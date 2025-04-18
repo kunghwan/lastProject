@@ -1,2 +1,1 @@
-확인
-sdfsdfsdfdsf
+확인용
