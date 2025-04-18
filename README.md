@@ -1,4 +1,2 @@
 확인
-sdfsdfsdfsdf
-gdgdgdgdgdgdgdg
-sdfsdfsdfs
+sdfsdfsdfdsf
