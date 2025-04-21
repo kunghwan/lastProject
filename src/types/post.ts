@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // SNS페이지 요구사항명세서
 // 1. 피드페이지 메인
 //  - 홈페이지 네브바에서 sns 버튼을 누르면 홈페이지의 지도가 반으로 줄어들고 그 빈자리에 sns 페이지가 보여집니다.
@@ -58,3 +59,5 @@ export interface Bookmark {
   uid: string; // bookmark 한 사람의 아이디
   createdAt: Date;
 }
+=======
+>>>>>>> origin/main
