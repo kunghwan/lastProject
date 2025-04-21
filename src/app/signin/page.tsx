@@ -48,8 +48,12 @@ const Signin = () => {
           />
         </div>
         <div className="flex gap-x-20 justify-start  w-100 lg:w-200">
-          <p className="cursor-pointer">아이디찾기</p>
-          <p className="cursor-pointer">비밀번호찾기</p>
+          <Link href="/idfind" className="cursor-pointer">
+            아이디찾기
+          </Link>
+          <Link href="/pwfind" className="cursor-pointer">
+            비밀번호찾기
+          </Link>
         </div>
         <button className={LoginButton}>로그인</button>
         <Link href="/signup" className={SignUserButton}>
