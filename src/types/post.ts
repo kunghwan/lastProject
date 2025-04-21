@@ -16,7 +16,7 @@ export interface FeedPageProps {
   onPostFocus: (location: Location) => void; // 지도에서 해당 위치로 포커스하는 함수
 }
 // 포스트 하나에 대한 타입
-interface Post {
+export interface Post {
   id: string; // 게시물 고유 ID
   uid: string; // 작성자 ID
   userNickname: string; // 작성자 닉네임
