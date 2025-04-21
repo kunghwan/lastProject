@@ -1,7 +1,29 @@
 "use client";
+import { Post } from "@/types/post";
 import React, { useCallback, useState } from "react";
+import { twMerge } from "tailwind-merge";
+
+const initialState: Post = {
+  id: "",
+  uid: "",
+  userNickname: "",
+  userProfileImage: "",
+  imageUrl: null,
+  content: null,
+  lo: {
+    latitude: 0,
+    longitude: 0,
+    address: "",
+  },
+  likes: [],
+  shares: [],
+  bookmarked: [],
+  isLiked: false,
+  createdAt: "",
+};
 
 const UploadPostPage = () => {
+  const [post, setPost] = useState<Post>(initialState);
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tag, setTag] = useState("");
@@ -32,7 +54,7 @@ const UploadPostPage = () => {
             name=""
             id=""
             placeholder="소개하고 싶은 관광지의 소개글이나 리뷰를 작성해주세요."
-            className={input}
+            className={twMerge("h-20", input)}
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
           ></textarea>
