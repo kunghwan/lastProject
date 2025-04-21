@@ -1,8 +1,8 @@
-import UploadPage from "@/components/post/UploadPage";
+import UploadPostPage from "@/components/post/UploadPage";
 import React from "react";
 
 const PostCreatePage = () => {
-  return <UploadPage />;
+  return <UploadPostPage />;
 };
 
 export default PostCreatePage;
