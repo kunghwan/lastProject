@@ -39,9 +39,3 @@ interface Place {
 interface PlaceFilterOption {
   minLikes?: number; // 최소 좋아요 수 필터
 }
-
-// +고객센터  interface
-interface CustomerService {
-  question: string;
-  Answer: string;
-}
