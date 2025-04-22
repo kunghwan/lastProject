@@ -33,6 +33,7 @@
 4. 허승이
    - customer
    - notification
+   - uploadpostpage
 
 # 오늘 할일
 
