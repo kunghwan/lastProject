@@ -2,6 +2,7 @@
 import { Post } from "@/types/post";
 import React, { useCallback, useState } from "react";
 import { twMerge } from "tailwind-merge";
+import { FaPlus } from "react-icons/fa6";
 
 const initialState: Post = {
   id: "",
@@ -19,7 +20,7 @@ const initialState: Post = {
   shares: [],
   bookmarked: [],
   isLiked: false,
-  createdAt: "",
+  createdAt: Date(),
 };
 
 const UploadPostPage = () => {
@@ -35,13 +36,18 @@ const UploadPostPage = () => {
       if (title.length === 0 || title.trim() === "") {
         return alert("제목을 입력해주세요.");
       }
+
+      try {
+      } catch (error: any) {
+        return alert(error.message);
+      }
     },
     [title]
   );
   return (
     <div>
-      <div className="bg-[rgba(250,255,254)] px-5 border">
-        <h1 className="text-3xl font-bold">새글작성</h1>
+      <div className="bg-[rgba(250,255,254)] px-5 border h-screen">
+        <h1 className="text-3xl font-bold text-black">새글작성</h1>
         <form action="" onSubmit={onSubmit} className="flex flex-col gap-2">
           <input
             type="text"
@@ -77,14 +83,25 @@ const UploadPostPage = () => {
           <div>
             <ul className="flex gap-x-2">
               {tags.map((t, index) => (
-                <li key={index}>{t}</li>
+                <li key={index}>
+                  <button>{t}</button>
+                </li>
               ))}
             </ul>
           </div>
+          <div>
+            <input
+              type="file"
+              className="border max-w-20 min-h-20 border-black  absolute opacity-0 cursor-pointer z-30"
+            />
+            <div className="border max-w-20 min-h-20 border-black bg-white cursor-pointer flex justify-center items-center z-10">
+              <FaPlus className="text-3xl text-black " />
+            </div>
+          </div>
 
           <div className="flex">
-            <button>취소</button>
-            <button>게시</button>
+            <button className="text-black">취소</button>
+            <button className="text-black">게시</button>
           </div>
         </form>
       </div>
