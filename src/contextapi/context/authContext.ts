@@ -7,7 +7,7 @@ export interface Props {
   signin: (email: string, password: string) => Promise<PromiseResult>;
   signout: () => Promise<PromiseResult>;
   signup: (newUser: User, password: string) => Promise<PromiseResult>;
-  isUpdate?: (target: keyof User, value: any) => Promise<PromiseResult>;
+  updateUser?: (target: keyof User, value: any) => Promise<PromiseResult>;
 }
 
 export const initialState: Props = {
@@ -17,7 +17,7 @@ export const initialState: Props = {
   signin: async () => ({}),
   signout: async () => ({}),
   signup: async () => ({}),
-  isUpdate: async () => ({}),
+  updateUser: async () => ({}),
 };
 
 export const context = createContext(initialState);
