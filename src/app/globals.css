@@ -1,3 +1,9 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+@layer components {
+  .themeButton {
+    @apply p-3 rounded-full bg-teal-100 cursor-pointer hover:opacity-70 justify-center flex items-center dark:text-gray-800;
+  }
+}
