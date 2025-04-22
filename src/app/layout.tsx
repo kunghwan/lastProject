@@ -3,11 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Loaiding from "@/components/Loading/page";
 
-
-
 import ProjectLayout from "./ProjectLayout";
-
-
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-black dark:bg-[#333333] dark:text-white transition-colors lg:max-w-300 lg:mx-auto`}
       >
         <ProjectLayout>
           <Loaiding />
