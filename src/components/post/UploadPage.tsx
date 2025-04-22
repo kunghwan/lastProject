@@ -2,13 +2,18 @@
 import { Post } from "@/types/post";
 import React, { useCallback, useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { FaPlus } from "react-icons/fa6";
+import FileItem from "./FileItem";
 
-interface UploadPostPageProps extends Post {
+interface Tag {
+  id: string;
+  name: string;
+}
+
+interface UploadPostProps extends Post {
   imgs: [];
-  file?: File;
-  onChangeFile: () => void;
+  onChangeFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDeleteFile: () => void;
+  tags: Tag[] | null;
 }
 
 const initialState: Post = {
@@ -98,16 +103,14 @@ const UploadPostPage = () => {
             </ul>
           </div>
           <div>
-            <input
-              type="file"
-              multiple
-              className="border max-w-20 min-h-20 border-black  absolute opacity-0 cursor-pointer z-30"
-            />
-            <div className="border max-w-20 min-h-20 border-black bg-white cursor-pointer flex justify-center items-center z-10">
-              <FaPlus className="text-3xl text-black " />
-            </div>
+            <ul>
+              {files.map((file) => (
+                <li key={file.name}>
+                  <FileItem />
+                </li>
+              ))}
+            </ul>
           </div>
-
           <div className="flex">
             <button className="text-black">취소</button>
             <button className="text-black">게시</button>
