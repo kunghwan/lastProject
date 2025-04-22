@@ -14,8 +14,21 @@
    - contextApi
 
 2. 강산
+
    - map
-   - components/
+   - app/page.tsx
+     - components/
+       - map
+       - features/navber
+
+3. 강찬희
+
+   - profile
+   - components/post
+
+4. 허승이
+   - customer
+   - notification
 
 # 오늘 할일
 
