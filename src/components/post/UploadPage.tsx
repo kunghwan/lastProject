@@ -161,6 +161,8 @@ const UploadPostPage = () => {
         </div>
       </div>
 
+      {/* 주소 컴포넌트 자리 */}
+
       <div className="flex justify-end gap-x-2.5 mt-4 lg:col-span-2">
         <button
           type="button"
