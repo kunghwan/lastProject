@@ -5,6 +5,10 @@ import Loaiding from "@/components/Loading/page";
 
 import ProjectLayout from "./ProjectLayout";
 
+=======
+import { AuthProvider } from "@/contextapi/provider";
+
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -32,7 +36,7 @@ export default function RootLayout({
       >
         <ProjectLayout>
           <Loaiding />
-          {children}
+          <AuthProvider> {children}</AuthProvider>
         </ProjectLayout>
       </body>
     </html>
