@@ -1,5 +1,5 @@
 "use client";
-import { Post } from "@/types/post";
+import { Location, Post } from "@/types/post";
 import React, { useCallback, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import FileItem from "./FileItem";
@@ -48,6 +48,11 @@ const UploadPostPage = () => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [tag, setTag] = useState("");
   const [desc, setDesc] = useState("");
+  const [juso, setJuso] = useState<Location>({
+    latitude: 0,
+    longitude: 0,
+    address: "",
+  });
   const navi = useRouter();
 
   const onChangeFiles = useCallback(
@@ -83,7 +88,7 @@ const UploadPostPage = () => {
     <form
       action=""
       onSubmit={onSubmit}
-      className="grid grid-cols-1 gap-2  lg:grid-cols-2 lg:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border h-full relative"
+      className="flex-1 grid grid-cols-1 gap-2  lg:grid-cols-2 lg:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border h-full relative"
     >
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold text-black">새글작성</h1>
