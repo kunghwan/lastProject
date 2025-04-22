@@ -4,6 +4,12 @@ import React, { useCallback, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { FaPlus } from "react-icons/fa6";
 
+interface UploadPostPageProps extends Post {
+  imgs: [];
+  file?: File;
+  onChangeFile: () => void;
+}
+
 const initialState: Post = {
   id: "",
   uid: "",
@@ -25,6 +31,7 @@ const initialState: Post = {
 
 const UploadPostPage = () => {
   const [post, setPost] = useState<Post>(initialState);
+  const [files, setFiles] = useState<File[]>([]);
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tag, setTag] = useState("");
@@ -92,6 +99,7 @@ const UploadPostPage = () => {
           <div>
             <input
               type="file"
+              multiple
               className="border max-w-20 min-h-20 border-black  absolute opacity-0 cursor-pointer z-30"
             />
             <div className="border max-w-20 min-h-20 border-black bg-white cursor-pointer flex justify-center items-center z-10">
