@@ -5,9 +5,7 @@ import Loaiding from "@/components/Loading/page";
 
 import ProjectLayout from "./ProjectLayout";
 
-=======
 import { AuthProvider } from "@/contextapi/provider";
-
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
