@@ -80,103 +80,101 @@ const UploadPostPage = () => {
   );
 
   return (
-    <div className="mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] p-5  border h-screen relative">
-      <h1 className="text-3xl font-bold text-black">새글작성</h1>
-      <form
-        action=""
-        onSubmit={onSubmit}
-        className="flex flex-col gap-2 lg:grid lg:grid-cols-2 lg:gap-5"
-      >
-        <div className="flex flex-col gap-2">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className={input}
-            placeholder="제목을 입력하세요."
-          />
-          <textarea
-            name=""
-            id=""
-            placeholder="소개하고 싶은 관광지의 소개글이나 리뷰를 작성해주세요."
-            className={twMerge("h-20 resize-none", input)}
-            value={desc}
-            onChange={(e) => setDesc(e.target.value)}
-          />
-          <div>
-            <ul className="flex items-center gap-2.5">
-              {files.map((file) => (
-                <li key={file.name}>
-                  <FileItem
-                    file={file}
-                    onDeleteFiles={() =>
-                      setFiles((prev) =>
-                        prev.filter((item) => item.name !== file.name)
-                      )
-                    }
-                  />
-                </li>
-              ))}
-              <li>
-                <FileItem onChangeFiles={onChangeFiles} />
-              </li>
-            </ul>
-          </div>
-        </div>
+    <form
+      action=""
+      onSubmit={onSubmit}
+      className="grid grid-cols-1 gap-2  lg:grid-cols-2 lg:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border h-full relative"
+    >
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold text-black">새글작성</h1>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className={input}
+          placeholder="제목을 입력하세요."
+        />
+        <textarea
+          name=""
+          id=""
+          placeholder="소개하고 싶은 관광지의 소개글이나 리뷰를 작성해주세요."
+          className={twMerge("h-50 resize-none", input)}
+          value={desc}
+          onChange={(e) => setDesc(e.target.value)}
+        />
         <div>
-          <input
-            type="text"
-            value={tag}
-            onChange={(e) => setTag(e.target.value)}
-            onKeyDown={(e) => {
-              const { key, nativeEvent } = e;
-              if (key === "Shift" && !nativeEvent.isComposing) {
-                const formattedTag = tag.startsWith("#") ? tag : `#${tag}`;
-                const newTag: Tag = {
-                  id: v4(),
-                  name: formattedTag,
-                };
-                if (tags.find((t) => t.name === newTag.name)) {
-                  return alert("이미 존재하는 태그입니다.");
-                }
-                setTags((prev) => [...prev, newTag]);
-                setTag("");
-              }
-            }}
-            className={twMerge("w-full", input)}
-            placeholder="태그를 입력후 shift키를 눌러주세요."
-          />
-          <div>
-            <ul className="flex gap-x-2">
-              {tags.map((t) => (
-                <li key={t.id}>
-                  <button>{t.name}</button>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ul className="flex items-center gap-2.5">
+            {files.map((file) => (
+              <li key={file.name}>
+                <FileItem
+                  file={file}
+                  onDeleteFiles={() =>
+                    setFiles((prev) =>
+                      prev.filter((item) => item.name !== file.name)
+                    )
+                  }
+                />
+              </li>
+            ))}
+            <li>
+              <FileItem onChangeFiles={onChangeFiles} />
+            </li>
+          </ul>
         </div>
+      </div>
+      <div>
+        <input
+          type="text"
+          value={tag}
+          onChange={(e) => setTag(e.target.value)}
+          onKeyDown={(e) => {
+            const { key, nativeEvent } = e;
+            if (key === "Shift" && !nativeEvent.isComposing) {
+              const formattedTag = tag.startsWith("#") ? tag : `#${tag}`;
+              const newTag: Tag = {
+                id: v4(),
+                name: formattedTag,
+              };
+              if (tags.find((t) => t.name === newTag.name)) {
+                return alert("이미 존재하는 태그입니다.");
+              }
+              setTags((prev) => [...prev, newTag]);
+              setTag("");
+            }
+          }}
+          className={twMerge("w-full ", input)}
+          placeholder="태그를 입력후 shift키를 눌러주세요."
+        />
+        <div>
+          <ul className="flex gap-x-2">
+            {tags.map((t) => (
+              <li key={t.id}>
+                <button>{t.name}</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
 
-        <div className="flex  justify-end gap-x-2.5 absolute bottom-5 right-5">
-          <button
-            type="button"
-            onClick={() => {
-              if (confirm("취소하시겠습니까?")) {
-                navi.back();
-              } else {
-                return alert("취소되었습니다.");
-              }
-            }}
-            className={twMerge("bg-gray-300 ", button)}
-          >
-            취소
-          </button>
-          <button className={twMerge("bg-[rgba(62,188,154)]", button)}>
-            게시
-          </button>
-        </div>
-      </form>
-    </div>
+      <div className="flex justify-end gap-x-2.5 mt-4 lg:col-span-2">
+        <button
+          type="button"
+          onClick={() => {
+            if (confirm("취소하시겠습니까?")) {
+              navi.back();
+            } else {
+              return alert("취소되었습니다.");
+            }
+          }}
+          className={twMerge("bg-gray-300 ", button)}
+        >
+          취소
+        </button>
+        <button className={twMerge("bg-[rgba(62,188,154)]", button)}>
+          게시
+        </button>
+      </div>
+    </form>
   );
 };
 
