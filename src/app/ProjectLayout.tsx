@@ -3,12 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { PropsWithChildren, useEffect, useState } from "react";
-import { IoMoon, IoSunny } from "react-icons/io5";
+import { IoMoon, IoSunny, IoBookmarkOutline } from "react-icons/io5";
+import { VscBell } from "react-icons/vsc";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/features/navber/Navbar";
 
 const ProjectLayout = ({ children }: PropsWithChildren) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
 
   const router = useRouter();
 
@@ -29,13 +31,24 @@ const ProjectLayout = ({ children }: PropsWithChildren) => {
         <ul className="flex-row gap-x-5 flex text-2xl">
           <button
             onClick={() => setIsDarkMode((prev) => !prev)}
-            className="p-3 rounded-full bg-teal-100 cursor-pointer hover:opacity-70 w-15 h-15 justify-center flex items-center dark:text-gray-800"
+            className="themeButton w-15 h-15"
           >
-            {isDarkMode ? <IoMoon /> : <IoSunny />}
+            {isDarkMode ? <IoSunny className="text-red-400" /> : <IoMoon />}
           </button>
 
+          {isLogin && (
+            <div className="flex gap-x-5">
+              <button className="themeButton h-15 w-15">
+                <IoBookmarkOutline />
+              </button>
+              <button className="themeButton h-15 w-15">
+                <VscBell />
+              </button>
+            </div>
+          )}
+
           <button
-            className="p-3 rounded-full bg-teal-100 cursor-pointer hover:opacity-70 items-center flex justify-center dark:text-gray-800"
+            className="themeButton"
             onClick={() => router.push("/signin")}
           >
             로그인
