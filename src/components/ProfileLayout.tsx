@@ -4,7 +4,7 @@ import { Post } from "@/types/post";
 import { useEffect, useState } from "react";
 import { FcRemoveImage } from "react-icons/fc";
 import { IoSettingsOutline } from "react-icons/io5";
-import "../globals.css";
+import "../app/globals.css";
 
 const ProfileLayout = ({
   posts,
