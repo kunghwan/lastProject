@@ -8,7 +8,7 @@
 // 3. 피드의 포스트는 n개까지 올릴수 있고 옆으로 밀어볼 수 있습니다.
 // 4. 모든 피드는 무한스크롤로 내려서 다음 포스트를 확인할 수 있습니다.
 
-// SNS페이지 interface;
+// SNS페이지 export interface;
 
 // 전체 피드 페이지 타입
 export interface FeedPageProps {
@@ -32,8 +32,14 @@ export interface Post {
   createdAt: string; // 작성일시 (ISO 8601)
 }
 
+// const post1: Post = {
+//   likes: ["1", "2", "3"],
+// };
+
+// setPost((prev) => ({ ...prev, likes: [...prev.likes, newId] }));
+
 // 지도위치 정보
-interface Location {
+export interface Location {
   latitude: number; // 위도
   longitude: number; // 경도
   address: string; // 해당 위치의 주소
