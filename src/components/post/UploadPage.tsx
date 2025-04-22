@@ -106,9 +106,12 @@ const UploadPostPage = () => {
             <ul>
               {files.map((file) => (
                 <li key={file.name}>
-                  <FileItem />
+                  <FileItem file={file} />
                 </li>
               ))}
+              <li>
+                <FileItem />
+              </li>
             </ul>
           </div>
           <div className="flex">
