@@ -14,5 +14,40 @@
    - contextApi
 
 2. 강산
+
    - map
-   - components/
+   - app/page.tsx
+     - components/
+       - map
+       - features/navber
+
+3. 강찬희
+
+   - profile
+   - components/post
+
+4. 허승이
+   - customer
+   - notification
+
+# 오늘 할일
+
+1. 맡은 페이지 중 작업할 페이지 하나 선택해서 README.md 만들고 작업
+2. 작업 끝나면 PR 날리고 팀장한테 리뷰 신청하기
+3. 리뷰 다같이 진행할 수 있도록 7교시에 진행
+4. 리뷰 후 문제 없으면 MERGE
+
+## github branch 전략
+
+1. 본인의 branch에만 push 하기! **팀장포함!예외없음**
+2. merge 된 후 본인 브랜치에서 add&commit 후 gitpull origin main
+
+### 팀장 전용
+
+1. 예외상황을 고려해서 상항 tag 만들기
+2. git tag -a 태그이름 -m '태그내용'
+3. push할때 -- tages 붙이기
+
+```bash
+ git push origin <branch-name> --tags
+```
