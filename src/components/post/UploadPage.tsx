@@ -8,6 +8,7 @@ interface UploadPostPageProps extends Post {
   imgs: [];
   file?: File;
   onChangeFile: () => void;
+  onDeleteFile: () => void;
 }
 
 const initialState: Post = {
