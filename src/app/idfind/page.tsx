@@ -31,28 +31,39 @@ const IdFind = () => {
         </div>
       </div>
       {IdFinds.map((idf, index) => (
-        <React.Fragment key={index}>
-          <div className=" flex gap-2 p-5">
+        <div key={index} className="">
+          <div className=" flex gap-2 p-5 lg:flex lg:items-center lg:justify-center">
             <input
               type="text"
               placeholder={idf.label}
-              className="bg-lime-300 p-5 placeholder:text-black"
+              className="bg-lime-300 p-5 placeholder:text-black outline-none lg:w-100 w-70"
             />
-            {idf.bt && (
-              <button className="bg-emerald-300 p-5  font-bold w-40">
+            {idf.bt ? (
+              <button className="bg-emerald-300 p-5 font-bold w-40">
                 {idf.bt}
               </button>
+            ) : (
+              // 👉 버튼 없을 경우 데스크탑에서 자리 맞추기용 빈 div
+              <div className=" lg:block w-40" />
             )}
           </div>
-        </React.Fragment>
+        </div>
       ))}
-      <div className="px-5 mt-4">
-        <button
-          className="w-[240px] h-[80px] bg-emerald-300 rounded font-bold text-lg hover:bg-[#5cd89b]"
-          onClick={handleConfirm}
-        >
-          확인
-        </button>
+      {/* 확인 버튼 줄 */}
+
+      <div className="w-full px-5">
+        <div className="flex flex-col lg:flex-row lg:justify-center   ">
+          <div className="w-[240px] md:w-[400px]">
+            <button
+              className="w-full h-[80px] bg-emerald-300 rounded font-bold  lg:text-lg hover:bg-emerald-400"
+              onClick={handleConfirm}
+            >
+              확인
+            </button>
+          </div>
+          {/* 버튼 없는 공간 만들기 (input 줄과 정렬 맞춤용) */}
+          <div className="hidden lg:block w-40" />
+        </div>
       </div>
     </>
   );
