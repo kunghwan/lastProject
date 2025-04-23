@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { FaPlus } from "react-icons/fa";
+import { IoClose } from "react-icons/io5";
 interface QnA {
   question: string;
   answer: string;
@@ -13,23 +15,38 @@ const QnaPage = () => {
   };
 
   return (
-    <div className="mt-5">
-      <ul>
-        {qna.map((item) => (
-          <li key={item.question} className="flex flex-col mb-2">
-            <button
-              onClick={() => toggleQuestion(item.question)}
-              className="text-left font-bold"
-            >
-              {item.question}
-              <span>{isanswerShowing === item.question ? "X" : "+"}</span>
-            </button>
-            {isanswerShowing === item.question && (
-              <p className="mt-2 text-gray-600">{item.answer}</p>
-            )}
-          </li>
-        ))}
-      </ul>
+    <div className="mt-5 relative h-screen  ">
+      <div>
+        <ul className="px-2">
+          {qna.map((item) => (
+            <li key={item.question} className="flex flex-col mb-2 w-full">
+              <button
+                onClick={() => toggleQuestion(item.question)}
+                className="text-left font-bold  flex justify-between items-center p-2.5 rounded bg-[rgba(151,218,200)] dark:bg-[rgba(151,218,200,0.5)] lg:text-xl cursor-pointer"
+              >
+                <p> {item.question}</p>
+                <span>
+                  {isanswerShowing === item.question ? (
+                    <IoClose className="text-2xl font-bold " />
+                  ) : (
+                    <FaPlus className="text-lg" />
+                  )}
+                </span>
+              </button>
+              {isanswerShowing === item.question && (
+                <p className="mt-1  text-gray-600 rounded p-2.5 bg-[rgba(240,255,251)] dark:bg-[rgba(240,255,251,0.5) lg:text-xl">
+                  {item.answer}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="text-xl font-bold flex flex-col justify-end items-center absolute bottom-2 left-0 right-0 ">
+        <p>추가로 질문사항이 있으시면 </p>
+        <p>test@test.com으로 메일을 보내주시면 감사하겠습니다.</p>
+      </div>
     </div>
   );
 };
