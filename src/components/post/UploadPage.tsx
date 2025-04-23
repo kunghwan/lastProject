@@ -1,11 +1,13 @@
 "use client";
 import { Location, Post } from "@/types/post";
-import React, { useCallback, useState } from "react";
+import React, { use, useCallback, useMemo, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import FileItem from "./FileItem";
 import { v4 } from "uuid";
 import { dbService, FBCollection } from "@/lib";
 import { useRouter } from "next/navigation";
+import { IoLocationSharp } from "react-icons/io5";
+import { AUTH } from "@/contextapi/context";
 
 interface Tag {
   id: string;
@@ -36,24 +38,51 @@ const initialState: UploadPostProps = {
   shares: [],
   bookmarked: [],
   isLiked: false,
-  createdAt: Date(),
+  createdAt: new Date().toLocaleString(),
   imgs: [],
   tags: null,
 };
 
 const UploadPostPage = () => {
+  // const { user } = AUTH.use();
   const [post, setPost] = useState<UploadPostProps>(initialState);
   const [files, setFiles] = useState<File[]>([]);
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState<Tag[]>([]);
   const [tag, setTag] = useState("");
   const [desc, setDesc] = useState("");
+  const [address, setAddress] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [juso, setJuso] = useState<Location>({
     latitude: 0,
     longitude: 0,
     address: "",
   });
+
+  const [isJusoShowing, setIsJusoShowing] = useState(false);
+  const [isJusoUlShowing, setIsJusoUlShowing] = useState(false);
   const navi = useRouter();
+
+  const titleRef = useRef<HTMLInputElement>(null);
+  const descRef = useRef<HTMLTextAreaElement>(null);
+  const jusoRef = useRef<HTMLInputElement>(null);
+
+  const titleMessage = useMemo(() => {
+    if (title.length === 0 || title.trim() === "") {
+      return "제목을 입력해주세요.";
+    }
+  }, [title]);
+  const descMessage = useMemo(() => {
+    if (desc.length === 0 || desc.trim() === "") {
+      return "내용을 입력해주세요.";
+    }
+  }, [desc]);
+
+  const jusoMessage = useMemo(() => {
+    if (juso.address.length === 0 || juso.address.trim() === "") {
+      return "주소를 입력해주세요.";
+    }
+  }, [juso]);
 
   const onChangeFiles = useCallback(
     (items: FileList) => {
@@ -63,23 +92,43 @@ const UploadPostPage = () => {
     },
     [files]
   );
+  const searchAddress = useCallback(async (query: string) => {
+    const res = await fetch(
+      `https://dapi.kakao.com/v2/local/search/keyword.json?query=${query}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `KakaoAK ${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}`,
+        },
+      }
+    );
+    const data = await res.json();
+    console.log(data, 79);
+    setSearchResults(data.documents);
+  }, []);
 
   const onSubmit = useCallback(
     async (e) => {
       e.preventDefault();
-      if (title.length === 0 || title.trim() === "") {
-        return alert("제목을 입력해주세요.");
+      if (titleMessage) {
+        alert(titleMessage);
+        return titleRef.current?.focus();
       }
-      if (desc.length === 0 || desc.trim() === "") {
-        return alert("내용을 입력해주세요.");
+      if (descMessage) {
+        alert(descMessage);
+        return descRef.current?.focus();
+      }
+      if (jusoMessage) {
+        alert(jusoMessage);
+        return jusoRef.current?.focus();
       }
 
-      // try {
-      //   const ref = await dbService.collection(FBCollection.POSTS).doc(post.id);
-      //   const snap = await ref.set(post)
-      // } catch (error: any) {
-      //   return alert(error.message);
-      // }
+      try {
+        const ref = await dbService.collection(FBCollection.POSTS).doc(post.id);
+        // const snap = await ref.add();
+      } catch (error: any) {
+        return alert(error.message);
+      }
     },
     [title]
   );
@@ -88,7 +137,7 @@ const UploadPostPage = () => {
     <form
       action=""
       onSubmit={onSubmit}
-      className="flex-1 grid grid-cols-1 gap-2  lg:grid-cols-2 lg:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border h-full relative"
+      className="flex-1 grid grid-cols-1 gap-2 dark:text-gray-700  lg:grid-cols-2 lg:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border rounded border-gray-400 h-full relative"
     >
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold text-black">새글작성</h1>
@@ -97,6 +146,7 @@ const UploadPostPage = () => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className={input}
+          ref={titleRef}
           placeholder="제목을 입력하세요."
         />
         <textarea
@@ -105,6 +155,7 @@ const UploadPostPage = () => {
           placeholder="소개하고 싶은 관광지의 소개글이나 리뷰를 작성해주세요."
           className={twMerge("h-50 resize-none", input)}
           value={desc}
+          ref={descRef}
           onChange={(e) => setDesc(e.target.value)}
         />
         <div>
@@ -127,7 +178,8 @@ const UploadPostPage = () => {
           </ul>
         </div>
       </div>
-      <div>
+
+      <div className="flex flex-col gap-2 lg:mt-11">
         <input
           type="text"
           value={tag}
@@ -154,15 +206,109 @@ const UploadPostPage = () => {
           <ul className="flex gap-x-2">
             {tags.map((t) => (
               <li key={t.id}>
-                <button>{t.name}</button>
+                <button
+                  onClick={() => {
+                    if (confirm("삭제하시겠습니까?")) {
+                      setTags((prev) => prev.filter((tag) => tag.id !== t.id));
+                    } else {
+                      return alert("취소되었습니다.");
+                    }
+                  }}
+                >
+                  {t.name}
+                </button>
               </li>
             ))}
           </ul>
         </div>
-      </div>
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-x-2 items-center">
+            {juso.address.length > 0 && (
+              <label className=" flex w-full border bg-emerald-100 p-2.5 rounded items-center  border-gray-400 dark:text-gray-900">
+                <span>
+                  <IoLocationSharp className="text-2xl" />
+                </span>
+                {juso.address}
+              </label>
+            )}
 
-      {/* 주소 컴포넌트 자리 */}
-      {/* ? */}
+            {isJusoShowing && (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirm("다시 검색하시겠습니까?")) {
+                      setJuso({
+                        latitude: 0,
+                        longitude: 0,
+                        address: "",
+                      });
+                      setSearchResults([]);
+                      setAddress("");
+                      return setIsJusoShowing(false);
+                    } else {
+                      return alert("취소되었습니다.");
+                    }
+                  }}
+                  className={twMerge(
+                    "border border-gray-400 p-2.5 rounded bg-gray-100 flex-1 min-w-20 cursor-pointer"
+                  )}
+                >
+                  다시검색
+                </button>
+              </div>
+            )}
+          </div>
+          {!isJusoShowing && (
+            <div>
+              <div className="flex gap-x-2">
+                <input
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className={twMerge("w-full ", input)}
+                  ref={jusoRef}
+                  placeholder="주소를 입력후 검색버튼을 눌러주세요."
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    searchAddress(address);
+                    setIsJusoUlShowing(true);
+                    return setIsJusoShowing(true);
+                  }}
+                  className=" min-w-10 flex-1 rounded bg-[rgba(116,212,186)]"
+                >
+                  검색
+                </button>
+              </div>
+            </div>
+          )}
+          {isJusoUlShowing && (
+            <ul className="mt-2 flex flex-col gap-y-2 bg-gray-50 border border-gray-400  rounded p-2.5 max-h-50 overflow-y-auto">
+              {searchResults.map((item) => (
+                <li
+                  key={item.id}
+                  className="cursor-pointer bg-white rounded gap-y-2.5 hover:underline border p-1.5 hover:text-green-800 "
+                  onClick={() => {
+                    setJuso({
+                      address: item.address_name,
+                      latitude: Number(item.y),
+                      longitude: Number(item.x),
+                    });
+                    setSearchResults([]);
+                    setIsJusoUlShowing(false);
+                    return setAddress(item.address_name);
+                  }}
+                >
+                  {item.address_name}
+                  {item.place_name}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
 
       <div className="flex justify-end gap-x-2.5 mt-4 lg:col-span-2">
         <button
@@ -188,5 +334,5 @@ const UploadPostPage = () => {
 
 export default UploadPostPage;
 
-const input = "bg-white border rounded px-2";
-const button = " rounded px-2.5 py-1";
+const input = "bg-white border rounded px-2 py-2 border-gray-400";
+const button = " rounded px-2.5 py-1 cursor-pointer";
