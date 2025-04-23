@@ -50,7 +50,12 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
           )}
 
           {user ? (
-            <button className="navButton font-bold text-xl">로그아웃</button>
+            <button
+              className="navButton font-bold text-xl"
+              onClick={() => router.push("/")}
+            >
+              로그아웃
+            </button>
           ) : (
             <button
               className="navButton font-bold text-xl"
