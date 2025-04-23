@@ -58,6 +58,7 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
               </button>
             </div>
           )}
+
           {!["/signin", "/signup"].includes(pathname) && (
             <>
               {user ? (
@@ -82,6 +83,23 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
                 </button>
               )}
             </>
+
+
+          {user ? (
+            <button
+              className="navButton font-bold text-xl"
+              onClick={() => router.push("/")}
+            >
+              로그아웃
+            </button>
+          ) : (
+            <button
+              className="navButton font-bold text-xl"
+              onClick={() => router.push("/signin")}
+            >
+              로그인
+            </button>
+
           )}
         </ul>
       </header>

@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
-
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { authService, dbService, FBCollection } from "@/lib";
+import { onAuthStateChanged } from "firebase/auth";
 
 import { PropsWithChildren } from "react";
 import { AUTH } from "../context";
@@ -92,12 +92,27 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     [user, ref]
   );
 
+  // ✅ 새로고침 시에도 로그인 상태 유지
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(authService, async (fbUser) => {
+      if (fbUser) {
+        const snap = await ref.doc(fbUser.uid).get();
+        const data = snap.data() as User;
+        if (data) setUser(data);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [ref]);
+
   // ✅ Context에 넣을 값
   const value = useMemo(
     () => ({
       user,
       isPending: false,
-      initialized: false,
+      initialized: true,
       signin,
       signout,
       signup,
