@@ -1,17 +1,19 @@
 "use client";
 
-import { Post } from "@/types/post";
+import { Post, Tag } from "@/types/post";
 import { useEffect, useState } from "react";
-import { FcRemoveImage } from "react-icons/fc";
 import { IoSettingsOutline } from "react-icons/io5";
-import "../app/globals.css";
+import "../globals.css";
+import ProfileFeed from "./ProfileFeed";
 
 const ProfileLayout = ({
   posts,
   isMyPage,
+  tags = [],
 }: {
   posts: Post[];
   isMyPage: boolean;
+  tags?: Tag[];
 }) => {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   useEffect(() => {
@@ -28,31 +30,38 @@ const ProfileLayout = ({
       {!isSmallScreen ? (
         <div className="flex flex-col m-5 mx-auto">
           <div className="flex m-10 mb-0 pr-20 pl-20 gap-2.5 justify-center ">
-            <img
-              src={posts[0].userProfileImage}
-              alt={`${posts[0].userNickname}'s profile`}
-              className="w-40 h-40 rounded-full bg-gray-600 sm:x-auto"
-            />
+            <div className="relative w-40 h-40">
+              <img
+                src={posts[0].userProfileImage}
+                alt={`${posts[0].userNickname}'s profile`}
+                className="w-40 h-40 rounded-full border border-gray-300 sm:x-auto hover:scale-103 transition-all cursor-pointer"
+              />
+              {isMyPage && (
+                <button className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-medium rounded-full opacity-0 hover:opacity-100 transition-opacity">
+                  수정하기
+                </button>
+              )}
+            </div>
             <div className="ml-10 w-120 flex-col flex flex-1 ">
               <p className="flex justify-between">
-                <h1 className="font-medium text-4xl p-1">
+                <h1 className="font-medium text-4xl p-1 hover:scale-103 hover:animate-pulse  transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
                   {posts[0].userNickname}
                 </h1>
                 {posts[0] && (
-                  <button className="text-2xl hover:animate-spin cursor-pointer p-2.5 active:text-gray-800  hover:text-gray-400">
+                  <button className="text-2xl hover:animate-spin hover:scale-105  cursor-pointer p-2.5 active:text-gray-800  hover:text-gray-400">
                     <IoSettingsOutline />
                   </button>
                 )}
               </p>
-              <div className="flex ml-2.5 gap-5">
-                <p className="flex gap-2.5 p-2.5">
+              <div className="flex ml-2.5 gap-5 ">
+                <p className="flex gap-2.5 p-2.5  hover:scale-103 hover:animate-pulse  transition-all cursor-pointer active:text-gray-800 ">
                   게시물 <p>{posts.length}</p>
                 </p>
-                <p className="flex gap-2.5 p-2.5">
+                <p className="flex gap-2.5 p-2.5  hover:scale-103 hover:animate-pulse  transition-all cursor-pointer active:text-gray-800 ">
                   구독수 <p>{posts[0].shares.length}</p>
                 </p>
               </div>
-              <p className="pb-5 text-xl">
+              <p className="pb-5 text-xl  hover:scale-101 hover:animate-pulse  transition-all cursor-pointer active:text-gray-800 ">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit.
                 Explicabo molestias quibusdam cum id assumenda nulla neque
                 voluptas sint deserunt aliquam veniam consequatur cupiditate
@@ -60,7 +69,17 @@ const ProfileLayout = ({
               </p>
             </div>
           </div>
-          <div className="flex text-2xl p-2.5 ml-30 mr-30">#tag1 #tag2 </div>
+          <div className="flex text-2xl p-2.5 ml-30 mr-30">
+            <ul className="flex gap-2.5 ">
+              {tags.map((tag) => (
+                <li key={tag.id}>
+                  <button className="p-2.5 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
+                    #{tag.content}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       ) : (
         <div className="flex flex-col m-5 sm:m-10 mx-auto">
@@ -71,7 +90,7 @@ const ProfileLayout = ({
               className="w-24 h-24 sm:w-40 sm:h-40 rounded-full bg-gray-600 object-cover"
             />
             <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
-              <h1 className="font-medium text-2xl sm:text-4xl">
+              <h1 className="font-medium text-2xl sm:text-4xl hover:animate-pulse transition-all cursor-pointer">
                 {posts[0].userNickname}
               </h1>
               {posts[0] && (
@@ -89,34 +108,16 @@ const ProfileLayout = ({
           </div>
         </div>
       )}
-      <div className="flex border-t pt-10 border-blue-200 lg:w-[1024px] mx-auto">
-        <ul className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
-          {posts.map((post) => (
-            <li key={post.id} className="border">
-              <div>
-                {post.imageUrl ? (
-                  <p className="flex justify-center items-center:">
-                    <img
-                      src={post.imageUrl}
-                      alt="Post image"
-                      className="w-full h-96 object-cover mb-2.5"
-                    />
-                  </p>
-                ) : (
-                  <p className="flex justify-center items-center">
-                    <FcRemoveImage className=" w-96 h-96 object-cover rounded-lg mb-2.5" />
-                  </p>
-                )}
-                <div>
-                  <h3>{post.content}</h3>
-                  <p>좋아요 수: {post.likes.length}</p>
-                  <p>공유 수: {post.shares.length}</p>
-                  <p>위치: {posts[0].lo.address || "위치 정보 없음"}</p>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+      <div className="flex flex-col items-center justify-center">
+        {posts?.length > 1 ? (
+          <ProfileFeed posts={posts} isMyPage={isMyPage} />
+        ) : (
+          <div className="flex border-t pt-10 border-blue-200 lg:w-[1024px] mx-auto justify-center">
+            <div className="text-gray-800 text-xl mt-30 animate-bounce">
+              게시물이 없습니다.
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
