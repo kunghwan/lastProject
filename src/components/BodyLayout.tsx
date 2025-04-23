@@ -83,23 +83,6 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
                 </button>
               )}
             </>
-
-
-          {user ? (
-            <button
-              className="navButton font-bold text-xl"
-              onClick={() => router.push("/")}
-            >
-              로그아웃
-            </button>
-          ) : (
-            <button
-              className="navButton font-bold text-xl"
-              onClick={() => router.push("/signin")}
-            >
-              로그인
-            </button>
-
           )}
         </ul>
       </header>
@@ -108,7 +91,7 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
 
       <Navbar />
 
-      <main>{children}</main>
+      <main className="flex-1 overflow-y-auto">{children}</main>
     </>
   );
 };
