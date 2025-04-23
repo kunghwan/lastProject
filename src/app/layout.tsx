@@ -3,10 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Loaiding from "@/components/Loading/page";
 
-
-
 import BodyLayout from "../components/BodyLayout";
-
 
 import { AuthProvider } from "@/contextapi/provider";
 
@@ -35,17 +32,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-black dark:bg-[#333333] dark:text-[#F1F5F9] transition-colors lg:max-w-300 lg:mx-auto`}
       >
-
         <Loaiding />
-        <AuthProvider> {children}</AuthProvider>
-
         <AuthProvider>
-          <BodyLayout>
-            <Loaiding />
-            {children}
-          </BodyLayout>
+          <BodyLayout>{children}</BodyLayout>
         </AuthProvider>
-
       </body>
     </html>
   );

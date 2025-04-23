@@ -15,24 +15,26 @@ const config = {
 
 if (!firebase.apps.length) {
   firebase.initializeApp(config);
-  console.log("firebase connected!");
+  console.log("Firebase Connected ✅");
 }
 
 const auth = firebase.auth;
 const authService = auth();
+
 const firestore = firebase.firestore;
 const dbService = firestore();
+
 const storage = firebase.storage;
 const storageService = storage();
 
 export {
-  authService,
-  dbService,
-  storageService,
-  auth,
-  firestore,
-  storage,
   firebase,
+  auth,
+  authService,
+  firestore,
+  dbService,
+  storage,
+  storageService,
 };
 
 export enum FBCollection {

@@ -11,7 +11,6 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
   const ref = dbService.collection(FBCollection.USERS);
 
-  // ✅ 로그인
   const signin = useCallback(
     async (email: string, password: string): Promise<PromiseResult> => {
       try {
@@ -34,7 +33,6 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     [ref]
   );
 
-  // ✅ 로그아웃
   const signout = useCallback(async (): Promise<PromiseResult> => {
     try {
       await authService.signOut();
@@ -45,38 +43,39 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   }, []);
 
-  // ✅ 회원가입
   const signup = useCallback(
     async (newUser: User, password: string): Promise<PromiseResult> => {
       try {
         const { user: fbUser } =
           await authService.createUserWithEmailAndPassword(
-            newUser.email,
+            newUser.email!,
             password
           );
 
         if (!fbUser) return { success: false, message: "유저 가입안됨" };
 
-        const storedUser: User = { ...newUser, uid: fbUser.uid };
-        await ref.doc(fbUser.uid).set(storedUser);
-        setUser(storedUser);
+        const storedUser: User = {
+          ...newUser,
+          uid: fbUser.uid,
+        };
+
+        // 🔸 로그인 상태로 두지 않고 sessionStorage 에만 저장
+        sessionStorage.setItem("signupUser", JSON.stringify(storedUser));
 
         return { success: true };
       } catch (error: any) {
         return { success: false, message: error.message };
       }
     },
-    [ref]
+    []
   );
 
-  // ✅ 유저 정보 수정
   const updateUser = useCallback(
     async (target: keyof User, value: any): Promise<PromiseResult> => {
       if (!user) {
         return {
           success: false,
-          message:
-            "로그인 한 유저만 사용할 수 있는 기능입니다. 로그인 후 다시 시도해주세요.",
+          message: "로그인 한 유저만 사용할 수 있는 기능입니다.",
         };
       }
 
@@ -92,7 +91,6 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     [user, ref]
   );
 
-  // ✅ 새로고침 시에도 로그인 상태 유지
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(authService, async (fbUser) => {
       if (fbUser) {
@@ -107,7 +105,6 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     return () => unsubscribe();
   }, [ref]);
 
-  // ✅ Context에 넣을 값
   const value = useMemo(
     () => ({
       user,
