@@ -1,6 +1,6 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { dbService, FBCollection } from "@/lib/firebase";
-import ProfileLayout from "@/app/components/ProfileLayout";
+import BodyLayout from "@/components/BodyLayout";
 import { Post } from "@/types/post";
 
 const MePage = async () => {
@@ -34,7 +34,7 @@ const MePage = async () => {
     );
   }
 
-  return <ProfileLayout posts={posts} isMyPage={true} />;
+  return <BodyLayout posts={posts} isMyPage={true} />;
 };
 
 export default MePage;

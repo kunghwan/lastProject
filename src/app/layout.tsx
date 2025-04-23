@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Loaiding from "@/components/Loading/page";
 
-import ProjectLayout from "./ProjectLayout";
+import ProjectLayout from "../components/BodyLayout";
 
 import { AuthProvider } from "@/contextapi/provider";
 
