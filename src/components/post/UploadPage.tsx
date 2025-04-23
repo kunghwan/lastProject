@@ -51,9 +51,9 @@ const initialState: UploadPostProps = {
 const UploadPostPage = () => {
   const { user } = AUTH.use();
   const [post, setPost] = useState<UploadPostProps>(initialState);
-  const { content, title } = post;
+  const { content, title, tags } = post;
   const [files, setFiles] = useState<File[]>([]);
-  const [tags, setTags] = useState<Tag[]>([]);
+
   const [tag, setTag] = useState("");
   const [address, setAddress] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -161,6 +161,11 @@ const UploadPostPage = () => {
 
           alert("게시물이 성공적으로 등록되었습니다!");
           setPost(initialState);
+          setJuso({
+            latitude: 0,
+            longitude: 0,
+            address: "",
+          });
           setFiles([]);
           return navi.back(); // 게시 후  이동
         } catch (error: any) {
@@ -248,7 +253,10 @@ const UploadPostPage = () => {
               if (tags.find((t) => t.name === newTag.name)) {
                 return alert("이미 존재하는 태그입니다.");
               }
-              setTags((prev) => [...prev, newTag]);
+              setPost((prev) => ({
+                ...prev,
+                tags: [...prev.tags, newTag],
+              }));
               return setTag("");
             }}
             className=" min-w-20 flex-1 rounded bg-[rgba(116,212,186)]"
@@ -257,20 +265,22 @@ const UploadPostPage = () => {
           </button>
         </div>
         <div>
-          <ul className="flex gap-x-2">
+          <ul className="flex gap-x-2 items-center flex-wrap">
             {tags.map((t) => (
               <li key={t.id}>
                 <button
                   type="button"
                   onClick={() => {
                     if (confirm("삭제하시겠습니까?")) {
-                      return setTags((prev) =>
-                        prev.filter((tag) => tag.id !== t.id)
-                      );
+                      return setPost((prev) => ({
+                        ...prev,
+                        tags: prev.tags.filter((tag) => tag.id !== t.id),
+                      }));
                     } else {
                       return alert("취소되었습니다.");
                     }
                   }}
+                  className="cursor-pointer font-extrabold"
                 >
                   {t.name}
                 </button>
