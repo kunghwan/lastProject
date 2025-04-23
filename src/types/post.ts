@@ -19,10 +19,11 @@ export interface FeedPageProps {
 export interface Post {
   id: string; // 게시물 고유 ID
   uid: string; // 작성자 ID
+  title: string; // 게시물 제목
   userNickname: string; // 작성자 닉네임
   userProfileImage: string; // 작성자 프로필 이미지 URL
   imageUrl: string | null; // 게시물 대표 이미지 URL
-  content: string | null; // 게시물 내용 또는 설명
+  content: string; // 게시물 내용 또는 설명
   lo: Location; // 장소 정보 (위치, 주소 등)
   // likes: number; // 좋아요 수를 카운트하기위해 uid 좋아요를 클릭한 사람의 uid를 담음 취소하면 uid를 뺌
   likes: Array<string>;
@@ -67,6 +68,6 @@ export interface Bookmark {
 
 export interface Tag {
   id: string; // 태그 아이디
-  content: string;
-  onTag: () => void; // 태그 클릭 시 핸들러
+  name: string;
+  onTag?: () => void; // 태그 클릭 시 핸들러
 }

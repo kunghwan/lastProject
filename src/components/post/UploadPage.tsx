@@ -1,5 +1,5 @@
 "use client";
-import { Location, Post } from "@/types/post";
+import { Location, Post, Tag } from "@/types/post";
 import React, {
   useCallback,
   useMemo,
@@ -9,13 +9,10 @@ import React, {
 } from "react";
 import { twMerge } from "tailwind-merge";
 import FileItem from "./FileItem";
-<<<<<<< HEAD
+
 import { v4 } from "uuid";
 import { dbService, FBCollection, storageService } from "@/lib";
-=======
-// import { v4 } from "uuid";
-import { dbService, FBCollection } from "@/lib";
->>>>>>> origin/main
+
 import { useRouter } from "next/navigation";
 import { IoLocationSharp } from "react-icons/io5";
 import { IoIosSearch } from "react-icons/io";
@@ -23,14 +20,9 @@ import { AUTH } from "@/contextapi/context";
 import Loaiding from "../Loading/page";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
 
-interface Tag {
-  id: string;
-  name: string;
-}
-
 interface UploadPostProps extends Post {
   imgs: [];
-  tags: Tag[] | null;
+  tags: Tag[];
 }
 
 const initialState: UploadPostProps = {
@@ -39,7 +31,8 @@ const initialState: UploadPostProps = {
   userNickname: "",
   userProfileImage: "",
   imageUrl: null,
-  content: null,
+  title: "",
+  content: "",
   lo: {
     latitude: 0,
     longitude: 0,
@@ -51,17 +44,17 @@ const initialState: UploadPostProps = {
   isLiked: false,
   createdAt: new Date().toLocaleString(),
   imgs: [],
-  tags: null,
+
+  tags: [],
 };
 
 const UploadPostPage = () => {
   const { user } = AUTH.use();
   const [post, setPost] = useState<UploadPostProps>(initialState);
+  const { content, title } = post;
   const [files, setFiles] = useState<File[]>([]);
-  const [title, setTitle] = useState("");
   const [tags, setTags] = useState<Tag[]>([]);
   const [tag, setTag] = useState("");
-  const [desc, setDesc] = useState("");
   const [address, setAddress] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [juso, setJuso] = useState<Location>({
@@ -84,10 +77,10 @@ const UploadPostPage = () => {
     }
   }, [title]);
   const descMessage = useMemo(() => {
-    if (desc.length === 0 || desc.trim() === "") {
+    if (content.length === 0 || content.trim() === "") {
       return "내용을 입력해주세요.";
     }
-  }, [desc]);
+  }, [content]);
 
   const jusoMessage = useMemo(() => {
     if (juso.address.length === 0 || juso.address.trim() === "") {
@@ -151,7 +144,7 @@ const UploadPostPage = () => {
             uid: user.uid,
             imageUrl: imgUrls[0] || null, // 대표 이미지
             imgs: imgUrls,
-            content: desc,
+            content: content,
             title: title,
             lo: {
               latitude: juso.latitude,
@@ -175,7 +168,7 @@ const UploadPostPage = () => {
         }
       });
     },
-    [title, titleMessage, desc, descMessage, juso, jusoMessage, user]
+    [title, titleMessage, content, descMessage, juso, jusoMessage, user]
   );
 
   return (
@@ -190,7 +183,12 @@ const UploadPostPage = () => {
         <input
           type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) =>
+            setPost((prev) => ({
+              ...prev,
+              title: e.target.value,
+            }))
+          }
           className={input}
           ref={titleRef}
           placeholder="제목을 입력하세요."
@@ -200,9 +198,14 @@ const UploadPostPage = () => {
           id=""
           placeholder="소개하고 싶은 관광지의 소개글이나 리뷰를 작성해주세요."
           className={twMerge("h-50 resize-none", input)}
-          value={desc}
+          value={content}
           ref={descRef}
-          onChange={(e) => setDesc(e.target.value)}
+          onChange={(e) =>
+            setPost((prev) => ({
+              ...prev,
+              content: e.target.value,
+            }))
+          }
         />
         <div>
           <ul className="flex items-center gap-2.5">
