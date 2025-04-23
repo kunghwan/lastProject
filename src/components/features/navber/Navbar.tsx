@@ -11,8 +11,8 @@ import { FaRegQuestionCircle } from "react-icons/fa";
 const Navbar = () => {
   const [isShowingModal, setIsShowingModal] = useState(false);
 
-  const pathname = usePathname();
   const router = useRouter();
+  const pathname = usePathname();
 
   const { user } = AUTH.use();
 
@@ -44,29 +44,28 @@ const Navbar = () => {
   return (
     <>
       <div className="flex relative lg:max-w-300 lg:mx-auto h-auto">
-        {/* 왼쪽 nav (xl 이상에서만 보임) */}
-        <nav
-          className={twMerge(
-            "hidden xl:flex absolute top-[10vh] -left-25 h-140 w-20 justify-center bg-gray-200 z-30 rounded-full",
-            ["/signin", "/signup"].includes(pathname) && "hidden"
-          )}
-        >
-          <ul className="flex flex-col justify-between py-5">
-            {NavBtns.map((btn, index) => (
-              <li key={index} className="flex justify-center items-center">
-                <button
-                  className="navButton text-3xl  flex flex-col gap-y-1.5 "
-                  onClick={() => navBtnClick(btn, index)}
-                >
-                  {btn.icon}
-                  <p className="text-black text-sm">{btn.name}</p>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        {pathname !== "/signin" && pathname !== "/signup" && (
+          <nav
+            className={twMerge(
+              "hidden xl:flex absolute top-[10vh] -left-25 h-140 w-20 justify-center bg-gray-200 z-30 rounded-full"
+            )}
+          >
+            <ul className="flex flex-col justify-between py-5">
+              {NavBtns.map((btn, index) => (
+                <li key={index} className="flex justify-center items-center">
+                  <button
+                    className="navButton text-3xl   flex flex-col gap-y-1.5 "
+                    onClick={() => navBtnClick(btn, index)}
+                  >
+                    {btn.icon}
+                    <p className="text-black text-sm">{btn.name}</p>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
 
-        {/* 하단 nav (xl 이하에서만 보임) */}
         <nav
           className={twMerge(
             "fixed bottom-0 left-0 right-0 bg-gray-200 z-30 p-3 flex justify-around xl:hidden rounded-t-2xl",
@@ -111,7 +110,7 @@ const NavBtns = [
   { name: "추천", icon: <FaRegStar />, path: "/upplace" },
   { name: "피드", icon: <FaRegMessage />, modal: true },
   { name: "글쓰기", icon: <FaPencil />, path: "/profile/create" },
-  { name: "MY", icon: <IoPersonSharp />, path: "/profile" },
+  { name: "MY", icon: <IoPersonSharp />, path: "/profile/me" },
 ];
 
 // <>
