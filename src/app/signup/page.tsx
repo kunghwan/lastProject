@@ -15,16 +15,6 @@ import {
 } from "@/lib/validations";
 import { dbService, FBCollection } from "@/lib/firebase";
 
-interface User {
-  uid: string;
-  email: string;
-  password: string;
-  name: string;
-  tel: string;
-  birth: string;
-  agreeLocation: boolean;
-}
-
 const InfoAccount = [
   { label: "이름", name: "name", type: "text" },
   { label: "이메일", name: "email", type: "email" },
