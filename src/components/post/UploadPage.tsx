@@ -1,7 +1,6 @@
 "use client";
 import { Location, Post } from "@/types/post";
 import React, {
-  use,
   useCallback,
   useMemo,
   useRef,
@@ -11,11 +10,13 @@ import React, {
 import { twMerge } from "tailwind-merge";
 import FileItem from "./FileItem";
 import { v4 } from "uuid";
-import { dbService, FBCollection } from "@/lib";
+import { dbService, FBCollection, storageService } from "@/lib";
 import { useRouter } from "next/navigation";
 import { IoLocationSharp } from "react-icons/io5";
+import { IoIosSearch } from "react-icons/io";
 import { AUTH } from "@/contextapi/context";
 import Loaiding from "../Loading/page";
+import { getDownloadURL, uploadBytes } from "firebase/storage";
 
 interface Tag {
   id: string;
@@ -24,9 +25,6 @@ interface Tag {
 
 interface UploadPostProps extends Post {
   imgs: [];
-  onChangeFile?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onDeleteFile?: () => void;
-
   tags: Tag[] | null;
 }
 
@@ -135,15 +133,19 @@ const UploadPostPage = () => {
         try {
           if (!user) {
             alert("로그인 후 사용해주세요.");
-            return navi.push("/login");
+            return navi.push("/singin");
           }
-          const ref = await dbService.collection(FBCollection.POSTS);
-
-          const snap = await ref.add({
-            id: v4(),
+          const imgUrls: string[] = [];
+          for (const file of files) {
+            const imgRef = storageService.ref(`${user.uid}/post/${v4()}`);
+            await uploadBytes(imgRef, file);
+            const url = await getDownloadURL(imgRef);
+            imgUrls.push(url);
+          }
+          await dbService.collection(FBCollection.POSTS).add({
             uid: user.uid,
-            imageUrl: files[0] || null, // 대표 이미지
-            imgs: files,
+            imageUrl: imgUrls[0] || null, // 대표 이미지
+            imgs: imgUrls,
             content: desc,
             title: title,
             lo: {
@@ -160,7 +162,9 @@ const UploadPostPage = () => {
           });
 
           alert("게시물이 성공적으로 등록되었습니다!");
-          navi.back(); // 게시 후  이동
+          setPost(initialState);
+          setFiles([]);
+          return navi.back(); // 게시 후  이동
         } catch (error: any) {
           return alert(`에러:${error.message}`);
         }
@@ -217,13 +221,17 @@ const UploadPostPage = () => {
       </div>
 
       <div className="flex flex-col gap-2 lg:mt-11">
-        <input
-          type="text"
-          value={tag}
-          onChange={(e) => setTag(e.target.value)}
-          onKeyDown={(e) => {
-            const { key, nativeEvent } = e;
-            if (key === "Shift" && !nativeEvent.isComposing) {
+        <div className="flex gap-x-2">
+          <input
+            type="text"
+            value={tag}
+            onChange={(e) => setTag(e.target.value)}
+            className={twMerge("w-full ", input)}
+            placeholder="태그를 입력후 추가버튼을 눌러주세요."
+          />
+          <button
+            type="button"
+            onClick={() => {
               const formattedTag = tag.startsWith("#") ? tag : `#${tag}`;
               const newTag: Tag = {
                 id: v4(),
@@ -233,20 +241,24 @@ const UploadPostPage = () => {
                 return alert("이미 존재하는 태그입니다.");
               }
               setTags((prev) => [...prev, newTag]);
-              setTag("");
-            }
-          }}
-          className={twMerge("w-full ", input)}
-          placeholder="태그를 입력후 shift키를 눌러주세요."
-        />
+              return setTag("");
+            }}
+            className=" min-w-20 flex-1 rounded bg-[rgba(116,212,186)]"
+          >
+            추가
+          </button>
+        </div>
         <div>
           <ul className="flex gap-x-2">
             {tags.map((t) => (
               <li key={t.id}>
                 <button
+                  type="button"
                   onClick={() => {
                     if (confirm("삭제하시겠습니까?")) {
-                      setTags((prev) => prev.filter((tag) => tag.id !== t.id));
+                      return setTags((prev) =>
+                        prev.filter((tag) => tag.id !== t.id)
+                      );
                     } else {
                       return alert("취소되었습니다.");
                     }
@@ -314,9 +326,9 @@ const UploadPostPage = () => {
                     setIsJusoUlShowing(true);
                     return setIsJusoShowing(true);
                   }}
-                  className=" min-w-10 flex-1 rounded bg-[rgba(116,212,186)]"
+                  className="flex justify-center items-center flex-1 rounded bg-[rgba(116,212,186)] min-w-20"
                 >
-                  검색
+                  <IoIosSearch className="text-3xl font-bold" />
                 </button>
               </div>
             </div>
