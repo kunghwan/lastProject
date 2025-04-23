@@ -7,6 +7,7 @@ import { TbPassword } from "react-icons/tb";
 
 const IdFindResult = () => {
   const [email, setEmail] = useState("");
+  const [isChecked, setIsChecked] = useState(false);
 
   useEffect(() => {
     const storedEmail = sessionStorage.getItem("realEmail");
@@ -14,6 +15,14 @@ const IdFindResult = () => {
       setEmail(storedEmail);
     }
   }, []);
+
+  const handleClick = (url: string) => {
+    if (!isChecked) {
+      alert("체크박스를 체크해주세요.");
+      return;
+    }
+    window.location.href = url;
+  };
 
   return (
     <>
@@ -34,8 +43,8 @@ const IdFindResult = () => {
         <div className="h-50 items-center justify-center flex border border-emerald-300 rounded mt-5 w-100 gap-3 p-4 lg:h-100 lg:w-280 md:w-200">
           <input
             type="checkbox"
-            className="w-5 h-5 appearance-none border border-cyan-300 rounded-sm 
-             checked:bg-cyan-200 checked:border-cyan-400 checked:text-red"
+            className="w-5 h-5 appearance-none border border-cyan-300 rounded-sm checked:bg-cyan-200 checked:border-cyan-400"
+            onChange={(e) => setIsChecked(e.target.checked)}
           />
 
           {email ? (
@@ -47,12 +56,15 @@ const IdFindResult = () => {
           )}
         </div>
         <div className="flex mt-4 gap-x-2.5 justify-start ml-10 lg:ml-100">
-          <Link href="/signup" className={loginButton}>
+          <button
+            onClick={() => handleClick("/signup")}
+            className={loginButton}
+          >
             로그인하기
-          </Link>
-          <Link href="/pwfind" className={pwButton}>
+          </button>
+          <button onClick={() => handleClick("/pwfind")} className={pwButton}>
             비밀번호 찾기
-          </Link>
+          </button>
         </div>
       </div>
     </>
