@@ -1,6 +1,13 @@
 "use client";
 import { Location, Post } from "@/types/post";
-import React, { use, useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  use,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { twMerge } from "tailwind-merge";
 import FileItem from "./FileItem";
 import { v4 } from "uuid";
@@ -8,6 +15,7 @@ import { dbService, FBCollection } from "@/lib";
 import { useRouter } from "next/navigation";
 import { IoLocationSharp } from "react-icons/io5";
 import { AUTH } from "@/contextapi/context";
+import Loaiding from "../Loading/page";
 
 interface Tag {
   id: string;
@@ -44,7 +52,7 @@ const initialState: UploadPostProps = {
 };
 
 const UploadPostPage = () => {
-  // const { user } = AUTH.use();
+  const { user } = AUTH.use();
   const [post, setPost] = useState<UploadPostProps>(initialState);
   const [files, setFiles] = useState<File[]>([]);
   const [title, setTitle] = useState("");
@@ -62,7 +70,7 @@ const UploadPostPage = () => {
   const [isJusoShowing, setIsJusoShowing] = useState(false);
   const [isJusoUlShowing, setIsJusoUlShowing] = useState(false);
   const navi = useRouter();
-
+  const [isPending, startTransition] = useTransition();
   const titleRef = useRef<HTMLInputElement>(null);
   const descRef = useRef<HTMLTextAreaElement>(null);
   const jusoRef = useRef<HTMLInputElement>(null);
@@ -108,7 +116,7 @@ const UploadPostPage = () => {
   }, []);
 
   const onSubmit = useCallback(
-    async (e) => {
+    (e) => {
       e.preventDefault();
       if (titleMessage) {
         alert(titleMessage);
@@ -123,14 +131,42 @@ const UploadPostPage = () => {
         return jusoRef.current?.focus();
       }
 
-      try {
-        const ref = await dbService.collection(FBCollection.POSTS).doc(post.id);
-        // const snap = await ref.add();
-      } catch (error: any) {
-        return alert(error.message);
-      }
+      startTransition(async () => {
+        try {
+          if (!user) {
+            alert("로그인 후 사용해주세요.");
+            return navi.push("/login");
+          }
+          const ref = await dbService.collection(FBCollection.POSTS);
+
+          const snap = await ref.add({
+            id: v4(),
+            uid: user.uid,
+            imageUrl: files[0] || null, // 대표 이미지
+            imgs: files,
+            content: desc,
+            title: title,
+            lo: {
+              latitude: juso.latitude,
+              longitude: juso.longitude,
+              address: juso.address,
+            },
+            likes: [],
+            shares: [],
+            bookmarked: [],
+            isLiked: false,
+            createdAt: new Date().toLocaleString(),
+            tags: tags,
+          });
+
+          alert("게시물이 성공적으로 등록되었습니다!");
+          navi.back(); // 게시 후  이동
+        } catch (error: any) {
+          return alert(`에러:${error.message}`);
+        }
+      });
     },
-    [title]
+    [title, titleMessage, desc, descMessage, juso, jusoMessage, user]
   );
 
   return (
@@ -139,6 +175,7 @@ const UploadPostPage = () => {
       onSubmit={onSubmit}
       className="flex-1 grid grid-cols-1 gap-2 dark:text-gray-700  lg:grid-cols-2 lg:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border rounded border-gray-400 h-full relative"
     >
+      {isPending && <Loaiding />}
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold text-black">새글작성</h1>
         <input
