@@ -1,4 +1,27 @@
 import { redirect } from "next/navigation";
+import { doc, getDoc } from "firebase/firestore";
+import { authService, dbService, FBCollection } from "@/lib/firebase";
+
+export const getUserNickname = async (): Promise<string | null> => {
+  const user = authService.currentUser; // 현재 로그인한 유저 정보 가져오기
+  if (!user) return null; // 로그인하지 않은 경우 null 반환
+
+  try {
+    const userDocRef = doc(dbService, FBCollection.USERS, user.uid); // Firestore에서 유저 문서 참조
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      return userData.nickname || null; // 닉네임 반환
+    } else {
+      console.error("유저 문서가 존재하지 않습니다.");
+      return null;
+    }
+  } catch (error) {
+    console.error("유저 닉네임 가져오기 오류:", error);
+    return null;
+  }
+};
 
 const ProfilePage = () => {
   redirect("/profile/me"); // /profile 경로를 /profile/me로 리다이렉트
