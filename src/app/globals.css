@@ -4,6 +4,9 @@
 
 @layer components {
   .themeButton {
-    @apply p-3 rounded-full bg-teal-100 cursor-pointer hover:opacity-70 justify-center flex items-center dark:text-gray-800;
+    @apply p-3 rounded-full  cursor-pointer hover:opacity-70 justify-center flex items-center dark:text-gray-800 text-3xl bg-teal-100;
+  }
+  .navButton {
+    @apply p-3 rounded-full cursor-pointer hover:opacity-70 justify-center flex items-center dark:text-gray-800 text-3xl bg-gray-200;
   }
 }

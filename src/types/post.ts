@@ -64,3 +64,9 @@ export interface Bookmark {
   uid: string; // bookmark 한 사람의 아이디
   createdAt: Date;
 }
+
+export interface Tag {
+  id: string; // 태그 아이디
+  content: string;
+  onTag: () => void; // 태그 클릭 시 핸들러
+}

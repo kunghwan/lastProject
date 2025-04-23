@@ -9,8 +9,13 @@ import React, {
 } from "react";
 import { twMerge } from "tailwind-merge";
 import FileItem from "./FileItem";
+<<<<<<< HEAD
 import { v4 } from "uuid";
 import { dbService, FBCollection, storageService } from "@/lib";
+=======
+// import { v4 } from "uuid";
+import { dbService, FBCollection } from "@/lib";
+>>>>>>> origin/main
 import { useRouter } from "next/navigation";
 import { IoLocationSharp } from "react-icons/io5";
 import { IoIosSearch } from "react-icons/io";

@@ -7,12 +7,13 @@ import { IoMoon, IoSunny, IoBookmarkOutline } from "react-icons/io5";
 import { VscBell } from "react-icons/vsc";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/features/navber/Navbar";
+import { AUTH } from "@/contextapi/context";
 
-const ProjectLayout = ({ children }: PropsWithChildren) => {
+const BodyLayout = ({ children }: PropsWithChildren) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isLogin, setIsLogin] = useState(false);
 
   const router = useRouter();
+  const { user } = AUTH.use();
 
   useEffect(() => {
     if (isDarkMode) {
@@ -25,44 +26,49 @@ const ProjectLayout = ({ children }: PropsWithChildren) => {
   return (
     <>
       <header className="flex items-center justify-between my-4 lg:max-w-300 lg:mx-auto ">
-        <Link href={"/"} className="hover:opacity-80">
-          <Image src="/image/logo.png" alt="logo" height={120} width={120} />
+        <Link href={"/"} className="hover:opacity-80 mx-5">
+          <Image src="/image/logo1.PNG" alt="logo" height={100} width={100} />
         </Link>
-        <ul className="flex-row gap-x-5 flex text-2xl">
+
+        <ul className="flex-row gap-x-5 flex mx-5">
           <button
             onClick={() => setIsDarkMode((prev) => !prev)}
-            className="themeButton w-15 h-15"
+            className="navButton h-15 w-15"
           >
-            {isDarkMode ? <IoSunny className="text-red-400" /> : <IoMoon />}
+            {isDarkMode ? <IoSunny className="text-red-400 " /> : <IoMoon />}
           </button>
 
-          {isLogin && (
+          {user && (
             <div className="flex gap-x-5">
-              <button className="themeButton h-15 w-15">
+              <button className="navButton h-15 w-15">
                 <IoBookmarkOutline />
               </button>
-              <button className="themeButton h-15 w-15">
+              <button className="navButton h-15 w-15">
                 <VscBell />
               </button>
             </div>
           )}
 
-          <button
-            className="themeButton"
-            onClick={() => router.push("/signin")}
-          >
-            로그인
-          </button>
+          {user ? (
+            <button className="navButton font-bold text-xl">로그아웃</button>
+          ) : (
+            <button
+              className="navButton font-bold text-xl"
+              onClick={() => router.push("/signin")}
+            >
+              로그인
+            </button>
+          )}
         </ul>
       </header>
 
       <div className="w-300 h-0.5 bg-teal-100 mx-auto" />
 
-      <main>{children}</main>
-
       <Navbar />
+
+      <main>{children}</main>
     </>
   );
 };
 
-export default ProjectLayout;
+export default BodyLayout;
