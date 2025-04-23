@@ -27,11 +27,11 @@ const ProjectLayout = ({ children }: PropsWithChildren) => {
     <>
       <header className="flex items-center justify-between my-4 lg:max-w-300 lg:mx-auto ">
         {!isDarkMode ? (
-          <Link href={"/"} className="hover:opacity-80">
+          <Link href={"/"} className="hover:opacity-80 mx-5">
             <Image src="/image/logoc.PNG" alt="logo" height={100} width={100} />
           </Link>
         ) : (
-          <Link href={"/"} className="hover:opacity-80">
+          <Link href={"/"} className="hover:opacity-80 mx-5">
             <Image
               src="/image/whiteLogo.png"
               alt="logo"
@@ -41,7 +41,7 @@ const ProjectLayout = ({ children }: PropsWithChildren) => {
           </Link>
         )}
 
-        <ul className="flex-row gap-x-5 flex">
+        <ul className="flex-row gap-x-5 flex mx-5">
           <button
             onClick={() => setIsDarkMode((prev) => !prev)}
             className="themeButton h-15 w-15"

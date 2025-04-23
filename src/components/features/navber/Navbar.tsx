@@ -52,7 +52,7 @@ const Navbar = () => {
         {/* 왼쪽 nav (xl 이상에서만 보임) */}
         <nav
           className={twMerge(
-            "hidden xl:flex absolute  top-[10vh] -left-25 h-130 w-15 justify-center bg-teal-100 z-30 rounded-3xl",
+            "hidden xl:flex absolute top-[10vh] -left-25 h-130 w-15 justify-center bg-teal-100 z-30 rounded-3xl",
             ["/signin", "/signup"].includes(pathname) && "hidden"
           )}
         >
@@ -73,7 +73,7 @@ const Navbar = () => {
         {/* 하단 nav (xl 이하에서만 보임) */}
         <nav
           className={twMerge(
-            "fixed bottom-0 left-0 right-0 bg-teal-100 z-30 p-3 flex justify-around xl:hidden",
+            "fixed bottom-0 left-0 right-0 bg-teal-100 z-30 p-3 flex justify-around xl:hidden rounded-t-2xl",
             ["/signin", "/signup"].includes(pathname) && "hidden"
           )}
         >
