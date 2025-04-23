@@ -117,8 +117,8 @@ const SignupForm = () => {
         return;
       }
 
-      alert("회원가입 성공!");
-      navi.push("/"); // 메인페이지 이동
+      alert("프로필설정으로 이동합니다!");
+      navi.push("/signup/settingprofile"); // 메인페이지 이동
     } catch (err: any) {
       alert("에러 발생: " + err.message);
     }
@@ -172,7 +172,7 @@ const SignupForm = () => {
         onClick={handleSubmit}
         className="mt-10 bg-green-500 w-110 p-5 text-white font-bold rounded"
       >
-        가입
+        다음
       </button>
     </div>
   );
