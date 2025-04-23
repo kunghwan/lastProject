@@ -1,7 +1,6 @@
 "use client";
-import { Location, Post } from "@/types/post";
+import { Location, Post, Tag } from "@/types/post";
 import React, {
-  use,
   useCallback,
   useMemo,
   useRef,
@@ -10,24 +9,20 @@ import React, {
 } from "react";
 import { twMerge } from "tailwind-merge";
 import FileItem from "./FileItem";
-// import { v4 } from "uuid";
-import { dbService, FBCollection } from "@/lib";
+
+import { v4 } from "uuid";
+import { dbService, FBCollection, storageService } from "@/lib";
+
 import { useRouter } from "next/navigation";
 import { IoLocationSharp } from "react-icons/io5";
+import { IoIosSearch } from "react-icons/io";
 import { AUTH } from "@/contextapi/context";
 import Loaiding from "../Loading/page";
-
-interface Tag {
-  id: string;
-  name: string;
-}
+import { getDownloadURL, uploadBytes } from "firebase/storage";
 
 interface UploadPostProps extends Post {
   imgs: [];
-  onChangeFile?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onDeleteFile?: () => void;
-
-  tags: Tag[] | null;
+  tags: Tag[];
 }
 
 const initialState: UploadPostProps = {
@@ -36,7 +31,8 @@ const initialState: UploadPostProps = {
   userNickname: "",
   userProfileImage: "",
   imageUrl: null,
-  content: null,
+  title: "",
+  content: "",
   lo: {
     latitude: 0,
     longitude: 0,
@@ -48,17 +44,17 @@ const initialState: UploadPostProps = {
   isLiked: false,
   createdAt: new Date().toLocaleString(),
   imgs: [],
-  tags: null,
+
+  tags: [],
 };
 
 const UploadPostPage = () => {
   const { user } = AUTH.use();
   const [post, setPost] = useState<UploadPostProps>(initialState);
+  const { content, title, tags } = post;
   const [files, setFiles] = useState<File[]>([]);
-  const [title, setTitle] = useState("");
-  const [tags, setTags] = useState<Tag[]>([]);
+
   const [tag, setTag] = useState("");
-  const [desc, setDesc] = useState("");
   const [address, setAddress] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [juso, setJuso] = useState<Location>({
@@ -81,10 +77,10 @@ const UploadPostPage = () => {
     }
   }, [title]);
   const descMessage = useMemo(() => {
-    if (desc.length === 0 || desc.trim() === "") {
+    if (content.length === 0 || content.trim() === "") {
       return "내용을 입력해주세요.";
     }
-  }, [desc]);
+  }, [content]);
 
   const jusoMessage = useMemo(() => {
     if (juso.address.length === 0 || juso.address.trim() === "") {
@@ -135,16 +131,20 @@ const UploadPostPage = () => {
         try {
           if (!user) {
             alert("로그인 후 사용해주세요.");
-            return navi.push("/login");
+            return navi.push("/singin");
           }
-          const ref = await dbService.collection(FBCollection.POSTS);
-
-          const snap = await ref.add({
-            id: v4(),
+          const imgUrls: string[] = [];
+          for (const file of files) {
+            const imgRef = storageService.ref(`${user.uid}/post/${v4()}`);
+            await uploadBytes(imgRef, file);
+            const url = await getDownloadURL(imgRef);
+            imgUrls.push(url);
+          }
+          await dbService.collection(FBCollection.POSTS).add({
             uid: user.uid,
-            imageUrl: files[0] || null, // 대표 이미지
-            imgs: files,
-            content: desc,
+            imageUrl: imgUrls[0] || null, // 대표 이미지
+            imgs: imgUrls,
+            content: content,
             title: title,
             lo: {
               latitude: juso.latitude,
@@ -160,13 +160,20 @@ const UploadPostPage = () => {
           });
 
           alert("게시물이 성공적으로 등록되었습니다!");
-          navi.back(); // 게시 후  이동
+          setPost(initialState);
+          setJuso({
+            latitude: 0,
+            longitude: 0,
+            address: "",
+          });
+          setFiles([]);
+          return navi.back(); // 게시 후  이동
         } catch (error: any) {
           return alert(`에러:${error.message}`);
         }
       });
     },
-    [title, titleMessage, desc, descMessage, juso, jusoMessage, user]
+    [title, titleMessage, content, descMessage, juso, jusoMessage, user]
   );
 
   return (
@@ -181,7 +188,12 @@ const UploadPostPage = () => {
         <input
           type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) =>
+            setPost((prev) => ({
+              ...prev,
+              title: e.target.value,
+            }))
+          }
           className={input}
           ref={titleRef}
           placeholder="제목을 입력하세요."
@@ -191,9 +203,14 @@ const UploadPostPage = () => {
           id=""
           placeholder="소개하고 싶은 관광지의 소개글이나 리뷰를 작성해주세요."
           className={twMerge("h-50 resize-none", input)}
-          value={desc}
+          value={content}
           ref={descRef}
-          onChange={(e) => setDesc(e.target.value)}
+          onChange={(e) =>
+            setPost((prev) => ({
+              ...prev,
+              content: e.target.value,
+            }))
+          }
         />
         <div>
           <ul className="flex items-center gap-2.5">
@@ -217,13 +234,17 @@ const UploadPostPage = () => {
       </div>
 
       <div className="flex flex-col gap-2 lg:mt-11">
-        <input
-          type="text"
-          value={tag}
-          onChange={(e) => setTag(e.target.value)}
-          onKeyDown={(e) => {
-            const { key, nativeEvent } = e;
-            if (key === "Shift" && !nativeEvent.isComposing) {
+        <div className="flex gap-x-2">
+          <input
+            type="text"
+            value={tag}
+            onChange={(e) => setTag(e.target.value)}
+            className={twMerge("w-full ", input)}
+            placeholder="태그를 입력후 추가버튼을 눌러주세요."
+          />
+          <button
+            type="button"
+            onClick={() => {
               const formattedTag = tag.startsWith("#") ? tag : `#${tag}`;
               const newTag: Tag = {
                 id: v4(),
@@ -232,25 +253,34 @@ const UploadPostPage = () => {
               if (tags.find((t) => t.name === newTag.name)) {
                 return alert("이미 존재하는 태그입니다.");
               }
-              setTags((prev) => [...prev, newTag]);
-              setTag("");
-            }
-          }}
-          className={twMerge("w-full ", input)}
-          placeholder="태그를 입력후 shift키를 눌러주세요."
-        />
+              setPost((prev) => ({
+                ...prev,
+                tags: [...prev.tags, newTag],
+              }));
+              return setTag("");
+            }}
+            className=" min-w-20 flex-1 rounded bg-[rgba(116,212,186)]"
+          >
+            추가
+          </button>
+        </div>
         <div>
-          <ul className="flex gap-x-2">
+          <ul className="flex gap-x-2 items-center flex-wrap">
             {tags.map((t) => (
               <li key={t.id}>
                 <button
+                  type="button"
                   onClick={() => {
                     if (confirm("삭제하시겠습니까?")) {
-                      setTags((prev) => prev.filter((tag) => tag.id !== t.id));
+                      return setPost((prev) => ({
+                        ...prev,
+                        tags: prev.tags.filter((tag) => tag.id !== t.id),
+                      }));
                     } else {
                       return alert("취소되었습니다.");
                     }
                   }}
+                  className="cursor-pointer font-extrabold"
                 >
                   {t.name}
                 </button>
@@ -314,9 +344,9 @@ const UploadPostPage = () => {
                     setIsJusoUlShowing(true);
                     return setIsJusoShowing(true);
                   }}
-                  className=" min-w-10 flex-1 rounded bg-[rgba(116,212,186)]"
+                  className="flex justify-center items-center flex-1 rounded bg-[rgba(116,212,186)] min-w-20"
                 >
-                  검색
+                  <IoIosSearch className="text-3xl font-bold" />
                 </button>
               </div>
             </div>

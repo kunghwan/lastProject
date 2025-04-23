@@ -24,7 +24,12 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
       ) : (
         <button
           type="button"
-          onClick={onDeleteFiles}
+          onClick={() => {
+            if (confirm("삭제하시겠습니까?")) {
+              return onDeleteFiles && onDeleteFiles();
+            }
+            alert("취소했습니다.");
+          }}
           className=" absolute border rounded text-xl bg-white z-20 w-25 h-25 opacity-0 hover:opacity-80 flex justify-center items-center cursor-pointer"
         >
           <RiDeleteBin5Fill />

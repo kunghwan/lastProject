@@ -1,6 +1,10 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { dbService, FBCollection } from "@/lib/firebase";
+
 import ProfileLayout from "@/components/ProfileUI/ProfileLayout";
+
+import BodyLayout from "@/components/BodyLayout";
+
 import { Post } from "@/types/post";
 
 const MePage = async () => {
@@ -25,7 +29,7 @@ const MePage = async () => {
     console.error("Firestore 데이터 가져오기 오류:", error);
   }
 
-  return <ProfileLayout posts={posts} isMyPage={true} />;
+  return <BodyLayout posts={posts} isMyPage={true} />;
 };
 
 export default MePage;
