@@ -154,7 +154,7 @@ const Signup = () => {
                 className={`p-2 outline-none ${
                   info.type === "checkbox"
                     ? "w-4 h-4"
-                    : "flex-1 border-b border-black bg-transparent"
+                    : "flex-1   bg-transparent"
                 }`}
               />
             </div>
