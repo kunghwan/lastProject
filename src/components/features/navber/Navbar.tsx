@@ -30,7 +30,7 @@ const Navbar = () => {
         <nav
           className={twMerge(
             "absolute top-25 h-130 w-15 justify-center flex bg-teal-100 z-30 rounded-2xl left-[-80px] ",
-            pathname !== "/" && "hidden"
+            pathname === "/signin" && "hidden"
           )}
         >
           <ul className="flex flex-col justify-between py-5 ">
