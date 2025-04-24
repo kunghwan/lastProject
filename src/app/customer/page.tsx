@@ -45,7 +45,12 @@ const QnaPage = () => {
 
       <div className="text-xl font-bold flex flex-col justify-end items-center absolute bottom-2 left-0 right-0 ">
         <p>추가로 질문사항이 있으시면 </p>
-        <p>test@test.com으로 메일을 보내주시면 감사하겠습니다.</p>
+        <p>
+          <a href="mailto:test@test.com" className="text-green-800 font-bold">
+            test@test.com
+          </a>
+          으로 메일을 보내주시면 감사하겠습니다.
+        </p>
       </div>
     </div>
   );
