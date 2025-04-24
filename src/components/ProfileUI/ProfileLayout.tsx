@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { IoSettingsOutline } from "react-icons/io5";
 import ProfileFeed from "./ProfileFeed";
 import { getUserNickname } from "@/app/profile/page";
+import FollowButton from "../post/FollowButton";
 
 const ProfileLayout = ({
   posts,
@@ -60,9 +61,13 @@ const ProfileLayout = ({
                 <h1 className="font-medium text-4xl p-1 hover:scale-103 hover:animate-pulse  transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
                   {nickname || `${posts[0]?.userNickname || `MyProfile`}`}
                 </h1>
-                {!posts[0] && (
+                {!posts[0] ? (
                   <button className="text-2xl hover:animate-spin hover:scale-105  cursor-pointer p-2.5 active:text-gray-800  hover:text-gray-400">
                     <IoSettingsOutline />
+                  </button>
+                ) : (
+                  <button className="text-2xl cursor-pointer  ">
+                    <FollowButton followingId={posts[0]?.uid} />
                   </button>
                 )}
               </p>
@@ -87,7 +92,7 @@ const ProfileLayout = ({
               {tags.map((tag) => (
                 <li key={tag.id}>
                   <button className="p-2.5 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
-                    #{tag.content}
+                    #{tag.name}
                   </button>
                 </li>
               ))}

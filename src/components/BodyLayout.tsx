@@ -7,8 +7,7 @@ import { PropsWithChildren } from "react";
 const BodyLayout = ({ children }: PropsWithChildren) => {
   return (
     <>
-
-      <header className="flex items-center justify-between my-4 lg:max-w-300 lg:mx-auto ">
+      {/* <header className="flex items-center justify-between my-4 lg:max-w-300 lg:mx-auto ">
         <Link href={"/"} className="hover:opacity-80 mx-5">
           <Image src="/image/logo1.PNG" alt="logo" height={100} width={100} />
         </Link>
@@ -68,11 +67,11 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
         </ul>
       </header>
 
-      <div className="w-full h-0.5 bg-teal-100 mx-auto" />
+      <div className="w-full h-0.5 bg-teal-100 mx-auto" /> */}
 
-      <Navbar />
+      {/* <Navbar />
 
-      <main className="flex-1 overflow-y-auto">{children}</main>
+      <main className="flex-1 overflow-y-auto">{children}</main> */}
 
       <Header />
       <main
@@ -81,7 +80,6 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
         <Navbar />
         {children}
       </main>
-
     </>
   );
 };
