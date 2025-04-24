@@ -8,13 +8,8 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
   return (
     <>
       <Header />
-
-      <main
-      // className="flex-1 overflow-y-auto"
-      >
-        <Navbar />
-        {children}
-      </main>
+      <Navbar />
+      <main>{children}</main>
     </>
   );
 };

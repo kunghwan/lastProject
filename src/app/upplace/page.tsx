@@ -1,14 +1,10 @@
-<<<<<<< HEAD
-const UpPlace = () => {
-  return (
-    <div>
-      <h1>UpPlace</h1>
-=======
+// pages/recommend.tsx (혹은 UpPlace 컴포넌트)
+
 "use client";
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import PlaceCard from "../../components/upplace/PlaceCard";
+import PlaceCard from "@/components/upplace/PlaceCard";
 
 interface Place {
   contentid: string;
@@ -23,10 +19,10 @@ const UpPlace = () => {
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
-        const res = await axios.get("/api/recommend");
+        const res = await axios.get("/api/recommend"); // 🔥 이 경로 404 나면 안 됨!
         setPlaces(res.data);
-      } catch (err) {
-        console.error("추천 장소 불러오기 실패", err);
+      } catch (error) {
+        console.error("추천 장소 불러오기 실패", error);
       }
     };
 
@@ -38,7 +34,6 @@ const UpPlace = () => {
       {places.map((place) => (
         <PlaceCard key={place.contentid} place={place} />
       ))}
->>>>>>> 63f895d01ae07342ee40015069137bfdde56dbf9
     </div>
   );
 };
