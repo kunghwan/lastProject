@@ -110,7 +110,7 @@ const NavBtns = [
   { name: "추천", icon: <FaRegStar />, path: "/upplace" },
   { name: "피드", icon: <FaRegMessage />, modal: true },
   { name: "글쓰기", icon: <FaPencil />, path: "/profile/create" },
-  { name: "MY", icon: <IoPersonSharp />, path: "/profile/me" },
+  { name: "MY", icon: <IoPersonSharp />, path: "/profile" },
 ];
 
 // <>
