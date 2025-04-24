@@ -1,8 +1,7 @@
-// components/PlaceCard.tsx
+"use client";
 
 import React from "react";
 
-// fallback 이미지 맵핑
 const fallbackImages: Record<string, string> = {
   테미오래: "/custom/temiora.jpg",
   // 필요한 장소명 계속 추가 가능
@@ -21,8 +20,8 @@ const PlaceCard: React.FC<{ place?: Place }> = ({ place }) => {
 
   const defaultImage = "/image/logoc.PNG";
 
-  // ✅ 이미지 fallback 처리 로직
-  const validImage =
+  // ✅ 기본 + fallback 처리
+  const imageUrl =
     place.firstimage && place.firstimage.trim() !== ""
       ? place.firstimage.trim()
       : fallbackImages[place.title] || defaultImage;
@@ -30,7 +29,7 @@ const PlaceCard: React.FC<{ place?: Place }> = ({ place }) => {
   return (
     <div className="border p-4 rounded-lg shadow">
       <img
-        src={validImage}
+        src={imageUrl}
         onError={(e) => {
           e.currentTarget.onerror = null;
           e.currentTarget.src = fallbackImages[place.title] || defaultImage;
@@ -46,4 +45,5 @@ const PlaceCard: React.FC<{ place?: Place }> = ({ place }) => {
   );
 };
 
+//!  초당 요청 제한	10건 내외 (공식적 언급은 없음, 경험상)
 export default PlaceCard;

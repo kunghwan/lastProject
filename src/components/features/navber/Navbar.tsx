@@ -2,8 +2,8 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { FaRegStar, FaRegMessage, FaPencil } from "react-icons/fa6";
-import { IoPersonSharp, IoCloseOutline } from "react-icons/io5";
+import { FaRegMessage, FaPencil } from "react-icons/fa6";
+import { IoPersonSharp, IoCloseOutline, IoStarOutline } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
 import { AUTH } from "@/contextapi/context";
 import { FaRegQuestionCircle } from "react-icons/fa";
@@ -113,7 +113,7 @@ export default Navbar;
 
 const NavBtns = [
   { name: "Q&A", icon: <FaRegQuestionCircle />, path: "/customer" },
-  { name: "추천", icon: <FaRegStar />, path: "/upplace" },
+  { name: "추천", icon: <IoStarOutline />, path: "/upplace" },
   { name: "피드", icon: <FaRegMessage />, modal: true },
   { name: "글쓰기", icon: <FaPencil />, path: "/profile/create" },
   { name: "MY", icon: <IoPersonSharp />, path: "/profile" },
