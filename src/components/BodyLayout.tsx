@@ -7,7 +7,6 @@ import { PropsWithChildren } from "react";
 const BodyLayout = ({ children }: PropsWithChildren) => {
   return (
     <>
-
       {/* <header className="flex items-center justify-between my-4 lg:max-w-300 lg:mx-auto ">
         <Link href={"/"} className="hover:opacity-80 mx-5">
           <Image src="/image/logo1.PNG" alt="logo" height={100} width={100} />
