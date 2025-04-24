@@ -1,5 +1,3 @@
-// pages/recommend.tsx (혹은 UpPlace 컴포넌트)
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -11,6 +9,7 @@ interface Place {
   title: string;
   addr1: string;
   firstimage: string;
+  likeCount: number; // ✅ 좋아요 수 포함
 }
 
 const UpPlace = () => {
@@ -19,7 +18,7 @@ const UpPlace = () => {
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
-        const res = await axios.get("/api/recommend"); // 🔥 이 경로 404 나면 안 됨!
+        const res = await axios.get("/api/recommendmerged"); // ✅ 병합된 데이터 API 호출
         setPlaces(res.data);
       } catch (error) {
         console.error("추천 장소 불러오기 실패", error);
