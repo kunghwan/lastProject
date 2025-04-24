@@ -25,12 +25,13 @@ const UserPage = async ({ params }: Props) => {
     if (posts.length === 0) {
       posts.push({
         title: "title 없음",
-        id: "default",
-        uid: "default",
+        id: username === "user1" ? "my-default" : "default", // 로그인한 유저와 다른 유저 구분
+        uid: username === "user1" ? "my-uid" : "default-uid", // 로그인한 유저와 다른 유저 구분
         userNickname: username,
-        userProfileImage: "", // 기본 프로필 이미지
+        userProfileImage: username === "user1" ? "/images/my-profile.png" : "", // 기본 프로필 이미지
         imageUrl: "",
-        content: "게시물이 없습니다.",
+        content:
+          username === "user1" ? "내 게시물이 없습니다." : "게시물이 없습니다.",
         lo: { latitude: 0, longitude: 0, address: "" },
         likes: [],
         shares: [],
@@ -44,8 +45,27 @@ const UserPage = async ({ params }: Props) => {
     return <h1>데이터를 불러오는 중 오류가 발생했습니다.</h1>;
   }
 
-  const isMyPage = username === "user1"; // 현재 로그인한 사용자와 비교
-  return <ProfileLayout posts={posts} isMyPage={isMyPage} />;
+  // 로그인한 유저와 현재 페이지 유저 비교
+  const isMyPage = username === "user1"; // "user1"은 로그인한 유저의 아이디로 가정
+
+  // 변수 처리
+  const userId = isMyPage ? "my-uid" : posts[0]?.uid || "unknown-uid";
+  const userNickname = isMyPage
+    ? "내 닉네임"
+    : posts[0]?.userNickname || username;
+  const userProfileImage = isMyPage
+    ? "/images/my-profile.png"
+    : posts[0]?.userProfileImage || "/images/default-profile.png";
+
+  return (
+    <ProfileLayout
+      posts={posts}
+      isMyPage={isMyPage}
+      uid={userId}
+      userNickname={userNickname}
+      userProfileImage={userProfileImage}
+    />
+  );
 };
 
 export default UserPage;

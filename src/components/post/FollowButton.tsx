@@ -91,24 +91,14 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
     <div>
       {isPening && <Loaiding />}
       {isFollowing ? (
-
-        <button onClick={() => {}}>UnFollow</button>
-
         <button
-<<<<<<< HEAD
           className="border-2 border-gray-300 rounded-full px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-=======
-
-          className="border-2 border-gray-300 rounded-full px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-
->>>>>>> b72ee65a6bf8808228c8a9d075ac0aa4461734d5
           onClick={() => {
             return handleFollow();
           }}
         >
           UnFollow
         </button>
-
       ) : (
         <button
           onClick={() => {
