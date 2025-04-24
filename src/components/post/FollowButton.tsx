@@ -1,46 +1,64 @@
 import { AUTH } from "@/contextapi/context";
 import { dbService, FBCollection } from "@/lib";
 import { useRouter } from "next/navigation";
-import React, { useCallback, useState, useTransition } from "react";
-
+import React, { useCallback, useEffect, useState, useTransition } from "react";
 
 interface FollowButtonProps {
-    followingId: string; // 팔로잉할 유저의 uid
-  }
+  followingId: string; // 팔로잉할 유저의 uid
+}
 
+const FollowButton = ({ followingId }: FollowButtonProps) => {
+  const { user } = AUTH.use();
+  const navi = useRouter();
+  const [isFollowing, setIsFollowing] = useState(false);
+  const handleFollow = () => setIsFollowing((prev) => !prev);
+  const [isPening, startTransition] = useTransition();
 
-const FollowButton = ({ followingId }:FollowButtonProps) => {
-    const {user} = AUTH.use()
-    const navi = useRouter()
-    const [isFollowing, setIsFollowing] = useState(false)
-    const [isPening,startTransition] = useTransition()
+  const onFollow = useCallback(() => {
+    if (!user) {
+      alert("로그인 후 이용해주세요");
+      return navi.push("/signin");
+    }
+    startTransition(async () => {});
+  }, []);
 
-   
-
-    const onFollow = useCallback(() => {
-        if(!user){
-            alert("로그인 후 이용해주세요")
-            return navi.push('/signin')
-        }
-        startTransition(
-           async ()=>{
-            const ref = dbService.collection(FBCollection.USERS).doc(user.uid).collection("notification")
-            await ref.add({
-                follwingId: , // 팔로우된 사람의 ID
-                followerId: null,// 팔로우한 사람의 ID
-                createdAt:new Date().toLocaleString(),
-                isRead: false,
-         
-           })}
-        )
-    
-      
-    },[user,navi])
-
-    const  onUnFollow = useCallback(() => {},[])
+  const onUnFollow = useCallback(() => {}, []);
+  //현재 유저를 팔로우하고 있는지 확인용도
+  useEffect(() => {
+    const checkFollowing = async () => {
+      if (!user) {
+        return;
+      }
+      const ref = dbService
+        .collection(FBCollection.USERS)
+        .doc(user.uid)
+        .collection("followings")
+        .doc(followingId);
+      const snap = await ref.get();
+      //extsts는 문서가 존재하는지 확인하는 메서드(불리언타입임)
+      setIsFollowing(snap.exists);
+    };
+    checkFollowing();
+  }, [user, followingId]);
   return (
     <div>
-      {isFollowing?<button>UnFollow</button>:<button>Follow</button>}
+      {isFollowing ? (
+        <button
+          onClick={() => {
+            return handleFollow();
+          }}
+        >
+          UnFollow
+        </button>
+      ) : (
+        <button
+          onClick={() => {
+            return handleFollow();
+          }}
+        >
+          Follow
+        </button>
+      )}
     </div>
   );
 };
