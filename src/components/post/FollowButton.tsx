@@ -4,12 +4,12 @@ import { useRouter } from "next/navigation";
 import React, { useCallback, useState, useTransition } from "react";
 
 
-interface FollowingButtonProps {
+interface FollowButtonProps {
     followingId: string; // 팔로잉할 유저의 uid
   }
 
 
-const FollowingButton = ({ followingId }:FollowingButtonProps) => {
+const FollowButton = ({ followingId }:FollowButtonProps) => {
     const {user} = AUTH.use()
     const navi = useRouter()
     const [isFollowing, setIsFollowing] = useState(false)
@@ -45,4 +45,4 @@ const FollowingButton = ({ followingId }:FollowingButtonProps) => {
   );
 };
 
-export default FollowingButton;
+export default FollowButton;
