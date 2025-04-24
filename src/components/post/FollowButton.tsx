@@ -22,6 +22,10 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
       alert("로그인 후 이용해주세요");
       return navi.push("/signin");
     }
+    // if (!followingId || followingId === "default") {
+    //   console.log("유효하지 않은 Uid입니다:", followingId);
+    //   return null;
+    // }
     startTransition(async () => {
       // 1. 내 팔로잉에 추가
       await dbService
@@ -48,7 +52,7 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
           createdAt: new Date().toLocaleString(),
           isRead: false,
         });
-
+      console.log(followingId, user.uid, 51);
       setIsFollowing(true);
     });
   }, [user, followingId, navi]);
@@ -81,25 +85,17 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
       }
 
       checkFollowing();
-      return console.log(checkFollowing);
     };
   }, [user, followingId]);
   return (
     <div>
       {isPening && <Loaiding />}
       {isFollowing ? (
-        <button
-          onClick={() => {
-            return handleFollow();
-          }}
-        >
-          UnFollow
-        </button>
+        <button onClick={() => {}}>UnFollow</button>
       ) : (
         <button
           onClick={() => {
             onFollow();
-            return handleFollow();
           }}
         >
           Follow
