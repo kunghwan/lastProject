@@ -6,7 +6,13 @@
   .themeButton {
     @apply p-3 rounded-full  cursor-pointer hover:opacity-70 justify-center flex items-center dark:text-gray-800 text-3xl bg-teal-100;
   }
-  .navButton {
+  .grayButton {
     @apply p-3 rounded-full cursor-pointer hover:opacity-70 justify-center flex items-center dark:text-gray-800 text-3xl bg-gray-200;
+  }
+}
+
+@media (min-width: 1280px) {
+  .custom-nav {
+    display: flex !important;
   }
 }

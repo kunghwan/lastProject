@@ -45,25 +45,28 @@ const Navbar = () => {
     <>
       <div className="flex relative lg:max-w-300 lg:mx-auto h-auto">
         {pathname !== "/signin" && pathname !== "/signup" && (
-          <nav
-            className={twMerge(
-              "hidden xl:flex absolute top-[10vh] -left-25 h-140 w-20 justify-center bg-gray-200 z-30 rounded-full"
-            )}
-          >
-            <ul className="flex flex-col justify-between py-5">
-              {NavBtns.map((btn, index) => (
-                <li key={index} className="flex justify-center items-center">
-                  <button
-                    className="navButton text-3xl   flex flex-col gap-y-1.5 "
-                    onClick={() => navBtnClick(btn, index)}
-                  >
-                    {btn.icon}
-                    <p className="text-black text-sm">{btn.name}</p>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <div className="mx-auto max-w-100">
+            <div className="fixed w-full max-w-100 left-[50%] translate-x-[-50%]">
+              <nav className="hidden xl:flex absolute h-140 w-20 -left-[130%] justify-center bg-gray-200 z-30 rounded-full">
+                <ul className="flex flex-col justify-between py-5">
+                  {NavBtns.map((btn, index) => (
+                    <li
+                      key={index}
+                      className="flex justify-center items-center"
+                    >
+                      <button
+                        className="grayButton text-3xl flex flex-col gap-y-1.5 "
+                        onClick={() => navBtnClick(btn, index)}
+                      >
+                        {btn.icon}
+                        <p className="text-black text-sm">{btn.name}</p>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
+          </div>
         )}
 
         <nav
@@ -72,16 +75,19 @@ const Navbar = () => {
             ["/signin", "/signup"].includes(pathname) && "hidden"
           )}
         >
-          {NavBtns.map((btn, index) => (
-            <button
-              key={index}
-              className="navButton text-2xl  flex flex-col gap-y-1.5"
-              onClick={() => navBtnClick(btn, index)}
-            >
-              {btn.icon}
-              <p className="text-black text-xs">{btn.name}</p>
-            </button>
-          ))}
+          <ul className="flex justify-around w-full">
+            {NavBtns.map((btn, index) => (
+              <li key={index}>
+                <button
+                  className="grayButton text-2xl flex flex-col gap-y-1.5 items-center"
+                  onClick={() => navBtnClick(btn, index)}
+                >
+                  {btn.icon}
+                  <p className="text-black text-xs">{btn.name}</p>
+                </button>
+              </li>
+            ))}
+          </ul>
         </nav>
 
         {/* 모달 */}
@@ -110,44 +116,5 @@ const NavBtns = [
   { name: "추천", icon: <FaRegStar />, path: "/upplace" },
   { name: "피드", icon: <FaRegMessage />, modal: true },
   { name: "글쓰기", icon: <FaPencil />, path: "/profile/create" },
-  { name: "MY", icon: <IoPersonSharp />, path: "/profile/me" },
+  { name: "MY", icon: <IoPersonSharp />, path: "/profile" },
 ];
-
-// <>
-//   <div className="flex relative lg:max-w-300 lg:mx-auto h-auto">
-
-//       <nav
-//         className={twMerge(
-//           "absolute top-[10vh] -left-25 h-130 w-15 justify-center flex bg-teal-100 z-30 rounded-3xl",
-//           ["/signin", "/signup"].includes(pathname) && "hidden"
-//         )}
-//       >
-//         <ul className="flex flex-col justify-between py-5">
-//           {NavBtns.map((btn, index) => (
-//             <li key={index}>
-//               <button
-//                 className="themeButton text-3xl"
-//                 onClick={() => navBtnClick(btn, index)}
-//               >
-//                 {btn.icon}
-//               </button>
-//             </li>
-//           ))}
-//         </ul>
-//       </nav>
-
-//     {isShowingModal && (
-//       <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
-//         <div className="p-6 rounded-xl shadow-lg w-80 relative bg-white text-black dark:text-black dark:bg-white ">
-//           <button
-//             onClick={() => setIsShowingModal(false)}
-//             className="absolute top-2 right-4 text-gray-500 hover:text-gray-800 text-xl"
-//           >
-//             <IoCloseOutline />
-//           </button>
-//           <p>feed</p>
-//         </div>
-//       </div>
-//     )}
-//   </div>
-// </>

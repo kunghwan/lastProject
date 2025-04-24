@@ -1,32 +1,13 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import { PropsWithChildren, useEffect, useState } from "react";
-import { IoMoon, IoSunny, IoBookmarkOutline } from "react-icons/io5";
-import { VscBell } from "react-icons/vsc";
-import { usePathname, useRouter } from "next/navigation";
 import Navbar from "@/components/features/navber/Navbar";
-import { AUTH } from "@/contextapi/context";
-import { twMerge } from "tailwind-merge";
+import Header from "./Header";
+import { PropsWithChildren } from "react";
 
 const BodyLayout = ({ children }: PropsWithChildren) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  const router = useRouter();
-  const pathname = usePathname();
-  const { user, signout } = AUTH.use();
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDarkMode]);
-
   return (
     <>
+
       <header className="flex items-center justify-between my-4 lg:max-w-300 lg:mx-auto ">
         <Link href={"/"} className="hover:opacity-80 mx-5">
           <Image src="/image/logo1.PNG" alt="logo" height={100} width={100} />
@@ -92,6 +73,15 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
       <Navbar />
 
       <main className="flex-1 overflow-y-auto">{children}</main>
+
+      <Header />
+      <main
+      // className="flex-1 overflow-y-auto"
+      >
+        <Navbar />
+        {children}
+      </main>
+
     </>
   );
 };
