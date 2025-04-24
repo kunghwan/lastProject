@@ -61,7 +61,7 @@ const UserPage = async ({ params }: Props) => {
     <ProfileLayout
       posts={posts}
       isMyPage={isMyPage}
-      uid={userId}
+      userId={userId}
       userNickname={userNickname}
       userProfileImage={userProfileImage}
     />
