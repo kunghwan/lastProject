@@ -25,7 +25,7 @@ const FollowButton = ({ followingId }:FollowButtonProps) => {
         startTransition(
            async ()=>{
             const ref = dbService.collection(FBCollection.USERS).doc(user.uid).collection("notification")
-            const snap = await ref.add({
+            await ref.add({
                 follwingId: , // 팔로우된 사람의 ID
                 followerId: null,// 팔로우한 사람의 ID
                 createdAt:new Date().toLocaleString(),
@@ -35,7 +35,7 @@ const FollowButton = ({ followingId }:FollowButtonProps) => {
         )
     
       
-    },[])
+    },[user,navi])
 
     const  onUnFollow = useCallback(() => {},[])
   return (
