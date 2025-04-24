@@ -54,7 +54,10 @@ const Header = () => {
               <button className="grayButton p-2 text-xl sm:text-2xl">
                 <IoBookmarkOutline />
               </button>
-              <button className="grayButton p-2 text-xl sm:text-2xl">
+              <button
+                className="grayButton p-2 text-xl sm:text-2xl"
+                onClick={() => router.push("/notification")}
+              >
                 <VscBell />
               </button>
             </div>

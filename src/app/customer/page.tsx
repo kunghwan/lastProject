@@ -8,8 +8,9 @@ interface QnA {
   answer: string;
 }
 const QnaPage = () => {
+  //useState로 상태 관리(openQuestion 상태를 추가하여 현재 열려 있는 질문을 관리,null이면 아무 질문도 열려 있지 않은 상태)
   const [isanswerShowing, setIsanswerShowing] = useState<string | null>(null);
-
+  //클릭한 질문이 이미 열려 있으면 닫고, 그렇지 않으면 해당 질문을 엽니다.
   const toggleQuestion = (question: string) => {
     setIsanswerShowing((prev) => (prev === question ? null : question));
   };
@@ -33,6 +34,8 @@ const QnaPage = () => {
                   )}
                 </span>
               </button>
+              {/*조건부 렌더링: openQuestion === item.question일 때만 답변을 표시합니다.
+               */}
               {isanswerShowing === item.question && (
                 <p className="mt-1  text-gray-600 rounded p-2.5 bg-[rgba(240,255,251)] dark:bg-[rgba(240,255,251,0.5) lg:text-xl">
                   {item.answer}
