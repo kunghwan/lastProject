@@ -44,6 +44,10 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
     <div>
       {isFollowing ? (
         <button
+<<<<<<< HEAD
+          className="border-2 border-gray-300 rounded-full px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+=======
+>>>>>>> 63f895d01ae07342ee40015069137bfdde56dbf9
           onClick={() => {
             return handleFollow();
           }}

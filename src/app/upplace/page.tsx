@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+const UpPlace = () => {
+  return (
+    <div>
+      <h1>UpPlace</h1>
+=======
 "use client";
 
 import { useEffect, useState } from "react";
@@ -32,6 +38,7 @@ const UpPlace = () => {
       {places.map((place) => (
         <PlaceCard key={place.contentid} place={place} />
       ))}
+>>>>>>> 63f895d01ae07342ee40015069137bfdde56dbf9
     </div>
   );
 };
