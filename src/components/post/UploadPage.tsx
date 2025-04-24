@@ -96,20 +96,23 @@ const UploadPostPage = () => {
     },
     [files]
   );
-  const searchAddress = useCallback(async (query: string) => {
-    const res = await fetch(
-      `https://dapi.kakao.com/v2/local/search/keyword.json?query=${query}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `KakaoAK ${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}`,
-        },
-      }
-    );
-    const data = await res.json();
-    console.log(data, 79);
-    setSearchResults(data.documents);
-  }, []);
+  const searchAddress = useCallback(
+    async (query: string) => {
+      const res = await fetch(
+        `https://dapi.kakao.com/v2/local/search/keyword.json?query=${query}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `KakaoAK ${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}`,
+          },
+        }
+      );
+      const data = await res.json();
+      console.log(data, 79);
+      setSearchResults(data.documents);
+    },
+    [searchResults]
+  );
 
   const onSubmit = useCallback(
     (e) => {
@@ -156,7 +159,7 @@ const UploadPostPage = () => {
             bookmarked: [],
             isLiked: false,
             createdAt: new Date().toLocaleString(),
-            tags: tags,
+            tags: post.tags,
           });
 
           alert("게시물이 성공적으로 등록되었습니다!");
@@ -173,7 +176,7 @@ const UploadPostPage = () => {
         }
       });
     },
-    [title, titleMessage, content, descMessage, juso, jusoMessage, user]
+    [title, titleMessage, post, content, descMessage, juso, jusoMessage, user]
   );
 
   return (
