@@ -143,6 +143,7 @@ const UploadPostPage = () => {
             const url = await getDownloadURL(imgRef);
             imgUrls.push(url);
           }
+
           await dbService.collection(FBCollection.POSTS).add({
             uid: user.uid,
             imageUrl: imgUrls[0] || null, // 대표 이미지
