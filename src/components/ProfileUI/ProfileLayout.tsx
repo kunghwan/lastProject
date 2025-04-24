@@ -61,8 +61,17 @@ const ProfileLayout = ({
                 <h1 className="font-medium text-4xl p-1 hover:scale-103 hover:animate-pulse  transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
                   {nickname || `${posts[0]?.userNickname || `MyProfile`}`}
                 </h1>
+                {isMyPage ? (
+                  <button className="text-2xl hover:animate-spin hover:scale-105  cursor-pointer p-2.5 active:text-gray-800  hover:text-gray-400">
+                    <IoSettingsOutline />
+                  </button>
+                ) : (
+                  <button>
+                    <FollowButton followingId={posts[0].uid} />
+                  </button>
+                )}
 
-                {!posts[0] ? (
+                {/*
 
                 {isMyPage ? (
 
@@ -78,7 +87,7 @@ const ProfileLayout = ({
                     <FollowButton followingId={posts[0].uid} />
 
                   </button>
-                )}
+                )} */}
               </p>
               <div className="flex ml-2.5 gap-5 ">
                 <p className="flex gap-2.5 p-2.5  hover:scale-103 hover:animate-pulse  transition-all cursor-pointer active:text-gray-800 ">
