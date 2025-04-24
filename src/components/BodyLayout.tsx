@@ -87,7 +87,7 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
         </ul>
       </header>
 
-      <div className="w-300 h-0.5 bg-teal-100 mx-auto" />
+      <div className="w-full h-0.5 bg-teal-100 mx-auto" />
 
       <Navbar />
 

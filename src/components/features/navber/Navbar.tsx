@@ -43,11 +43,21 @@ const Navbar = () => {
 
   return (
     <>
+      <style>
+        {`
+      @media (min-width: 1280px) {
+        .custom-nav {
+          display: flex !important;
+        }
+      }
+    `}
+      </style>
+
       <div className="flex relative lg:max-w-300 lg:mx-auto h-auto">
         {pathname !== "/signin" && pathname !== "/signup" && (
           <nav
             className={twMerge(
-              "hidden xl:flex absolute top-[10vh] -left-25 h-140 w-20 justify-center bg-gray-200 z-30 rounded-full"
+              "hidden xl:flex absolute top-[10vh] -left-25 h-140 w-20 justify-center bg-gray-200 z-30 rounded-full custom-nav"
             )}
           >
             <ul className="flex flex-col justify-between py-5">
