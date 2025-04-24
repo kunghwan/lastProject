@@ -24,6 +24,7 @@ const UserPage = async ({ params }: Props) => {
     // 데이터가 없을 경우 기본값 추가
     if (posts.length === 0) {
       posts.push({
+        title: "title 없음",
         id: "default",
         uid: "default",
         userNickname: username,

@@ -1,33 +1,15 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import { PropsWithChildren, useEffect, useState } from "react";
-import { IoMoon, IoSunny, IoBookmarkOutline } from "react-icons/io5";
-import { VscBell } from "react-icons/vsc";
-import { usePathname, useRouter } from "next/navigation";
 import Navbar from "@/components/features/navber/Navbar";
-import { AUTH } from "@/contextapi/context";
-import { twMerge } from "tailwind-merge";
+import Header from "./Header";
+import { PropsWithChildren } from "react";
+import Link from "next/link";
+import Image from "next/image";
 
 const BodyLayout = ({ children }: PropsWithChildren) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  const router = useRouter();
-  const pathname = usePathname();
-  const { user, signout } = AUTH.use();
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDarkMode]);
-
   return (
     <>
-      <header className="flex items-center justify-between my-4 lg:max-w-300 lg:mx-auto ">
+      {/* <header className="flex items-center justify-between my-4 lg:max-w-300 lg:mx-auto ">
         <Link href={"/"} className="hover:opacity-80 mx-5">
           <Image src="/image/logo1.PNG" alt="logo" height={100} width={100} />
         </Link>
@@ -85,13 +67,21 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
             </>
           )}
         </ul>
-      </header>
+      </header> */}
 
-      <div className="w-300 h-0.5 bg-teal-100 mx-auto" />
+      <Header />
+      <div className="w-full h-0.5 bg-teal-100 mx-auto" />
 
-      <Navbar />
+      {/* <Navbar /> */}
 
-      <main className="flex-1 overflow-y-auto">{children}</main>
+      {/* <main className="flex-1 overflow-y-auto">{children}</main> */}
+
+      <main
+      // className="flex-1 overflow-y-auto"
+      >
+        <Navbar />
+        {children}
+      </main>
     </>
   );
 };
