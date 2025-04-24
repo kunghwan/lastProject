@@ -21,7 +21,7 @@ import Loaiding from "../Loading/page";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
 
 interface UploadPostProps extends Post {
-  imgs: [];
+  imgs: string[];
   tags: Tag[];
 }
 
@@ -160,7 +160,9 @@ const UploadPostPage = () => {
             isLiked: false,
             createdAt: new Date().toLocaleString(),
             tags: post.tags,
-          });
+            userNickname: user.nickname,
+            userProfileImage: user.profileImageUrl,
+          } as UploadPostProps);
 
           alert("게시물이 성공적으로 등록되었습니다!");
           setPost(initialState);
