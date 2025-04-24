@@ -27,9 +27,26 @@ const Header = () => {
   return (
     <>
       <header className="flex items-center justify-between my-4 max-w-full px-4 lg:max-w-300 mx-auto">
+<<<<<<< HEAD
         <Link href="/" className="hover:opacity-80">
           <Image src="/image/logo1.PNG" alt="logo" height={80} width={80} />
         </Link>
+=======
+        {!isDarkMode ? (
+          <Link href="/" className="hover:opacity-80">
+            <Image src="/image/logo1.PNG" alt="logo" height={80} width={80} />
+          </Link>
+        ) : (
+          <Link href="/" className="hover:opacity-80">
+            <Image
+              src="/image/whitelogo1.PNG"
+              alt="logo"
+              height={80}
+              width={80}
+            />
+          </Link>
+        )}
+>>>>>>> 63f895d01ae07342ee40015069137bfdde56dbf9
 
         <ul className="flex items-center gap-x-3 sm:gap-x-5">
           {user && (
@@ -43,7 +60,11 @@ const Header = () => {
             onClick={() => setIsDarkMode((prev) => !prev)}
             className={twMerge(
               "grayButton text-white text-xl sm:text-2xl p-2 rounded-full",
+<<<<<<< HEAD
               isDarkMode ? "bg-blue-400" : "bg-red-400"
+=======
+              isDarkMode ? "bg-blue-400 text-amber-300" : "bg-red-400"
+>>>>>>> 63f895d01ae07342ee40015069137bfdde56dbf9
             )}
           >
             {isDarkMode ? <IoMoon /> : <IoSunny />}

@@ -3,12 +3,16 @@
 import Navbar from "@/components/features/navber/Navbar";
 import Header from "./Header";
 import { PropsWithChildren } from "react";
+<<<<<<< HEAD
 import Link from "next/link";
 import Image from "next/image";
+=======
+>>>>>>> 63f895d01ae07342ee40015069137bfdde56dbf9
 
 const BodyLayout = ({ children }: PropsWithChildren) => {
   return (
     <>
+<<<<<<< HEAD
       {/* <header className="flex items-center justify-between my-4 lg:max-w-300 lg:mx-auto ">
         <Link href={"/"} className="hover:opacity-80 mx-5">
           <Image src="/image/logo1.PNG" alt="logo" height={100} width={100} />
@@ -76,6 +80,10 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
 
       {/* <main className="flex-1 overflow-y-auto">{children}</main> */}
 
+=======
+      <Header />
+
+>>>>>>> 63f895d01ae07342ee40015069137bfdde56dbf9
       <main
       // className="flex-1 overflow-y-auto"
       >
