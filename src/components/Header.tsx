@@ -78,8 +78,8 @@ const Header = () => {
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
               className={twMerge(
-                "grayButton text-white",
-                isDarkMode ? "text-gray-800" : "bg-black"
+                "grayButton text-xl",
+                isDarkMode ? "text-gray-800" : "text-white bg-black"
               )}
             >
               {isDarkMode ? <IoMoon /> : <IoSunny />}
@@ -97,14 +97,14 @@ const Header = () => {
           )}
         </ul>
 
-        {/* 모바일 메뉴 */}
+        {/* 모바일 메뉴 버튼 */}
         <div className="sm:hidden">
           {isAuthPage ? (
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
               className={twMerge(
-                "grayButton text-white text-xl",
-                isDarkMode ? "text-gray-800" : "bg-black"
+                "grayButton text-xl",
+                isDarkMode ? "text-gray-800" : "text-white bg-black"
               )}
             >
               {isDarkMode ? <IoMoon /> : <IoSunny />}
@@ -120,32 +120,19 @@ const Header = () => {
         </div>
       </header>
 
-
-          {user && (
-            <div className="flex gap-x-2 sm:gap-x-4">
-              <button className="grayButton p-2 text-xl sm:text-2xl">
-                <IoBookmarkOutline />
-              </button>
-              <button
-                className="grayButton p-2 text-xl sm:text-2xl"
-                onClick={() => router.push("/notification")}
-              >
-                <VscBell />
-
       {/* 모바일 팝업 메뉴 */}
       {isMenuOpen && !isAuthPage && (
         <div className="fixed inset-0 bg-gray-500/50 z-50 flex items-center justify-center sm:hidden">
-          <div className="bg-white dark:bg-gray-400 p-6 rounded-xl shadow-lg w-[65vw] max-w-sm text-center ">
-            <div className="flex justify-end mb-1 ">
+          <div className="bg-white dark:bg-gray-400 p-6 rounded-xl shadow-lg w-[65vw] max-w-sm text-center">
+            <div className="flex justify-end mb-1">
               <button onClick={() => setIsMenuOpen(false)} className="text-2xl">
                 <IoCloseSharp className="dark:text-black" />
-
               </button>
             </div>
 
             {user && (
               <>
-                <div className="text-2xl font-bold mb-3 text-black ">
+                <div className="text-2xl font-bold mb-3 text-black">
                   {user.name}님
                 </div>
                 <button
