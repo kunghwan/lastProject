@@ -79,13 +79,8 @@ const ProfileLayout = ({
                     <IoSettingsOutline />
                   </button>
                 ) : (
-
                   <button className="text-2xl cursor-pointer  ">
                     <FollowButton followingId={posts[0]?.uid} />
-
-                  <button>
-                    <FollowButton followingId={posts[0].uid} />
-
                   </button>
                 )} */}
               </p>

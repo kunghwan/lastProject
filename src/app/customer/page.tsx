@@ -8,14 +8,15 @@ interface QnA {
   answer: string;
 }
 const QnaPage = () => {
+  //useState로 상태 관리(openQuestion 상태를 추가하여 현재 열려 있는 질문을 관리,null이면 아무 질문도 열려 있지 않은 상태)
   const [isanswerShowing, setIsanswerShowing] = useState<string | null>(null);
-
+  //클릭한 질문이 이미 열려 있으면 닫고, 그렇지 않으면 해당 질문을 엽니다.
   const toggleQuestion = (question: string) => {
     setIsanswerShowing((prev) => (prev === question ? null : question));
   };
 
   return (
-    <div className="mt-5 relative h-screen  ">
+    <div className="mt-5 relative h-screen ">
       <div>
         <ul className="px-2">
           {qna.map((item) => (
@@ -33,6 +34,8 @@ const QnaPage = () => {
                   )}
                 </span>
               </button>
+              {/*조건부 렌더링: openQuestion === item.question일 때만 답변을 표시합니다.
+               */}
               {isanswerShowing === item.question && (
                 <p className="mt-1  text-gray-600 rounded p-2.5 bg-[rgba(240,255,251)] dark:bg-[rgba(240,255,251,0.5) lg:text-xl">
                   {item.answer}
@@ -46,7 +49,10 @@ const QnaPage = () => {
       <div className="text-xl font-bold flex flex-col justify-end items-center absolute bottom-2 left-0 right-0 ">
         <p>추가로 질문사항이 있으시면 </p>
         <p>
-          <a href="mailto:test@test.com" className="text-green-800 font-bold">
+          <a
+            href="mailto:test@test.com"
+            className="text-green-800 font-bold hover:underline"
+          >
             test@test.com
           </a>
           으로 메일을 보내주시면 감사하겠습니다.

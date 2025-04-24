@@ -120,6 +120,18 @@ const Header = () => {
         </div>
       </header>
 
+
+          {user && (
+            <div className="flex gap-x-2 sm:gap-x-4">
+              <button className="grayButton p-2 text-xl sm:text-2xl">
+                <IoBookmarkOutline />
+              </button>
+              <button
+                className="grayButton p-2 text-xl sm:text-2xl"
+                onClick={() => router.push("/notification")}
+              >
+                <VscBell />
+
       {/* 모바일 팝업 메뉴 */}
       {isMenuOpen && !isAuthPage && (
         <div className="fixed inset-0 bg-gray-500/50 z-50 flex items-center justify-center sm:hidden">
@@ -127,6 +139,7 @@ const Header = () => {
             <div className="flex justify-end mb-1 ">
               <button onClick={() => setIsMenuOpen(false)} className="text-2xl">
                 <IoCloseSharp className="dark:text-black" />
+
               </button>
             </div>
 
