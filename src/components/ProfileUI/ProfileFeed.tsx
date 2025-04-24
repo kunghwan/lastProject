@@ -1,6 +1,5 @@
 import { Post } from "@/types/post";
-import { FcRemoveImage } from "react-icons/fc";
-import PostComponent from "./PostComponent";
+import PostComponent from "../post/PostComponent";
 
 const ProfileFeed = ({
   posts,

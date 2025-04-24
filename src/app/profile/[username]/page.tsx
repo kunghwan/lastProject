@@ -1,7 +1,7 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { dbService } from "@/lib/firebase";
 import { Post } from "@/types/post";
-import ProfileLayout from "@/app/components/ProfileLayout";
+import ProfileLayout from "@/components/ProfileUI/ProfileLayout";
 
 interface Props {
   params: { username: string };
@@ -27,7 +27,7 @@ const UserPage = async ({ params }: Props) => {
         id: "default",
         uid: "default",
         userNickname: username,
-        userProfileImage: defaultImgUrl, // 기본 프로필 이미지
+        userProfileImage: "", // 기본 프로필 이미지
         imageUrl: "",
         content: "게시물이 없습니다.",
         lo: { latitude: 0, longitude: 0, address: "" },
@@ -48,6 +48,3 @@ const UserPage = async ({ params }: Props) => {
 };
 
 export default UserPage;
-
-const defaultImgUrl =
-  "https://i.pinimg.com/1200x/3e/c0/d4/3ec0d48e3332288604e8d48096296f3e.jpg";
