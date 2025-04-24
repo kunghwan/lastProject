@@ -54,7 +54,7 @@ const Header = () => {
             onClick={() => setIsDarkMode((prev) => !prev)}
             className={twMerge(
               "grayButton text-white text-xl sm:text-2xl p-2 rounded-full",
-              isDarkMode ? "bg-blue-400" : "bg-red-400"
+              isDarkMode ? "bg-blue-400 text-amber-300" : "bg-red-400"
             )}
           >
             {isDarkMode ? <IoMoon /> : <IoSunny />}
