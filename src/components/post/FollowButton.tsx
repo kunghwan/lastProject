@@ -56,14 +56,32 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
       setIsFollowing(true);
     });
   }, [user, followingId, navi]);
-
+  //언팔로우 처리
   const onUnFollow = useCallback(() => {
     if (!user) {
       alert("로그인 후 이용해주세요");
       return navi.push("/signin");
     }
-    startTransition(async () => {});
-  }, [user, navi]);
+    startTransition(async () => {
+      //내 followings에서 제거
+      const ref = await dbService
+        .collection(FBCollection.USERS)
+        .doc(user.uid)
+        .collection("followings")
+        .doc(followingId);
+      await ref.delete();
+
+      // 상대방 followers에서 나 제거
+      const followerRef = await dbService
+        .collection(FBCollection.USERS)
+        .doc(followingId)
+        .collection("followers")
+        .doc(user.uid);
+      await followerRef.delete();
+
+      setIsFollowing(false);
+    });
+  }, [user, navi, followingId]);
   //현재 유저를 팔로우하고 있는지 확인용도
   useEffect(() => {
     const checkFollowing = async () => {
@@ -91,15 +109,9 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
     <div>
       {isPening && <Loaiding />}
       {isFollowing ? (
-        <button onClick={() => {}}>UnFollow</button>
+        <button onClick={() => onUnFollow()}>UnFollow</button>
       ) : (
-        <button
-          onClick={() => {
-            onFollow();
-          }}
-        >
-          Follow
-        </button>
+        <button onClick={() => onFollow()}>Follow</button>
       )}
     </div>
   );
