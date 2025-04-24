@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { AUTH } from "@/contextapi/context";
@@ -12,6 +12,25 @@ const LoginForm = () => {
   const router = useRouter();
 
   const { signin } = AUTH.use();
+
+  useEffect(() => {
+    const savedEmail = sessionStorage.getItem("login_email");
+    const savedPassword = sessionStorage.getItem("login_password");
+    if (savedEmail) setEmail(savedEmail);
+    if (savedPassword) setPassword(savedPassword);
+  }, []);
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    sessionStorage.setItem("login_email", value); // 저장
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPassword(value);
+    sessionStorage.setItem("login_password", value); // 저장
+  };
 
   const handleLogin = async () => {
     if (!email && !password) {
@@ -46,28 +65,28 @@ const LoginForm = () => {
 
   return (
     <>
-      <div className=" flex flex-col gap-y-2.5 items-center justify-center h-screen">
+      <div className=" flex flex-col gap-y-2.5 items-center justify-center h-120 ">
         <div className="flex flex-col gap-y-2.5">
           <input
             type="text"
             className={InputStyle}
             placeholder="아이디"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleEmailChange}
           />
           <input
             type="password"
             className={InputStyle}
             placeholder="비밀번호"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handlePasswordChange}
           />
         </div>
-        <div className="flex gap-x-20 justify-start  w-100 lg:w-200">
-          <Link href="/idfind" className="cursor-pointer">
+        <div className="flex gap-x-20 justify-start w-100 lg:w-120  ">
+          <Link href="/idfind" className={Find}>
             아이디찾기
           </Link>
-          <Link href="/pwfind" className="cursor-pointer">
+          <Link href="/pwfind" className={Find}>
             비밀번호찾기
           </Link>
         </div>
@@ -84,8 +103,11 @@ const LoginForm = () => {
 
 export default LoginForm;
 
+const Find = "cursor-pointer dark:text-green-400";
+
 const InputStyle =
-  "rounded-2xl p-4 bg-pink-50 w-100 placeholder:text-black outline-none lg:w-200";
-const LoginButton = "p-3 rounded w-100 cursor-pointer bg-green-400 lg:w-200";
+  "rounded-2xl p-4 bg-pink-50 w-100 placeholder:text-black outline-none lg:w-120  dark:placeholder:text-lime-300 dark:text-lime-300";
+const LoginButton =
+  "p-3 rounded w-100 cursor-pointer bg-green-400 lg:w-120 dark:text-lime-300";
 const SignUserButton =
-  "p-3 rounded w-100 cursor-pointer bg-lime-300 text-center lg:w-200";
+  "p-3 rounded w-100 cursor-pointer bg-lime-300 text-center lg:w-120 dark:text-green-400";
