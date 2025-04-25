@@ -8,6 +8,7 @@ import Loaiding from "../Loading/page";
 
 interface FollowButtonProps {
   followingId: string; // 팔로잉할 유저의 uid
+  follwingNickname: string; // 팔로잉할 유저의 닉네임
 }
 
 const FollowButton = ({ followingId }: FollowButtonProps) => {
@@ -33,14 +34,20 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
         .doc(user.uid)
         .collection("followings")
         .doc(followingId)
-        .set({ createdAt: new Date().toLocaleString() });
+        .set({
+          follwingNickname: followingId,
+          createdAt: new Date().toLocaleString(),
+        });
       // 2. 상대방 팔로워에 나 추가
       await dbService
         .collection(FBCollection.USERS)
         .doc(followingId)
         .collection("followers")
         .doc(user.uid)
-        .set({ createdAt: new Date().toLocaleString() });
+        .set({
+          followerNickname: user?.nickname,
+          createdAt: new Date().toLocaleString(),
+        });
       // 3. 상대방에게 알림 전송
       await dbService
         .collection(FBCollection.USERS)
@@ -49,6 +56,7 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
         .add({
           follwingId: followingId,
           followerId: user.uid,
+          followerNickname: user?.nickname,
           createdAt: new Date().toLocaleString(),
           isRead: false,
         });
@@ -69,6 +77,7 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
         .doc(user.uid)
         .collection("followings")
         .doc(followingId);
+      //delete() 메서드는 문서를 삭제하는 메서드
       await ref.delete();
 
       // 상대방 followers에서 나 제거
@@ -77,6 +86,7 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
         .doc(followingId)
         .collection("followers")
         .doc(user.uid);
+      //delete() 메서드는 문서를 삭제하는 메서드
       await followerRef.delete();
 
       setIsFollowing(false);
