@@ -119,7 +119,7 @@ const MapPage = () => {
   };
 
   return (
-    <div className="flex flex-col relative dark:text-black h-screen overflow-hidden ">
+    <div className="flex flex-col relative dark:text-black h-190 overflow-hidden ">
       <div className="p-2.5 flex bg-white absolute z-50 left-10 top-10 rounded-full shadow-md">
         <input
           value={inputValue}
@@ -159,7 +159,7 @@ const MapPage = () => {
 
         {/* 검색 결과 리스트 */}
         {keyword.length !== 0 && (
-          <div className="w-72 h-screen p-4 bg-gray-100 border-l border-gray-300 ">
+          <div className="w-72 h-190 p-4 bg-gray-100 border-l border-gray-300 ">
             <h2 className="text-lg font-semibold mb-4">검색 결과</h2>
             <ul className="space-y-4 overflow-y-auto h-[calc(100%-2rem)] pr-2">
               {places.map((place) => (
