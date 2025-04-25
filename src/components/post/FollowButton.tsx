@@ -8,10 +8,14 @@ import Loaiding from "../Loading/page";
 
 interface FollowButtonProps {
   followingId: string; // 팔로잉할 유저의 uid
+
+  followNickName: string; // 팔로잉할 유저의 닉네임
+
   follwingNickname: string; // 팔로잉할 유저의 닉네임
+
 }
 
-const FollowButton = ({ followingId }: FollowButtonProps) => {
+const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
   const { user } = AUTH.use();
   const navi = useRouter();
   const [isFollowing, setIsFollowing] = useState(false);
@@ -35,7 +39,11 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
         .collection("followings")
         .doc(followingId)
         .set({
+
+          followNickName: followingId,
+
           follwingNickname: followingId,
+
           createdAt: new Date().toLocaleString(),
         });
       // 2. 상대방 팔로워에 나 추가
@@ -60,7 +68,7 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
           createdAt: new Date().toLocaleString(),
           isRead: false,
         });
-      console.log(followingId, user.uid, 51);
+      console.log(followingId, followNickName, user.uid, 51);
       setIsFollowing(true);
     });
   }, [user, followingId, navi]);
@@ -77,7 +85,11 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
         .doc(user.uid)
         .collection("followings")
         .doc(followingId);
+
       //delete() 메서드는 문서를 삭제하는 메서드
+
+      //delete() 메서드는 문서를 삭제하는 메서드
+
       await ref.delete();
 
       // 상대방 followers에서 나 제거
@@ -86,7 +98,12 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
         .doc(followingId)
         .collection("followers")
         .doc(user.uid);
+
       //delete() 메서드는 문서를 삭제하는 메서드
+
+
+      //delete() 메서드는 문서를 삭제하는 메서드
+
       await followerRef.delete();
 
       setIsFollowing(false);
