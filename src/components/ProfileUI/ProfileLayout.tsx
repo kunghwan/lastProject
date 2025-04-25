@@ -39,6 +39,13 @@ const ProfileLayout = ({
   }, []);
   const actualPostCount = posts.filter((post) => post.id !== "default").length;
 
+  const getRandomColor = () => {
+    let red = Math.floor(Math.random() * 256);
+    let green = Math.floor(Math.random() * 256);
+    let blue = Math.floor(Math.random() * 256);
+    return `rgb(${red}, ${green}, ${blue})`;
+  };
+
   return (
     <div className="flex flex-col w-full h-screen">
       {!isSmallScreen ? (
@@ -62,29 +69,20 @@ const ProfileLayout = ({
                   {nickname || `${posts[0]?.userNickname || `MyProfile`}`}
                 </h1>
                 {isMyPage ? (
-                  <button className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
+                  <button
+                    type="button"
+                    className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400"
+                  >
                     <IoSettingsOutline />
                   </button>
                 ) : (
-                  <button>
-                    <FollowButton followingId={posts[0].uid} />
+                  <button type="button">
+                    <FollowButton
+                      followingId={posts[0].uid}
+                      follwingNickname={posts[0].userNickname}
+                    />
                   </button>
                 )}
-
-
-                {/*
-
-                {isMyPage ? (
-
-                  <button className="text-2xl hover:animate-spin hover:scale-105  cursor-pointer p-2.5 active:text-gray-800  hover:text-gray-400">
-                    <IoSettingsOutline />
-                  </button>
-                ) : (
-                  <button className="text-2xl cursor-pointer  ">
-                    <FollowButton followingId={posts[0]?.uid} />
-                  </button>
-                )} */}
-
               </p>
               <div className="flex ml-2.5 gap-5 ">
                 <p className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
@@ -100,7 +98,12 @@ const ProfileLayout = ({
             <ul className="flex gap-2.5 ">
               {tags.map((tag) => (
                 <li key={tag.id}>
-                  <button className="p-2.5 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
+                  <button
+                    style={{
+                      color: getRandomColor(),
+                    }}
+                    className="p-2.5 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full"
+                  >
                     #{tag.name}
                   </button>
                 </li>
@@ -131,7 +134,7 @@ const ProfileLayout = ({
               <button className="absolute right-20 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
                 <FollowButton
                   followingId={posts[0].uid}
-                  followNickName={posts[0].userNickname}
+                  follwingNickname={posts[0].userNickname}
                 />
               </button>
             )}
@@ -176,6 +179,26 @@ const ProfileLayout = ({
         )}
       </div>
     </div>
+    // <div>
+    //   {posts.map((post) => (
+    //     <div key={post.id} className="post-item">
+    //       <h2>{post.title}</h2> {/* 게시물 제목 */}
+    //       <p>{post.content}</p> {/* 게시물 내용 */}
+    //       <img
+    //         src={post.imageUrl}
+    //         alt={post.title}
+    //         className="post-image"
+    //       />{" "}
+    //       {/* 게시물 이미지 */}
+    //       <p>작성자: {post.userNickname}</p> {/* 작성자 닉네임 */}
+    //       <p>좋아요 수: {post.likes.length}</p> {/* 좋아요 수 */}
+    //       <p>공유 수: {post.shares.length}</p> {/* 공유 수 */}
+    //       <p>북마크 수: {post.bookmarked.length}</p> {/* 북마크 수 */}
+    //       <p>작성일: {new Date(post.createdAt).toLocaleDateString()}</p>{" "}
+    //       {/* 작성일 */}
+    //     </div>
+    //   ))}
+    // </div>
   );
 };
 
