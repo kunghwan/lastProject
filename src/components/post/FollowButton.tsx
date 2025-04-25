@@ -8,9 +8,10 @@ import Loaiding from "../Loading/page";
 
 interface FollowButtonProps {
   followingId: string; // 팔로잉할 유저의 uid
+  followNickName: string; // 팔로잉할 유저의 닉네임
 }
 
-const FollowButton = ({ followingId }: FollowButtonProps) => {
+const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
   const { user } = AUTH.use();
   const navi = useRouter();
   const [isFollowing, setIsFollowing] = useState(false);
@@ -33,14 +34,20 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
         .doc(user.uid)
         .collection("followings")
         .doc(followingId)
-        .set({ createdAt: new Date().toLocaleString() });
+        .set({
+          followNickName: followingId,
+          createdAt: new Date().toLocaleString(),
+        });
       // 2. 상대방 팔로워에 나 추가
       await dbService
         .collection(FBCollection.USERS)
         .doc(followingId)
         .collection("followers")
         .doc(user.uid)
-        .set({ createdAt: new Date().toLocaleString() });
+        .set({
+          followerNickname: user?.nickname,
+          createdAt: new Date().toLocaleString(),
+        });
       // 3. 상대방에게 알림 전송
       await dbService
         .collection(FBCollection.USERS)
@@ -49,21 +56,42 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
         .add({
           follwingId: followingId,
           followerId: user.uid,
+          followerNickname: user?.nickname,
           createdAt: new Date().toLocaleString(),
           isRead: false,
         });
-      console.log(followingId, user.uid, 51);
+      console.log(followingId, followNickName, user.uid, 51);
       setIsFollowing(true);
     });
   }, [user, followingId, navi]);
-
+  //언팔로우 처리
   const onUnFollow = useCallback(() => {
     if (!user) {
       alert("로그인 후 이용해주세요");
       return navi.push("/signin");
     }
-    startTransition(async () => {});
-  }, [user, navi]);
+    startTransition(async () => {
+      //내 followings에서 제거
+      const ref = await dbService
+        .collection(FBCollection.USERS)
+        .doc(user.uid)
+        .collection("followings")
+        .doc(followingId);
+      //delete() 메서드는 문서를 삭제하는 메서드
+      await ref.delete();
+
+      // 상대방 followers에서 나 제거
+      const followerRef = await dbService
+        .collection(FBCollection.USERS)
+        .doc(followingId)
+        .collection("followers")
+        .doc(user.uid);
+      //delete() 메서드는 문서를 삭제하는 메서드
+      await followerRef.delete();
+
+      setIsFollowing(false);
+    });
+  }, [user, navi, followingId]);
   //현재 유저를 팔로우하고 있는지 확인용도
   useEffect(() => {
     const checkFollowing = async () => {
@@ -93,20 +121,12 @@ const FollowButton = ({ followingId }: FollowButtonProps) => {
       {isFollowing ? (
         <button
           className="border-2 border-gray-300 rounded-full px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-          onClick={() => {
-            return handleFollow();
-          }}
+          onClick={() => onUnFollow()}
         >
           UnFollow
         </button>
       ) : (
-        <button
-          onClick={() => {
-            onFollow();
-          }}
-        >
-          Follow
-        </button>
+        <button onClick={() => onFollow()}>Follow</button>
       )}
     </div>
   );

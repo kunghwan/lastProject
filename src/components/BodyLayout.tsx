@@ -68,7 +68,7 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
           )}
         </ul>
       </header> */}
-      <div className="w-full h-0.5 bg-teal-100 mx-auto" /> */
+      <div className="w-full h-0.5 bg-teal-100 mx-auto" />
       {/* <Navbar />
 
       <main className="flex-1 overflow-y-auto">{children}</main> */}
