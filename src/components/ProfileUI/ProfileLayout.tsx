@@ -1,12 +1,10 @@
 "use client";
-
 import { Post, Tag } from "@/types/post";
 import { useEffect, useState } from "react";
 import { IoSettingsOutline } from "react-icons/io5";
 import ProfileFeed from "./ProfileFeed";
 import { getUserNickname } from "@/app/profile/page";
 import FollowButton from "../post/FollowButton";
-
 const ProfileLayout = ({
   posts,
   isMyPage,
@@ -17,18 +15,14 @@ const ProfileLayout = ({
   tags?: Tag[];
 }) => {
   const [nickname, setNickname] = useState<string | null>(null);
-
   useEffect(() => {
     const fetchNickname = async () => {
       const userNickname = await getUserNickname();
       setNickname(userNickname);
     };
-
     fetchNickname();
   }, []);
-
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-
   useEffect(() => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth < 1024);
@@ -38,7 +32,6 @@ const ProfileLayout = ({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   const actualPostCount = posts.filter((post) => post.id !== "default").length;
-
   return (
     <div className="flex flex-col w-full h-screen">
       {!isSmallScreen ? (
@@ -62,29 +55,20 @@ const ProfileLayout = ({
                   {nickname || `${posts[0]?.userNickname || `MyProfile`}`}
                 </h1>
                 {isMyPage ? (
-                  <button className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
+                  <button
+                    type="button"
+                    className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400"
+                  >
                     <IoSettingsOutline />
                   </button>
                 ) : (
-                  <button>
-                    <FollowButton followingId={posts[0].uid} />
+                  <button type="button">
+                    <FollowButton
+                      followingId={posts[0].uid}
+                      follwingNickname={posts[0].userNickname}
+                    />
                   </button>
                 )}
-
-
-                {/*
-
-                {isMyPage ? (
-
-                  <button className="text-2xl hover:animate-spin hover:scale-105  cursor-pointer p-2.5 active:text-gray-800  hover:text-gray-400">
-                    <IoSettingsOutline />
-                  </button>
-                ) : (
-                  <button className="text-2xl cursor-pointer  ">
-                    <FollowButton followingId={posts[0]?.uid} />
-                  </button>
-                )} */}
-
               </p>
               <div className="flex ml-2.5 gap-5 ">
                 <p className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
@@ -131,7 +115,7 @@ const ProfileLayout = ({
               <button className="absolute right-20 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
                 <FollowButton
                   followingId={posts[0].uid}
-                  followNickName={posts[0].userNickname}
+                  follwingNickname={posts[0].userNickname}
                 />
               </button>
             )}
@@ -178,8 +162,6 @@ const ProfileLayout = ({
     </div>
   );
 };
-
 export default ProfileLayout;
-
 const defaultImgUrl =
   "https://i.pinimg.com/1200x/3e/c0/d4/3ec0d48e3332288604e8d48096296f3e.jpg";

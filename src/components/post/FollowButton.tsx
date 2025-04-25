@@ -9,13 +9,10 @@ import Loaiding from "../Loading/page";
 interface FollowButtonProps {
   followingId: string; // 팔로잉할 유저의 uid
 
-  followNickName: string; // 팔로잉할 유저의 닉네임
-
   follwingNickname: string; // 팔로잉할 유저의 닉네임
-
 }
 
-const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
+const FollowButton = ({ followingId, follwingNickname }: FollowButtonProps) => {
   const { user } = AUTH.use();
   const navi = useRouter();
   const [isFollowing, setIsFollowing] = useState(false);
@@ -39,7 +36,6 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         .collection("followings")
         .doc(followingId)
         .set({
-
           followNickName: followingId,
 
           follwingNickname: followingId,
@@ -68,7 +64,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
           createdAt: new Date().toLocaleString(),
           isRead: false,
         });
-      console.log(followingId, followNickName, user.uid, 51);
+      console.log(followingId, follwingNickname, user.uid, 51);
       setIsFollowing(true);
     });
   }, [user, followingId, navi]);
@@ -100,7 +96,6 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         .doc(user.uid);
 
       //delete() 메서드는 문서를 삭제하는 메서드
-
 
       //delete() 메서드는 문서를 삭제하는 메서드
 

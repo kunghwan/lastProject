@@ -14,7 +14,7 @@ import { AUTH } from "@/contextapi/context";
 import { fetchSignInMethodsForEmail } from "firebase/auth";
 import { authService } from "@/lib/firebase";
 
-const STORAGE_KEY = "signupUser"; // ✅ sessionStorage 키
+const STORAGE_KEY = "signupUser";
 
 const InfoAccount = [
   { label: "이름", name: "name", type: "text" },
@@ -35,51 +35,35 @@ const SignupForm = () => {
     agreeLocation: false,
   });
 
+  const [errors, setErrors] = useState<Partial<Record<keyof User, string>>>({});
   const { signup } = AUTH.use();
   const router = useRouter();
-
-  const [errors, setErrors] = useState<Partial<Record<keyof User, string>>>({});
 
   const checkEmailDuplicate = async (email: string): Promise<boolean> => {
     const methods = await fetchSignInMethodsForEmail(authService, email);
     return methods.length > 0;
   };
 
-  // ✅ sessionStorage에서 복원
+  // ✅ sessionStorage 복원
   useEffect(() => {
     const stored = sessionStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      setUser(JSON.parse(stored));
-    }
+    if (stored) setUser(JSON.parse(stored));
   }, []);
 
-  // ✅ user 상태가 바뀔 때마다 저장
+  // ✅ sessionStorage 저장
   useEffect(() => {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
   }, [user]);
 
-  // ✅ 마운트 시 초기 유효성 검사
-  useEffect(() => {
-    const validateOnMount = async () => {
-      const initialErrors: Partial<Record<keyof User, string>> = {};
-      for (const info of InfoAccount) {
-        const key = info.name as keyof typeof user;
-        const value = user[key];
-        const message = await validateField(key, value);
-        if (message) initialErrors[key] = message;
-      }
-      setErrors(initialErrors);
-    };
-    validateOnMount();
-  }, []);
-
   const validateField = useCallback(
     async (name: keyof User, value: any): Promise<string | null> => {
       let message: string | null = null;
-
       switch (name) {
         case "name":
           message = validateName(value);
+          break;
+        case "email":
+          message = await validateEmail(value, checkEmailDuplicate);
           break;
         case "password":
           message = validatePassword(value);
@@ -90,14 +74,10 @@ const SignupForm = () => {
         case "tel":
           message = validatePhone(value);
           break;
-        case "email":
-          // message = await validateEmail(value, checkEmailDuplicate);
-          break;
         case "agreeLocation":
           message = validateLocation(value);
           break;
       }
-
       setErrors((prev) => ({ ...prev, [name]: message ?? "" }));
       return message;
     },
@@ -109,23 +89,19 @@ const SignupForm = () => {
     const fieldName = name as keyof typeof user;
     const fieldValue = type === "checkbox" ? checked : value;
 
-    setUser((prev) => ({
-      ...prev,
-      [fieldName]: fieldValue,
-    }));
-
+    setUser((prev) => ({ ...prev, [fieldName]: fieldValue }));
     await validateField(fieldName, fieldValue);
   };
 
   const handleSubmit = async () => {
-    const newErrors: Partial<Record<keyof User, string>> = {};
-
+    const newErrors: typeof errors = {};
     for (const info of InfoAccount) {
       const key = info.name as keyof typeof user;
-      const value = user[key];
-      const message = await validateField(key, value);
+      const message = await validateField(key, user[key]);
       if (message) newErrors[key] = message;
     }
+
+    setErrors(newErrors);
 
     if (Object.values(newErrors).some((msg) => msg)) {
       alert("입력값을 다시 확인해주세요.");
@@ -133,13 +109,12 @@ const SignupForm = () => {
     }
 
     const result = await signup(user as User, user.password!);
-
     if (!result.success) {
       alert("회원가입 실패: " + result.message);
       return;
     }
 
-    sessionStorage.removeItem(STORAGE_KEY); // ✅ 회원가입 완료 시 저장값 삭제
+    // sessionStorage.removeItem(STORAGE_KEY); // ❌ 이 타이밍 X
     router.push("/signup/settingprofile");
   };
 
@@ -147,7 +122,9 @@ const SignupForm = () => {
     <div className="rounded-2xl h-screen flex flex-col justify-center items-center px-4 min-h-screen">
       <div className="border w-full border-teal-300 rounded-lg max-w-md bg-white divide-y">
         {InfoAccount.map((info, index) => {
+          const key = info.name as keyof typeof user;
           const inputId = `${info.name}-${index}`;
+          const value = user[key];
 
           return (
             <div
@@ -168,12 +145,10 @@ const SignupForm = () => {
                   name={info.name}
                   type={info.type}
                   value={
-                    info.type === "checkbox"
-                      ? undefined
-                      : (user[info.name as keyof typeof user] as string)
+                    info.type === "checkbox" ? undefined : (value as string)
                   }
                   checked={
-                    info.type === "checkbox" ? user.agreeLocation : undefined
+                    info.type === "checkbox" ? (value as boolean) : undefined
                   }
                   onChange={handleChange}
                   className={`p-2 outline-none ${
@@ -183,11 +158,8 @@ const SignupForm = () => {
                   }`}
                 />
               </div>
-
-              {errors[info.name as keyof User] && (
-                <p className="text-red-500 text-sm mt-1 ml-32">
-                  {errors[info.name as keyof User]}
-                </p>
+              {errors[key] && (
+                <p className="text-red-500 text-sm mt-1 ml-32">{errors[key]}</p>
               )}
             </div>
           );
