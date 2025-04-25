@@ -36,10 +36,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         .collection("followings")
         .doc(followingId)
         .set({
-          followNickName: followingId,
-
-          follwingNickname: followingId,
-
+          followNickName: followNickName,
           createdAt: new Date().toLocaleString(),
         });
       // 2. 상대방 팔로워에 나 추가
@@ -67,6 +64,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
       console.log(followingId, followNickName, user.uid, 51);
       setIsFollowing(true);
     });
+    return alert(`${followNickName}님을 팔로우 했습니다`);
   }, [user, followingId, navi]);
   //언팔로우 처리
   const onUnFollow = useCallback(() => {
