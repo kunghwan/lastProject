@@ -133,6 +133,7 @@ const MapPage = () => {
         </button>
       </div>
 
+      {/* 상세정보 */}
       <div className="flex flex-1">
         {selectedPlace && (
           <div className="w-52 h-full overflow-y-auto border-r border-gray-300 p-4 bg-gray-100 relative">
@@ -159,8 +160,22 @@ const MapPage = () => {
 
         {/* 검색 결과 리스트 */}
         {keyword.length !== 0 && (
-          <div className="w-72 h-190 p-4 bg-gray-100 border-l border-gray-300 ">
-            <h2 className="text-lg font-semibold mb-4">검색 결과</h2>
+          <div className="md:w-72 w-full h-190 p-4 bg-gray-100 border-l border-gray-300 flex flex-col gap-y-2 ">
+            <div className="p-2.5 flex bg-white rounded-full shadow-md w-full max-w-full overflow-hidden">
+              <input
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="p-1 text-xs focus:outline-none placeholder:text-gray-500 flex-grow min-w-0"
+              />
+              <button
+                onClick={handleSearch}
+                className="text-xl px-2 cursor-pointer  flex-shrink-0"
+              >
+                <IoSearch />
+              </button>
+            </div>
+
             <ul className="space-y-4 overflow-y-auto h-[calc(100%-2rem)] pr-2">
               {places.map((place) => (
                 <li
