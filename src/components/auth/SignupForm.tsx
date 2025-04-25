@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -15,9 +16,6 @@ import { authService } from "@/lib/firebase";
 
 const STORAGE_KEY = "signupUser";
 
-
-const STORAGE_KEY = "signupUser";
-
 const InfoAccount = [
   { label: "이름", name: "name", type: "text" },
   { label: "이메일", name: "email", type: "email" },
@@ -26,6 +24,7 @@ const InfoAccount = [
   { label: "전화번호", name: "tel", type: "text" },
   { label: "위치정보 동의", name: "agreeLocation", type: "checkbox" },
 ];
+
 const SignupForm = () => {
   const [user, setUser] = useState<Omit<User, "uid">>({
     name: "",
@@ -40,29 +39,15 @@ const SignupForm = () => {
   const { signup } = AUTH.use();
   const router = useRouter();
 
-
-  const [errors, setErrors] = useState<Partial<Record<keyof User, string>>>({});
-  const { signup } = AUTH.use();
-  const router = useRouter();
-
-
   const checkEmailDuplicate = async (email: string): Promise<boolean> => {
     const methods = await fetchSignInMethodsForEmail(authService, email);
     return methods.length > 0;
   };
 
-  // :흰색_확인_표시: sessionStorage 복원
-
   useEffect(() => {
     const stored = sessionStorage.getItem(STORAGE_KEY);
     if (stored) setUser(JSON.parse(stored));
   }, []);
-
-  // :흰색_확인_표시: sessionStorage 저장
-  useEffect(() => {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-  }, [user]);
-
 
   useEffect(() => {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
@@ -97,7 +82,6 @@ const SignupForm = () => {
     [checkEmailDuplicate]
   );
 
-
   // ✅ 처음 렌더링될 때 전체 필드 유효성 검사
   useEffect(() => {
     const validateAllFieldsOnMount = async () => {
@@ -114,17 +98,15 @@ const SignupForm = () => {
     validateAllFieldsOnMount();
   }, []);
 
-
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, type, value, checked } = e.target;
     const fieldName = name as keyof typeof user;
     const fieldValue = type === "checkbox" ? checked : value;
 
-
-
     setUser((prev) => ({ ...prev, [fieldName]: fieldValue }));
     await validateField(fieldName, fieldValue);
   };
+
   const handleSubmit = async () => {
     const newErrors: typeof errors = {};
     for (const info of InfoAccount) {
@@ -135,24 +117,20 @@ const SignupForm = () => {
 
     setErrors(newErrors);
 
-
-    setErrors(newErrors);
-
-
     if (Object.values(newErrors).some((msg) => msg)) {
       alert("입력값을 다시 확인해주세요.");
       return;
     }
+
     const result = await signup(user as User, user.password!);
     if (!result.success) {
       alert("회원가입 실패: " + result.message);
       return;
     }
 
-    // sessionStorage.removeItem(STORAGE_KEY); // :x: 이 타이밍 X
-
     router.push("/signup/settingprofile");
   };
+
   return (
     <div className="rounded-2xl h-screen flex flex-col justify-center items-center px-4 min-h-screen">
       <div className="border w-full border-teal-300 rounded-lg max-w-md bg-white divide-y">
@@ -166,37 +144,6 @@ const SignupForm = () => {
               key={index}
               className="flex flex-col gap-1 px-4 py-3 relative border-b-teal-300"
             >
-
-              <div className="flex items-center">
-                <label
-                  htmlFor={inputId}
-                  className={`text-gray-700 ${
-                    info.type === "checkbox" ? "mr-8" : "w-32"
-                  }`}
-                >
-                  {info.label}
-                </label>
-                <input
-                  id={inputId}
-                  name={info.name}
-                  type={info.type}
-                  value={
-                    info.type === "checkbox" ? undefined : (value as string)
-                  }
-                  checked={
-                    info.type === "checkbox" ? (value as boolean) : undefined
-                  }
-                  onChange={handleChange}
-                  className={`p-2 outline-none ${
-                    info.type === "checkbox"
-                      ? "w-4 h-4"
-                      : "flex-1 bg-transparent"
-                  }`}
-                />
-              </div>
-              {errors[key] && (
-                <p className="text-red-500 text-sm mt-1 ml-32">{errors[key]}</p>
-
               {info.type !== "checkbox" ? (
                 <>
                   <input
@@ -235,12 +182,12 @@ const SignupForm = () => {
                     {info.label}
                   </label>
                 </div>
-
               )}
             </div>
           );
         })}
       </div>
+
       <button
         onClick={handleSubmit}
         className="mt-10 bg-green-500 w-110 p-5 text-white font-bold rounded"
@@ -250,4 +197,5 @@ const SignupForm = () => {
     </div>
   );
 };
+
 export default SignupForm;
