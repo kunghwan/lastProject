@@ -44,13 +44,11 @@ const SignupForm = () => {
     return methods.length > 0;
   };
 
-  // ✅ sessionStorage 복원
   useEffect(() => {
     const stored = sessionStorage.getItem(STORAGE_KEY);
     if (stored) setUser(JSON.parse(stored));
   }, []);
 
-  // ✅ sessionStorage 저장
   useEffect(() => {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
   }, [user]);
@@ -84,6 +82,22 @@ const SignupForm = () => {
     [checkEmailDuplicate]
   );
 
+  // ✅ 처음 렌더링될 때 전체 필드 유효성 검사
+  useEffect(() => {
+    const validateAllFieldsOnMount = async () => {
+      const initialErrors: typeof errors = {};
+      for (const info of InfoAccount) {
+        const key = info.name as keyof typeof user;
+        const value = user[key];
+        const message = await validateField(key, value);
+        if (message) initialErrors[key] = message;
+      }
+      setErrors(initialErrors);
+    };
+
+    validateAllFieldsOnMount();
+  }, []);
+
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, type, value, checked } = e.target;
     const fieldName = name as keyof typeof user;
@@ -114,7 +128,6 @@ const SignupForm = () => {
       return;
     }
 
-    // sessionStorage.removeItem(STORAGE_KEY); // ❌ 이 타이밍 X
     router.push("/signup/settingprofile");
   };
 
@@ -129,37 +142,46 @@ const SignupForm = () => {
           return (
             <div
               key={index}
-              className="flex flex-col px-4 py-3 border-teal-300"
+              className="flex flex-col gap-1 px-4 py-3 relative border-b-teal-300"
             >
-              <div className="flex items-center">
-                <label
-                  htmlFor={inputId}
-                  className={`text-gray-700 ${
-                    info.type === "checkbox" ? "mr-8" : "w-32"
-                  }`}
-                >
-                  {info.label}
-                </label>
-                <input
-                  id={inputId}
-                  name={info.name}
-                  type={info.type}
-                  value={
-                    info.type === "checkbox" ? undefined : (value as string)
-                  }
-                  checked={
-                    info.type === "checkbox" ? (value as boolean) : undefined
-                  }
-                  onChange={handleChange}
-                  className={`p-2 outline-none ${
-                    info.type === "checkbox"
-                      ? "w-4 h-4"
-                      : "flex-1 bg-transparent"
-                  }`}
-                />
-              </div>
-              {errors[key] && (
-                <p className="text-red-500 text-sm mt-1 ml-32">{errors[key]}</p>
+              {info.type !== "checkbox" ? (
+                <>
+                  <input
+                    id={inputId}
+                    name={info.name}
+                    type={info.type}
+                    placeholder={info.label}
+                    value={value as string}
+                    onChange={handleChange}
+                    className={`
+                      w-full
+                      outline-none
+                      px-1.5 pt-5 pb-1
+                      text-sm
+                      transition-all
+                      
+                      placeholder:text-gray-400
+                      ${errors[key] ? " border-red-500" : " border-gray-300"}
+                    `}
+                  />
+                  {errors[key] && (
+                    <p className="text-red-500 text-xs mt-1">{errors[key]}</p>
+                  )}
+                </>
+              ) : (
+                <div className="flex items-center">
+                  <input
+                    id={inputId}
+                    name={info.name}
+                    type="checkbox"
+                    checked={value as boolean}
+                    onChange={handleChange}
+                    className="w-4 h-4 mr-2"
+                  />
+                  <label htmlFor={inputId} className="text-sm text-gray-700">
+                    {info.label}
+                  </label>
+                </div>
               )}
             </div>
           );
