@@ -116,21 +116,28 @@ const UserPage = ({ params }: Props) => {
 
   return (
     <ProfileLayout
-      key={`posts[0]?.id`}
+      key={posts[0]?.id || "default-key"}
       tags={[
         {
           id: "1",
-          name: "태그1",
+          name: "대전시",
           onTag() {
             console.log("태그1 클릭됨");
           },
         },
-      ]} // 태그 예시
+        {
+          id: "2",
+          name: "20대",
+          onTag() {
+            console.log("태그1 클릭됨");
+          },
+        },
+      ]}
       posts={posts}
       isMyPage={isMyPage}
-      userId={userId || `{!users.uid}`} // 가져온 uid를 전달
-      userNickname={userNickname}
-      userProfileImage={userProfileImage}
+      userId={userId || `{!users.uid}`}
+      userNickname={userNickname || "{!users.nickname}"}
+      userProfileImage={userProfileImage || "/images/default-profile.png"}
     >
       {!isMyPage && (
         <button onClick={handleFollow} style={{ marginTop: "20px" }}>
