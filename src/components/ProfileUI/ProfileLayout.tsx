@@ -23,7 +23,7 @@ const ProfileLayout = ({
       const userNickname = await getUserNickname();
       setNickname(userNickname);
     };
-
+    console.log(posts[0]);
     fetchNickname();
   }, []);
 
@@ -67,10 +67,12 @@ const ProfileLayout = ({
                   </button>
                 ) : (
                   <button>
-                    <FollowButton followingId={posts[0].uid} />
+                    <FollowButton
+                      followingId={posts[0].uid}
+                      followNickName={posts[0].userNickname}
+                    />
                   </button>
                 )}
-
 
                 {/*
 
@@ -84,7 +86,6 @@ const ProfileLayout = ({
                     <FollowButton followingId={posts[0]?.uid} />
                   </button>
                 )} */}
-
               </p>
               <div className="flex ml-2.5 gap-5 ">
                 <p className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">

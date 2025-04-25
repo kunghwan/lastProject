@@ -10,9 +10,6 @@ interface FollowButtonProps {
   followingId: string; // 팔로잉할 유저의 uid
 
   followNickName: string; // 팔로잉할 유저의 닉네임
-
-  follwingNickname: string; // 팔로잉할 유저의 닉네임
-
 }
 
 const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
@@ -39,7 +36,6 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         .collection("followings")
         .doc(followingId)
         .set({
-
           followNickName: followingId,
 
           follwingNickname: followingId,
@@ -100,7 +96,6 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         .doc(user.uid);
 
       //delete() 메서드는 문서를 삭제하는 메서드
-
 
       //delete() 메서드는 문서를 삭제하는 메서드
 

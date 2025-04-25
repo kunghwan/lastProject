@@ -13,7 +13,7 @@ import { useInView } from "react-intersection-observer";
 const page = () => {
   const { user } = AUTH.use();
   const navi = useRouter();
-  const { ref, inView } = useInView({ threshold: 0.75 });
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
   const uid = user?.uid;
