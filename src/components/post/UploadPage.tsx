@@ -19,6 +19,7 @@ import { IoIosSearch } from "react-icons/io";
 import { AUTH } from "@/contextapi/context";
 import Loaiding from "../Loading/page";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
+import JusoComponents from "./UpoladPostJusoComponents";
 
 interface UploadPostProps extends Post {
   imgs: string[];
@@ -55,16 +56,13 @@ const UploadPostPage = () => {
   const [files, setFiles] = useState<File[]>([]);
 
   const [tag, setTag] = useState("");
-  const [address, setAddress] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+
   const [juso, setJuso] = useState<Location>({
     latitude: 0,
     longitude: 0,
     address: "",
   });
 
-  const [isJusoShowing, setIsJusoShowing] = useState(false);
-  const [isJusoUlShowing, setIsJusoUlShowing] = useState(false);
   const navi = useRouter();
   const [isPending, startTransition] = useTransition();
   const titleRef = useRef<HTMLInputElement>(null);
@@ -96,26 +94,9 @@ const UploadPostPage = () => {
     },
     [files]
   );
-  const searchAddress = useCallback(
-    async (query: string) => {
-      const res = await fetch(
-        `https://dapi.kakao.com/v2/local/search/keyword.json?query=${query}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `KakaoAK ${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}`,
-          },
-        }
-      );
-      const data = await res.json();
-      console.log(data, 79);
-      setSearchResults(data.documents);
-    },
-    [searchResults]
-  );
 
   const onSubmit = useCallback(
-    (e) => {
+    (e: React.FormEvent) => {
       e.preventDefault();
       if (titleMessage) {
         alert(titleMessage);
@@ -137,14 +118,15 @@ const UploadPostPage = () => {
             return navi.push("/singin");
           }
           const imgUrls: string[] = [];
+          //1. 파일을 Firebase Storage에 업로드
           for (const file of files) {
             const imgRef = storageService.ref(`${user.uid}/post/${v4()}`);
             await uploadBytes(imgRef, file);
             const url = await getDownloadURL(imgRef);
             imgUrls.push(url);
           }
-
-          await dbService.collection(FBCollection.POSTS).add({
+          //2. Firestore에 새 게시글 추가 (add 사용)
+          const postRef = await dbService.collection(FBCollection.POSTS).add({
             uid: user.uid,
             imageUrl: imgUrls[0] || null, // 대표 이미지
             imgs: imgUrls,
@@ -265,7 +247,7 @@ const UploadPostPage = () => {
               }));
               return setTag("");
             }}
-            className=" min-w-20 flex-1 rounded bg-[rgba(116,212,186)]"
+            className=" min-w-20 flex-1 rounded bg-[rgba(116,212,186)] cursor-pointer"
           >
             추가
           </button>
@@ -294,93 +276,8 @@ const UploadPostPage = () => {
             ))}
           </ul>
         </div>
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-x-2 items-center">
-            {juso.address.length > 0 && (
-              <label className=" flex w-full border bg-emerald-100 p-2.5 rounded items-center  border-gray-400 dark:text-gray-900">
-                <span>
-                  <IoLocationSharp className="text-2xl" />
-                </span>
-                {juso.address}
-              </label>
-            )}
 
-            {isJusoShowing && (
-              <div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (confirm("다시 검색하시겠습니까?")) {
-                      setJuso({
-                        latitude: 0,
-                        longitude: 0,
-                        address: "",
-                      });
-                      setSearchResults([]);
-                      setAddress("");
-                      return setIsJusoShowing(false);
-                    } else {
-                      return alert("취소되었습니다.");
-                    }
-                  }}
-                  className={twMerge(
-                    "border border-gray-400 p-2.5 rounded bg-gray-100 flex-1 min-w-20 cursor-pointer"
-                  )}
-                >
-                  다시검색
-                </button>
-              </div>
-            )}
-          </div>
-          {!isJusoShowing && (
-            <div>
-              <div className="flex gap-x-2">
-                <input
-                  type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  className={twMerge("w-full ", input)}
-                  ref={jusoRef}
-                  placeholder="주소를 입력후 검색버튼을 눌러주세요."
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    searchAddress(address);
-                    setIsJusoUlShowing(true);
-                    return setIsJusoShowing(true);
-                  }}
-                  className="flex justify-center items-center flex-1 rounded bg-[rgba(116,212,186)] min-w-20"
-                >
-                  <IoIosSearch className="text-3xl font-bold" />
-                </button>
-              </div>
-            </div>
-          )}
-          {isJusoUlShowing && (
-            <ul className="mt-2 flex flex-col gap-y-2 bg-gray-50 border border-gray-400  rounded p-2.5 max-h-50 overflow-y-auto">
-              {searchResults.map((item) => (
-                <li
-                  key={item.id}
-                  className="cursor-pointer bg-white rounded gap-y-2.5 hover:underline border p-1.5 hover:text-green-800 "
-                  onClick={() => {
-                    setJuso({
-                      address: item.address_name,
-                      latitude: Number(item.y),
-                      longitude: Number(item.x),
-                    });
-                    setSearchResults([]);
-                    setIsJusoUlShowing(false);
-                    return setAddress(item.address_name);
-                  }}
-                >
-                  {item.address_name}
-                  {item.place_name}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <JusoComponents juso={juso} setJuso={setJuso} jusoRef={jusoRef} />
       </div>
 
       <div className="flex justify-end gap-x-2.5 mt-4 lg:col-span-2">

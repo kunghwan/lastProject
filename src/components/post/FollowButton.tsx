@@ -77,7 +77,10 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         .doc(user.uid)
         .collection("followings")
         .doc(followingId);
+<<<<<<< HEAD
       //delete() 메서드는 문서를 삭제하는 메서드
+=======
+>>>>>>> 388af51c610247309f52e092ee2e84d997459801
       await ref.delete();
 
       // 상대방 followers에서 나 제거
@@ -86,7 +89,10 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         .doc(followingId)
         .collection("followers")
         .doc(user.uid);
+<<<<<<< HEAD
       //delete() 메서드는 문서를 삭제하는 메서드
+=======
+>>>>>>> 388af51c610247309f52e092ee2e84d997459801
       await followerRef.delete();
 
       setIsFollowing(false);
