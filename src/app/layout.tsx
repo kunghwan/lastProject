@@ -39,8 +39,6 @@ export default function RootLayout({
           <AuthProvider>
             <BodyLayout>
 
-              {" "}
-
               <Script
                 src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_API_KEY}&autoload=false&libraries=services`}
                 strategy="beforeInteractive"

@@ -20,6 +20,9 @@ const ProfileLayout = ({
       const userNickname = await getUserNickname();
       setNickname(userNickname);
     };
+
+    console.log(posts[0]);
+
     fetchNickname();
   }, []);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -72,13 +75,35 @@ const ProfileLayout = ({
                     <IoSettingsOutline />
                   </button>
                 ) : (
+
+                  <button>
+                    <FollowButton
+                      followingId={posts[0].uid}
+                      followNickName={posts[0].userNickname}
+                    />
+                  </button>
+                )}
+
+                {/*
+
+                {isMyPage ? (
+
+                  <button className="text-2xl hover:animate-spin hover:scale-105  cursor-pointer p-2.5 active:text-gray-800  hover:text-gray-400">
+                    <IoSettingsOutline />
+                  </button>
+                ) : (
+                  <button className="text-2xl cursor-pointer  ">
+                    <FollowButton followingId={posts[0]?.uid} />
+                  </button>
+                )} */}
+=======
                   <button type="button">
                     <FollowButton
                       followingId={posts[0].uid}
                       follwingNickname={posts[0].userNickname}
                     />
                   </button>
-                )}
+
               </p>
               <div className="flex ml-2.5 gap-5 ">
                 <p className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">

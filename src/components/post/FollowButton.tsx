@@ -9,7 +9,11 @@ import Loaiding from "../Loading/page";
 interface FollowButtonProps {
   followingId: string; // 팔로잉할 유저의 uid
 
+
+  followNickName: string; // 팔로잉할 유저의 닉네임
+
   follwingNickname: string; // 팔로잉할 유저의 닉네임
+
 }
 
 const FollowButton = ({ followingId, follwingNickname }: FollowButtonProps) => {
@@ -36,9 +40,13 @@ const FollowButton = ({ followingId, follwingNickname }: FollowButtonProps) => {
         .collection("followings")
         .doc(followingId)
         .set({
+
+          followNickName: followNickName,
+
           followNickName: followingId,
 
           follwingNickname: followingId,
+
 
           createdAt: new Date().toLocaleString(),
         });
@@ -67,6 +75,7 @@ const FollowButton = ({ followingId, follwingNickname }: FollowButtonProps) => {
       console.log(followingId, follwingNickname, user.uid, 51);
       setIsFollowing(true);
     });
+    return alert(`${followNickName}님을 팔로우 했습니다`);
   }, [user, followingId, navi]);
   //언팔로우 처리
   const onUnFollow = useCallback(() => {
