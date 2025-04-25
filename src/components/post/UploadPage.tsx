@@ -14,8 +14,6 @@ import { v4 } from "uuid";
 import { dbService, FBCollection, storageService } from "@/lib";
 
 import { useRouter } from "next/navigation";
-import { IoLocationSharp } from "react-icons/io5";
-import { IoIosSearch } from "react-icons/io";
 import { AUTH } from "@/contextapi/context";
 import Loaiding from "../Loading/page";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
@@ -148,6 +146,8 @@ const UploadPostPage = () => {
           } as UploadPostProps);
 
           alert("게시물이 성공적으로 등록되었습니다!");
+          //게시된후 초기화
+          setTag("");
           setPost(initialState);
           setJuso({
             latitude: 0,
@@ -193,6 +193,7 @@ const UploadPostPage = () => {
           className={twMerge("h-50 resize-none", input)}
           value={content}
           ref={descRef}
+          // 변경은 post는 객체라서 전개연산자 사용후 content만 변경
           onChange={(e) =>
             setPost((prev) => ({
               ...prev,
@@ -206,6 +207,7 @@ const UploadPostPage = () => {
               <li key={file.name}>
                 <FileItem
                   file={file}
+                  // 파일을 삭제하기 위해 onDeleteFiles를 사용
                   onDeleteFiles={() =>
                     setFiles((prev) =>
                       prev.filter((item) => item.name !== file.name)

@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import UpPlaceLikeButton from "@/components/upplace/UpPlaceLikeButton";
 
 const fallbackImages: Record<string, string> = {
   테미오래: "/custom/temiora.jpg",
-  // 필요한 장소명 계속 추가 가능
 };
 
 interface Place {
@@ -20,11 +20,18 @@ const PlaceCard: React.FC<{ place?: Place }> = ({ place }) => {
 
   const defaultImage = "/image/logoc.PNG";
 
-  // ✅ 기본 + fallback 처리
   const imageUrl =
     place.firstimage && place.firstimage.trim() !== ""
       ? place.firstimage.trim()
       : fallbackImages[place.title] || defaultImage;
+
+  // ✅ 로컬 likeCount 상태 관리
+  const [likeCount, setLikeCount] = useState(place.likeCount);
+
+  // ✅ likeCount를 업데이트할 콜백
+  const handleLiked = (newCount: number) => {
+    setLikeCount(newCount);
+  };
 
   return (
     <div className="border p-4 rounded-lg shadow">
@@ -40,10 +47,13 @@ const PlaceCard: React.FC<{ place?: Place }> = ({ place }) => {
       />
       <h2 className="text-lg font-bold mt-2">{place.title}</h2>
       <p className="text-sm text-gray-600">{place.addr1}</p>
-      <p className="text-sm text-gray-500">❤️ 좋아요: {place.likeCount}</p>
+
+      <div className="mt-2 flex items-center justify-between">
+        <p className="text-sm text-gray-500">❤️ 좋아요: {likeCount}</p>
+        <UpPlaceLikeButton contentId={place.contentid} onLiked={handleLiked} />
+      </div>
     </div>
   );
 };
 
-//!  초당 요청 제한	10건 내외 (공식적 언급은 없음, 경험상)
 export default PlaceCard;

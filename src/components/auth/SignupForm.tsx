@@ -14,6 +14,8 @@ import { AUTH } from "@/contextapi/context";
 import { fetchSignInMethodsForEmail } from "firebase/auth";
 import { authService } from "@/lib/firebase";
 
+const STORAGE_KEY = "signupUser"; // ✅ sessionStorage 키
+
 const InfoAccount = [
   { label: "이름", name: "name", type: "text" },
   { label: "이메일", name: "email", type: "email" },
@@ -43,6 +45,20 @@ const SignupForm = () => {
     return methods.length > 0;
   };
 
+  // ✅ sessionStorage에서 복원
+  useEffect(() => {
+    const stored = sessionStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      setUser(JSON.parse(stored));
+    }
+  }, []);
+
+  // ✅ user 상태가 바뀔 때마다 저장
+  useEffect(() => {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+  }, [user]);
+
+  // ✅ 마운트 시 초기 유효성 검사
   useEffect(() => {
     const validateOnMount = async () => {
       const initialErrors: Partial<Record<keyof User, string>> = {};
@@ -54,7 +70,6 @@ const SignupForm = () => {
       }
       setErrors(initialErrors);
     };
-
     validateOnMount();
   }, []);
 
@@ -124,6 +139,7 @@ const SignupForm = () => {
       return;
     }
 
+    sessionStorage.removeItem(STORAGE_KEY); // ✅ 회원가입 완료 시 저장값 삭제
     router.push("/signup/settingprofile");
   };
 

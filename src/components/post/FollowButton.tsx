@@ -8,7 +8,11 @@ import Loaiding from "../Loading/page";
 
 interface FollowButtonProps {
   followingId: string; // 팔로잉할 유저의 uid
+
   followNickName: string; // 팔로잉할 유저의 닉네임
+
+  follwingNickname: string; // 팔로잉할 유저의 닉네임
+
 }
 
 const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
@@ -35,7 +39,11 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         .collection("followings")
         .doc(followingId)
         .set({
+
           followNickName: followingId,
+
+          follwingNickname: followingId,
+
           createdAt: new Date().toLocaleString(),
         });
       // 2. 상대방 팔로워에 나 추가
@@ -77,10 +85,11 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         .doc(user.uid)
         .collection("followings")
         .doc(followingId);
-<<<<<<< HEAD
+
       //delete() 메서드는 문서를 삭제하는 메서드
-=======
->>>>>>> 388af51c610247309f52e092ee2e84d997459801
+
+      //delete() 메서드는 문서를 삭제하는 메서드
+
       await ref.delete();
 
       // 상대방 followers에서 나 제거
@@ -89,10 +98,12 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         .doc(followingId)
         .collection("followers")
         .doc(user.uid);
-<<<<<<< HEAD
+
       //delete() 메서드는 문서를 삭제하는 메서드
-=======
->>>>>>> 388af51c610247309f52e092ee2e84d997459801
+
+
+      //delete() 메서드는 문서를 삭제하는 메서드
+
       await followerRef.delete();
 
       setIsFollowing(false);
