@@ -3,8 +3,6 @@
 import Navbar from "@/components/features/navber/Navbar";
 import Header from "./Header";
 import { PropsWithChildren } from "react";
-import Link from "next/link";
-import Image from "next/image";
 
 const BodyLayout = ({ children }: PropsWithChildren) => {
   return (
@@ -72,16 +70,10 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
       {/* <Navbar />
 
       <main className="flex-1 overflow-y-auto">{children}</main> */}
+
       <Header />
-      <div className="w-full h-0.5 bg-teal-100 mx-auto" />
-      {/* <Navbar /> */}
-      {/* <main className="flex-1 overflow-y-auto">{children}</main> */}
-      <main
-      // className="flex-1 overflow-y-auto"
-      >
-        <Navbar />
-        {children}
-      </main>
+      <Navbar />
+      <main>{children}</main>
     </>
   );
 };
