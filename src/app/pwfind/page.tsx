@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, ChangeEvent } from "react";
+import { useRouter } from "next/navigation";
+import { AUTH } from "@/contextapi/context";
 import { validatePassword } from "@/lib/validations";
 
 interface ValidationResult {
@@ -19,6 +21,8 @@ interface FindPasswordValidation {
 }
 
 const IdFindResult = () => {
+  const router = useRouter();
+  const { signin } = AUTH.use(); // ✅ context에서 signin 사용
   const [email, setEmail] = useState("");
   const [form, setForm] = useState<FindPasswordForm>({
     newPassword: "",
@@ -68,12 +72,18 @@ const IdFindResult = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    if (!validateForm()) {
-      return;
-    }
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
 
     alert("비밀번호가 성공적으로 변경되었습니다.");
+
+    // ✅ 비밀번호 변경 후 로그인 처리
+    const result = await signin(email, form.newPassword);
+    if (result.success) {
+      router.push("/");
+    } else {
+      alert("자동 로그인 실패: " + result.message);
+    }
   };
 
   return (
@@ -96,7 +106,7 @@ const IdFindResult = () => {
               value={form.newPassword}
               onChange={handleChange}
               placeholder="새비밀번호"
-              className="border p-2 border-emerald-300"
+              className="border p-2 border-emerald-300 placeholder:text-emerald-300"
             />
             {validation.newPassword?.message && (
               <p className="text-sm text-red-500 ml-1">
@@ -110,7 +120,7 @@ const IdFindResult = () => {
               value={form.confirmPassword}
               onChange={handleChange}
               placeholder="새 비밀번호 확인"
-              className="border p-2 border-emerald-300 mt-2"
+              className="border p-2 border-emerald-300 mt-2 placeholder:text-emerald-300"
             />
             {validation.confirmPassword?.message && (
               <p className="text-sm text-red-500 ml-1">
