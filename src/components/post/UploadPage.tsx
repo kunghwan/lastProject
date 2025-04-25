@@ -14,8 +14,6 @@ import { v4 } from "uuid";
 import { dbService, FBCollection, storageService } from "@/lib";
 
 import { useRouter } from "next/navigation";
-import { IoLocationSharp } from "react-icons/io5";
-import { IoIosSearch } from "react-icons/io";
 import { AUTH } from "@/contextapi/context";
 import Loaiding from "../Loading/page";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
