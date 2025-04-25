@@ -24,7 +24,7 @@ const Header = () => {
 
   const { user, signout } = AUTH.use();
 
-  const isAuthPage = ["/signin", "/signup"].includes(pathname);
+  const isAuthPage = ["/signin", "/signup"].includes(pathname!);
   const headBtn = "grayButton text-xl sm:text-2xl";
 
   useEffect(() => {
@@ -55,9 +55,8 @@ const Header = () => {
         <ul className="hidden sm:flex items-center gap-x-4">
           {user && (
             <>
-              <div className="text-2xl font-bold max-w-[100px] truncate overflow-hidden">
-                {user.name}
-                <span className="font-light text-sm ml-1">님</span>
+              <div className="text-2xl font-bold max-w-[100px] tracking-wider">
+                {user.name}님
               </div>
               <li>
                 <button className={headBtn} onClick={() => router.push("/map")}>
@@ -78,7 +77,7 @@ const Header = () => {
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
               className={twMerge(
-                "grayButton text-xl",
+                headBtn,
                 isDarkMode ? "text-gray-800" : "text-white bg-black"
               )}
             >
@@ -132,8 +131,8 @@ const Header = () => {
 
             {user && (
               <>
-                <div className="text-2xl font-bold mb-3 text-black">
-                  {user.name}님
+                <div className="text-2xl font-bold mb-3 text-black ">
+                  <p className=" tracking-wider">{user.name}님</p>
                 </div>
                 <button
                   className="grayButton w-full mb-2"

@@ -1,5 +1,11 @@
+import MapPage from "./map/page";
+
 const page = () => {
-  return <div className="text-9xl "></div>;
+  return (
+    <>
+      <MapPage />
+    </>
+  );
 };
 
 export default page;
