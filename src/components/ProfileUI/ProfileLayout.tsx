@@ -1,12 +1,10 @@
 "use client";
-
 import { Post, Tag } from "@/types/post";
 import { useEffect, useState } from "react";
 import { IoSettingsOutline } from "react-icons/io5";
 import ProfileFeed from "./ProfileFeed";
 import { getUserNickname } from "@/app/profile/page";
 import FollowButton from "../post/FollowButton";
-
 const ProfileLayout = ({
   posts,
   isMyPage,
@@ -17,18 +15,14 @@ const ProfileLayout = ({
   tags?: Tag[];
 }) => {
   const [nickname, setNickname] = useState<string | null>(null);
-
   useEffect(() => {
     const fetchNickname = async () => {
       const userNickname = await getUserNickname();
       setNickname(userNickname);
     };
-
     fetchNickname();
   }, []);
-
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-
   useEffect(() => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth < 1024);
@@ -39,12 +33,14 @@ const ProfileLayout = ({
   }, []);
   const actualPostCount = posts.filter((post) => post.id !== "default").length;
 
+
   const getRandomColor = () => {
     let red = Math.floor(Math.random() * 256);
     let green = Math.floor(Math.random() * 256);
     let blue = Math.floor(Math.random() * 256);
     return `rgb(${red}, ${green}, ${blue})`;
   };
+
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -201,8 +197,6 @@ const ProfileLayout = ({
     // </div>
   );
 };
-
 export default ProfileLayout;
-
 const defaultImgUrl =
   "https://i.pinimg.com/1200x/3e/c0/d4/3ec0d48e3332288604e8d48096296f3e.jpg";
