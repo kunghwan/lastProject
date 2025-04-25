@@ -72,7 +72,7 @@ const Navbar = () => {
         <nav
           className={twMerge(
             "fixed bottom-0 left-0 right-0 bg-gray-200 z-30 p-3 flex justify-around xl:hidden rounded-t-2xl",
-            ["/signin", "/signup"].includes(pathname) && "hidden"
+            ["/signin", "/signup"].includes(pathname!) && "hidden"
           )}
         >
           <ul className="flex justify-around w-full">

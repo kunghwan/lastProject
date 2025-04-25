@@ -52,6 +52,9 @@ const IdFind = () => {
       setGeneratedCode(parsed.generatedCode || "");
       setFoundEmail(parsed.foundEmail || "");
       setShowCode(parsed.showCode || false);
+      setCodeRequested(parsed.codeRequested || false); // ✅
+      setCodeSentOnce(parsed.codeSentOnce || false); // ✅
+
       validateField("name", parsed.name || "");
       validateField("phone", parsed.phone || "");
     } else {
@@ -70,9 +73,20 @@ const IdFind = () => {
         generatedCode,
         foundEmail,
         showCode,
+        codeRequested,
+        codeSentOnce, // ✅ 추가해야 함!
       })
     );
-  }, [name, phone, code, generatedCode, foundEmail, showCode]);
+  }, [
+    name,
+    phone,
+    code,
+    generatedCode,
+    foundEmail,
+    showCode,
+    codeRequested,
+    codeSentOnce,
+  ]);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -193,7 +207,9 @@ const IdFind = () => {
           </div>
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
             <TbPassword className="text-blue-500 text-4xl" />
-            <p className="font-bold text-black-500">비밀번호 찾기</p>
+            <p className="font-bold text-black-500 dark:text-black">
+              비밀번호 찾기
+            </p>
           </div>
         </div>
       </div>
@@ -204,7 +220,7 @@ const IdFind = () => {
             <input
               type={idf.type || "text"}
               placeholder={idf.label}
-              className="bg-lime-300 p-5 placeholder:text-black outline-none lg:w-100 w-70"
+              className="bg-lime-300 p-5 placeholder:text-black outline-none lg:w-100 w-70 dark:caret-red-500"
               value={idf.value}
               onChange={idf.onChange}
             />
