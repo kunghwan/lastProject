@@ -14,6 +14,7 @@ import { firebase } from "@/lib/firebase";
 
 const NotificationListPage = () => {
   const { user } = AUTH.use();
+  const [isUnRead, setIsUnRead] = useState(false);
   const navi = useRouter();
 
   // const [countPage, setCountPage] = useState(1);
