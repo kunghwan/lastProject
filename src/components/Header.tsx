@@ -24,6 +24,7 @@ const Header = () => {
   const { user, signout } = AUTH.use();
 
   const isAuthPage = ["/signin", "/signup"].includes(pathname!);
+
   const headBtn = "grayButton text-xl sm:text-2xl";
 
   useEffect(() => {
@@ -41,22 +42,28 @@ const Header = () => {
   return (
     <>
       <header className="flex items-center justify-between my-4 px-4 lg:max-w-300 mx-auto border-b-2 border-gray-300 pb-4">
-        <Link href="/" className="hover:opacity-80">
+        <Link
+          href="/"
+          className="hover:opacity-80 flex justify-center items-center"
+        >
           <Image
             src={isDarkMode ? "/image/whitelogo1.PNG" : "/image/logo1.PNG"}
             alt="logo"
             height={80}
             width={80}
           />
+          {/* <p className="text-bold">방방콕콕</p> */}
         </Link>
 
         {/* 데스크탑 메뉴 */}
         <ul className="hidden sm:flex items-center gap-x-4">
           {user && (
             <>
-              <div className="text-2xl font-bold max-w-[100px] tracking-wider">
-                {user.name}님
+              <div className="text-2xl font-bold whitespace-nowrap flex">
+                <div className="max-w-40 truncate">{user.nickname}</div>
+                <p>님</p>
               </div>
+
               <li>
                 <button className={headBtn} onClick={() => router.push("/map")}>
                   <IoBookmarkOutline />
@@ -130,8 +137,9 @@ const Header = () => {
 
             {user && (
               <>
-                <div className="text-2xl font-bold mb-3 text-black ">
-                  <p className=" tracking-wider">{user.name}님</p>
+                <div className="text-2xl font-bold whitespace-nowrap flex justify-center mb-3 text-black ">
+                  <div className="max-w-40 truncate">{user.nickname}</div>
+                  <p>님</p>
                 </div>
                 <button
                   className="grayButton w-full mb-2"

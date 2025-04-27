@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation";
 import { IoAdd } from "react-icons/io5";
 import { storageService, dbService, FBCollection } from "@/lib/firebase";
 import { AUTH } from "@/contextapi/context";
-// 👇 이미 만들어둔 로딩 컴포넌트 import
-import LoadingPage from "@/components/Loading/page"; // (이 경로는 실제 경로에 맞게 바꿔줘)
+import LoadingPage from "@/components/Loading/page"; // 로딩 컴포넌트
 
 const SettingProfile = () => {
   const [profile, setProfile] = useState<
@@ -16,22 +15,27 @@ const SettingProfile = () => {
     profileImageUrl: "",
     bio: "",
   });
+  const [nicknameError, setNicknameError] = useState<string | null>(null);
+  const [bioError, setBioError] = useState<string | null>(null);
 
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false); // ✅ 로딩 상태 추가
+  const [loading, setLoading] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const { signin } = AUTH.use();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setProfile((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const validateNickname = (nickname: string) => {
+    if (!nickname) return "닉네임을 입력해주세요";
+    if (!/^[a-zA-Z0-9]+$/.test(nickname)) return "한글은 입력 안됩니다";
+    if (nickname.length >= 18)
+      return "닉네임은 18글자 미만으로만 입력가능합니다";
+    return null;
+  };
+
+  const validateBio = (bio: string) => {
+    if (bio.length > 100) return "소개글은 100자 이하로 입력해주세요";
+    return null;
   };
 
   useEffect(() => {
@@ -43,6 +47,25 @@ const SettingProfile = () => {
       router.push("/signup");
     }
   }, [router]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+
+    setProfile((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    if (name === "nickname") {
+      setNicknameError(validateNickname(value));
+    }
+
+    if (name === "bio") {
+      setBioError(validateBio(value));
+    }
+  };
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -65,8 +88,12 @@ const SettingProfile = () => {
       alert("닉네임을 입력하세요");
       return;
     }
+    if (nicknameError || bioError) {
+      alert("입력값을 다시 확인해주세요.");
+      return;
+    }
 
-    setLoading(true); // ✅ 로딩 시작
+    setLoading(true);
     try {
       const signupUser = sessionStorage.getItem("signupUser");
       if (!signupUser) {
@@ -116,23 +143,32 @@ const SettingProfile = () => {
       console.error("가입 오류:", err);
       alert("회원가입 중 문제가 발생했습니다.");
     } finally {
-      setLoading(false); // ✅ 로딩 종료
+      setLoading(false);
     }
   };
 
   return (
     <>
-      {loading && <LoadingPage />} {/* ✅ 로딩 중일 때만 표시 */}
-      <div className="flex flex-col gap-y-4 p-4">
-        <input
-          type="text"
-          name="nickname"
-          value={profile.nickname}
-          onChange={handleChange}
-          placeholder="유저이름"
-          className={settingProfile}
-        />
+      {loading && <LoadingPage />}
+      <div className="flex flex-col gap-y-4 p-4 lg:mx-auto lg:w-130 md:w-130 md:mx-auto sm:w-130 sm:mx-auto ">
+        {/* 닉네임 입력 */}
+        <div className="relative">
+          <input
+            type="text"
+            name="nickname"
+            value={profile.nickname}
+            onChange={handleChange}
+            placeholder="유저이름"
+            className={`${settingProfile} ${nicknameError ? "border-red-500" : ""}`}
+          />
+          {nicknameError && (
+            <div className="absolute text-red-500 text-xs mt-1">
+              {nicknameError}
+            </div>
+          )}
+        </div>
 
+        {/* 프로필 추가 */}
         <div className="flex flex-col gap-y-5">
           <input
             type="text"
@@ -163,17 +199,24 @@ const SettingProfile = () => {
           )}
         </div>
 
-        <textarea
-          name="bio"
-          value={profile.bio}
-          onChange={handleChange}
-          placeholder="자기소개를 작성해주세요"
-          className="border w-full h-32 p-3 resize-none"
-        />
+        {/* 소개글 입력 */}
+        <div className="relative">
+          <textarea
+            name="bio"
+            value={profile.bio}
+            onChange={handleChange}
+            placeholder="자기소개를 작성해주세요"
+            className="border w-full h-32 p-3 resize-none mt-5"
+          />
+          {bioError && (
+            <div className="absolute text-red-500 text-xs mt-1">{bioError}</div>
+          )}
+        </div>
 
+        {/* 가입 완료 버튼 */}
         <button
           onClick={handleSubmit}
-          className="p-4 bg-emerald-300 rounded font-bold"
+          className="p-4 bg-emerald-300 rounded font-bold mt-5"
         >
           가입 완료
         </button>
@@ -184,4 +227,4 @@ const SettingProfile = () => {
 
 export default SettingProfile;
 
-const settingProfile = "bg-lime-300 p-3 rounded";
+const settingProfile = "bg-lime-300 p-3 rounded w-110 sm:w-122 mt-5 ";
