@@ -99,8 +99,8 @@ const UpPlaceLikeButton = ({ contentId, onLiked }: UpPlaceLikeButtonProps) => {
     <button
       onClick={toggleLike}
       disabled={loading}
-      className={`px-4 py-2 rounded-lg ${
-        liked ? "bg-gray-300 text-black" : "bg-red-500 text-white"
+      className={`px-4 py-2 rounded-lg  ${
+        liked ? "bg-gray-300 text-black" : "bg-red-500 text-white "
       }`}
     >
       {liked ? "❤️ 좋아요" : "🤍 좋아요"}
