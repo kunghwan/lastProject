@@ -1,5 +1,6 @@
 "use client";
 
+import { AUTH } from "@/contextapi/context";
 import React, { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";

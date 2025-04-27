@@ -15,8 +15,9 @@ interface FollowButtonProps {
 const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
   const { user } = AUTH.use();
   const navi = useRouter();
+  // user가 팔로우를 한 사람인가를 확인하는 용도
   const [isFollowing, setIsFollowing] = useState(false);
-  const handleFollow = () => setIsFollowing((prev) => !prev);
+
   const [isPening, startTransition] = useTransition();
 
   const onFollow = useCallback(() => {
@@ -73,7 +74,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
       return navi.push("/signin");
     }
     startTransition(async () => {
-      //내 followings에서 제거
+      //! 내 followings에서 제거
       const ref = await dbService
         .collection(FBCollection.USERS)
         .doc(user.uid)
@@ -82,11 +83,9 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
 
       //delete() 메서드는 문서를 삭제하는 메서드
 
-      //delete() 메서드는 문서를 삭제하는 메서드
-
       await ref.delete();
 
-      // 상대방 followers에서 나 제거
+      //! 상대방 followers에서 나 제거
       const followerRef = await dbService
         .collection(FBCollection.USERS)
         .doc(followingId)
@@ -95,18 +94,16 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
 
       //delete() 메서드는 문서를 삭제하는 메서드
 
-      //delete() 메서드는 문서를 삭제하는 메서드
-
       await followerRef.delete();
 
       setIsFollowing(false);
     });
   }, [user, navi, followingId]);
-  //현재 유저를 팔로우하고 있는지 확인용도
+  //! 현재 유저를 팔로우하고 있는지 확인용도
   useEffect(() => {
     const checkFollowing = async () => {
       if (!user?.uid || !followingId) {
-        return console.log("no");
+        return console.log("no user");
       }
 
       try {
@@ -117,13 +114,13 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
           .doc(followingId);
         const snap = await ref.get();
         //extsts는 문서가 존재하는지 확인하는 메서드(불리언타입임)
+        //snap.exists를 통해 그 문서가 존재하는지 확인// 문서가 존재하면 setIsFollowing(true),문서가 존재하지 않으면 setIsFollowing(false)
         setIsFollowing(snap.exists);
       } catch (error: any) {
         console.error(error.message);
       }
-
-      checkFollowing();
     };
+    checkFollowing();
   }, [user, followingId]);
   return (
     <div>
@@ -136,7 +133,12 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
           UnFollow
         </button>
       ) : (
-        <button onClick={() => onFollow()}>Follow</button>
+        <button
+          className="border-2 border-gray-300 rounded-full px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+          onClick={() => onFollow()}
+        >
+          Follow
+        </button>
       )}
     </div>
   );

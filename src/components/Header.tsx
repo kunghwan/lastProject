@@ -21,7 +21,6 @@ const Header = () => {
 
   const router = useRouter();
   const pathname = usePathname();
-
   const { user, signout } = AUTH.use();
 
   const isAuthPage = ["/signin", "/signup"].includes(pathname!);
