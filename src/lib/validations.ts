@@ -57,3 +57,21 @@ export function validateLocation(agree: boolean): string | null {
   if (!agree) return "위치정보 제공에 동의해주세요";
   return null;
 }
+
+// 닉네임 유효성
+export function validateNickname(nickname: string): string | null {
+  if (!nickname) return "닉네임을 입력해주세요";
+
+  const onlyEnglishNumber = /^[A-Za-z0-9]+$/;
+
+  if (!onlyEnglishNumber.test(nickname)) return "한글은 입력 안됩니다";
+  if (nickname.length >= 18) return "닉네임은 18글자 미만으로만 입력가능합니다";
+
+  return null;
+}
+
+// 소개글 유효성
+export function validateBio(bio: string): string | null {
+  if (bio.length > 100) return "소개글은 100글자 이내로 작성해주세요";
+  return null;
+}

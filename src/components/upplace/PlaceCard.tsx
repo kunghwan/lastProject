@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation"; // ✅ 추가
 import UpPlaceLikeButton from "@/components/upplace/UpPlaceLikeButton";
 
 const fallbackImages: Record<string, string> = {
@@ -16,6 +17,7 @@ interface Place {
 }
 
 const PlaceCard: React.FC<{ place?: Place }> = ({ place }) => {
+  const router = useRouter(); // ✅ 추가
   if (!place) return null;
 
   const defaultImage = "/image/logoc.PNG";
@@ -25,12 +27,14 @@ const PlaceCard: React.FC<{ place?: Place }> = ({ place }) => {
       ? place.firstimage.trim()
       : fallbackImages[place.title] || defaultImage;
 
-  // ✅ 로컬 likeCount 상태 관리
   const [likeCount, setLikeCount] = useState(place.likeCount);
 
-  // ✅ likeCount를 업데이트할 콜백
   const handleLiked = (newCount: number) => {
     setLikeCount(newCount);
+  };
+
+  const handleClickImage = () => {
+    router.push(`/upplace/${place.contentid}`); // ✅ 이동
   };
 
   return (
@@ -42,8 +46,9 @@ const PlaceCard: React.FC<{ place?: Place }> = ({ place }) => {
           e.currentTarget.src = fallbackImages[place.title] || defaultImage;
         }}
         alt={place.title}
-        className="w-full h-48 object-cover rounded"
+        className="w-full h-48 object-cover rounded cursor-pointer" // ✅ 커서 모양
         loading="lazy"
+        onClick={handleClickImage} // ✅ 클릭 핸들러 연결
       />
       <h2 className="text-lg font-bold mt-2">{place.title}</h2>
       <p className="text-sm text-gray-600">{place.addr1}</p>
