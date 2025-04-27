@@ -82,7 +82,7 @@ const LoginForm = () => {
             onChange={handlePasswordChange}
           />
         </div>
-        <div className="flex gap-x-20 justify-start w-100 lg:w-120  ">
+        <div className="flex gap-x-20 justify-start w-100 lg:w-120   ">
           <Link href="/idfind" className={Find}>
             아이디찾기
           </Link>
@@ -103,11 +103,11 @@ const LoginForm = () => {
 
 export default LoginForm;
 
-const Find = "cursor-pointer dark:text-green-400";
+const Find = "cursor-pointer dark:text-[#C5E3DB]";
 
 const InputStyle =
-  "rounded-2xl p-4 bg-pink-50 w-100 placeholder:text-black outline-none lg:w-120  dark:placeholder:text-lime-300 dark:text-lime-300";
+  "rounded-2xl p-4 bg-pink-50 w-100 placeholder:text-black outline-none lg:w-120  dark:placeholder:text-gray-900 dark:text-lime-300";
 const LoginButton =
-  "p-3 rounded w-100 cursor-pointer bg-green-400 lg:w-120 dark:text-lime-300";
+  "p-3 rounded w-100 cursor-pointer bg-green-400 lg:w-120 dark:text-gray-900";
 const SignUserButton =
-  "p-3 rounded w-100 cursor-pointer bg-lime-300 text-center lg:w-120 dark:text-green-400";
+  "p-3 rounded w-100 cursor-pointer bg-lime-300 text-center lg:w-120 dark:text-gray-900";
