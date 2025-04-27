@@ -1,11 +1,25 @@
 "use client";
 
-import { useCallback, useMemo, useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+} from "react";
 import { authService, dbService, FBCollection } from "@/lib";
 import { onAuthStateChanged } from "firebase/auth";
-
 import { PropsWithChildren } from "react";
-import { AUTH } from "../context";
+
+// 🔥 Context 두개로 나눈다
+const AuthUserContext = createContext<User | null>(null);
+const AuthFunctionContext = createContext<{
+  signin: (email: string, password: string) => Promise<PromiseResult>;
+  signout: () => Promise<PromiseResult>;
+  signup: (newUser: User, password: string) => Promise<PromiseResult>;
+  updateUser: (target: keyof User, value: any) => Promise<PromiseResult>;
+} | null>(null);
 
 const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
@@ -51,17 +65,10 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
             newUser.email!,
             password
           );
-
         if (!fbUser) return { success: false, message: "유저 가입안됨" };
 
-        const storedUser: User = {
-          ...newUser,
-          uid: fbUser.uid,
-        };
-
-        // 🔸 로그인 상태로 두지 않고 sessionStorage 에만 저장
+        const storedUser: User = { ...newUser, uid: fbUser.uid };
         sessionStorage.setItem("signupUser", JSON.stringify(storedUser));
-
         return { success: true };
       } catch (error: any) {
         return { success: false, message: error.message };
@@ -105,22 +112,33 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     return () => unsubscribe();
   }, [ref]);
 
-  const value = useMemo(
-    () => ({
-      user,
-      isPending: false,
-      initialized: true,
-      signin,
-      signout,
-      signup,
-      updateUser,
-    }),
-    [user, signin, signout, signup, updateUser]
+  const actions = useMemo(
+    () => ({ signin, signout, signup, updateUser }),
+    [signin, signout, signup, updateUser]
   );
 
   return (
-    <AUTH.context.Provider value={value}>{children}</AUTH.context.Provider>
+    <AuthUserContext.Provider value={user}>
+      <AuthFunctionContext.Provider value={actions}>
+        {children}
+      </AuthFunctionContext.Provider>
+    </AuthUserContext.Provider>
   );
 };
 
 export default AuthProvider;
+
+// 🔥 Context 사용 헬퍼
+export const useAuthUser = () => {
+  const context = useContext(AuthUserContext);
+  if (context === undefined)
+    throw new Error("useAuthUser must be used within AuthProvider");
+  return context;
+};
+
+export const useAuthFunction = () => {
+  const context = useContext(AuthFunctionContext);
+  if (context === undefined)
+    throw new Error("useAuthFunction must be used within AuthProvider");
+  return context;
+};
