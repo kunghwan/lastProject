@@ -1,7 +1,7 @@
 "use client";
 
 import { Post, Tag } from "@/types/post";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoSettingsOutline } from "react-icons/io5";
 import ProfileFeed from "./ProfileFeed";
 import { getUserNickname } from "@/app/profile/page";
@@ -39,27 +39,17 @@ const ProfileLayout = ({
   }, []);
   const actualPostCount = posts.filter((post) => post.id !== "default").length;
 
-
-  const sdf = useCallback(() => {}, []);
-
-  const getRandomColor = useCallback(() => {
-
   const getRandomColor = () => {
-
     let red = Math.floor(Math.random() * 256);
     let green = Math.floor(Math.random() * 256);
     let blue = Math.floor(Math.random() * 256);
     return `rgb(${red}, ${green}, ${blue})`;
-
-  }, [posts]);
-
   };
-
 
   return (
     <div className="flex flex-col w-full h-screen">
       {!isSmallScreen ? (
-        <div className="flex flex-col mx-auto">
+        <div className="mx-auto">
           <div className="flex m-5 mb-0 pr-20 pl-20 gap-2.5 justify-center ">
             <div className="relative w-40 h-40">
               <img
@@ -79,7 +69,7 @@ const ProfileLayout = ({
                   {nickname || `${posts[0]?.userNickname || `MyProfile`}`}
                 </h1>
                 {isMyPage ? (
-                  <button className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
+                  <button className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400 dark:active:text-gray-200">
                     <IoSettingsOutline />
                   </button>
                 ) : (
@@ -90,27 +80,6 @@ const ProfileLayout = ({
                     />
                   </button>
                 )}
-
-                {/*
-
-                {isMyPage ? (
-
-                  <button className="text-2xl hover:animate-spin hover:scale-105  cursor-pointer p-2.5 active:text-gray-800  hover:text-gray-400">
-                    <IoSettingsOutline />
-                  </button>
-                ) : (
-                  <button className="text-2xl cursor-pointer  ">
-                    <FollowButton followingId={posts[0]?.uid} />
-                  </button>
-                )} */}
-                =======
-                <button type="button">
-                  <FollowButton
-                    followingId={posts[0].uid}
-                    follwingNickname={posts[0].userNickname}
-                  />
-                </button>
-
               </p>
               <div className="flex ml-2.5 gap-5 ">
                 <p className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
@@ -157,7 +126,7 @@ const ProfileLayout = ({
                 <IoSettingsOutline />
               </button>
             ) : (
-              <button className="absolute right-20 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
+              <button className="absolute right-20 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400 ">
                 <FollowButton
                   followingId={posts[0].uid}
                   followNickName={posts[0].userNickname}
@@ -203,7 +172,7 @@ const ProfileLayout = ({
           <ProfileFeed posts={posts} isMyPage={isMyPage} />
         ) : (
           <div className="flex border-t pt-10 border-blue-200 w-full justify-center">
-            <div className="text-gray-800 text-xl mt-30 animate-bounce">
+            <div className="text-gray-700 text-xl mt-30 animate-bounce dark:text-gray-300">
               게시물이 없습니다
             </div>
           </div>

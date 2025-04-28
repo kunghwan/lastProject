@@ -1,3 +1,6 @@
+// page.tsx 는 무조건 태그 또는 nulll을 return해야함
+// page.tsx는 무조건 1개의 defauitlt export를 가져야함
+
 import { redirect } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 import { authService, dbService, FBCollection } from "@/lib/firebase";
@@ -43,7 +46,7 @@ export const getOtherUserInfo = async (
     }
   } catch (error) {
     console.error("다른 유저 정보 가져오기 오류:", error);
-    return null;
+    return <div>{error.message}</div>;
   }
 };
 
