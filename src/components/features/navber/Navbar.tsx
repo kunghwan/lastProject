@@ -3,7 +3,12 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaRegMessage, FaPencil } from "react-icons/fa6";
-import { IoPersonSharp, IoCloseOutline, IoStarOutline } from "react-icons/io5";
+import {
+  IoPersonSharp,
+  IoCloseOutline,
+  IoStarOutline,
+  IoCloseSharp,
+} from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
 import { AUTH } from "@/contextapi/context";
 import { FaRegQuestionCircle } from "react-icons/fa";
@@ -43,11 +48,11 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="flex relative lg:max-w-300 lg:mx-auto h-auto ">
+      <div className="flex relative">
         {pathname !== "/signin" && pathname !== "/signup" && (
           <div className="mx-auto max-w-100 ">
             <div className="fixed w-full max-w-100 left-[50%] translate-x-[-50%]">
-              <nav className="hidden xl:flex absolute h-140 w-20 -left-[130%] justify-center bg-gray-200 z-30 rounded-full">
+              <nav className="hidden [@media(min-width:1425px)]:flex absolute h-140 w-20 -left-[130%] justify-center bg-gray-200 z-30 rounded-full">
                 <ul className="flex flex-col justify-between py-5">
                   {NavBtns.map((btn, index) => (
                     <li
@@ -76,7 +81,7 @@ const Navbar = () => {
 
         <nav
           className={twMerge(
-            "fixed bottom-0 left-0 right-0 bg-gray-200 z-30 p-3 flex justify-around xl:hidden rounded-t-2xl",
+            "fixed bottom-0 left-0 right-0 bg-gray-200 z-30 p-2.5 flex justify-around [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto",
             ["/signin", "/signup"].includes(pathname!) && "hidden"
           )}
         >
@@ -122,4 +127,5 @@ const NavBtns = [
   { name: "피드", icon: <FaRegMessage />, modal: true },
   { name: "글쓰기", icon: <FaPencil />, path: "/profile/create" },
   { name: "MY", icon: <IoPersonSharp />, path: "/profile" },
+  { name: "닫기", icon: <IoCloseSharp /> },
 ];
