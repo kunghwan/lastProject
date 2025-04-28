@@ -1,6 +1,5 @@
 "use client";
 
-import Loaiding from "@/components/Loading/page";
 import { AUTH } from "@/contextapi/context";
 import { dbService, FBCollection } from "@/lib";
 
@@ -10,6 +9,7 @@ import { twMerge } from "tailwind-merge";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { Notifications } from "@/types/notification";
+import Loaiding from "@/components/Loading";
 
 const NotificationListPage = () => {
   const { user } = AUTH.use();
@@ -24,7 +24,7 @@ const NotificationListPage = () => {
   const ref = dbService
     .collection(FBCollection.USERS)
     .doc(uid)
-    .collection("notification")
+    .collection(FBCollection.NOTIFICATION)
     .orderBy("createdAt", "desc");
 
   useEffect(() => {
@@ -87,10 +87,8 @@ const NotificationListPage = () => {
   const fetchNotifications = useCallback(
     async ({
       pageParam, //pageParam: 마지막 문서를 기억해서 다음 데이터를 가져오기 위함
-      uid,
     }: {
       pageParam?: any;
-      uid?: string;
     }): Promise<{ notifications: Notifications[]; lastDoc: any }> => {
       //처음이면 그냥 10개 가져오고 이어지는 페이지라면 pageParam 이후부터 10개 가져옴
       let query = ref.limit(10);
@@ -128,7 +126,7 @@ const NotificationListPage = () => {
       if (!uid) {
         return Promise.resolve({ notifications: [], lastDoc: null });
       }
-      return fetchNotifications({ pageParam, uid });
+      return fetchNotifications({ pageParam });
     },
     //다음 페이지를 가져올 때 기준(lastDoc)
     getNextPageParam: (lastPage) => {
@@ -206,6 +204,7 @@ const NotificationListPage = () => {
   //! 안읽은 알림이 없느가를 처음 페이지가 렌더링될때 확인용
   useEffect(() => {
     checkUnreadNotifications();
+    return;
   }, [checkUnreadNotifications]);
 
   if (isPending) {

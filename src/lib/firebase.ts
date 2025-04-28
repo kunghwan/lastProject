@@ -40,4 +40,7 @@ export {
 export enum FBCollection {
   USERS = "users",
   POSTS = "posts",
+  FOLLOWINGS = "followings",
+  FOLLOWERS = "followers",
+  NOTIFICATION = "notification",
 }
