@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Loaiding from "@/components/Loading/page";
+import Loaiding from "@/components/Loading";
 import Script from "next/script";
 
 import BodyLayout from "../components/BodyLayout";
