@@ -154,7 +154,6 @@ import React from "react";
 const page = () => {
   return (
     <div>
-      page
       <NotificationListPage />
     </div>
   );

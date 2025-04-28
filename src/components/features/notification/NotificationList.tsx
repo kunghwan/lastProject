@@ -97,12 +97,17 @@ const NotificationListPage = () => {
       }
       //쿼리를 실행해서 문서 스냅샷을 가져옵니다.
       const snap = await query.get();
-
+      //데이터를 Notification 타입으로 변환하여 리스트에 담기
+      //snap.docs는 Firestore에서 가져온 알림 문서들의 배열
+      //문서들을 하나씩 돌면서 알림(Notification) 형식으로 변환
+      //id까지 합친하나의 객체로 만들어서 하나의 배열에 doc객체들을 담음
       const notifications = snap.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       })) as Notifications[];
+      console.log(notifications, "알림확인용");
       //마지막 문서를 저장해서 다음 페이지 기준점으로 사용할 준비를 함
+      //snap.docs의 마지막 인덱스 이거나 null 임
       const lastDoc = snap.docs[snap.docs.length - 1] ?? null;
 
       return { notifications, lastDoc };
@@ -129,10 +134,17 @@ const NotificationListPage = () => {
       return fetchNotifications({ pageParam });
     },
     //다음 페이지를 가져올 때 기준(lastDoc)
+    //lastPage는 fetchNotifications함수임 내가 마음대로 인자이름 지은거임
     getNextPageParam: (lastPage) => {
-      if (!lastPage || lastPage.notifications.length === 0) {
+      // 마지막으로 가져올 데이터가 없거나 0개거나 10개 미만이면 undefined임
+      if (
+        !lastPage ||
+        lastPage.notifications.length === 0 ||
+        lastPage.notifications.length < 10
+      ) {
         return undefined; //다음페이지가 없으면 undefined임
       }
+      //있다면 lastDoc를 반환해서 lastDoc로 나머지 가져옴
       return lastPage.lastDoc;
     },
     initialPageParam: null, //처음렌더링 됬을경우
@@ -150,14 +162,17 @@ const NotificationListPage = () => {
   // );
 
   //! 받아온 data중에 isRead가 false가 있냐 없냐를 검사하는 함수
+  //! 모두읽음 알림을 비활성화상태로 만들기 위해서 작성한 함수임
   const checkUnreadNotifications = useCallback(async () => {
     //data가 없으면 리턴
-    if (!data) return;
+    if (!data) {
+      return;
+    }
     // some은 각 요소들 중 하나라도 true를 리턴하면 값은 true
     const unread = data.pages.some((page) =>
       page.notifications.some((noti) => !noti.isRead)
     );
-
+    //unread값에 따라서 isUnRead의 값이 바뀜
     return setIsUnRead(unread);
   }, [data]);
 
@@ -201,6 +216,9 @@ const NotificationListPage = () => {
     return await refetch(); //  데이터 새로고침 //서버에 요청 → 최신 데이터로 갱신
   };
 
+  const isNotifications = data?.pages.map((page) => page.notifications);
+  console.log(isNotifications, "알림확인용");
+
   //! 안읽은 알림이 없느가를 처음 페이지가 렌더링될때 확인용
   useEffect(() => {
     checkUnreadNotifications();
@@ -217,44 +235,57 @@ const NotificationListPage = () => {
 
   return (
     <div>
-      {data?.pages.length === 0 ? (
-        <div>
-          <h1>알림이 없습니다.</h1>
-          <button onClick={() => navi.back()}>돌아가기</button>
-        </div>
-      ) : (
-        <div>
-          {/* isRead가 다 true라면 버튼을 비활성화함 */}
-          <button onClick={handleAllRead} disabled={!isUnRead}>
-            모두 읽음
+      <div className="flex flex-col gap-y-2.5 ">
+        {/* isUnRead는 읽지 않은 알림이 하나라도 있으면 true 없다면 false임 */}
+        {/* data 안에 있는 pages 배열을 돌면서,알림(notifications)이 하나라도 있는 페이지가 있는지 확인 */}
+        {/* 읽지 않은 알림이 있고, 실제 알림 데이터도 존재할 때만 버튼을 보여줌 */}
+        {isUnRead &&
+          data?.pages.some((page) => page.notifications.length > 0) && (
+            <div className="flex justify-end">
+              {/* isRead가 다 true라면 버튼을 비활성화함 */}
+              <button
+                onClick={handleAllRead}
+                disabled={!isUnRead}
+                className="cursor-pointer mr-2.5 bg-[rgba(232,255,241)] disabled:text-gray-400  disabled:bg-gray-200 dark:bg-[rgba(232,255,241,0.5)] p-2 rounded"
+              >
+                모두 읽음
+              </button>
+            </div>
+          )}
+        <ul className=" grid md:grid-cols-2 gap-2.5  items-center  w-full p-2.5">
+          {data?.pages.map((page) =>
+            page.notifications.map((noti) => (
+              <li
+                key={noti.id}
+                onClick={() => {
+                  handleNotificationClick(noti);
+                  return navi.push(`/profile/${noti.follwerId}`);
+                }}
+                className={twMerge(
+                  "flex flex-col  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer",
+                  noti.isRead
+                    ? "text-gray-500 bg-gray-200 dark:bg-gray-500 dark:text-white"
+                    : "text-black font-semibold bg-[rgba(232,255,241)] dark:bg-[rgba(232,255,241,0.5)] dark:text-white"
+                )}
+              >
+                <p>{noti.followerNickname}님이 팔로우했습니다.</p>
+                <p>{noti.createdAt.toString()}</p>
+              </li>
+            ))
+          )}
+        </ul>
+      </div>
+      <div className="flex justify-center mr-2.5">
+        {hasNextPage && (
+          <button
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+            className="border border-gray-400 p-2.5 rounded-xl min-w-30 dark:text-black hover:text-green-800"
+          >
+            {isFetchingNextPage ? "불러오는 중..." : "더보기"}
           </button>
-          <ul className="flex gap-y-2.5">
-            {data?.pages.map((page) =>
-              page.notifications.map((noti) => (
-                <li
-                  key={noti.id}
-                  onClick={() => {
-                    handleNotificationClick(noti);
-                    return navi.push(`/profile/${noti.followerId}`);
-                  }}
-                  className={twMerge(
-                    "flex flex-col gap-x-2.5",
-                    noti.isRead ? "text-gray-400" : "text-black font-semibold"
-                  )}
-                >
-                  <p>{noti.follwingNickname}</p> 님이 팔로우했습니다.
-                  <p>{noti.createdAt.toString()}</p>
-                </li>
-              ))
-            )}
-          </ul>
-        </div>
-      )}
-      {hasNextPage && (
-        <button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
-          {isFetchingNextPage ? "불러오는 중..." : "더보기"}
-        </button>
-      )}
+        )}
+      </div>
     </div>
   );
 };

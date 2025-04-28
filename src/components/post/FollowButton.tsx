@@ -58,7 +58,7 @@ const FollowButton = ({ followingId, followNickname }: FollowButtonProps) => {
           .collection(FBCollection.NOTIFICATION)
           .add({
             follwingId: followingId,
-            followerId: user.uid,
+            follwerId: user.uid,
             followerNickname: user?.nickname,
             createdAt: new Date().toLocaleString(),
             isRead: false,
