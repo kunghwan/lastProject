@@ -1,355 +1,286 @@
 "use client";
 
+import { useEffect, useState, ChangeEvent, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import React, { useCallback, useState, useEffect, FormEvent } from "react";
-import { FaIdCard } from "react-icons/fa";
-import { TbPassword } from "react-icons/tb";
-import { validateName, validatePhone } from "@/lib/validations";
 import { dbService, FBCollection } from "@/lib/firebase";
+import {
+  validateName,
+  validatePhone,
+  validateEmail,
+  validatePassword,
+} from "@/lib/validations";
+import { AUTH } from "@/contextapi/context";
 
-const STORAGE_KEY = "idFindForm";
+interface ValidationResult {
+  isValid: boolean;
+  message?: string;
+}
 
-const IdFind = () => {
+interface FindPasswordForm {
+  newPassword: string;
+  confirmPassword: string;
+}
+
+interface FindPasswordValidation {
+  newPassword?: ValidationResult;
+  confirmPassword?: ValidationResult;
+}
+
+const STORAGE_KEYS = {
+  NAME: "pwfind-name",
+  PHONE: "pwfind-phone",
+  EMAIL: "pwfind-email",
+};
+
+const PwFindResult = () => {
   const router = useRouter();
+  const { user } = AUTH.use();
 
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [code, setCode] = useState("");
-  const [generatedCode, setGeneratedCode] = useState("");
-  const [errors, setErrors] = useState<Record<"name" | "phone", string>>({
-    name: "",
-    phone: "",
+  const [inputName, setInputName] = useState("");
+  const [inputPhone, setInputPhone] = useState("");
+  const [inputEmail, setInputEmail] = useState("");
+
+  const [inputErrors, setInputErrors] = useState<{
+    name?: string;
+    phone?: string;
+    email?: string;
+  }>({});
+
+  const [email, setEmail] = useState("");
+  const [form, setForm] = useState<FindPasswordForm>({
+    newPassword: "",
+    confirmPassword: "",
   });
-  const [showCode, setShowCode] = useState(false);
-  const [foundEmail, setFoundEmail] = useState("");
-  const [codeRequested, setCodeRequested] = useState(false);
-  const [codeSentOnce, setCodeSentOnce] = useState(false);
-  const [selectedEmail, setSelectedEmail] = useState("");
+  const [validation, setValidation] = useState<FindPasswordValidation>({});
 
-  const maskEmail = (email: string) => {
-    const [id, domain] = email.split("@");
-    const maskedId =
-      id.length <= 3 ? id : id.slice(0, 3) + "*".repeat(id.length - 3);
-    return `${maskedId}@${domain}`;
-  };
+  // 🔥 페이지 진입 시 sessionStorage 복구 + 유효성검사
+  useEffect(() => {
+    const initValidation = async () => {
+      const savedName = sessionStorage.getItem(STORAGE_KEYS.NAME) || "";
+      const savedPhone = sessionStorage.getItem(STORAGE_KEYS.PHONE) || "";
+      const savedEmail = sessionStorage.getItem(STORAGE_KEYS.EMAIL) || "";
 
-  const validateField = useCallback(
-    (field: "name" | "phone", value: string) => {
-      let message = "";
-      if (field === "name") message = validateName(value) || "";
-      if (field === "phone") message = validatePhone(value) || "";
-      setErrors((prev) => ({ ...prev, [field]: message }));
+      setInputName(savedName);
+      setInputPhone(savedPhone);
+      setInputEmail(savedEmail);
+
+      setInputErrors({
+        name: validateName(savedName) || "",
+        phone: validatePhone(savedPhone) || "",
+        email: (await validateEmail(savedEmail)) || "",
+      });
+    };
+    initValidation();
+  }, []);
+
+  const validateForm = useCallback((): boolean => {
+    const errors: FindPasswordValidation = {};
+    const { newPassword, confirmPassword } = form;
+
+    const newPasswordMessage = validatePassword(newPassword);
+    if (newPasswordMessage) {
+      errors.newPassword = {
+        isValid: false,
+        message: newPasswordMessage,
+      };
+    }
+
+    if (!confirmPassword) {
+      errors.confirmPassword = {
+        isValid: false,
+        message: "비밀번호 확인을 입력해주세요.",
+      };
+    } else if (newPassword !== confirmPassword) {
+      errors.confirmPassword = {
+        isValid: false,
+        message: "새 비밀번호와 확인이 일치하지 않습니다.",
+      };
+    }
+
+    setValidation(errors);
+    return Object.keys(errors).length === 0;
+  }, [form]);
+
+  useEffect(() => {
+    validateForm();
+  }, [form, validateForm]);
+
+  const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  }, []);
+
+  const handleSubmit = useCallback(async () => {
+    if (!validateForm()) return;
+
+    alert("비밀번호가 성공적으로 변경되었습니다.");
+    sessionStorage.removeItem("selectedRealEmail");
+    router.push("/");
+  }, [router, validateForm]);
+
+  const handleInputChange = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      if (name === "name") {
+        const error = validateName(value);
+        setInputErrors((prev) => ({ ...prev, name: error || "" }));
+        setInputName(value);
+        sessionStorage.setItem(STORAGE_KEYS.NAME, value); // ✅ 저장
+      }
+      if (name === "phone") {
+        const error = validatePhone(value);
+        setInputErrors((prev) => ({ ...prev, phone: error || "" }));
+        setInputPhone(value);
+        sessionStorage.setItem(STORAGE_KEYS.PHONE, value); // ✅ 저장
+      }
+      if (name === "email") {
+        const error = await validateEmail(value);
+        setInputErrors((prev) => ({ ...prev, email: error || "" }));
+        setInputEmail(value);
+        sessionStorage.setItem(STORAGE_KEYS.EMAIL, value); // ✅ 저장
+      }
     },
     []
   );
 
-  useEffect(() => {
-    const saved = sessionStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setName(parsed.name || "");
-      setPhone(parsed.phone || "");
-      setCode(parsed.code || "");
-      setGeneratedCode(parsed.generatedCode || "");
-      setFoundEmail(parsed.foundEmail || "");
-      setShowCode(parsed.showCode || false);
-      setCodeRequested(parsed.codeRequested || false); // ✅
-      setCodeSentOnce(parsed.codeSentOnce || false); // ✅
-
-      validateField("name", parsed.name || "");
-      validateField("phone", parsed.phone || "");
-    } else {
-      validateField("name", "");
-      validateField("phone", "");
+  const handleFindPassword = async () => {
+    if (inputErrors.name || inputErrors.phone || inputErrors.email) {
+      alert("입력한 정보를 다시 확인해주세요.");
+      return;
     }
-  }, [validateField]);
-
-  useEffect(() => {
-    sessionStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        name,
-        phone,
-        code,
-        generatedCode,
-        foundEmail,
-        showCode,
-        codeRequested,
-        codeSentOnce, // ✅ 추가해야 함!
-      })
-    );
-  }, [
-    name,
-    phone,
-    code,
-    generatedCode,
-    foundEmail,
-    showCode,
-    codeRequested,
-    codeSentOnce,
-  ]);
-
-  const handleNameChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setName(value);
-      validateField("name", value);
-    },
-    [setName, validateField]
-  );
-
-  const handlePhoneChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setPhone(value);
-      validateField("phone", value);
-    },
-    [setPhone, validateField]
-  );
-
-  const handleVerifyCode = useCallback(async () => {
-    const nameErr = validateName(name);
-    const phoneErr = validatePhone(phone);
-    const codeValid = code.length === 6 && code === generatedCode;
-
-    setErrors({ name: nameErr || "", phone: phoneErr || "" });
-
-    if (nameErr || phoneErr || !codeValid) {
-      alert("이름, 전화번호, 인증번호를 모두 정확히 입력해주세요.");
+    if (!inputName || !inputPhone || !inputEmail) {
+      alert("모든 항목을 입력해주세요.");
       return;
     }
 
     try {
       const snap = await dbService
         .collection(FBCollection.USERS)
-        .where("name", "==", name)
-        .where("tel", "==", phone)
+        .where("name", "==", inputName)
+        .where("tel", "==", inputPhone)
+        .where("email", "==", inputEmail)
         .get();
 
       if (snap.empty) {
-        alert("일치하는 계정이 없습니다.");
+        alert("입력하신 정보와 일치하는 사용자를 찾을 수 없습니다.");
         return;
       }
 
-      const emails = snap.docs.map((doc) => doc.data().email);
-      sessionStorage.setItem("realEmail", emails.join(",")); // 여러 개 저장 (쉼표로 구분)
-
-      const maskedEmails = emails.map((email) => maskEmail(email)).join(", ");
-      setFoundEmail(maskedEmails);
+      sessionStorage.setItem("selectedRealEmail", inputEmail);
+      setEmail(inputEmail);
+      alert("본인 인증이 완료되었습니다. 비밀번호를 재설정해주세요.");
     } catch (error) {
-      console.error("이메일 조회 실패", error);
-      alert("이메일 조회 중 오류가 발생했습니다.");
+      console.error("비밀번호 찾기 오류", error);
+      alert("비밀번호 찾기 중 오류가 발생했습니다.");
     }
-  }, [name, phone, code, generatedCode]);
-
-  const handleSubmit = useCallback(() => {
-    if (!foundEmail) {
-      alert("먼저 인증확인을 완료해주세요.");
-      return;
-    }
-
-    if (!selectedEmail) {
-      alert("아이디를 선택해주세요.");
-      return;
-    }
-
-    const maskedEmails = foundEmail.split(", ");
-    const realEmails = sessionStorage.getItem("realEmail")?.split(",") || [];
-    const selectedIndex = maskedEmails.findIndex(
-      (email) => email === selectedEmail
-    );
-
-    if (selectedIndex !== -1) {
-      const realSelectedEmail = realEmails[selectedIndex];
-      sessionStorage.setItem("selectedRealEmail", realSelectedEmail);
-      router.push("/idfind/resultid");
-    } else {
-      alert("선택한 이메일을 찾을 수 없습니다.");
-    }
-  }, [foundEmail, selectedEmail, router]);
-
-  const handleCodeSend = useCallback(() => {
-    const nameErr = validateName(name);
-    const phoneErr = validatePhone(phone);
-    setErrors({ name: nameErr || "", phone: phoneErr || "" });
-
-    if (nameErr || phoneErr) return;
-
-    const newCode = Math.floor(100000 + Math.random() * 900000).toString();
-    setGeneratedCode(newCode);
-    setShowCode(true);
-    setCodeRequested(true);
-    setCodeSentOnce(true);
-    alert("인증번호가 전송되었습니다: " + newCode);
-  }, [
-    name,
-    phone,
-    setErrors,
-    setGeneratedCode,
-    setShowCode,
-    setCodeRequested,
-    setCodeSentOnce,
-  ]);
-
-  const handleResend = useCallback(() => {
-    if (!codeSentOnce) {
-      alert("먼저 인증번호찾기를 눌러주세요.");
-      return;
-    }
-
-    const newCode = Math.floor(100000 + Math.random() * 900000).toString();
-    setGeneratedCode(newCode);
-    setShowCode(true);
-    alert("인증번호가 재전송되었습니다: " + newCode);
-  }, [codeSentOnce, setGeneratedCode, setShowCode]);
-
-  const IdFinds = [
-    {
-      label: "이름",
-      value: name,
-      onChange: handleNameChange,
-      error: errors.name,
-    },
-    {
-      label: "전화번호",
-      value: phone,
-      onChange: handlePhoneChange,
-      bt: "인증번호찾기",
-      btAction: handleCodeSend,
-      error: errors.phone,
-    },
-    {
-      label: "인증번호 6자리 숫자 입력",
-      value: code,
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-        setCode(e.target.value),
-      bt: "재전송",
-      bt1: "인증확인",
-      btAction: handleResend,
-      type: "password",
-    },
-  ];
+  };
 
   return (
-    <form onSubmit={(e: FormEvent) => e.preventDefault()}>
-      <div className="w-full bg-emerald-100 p-4">
-        <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
-          <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
-            <FaIdCard className="text-amber-500 text-4xl" />
-            <p className="font-bold text-amber-500">아이디 찾기</p>
-          </div>
-          <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
-            <TbPassword className="text-blue-500 text-4xl" />
-            <p className="font-bold text-black-500 dark:text-black">
-              비밀번호 찾기
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className="p-2">
+      <h2 className="text-2xl font-bold mb-4">비밀번호 재설정</h2>
 
-      {IdFinds.map((idf, index) => (
-        <div key={index}>
-          <div className="flex gap-2 p-3 lg:flex lg:items-center lg:justify-center">
-            <input
-              type={idf.type || "text"}
-              placeholder={idf.label}
-              className="bg-lime-300 p-5 placeholder:text-black outline-none lg:w-100 w-70 dark:caret-red-500"
-              value={idf.value}
-              onChange={idf.onChange}
-            />
-            {index === 2 ? (
-              <>
-                <button
-                  type="button"
-                  className="bg-emerald-300 p-5 font-bold w-18 text-sm whitespace-nowrap lg:w-20 flex justify-center"
-                  onClick={idf.btAction}
-                >
-                  {idf.bt}
-                </button>
-                <button
-                  type="button"
-                  className="bg-emerald-300 p-5 font-bold w-17 whitespace-nowrap text-sm flex justify-center lg:w-20"
-                  onClick={handleVerifyCode}
-                >
-                  {idf.bt1}
-                </button>
-              </>
-            ) : idf.bt ? (
-              <button
-                type="button"
-                className="bg-emerald-300 p-5 font-bold w-40"
-                onClick={idf.btAction}
-              >
-                {idf.bt}
-              </button>
-            ) : (
-              <div className="lg:block w-40" />
-            )}
-          </div>
-
-          {idf.error && (
-            <p className="text-red-500 text-sm mt-0.5 ml-5 lg:ml-80">
-              {idf.error}
-            </p>
+      {!user && !email && (
+        <div className="flex flex-col gap-2 mb-4">
+          <input
+            type="text"
+            placeholder="이름 입력"
+            name="name"
+            value={inputName}
+            onChange={handleInputChange}
+            className="border p-2 border-emerald-300 placeholder:text-emerald-300"
+          />
+          {inputErrors.name && (
+            <p className="text-sm text-red-500 ml-1">{inputErrors.name}</p>
           )}
 
-          {index === 2 && showCode && (
-            <p className="text-center text-sm text-green-600 sm:mr-50 ">
-              인증번호: {generatedCode}
-            </p>
+          <input
+            type="text"
+            placeholder="전화번호 입력"
+            name="phone"
+            value={inputPhone}
+            onChange={handleInputChange}
+            className="border p-2 border-emerald-300 placeholder:text-emerald-300"
+          />
+          {inputErrors.phone && (
+            <p className="text-sm text-red-500 ml-1">{inputErrors.phone}</p>
           )}
-        </div>
-      ))}
 
-      <div className="w-full px-5">
-        <div className="flex flex-col lg:flex-row lg:justify-center">
-          <div className="w-[240px] md:w-[400px]">
+          <input
+            type="email"
+            placeholder="이메일 입력"
+            name="email"
+            value={inputEmail}
+            onChange={handleInputChange}
+            className="border p-2 border-emerald-300 placeholder:text-emerald-300"
+          />
+          {inputErrors.email && (
+            <p className="text-sm text-red-500 ml-1">{inputErrors.email}</p>
+          )}
+
+          <button
+            className="bg-gray-300 rounded-2xl p-3 mt-2 flex justify-center w-50 items-center lg:w-80"
+            onClick={handleFindPassword}
+          >
+            비밀번호 찾기
+          </button>
+        </div>
+      )}
+
+      {(user || email) && (
+        <>
+          <div className="border h-80 justify-center flex items-center">
+            <div>
+              <p className="text-xl text-black">
+                이메일 :{" "}
+                <span className="font-bold text-blue-600">
+                  {user ? user.email : email}
+                </span>
+              </p>
+
+              <div className="flex flex-col mt-5">
+                <input
+                  type="password"
+                  name="newPassword"
+                  value={form.newPassword}
+                  onChange={handleChange}
+                  placeholder="새비밀번호"
+                  className="border p-2 border-emerald-300 placeholder:text-emerald-300"
+                />
+                {validation.newPassword?.message && (
+                  <p className="text-sm text-red-500 ml-1">
+                    {validation.newPassword.message}
+                  </p>
+                )}
+
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={form.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="새 비밀번호 확인"
+                  className="border p-2 border-emerald-300 mt-2 placeholder:text-emerald-300"
+                />
+                {validation.confirmPassword?.message && (
+                  <p className="text-sm text-red-500 ml-1">
+                    {validation.confirmPassword.message}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
             <button
-              type="button"
-              className="w-full h-[80px] bg-emerald-300 rounded font-bold lg:text-lg hover:bg-emerald-400"
+              className="bg-gray-300 rounded-2xl p-5 mt-3 flex justify-center w-50 items-center lg:w-80"
               onClick={handleSubmit}
             >
               확인
             </button>
           </div>
-          <div className="hidden lg:block w-45" />
-        </div>
-      </div>
-
-      {foundEmail && (
-        <p className="text-center  text-amber-600 font-bold mt-1 text-sm">
-          내 아이디는 <span className="underline">{foundEmail}</span> 입니다.
-        </p>
+        </>
       )}
-      {foundEmail && (
-        <div className="text-center mt-4 text-sm flex flex-col items-center justify-center">
-          <p className="text-sm text-amber-600 font-bold whitespace-nowrap mb-2">
-            id 선택
-          </p>
-          <div className="grid grid-cols-2 gap-4">
-            {foundEmail.split(", ").map((email, idx) => (
-              <div key={idx} className="flex items-center gap-x-2.5">
-                <input
-                  type="radio"
-                  id={`email-${idx}`}
-                  name="selected-email"
-                  value={email}
-                  checked={selectedEmail === email}
-                  onChange={() => setSelectedEmail(email)}
-                />
-                <label
-                  htmlFor={`email-${idx}`}
-                  className="whitespace-nowrap z-50"
-                >
-                  {email}
-                </label>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </form>
+    </div>
   );
 };
 
-export default IdFind;
+export default PwFindResult;
