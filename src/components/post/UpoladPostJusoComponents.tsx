@@ -84,7 +84,7 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className={twMerge("w-full ", input)}
+              className={twMerge("w-full upPostInput ")}
               ref={jusoRef}
               placeholder="주소를 입력후 검색버튼을 눌러주세요."
             />
@@ -96,7 +96,7 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
                 setIsJusoUlShowing(true);
                 return setIsJusoShowing(true);
               }}
-              className="flex justify-center items-center flex-1 rounded bg-[rgba(116,212,186)] min-w-20"
+              className="flex justify-center items-center flex-1 rounded bg-[rgba(116,212,186)] min-w-20 dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
             >
               <IoIosSearch className="text-3xl font-bold" />
             </button>
@@ -134,4 +134,4 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
 };
 
 export default JusoComponents;
-const input = "bg-white border rounded px-2 py-2 border-gray-400";
+// const input = "bg-white border rounded px-2 py-2 border-gray-400";

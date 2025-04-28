@@ -14,3 +14,5 @@
     @apply p-3 rounded-full cursor-pointer hover:opacity-70 justify-center flex items-center dark:text-gray-800 text-3xl bg-gray-200;
   }
 }
+
+@import "../components/post/hseUpPost_FollowBtn.css";
