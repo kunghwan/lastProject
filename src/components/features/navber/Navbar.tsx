@@ -37,14 +37,15 @@ const Navbar = () => {
     btn.modal ? setIsShowingModal(true) : btn.path && router.push(btn.path);
   };
 
-  useEffect(() => {
-    if (isNavMenuOpen) {
-      const timer = setTimeout(() => setNavDelay(true), 50);
-      return () => clearTimeout(timer);
+  const handleToggleNavMenu = () => {
+    if (!isNavMenuOpen) {
+      setisNavMenuOpen(true);
+      setTimeout(() => setNavDelay(true), 100);
     } else {
+      setisNavMenuOpen(false);
       setNavDelay(false);
     }
-  }, [isNavMenuOpen]);
+  };
 
   const navStyle =
     "hidden [@media(min-width:1425px)]:flex absolute w-20 -left-[130%] bg-gray-200 z-30 rounded-full transition-opacity duration-300";
@@ -61,7 +62,7 @@ const Navbar = () => {
                   navStyle,
                   isNavMenuOpen && "hidden"
                 )}
-                onClick={() => setisNavMenuOpen(!isNavMenuOpen)}
+                onClick={handleToggleNavMenu}
               >
                 <IoGridOutline />
               </button>
