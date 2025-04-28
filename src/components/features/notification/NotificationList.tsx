@@ -262,7 +262,7 @@ const NotificationListPage = () => {
                   return navi.push(`/profile/${noti.follwerId}`);
                 }}
                 className={twMerge(
-                  "flex flex-col  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer",
+                  "flex flex-col  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer hover:border hover:border-gray-300",
                   noti.isRead
                     ? "text-gray-500 bg-gray-200 dark:bg-gray-500 dark:text-white"
                     : "text-black font-semibold bg-[rgba(232,255,241)] dark:bg-[rgba(232,255,241,0.7)] dark:text-white"

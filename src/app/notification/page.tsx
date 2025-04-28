@@ -160,5 +160,3 @@ const page = () => {
 };
 
 export default page;
-
-page;
