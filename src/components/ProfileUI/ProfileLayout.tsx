@@ -39,22 +39,16 @@ const ProfileLayout = ({
   }, []);
   const actualPostCount = posts.filter((post) => post.id !== "default").length;
 
-
   const sdf = useCallback(() => {}, []);
 
   const getRandomColor = useCallback(() => {
-
-  const getRandomColor = () => {
-
-    let red = Math.floor(Math.random() * 256);
-    let green = Math.floor(Math.random() * 256);
-    let blue = Math.floor(Math.random() * 256);
-    return `rgb(${red}, ${green}, ${blue})`;
-
+    const getRandomColor = () => {
+      let red = Math.floor(Math.random() * 256);
+      let green = Math.floor(Math.random() * 256);
+      let blue = Math.floor(Math.random() * 256);
+      return `rgb(${red}, ${green}, ${blue})`;
+    };
   }, [posts]);
-
-  };
-
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -86,11 +80,10 @@ const ProfileLayout = ({
                   <button>
                     <FollowButton
                       followingId={posts[0].uid}
-                      followNickName={posts[0].userNickname}
+                      follwingNickname={posts[0].userNickname}
                     />
                   </button>
                 )}
-
                 {/*
 
                 {isMyPage ? (
@@ -110,7 +103,6 @@ const ProfileLayout = ({
                     follwingNickname={posts[0].userNickname}
                   />
                 </button>
-
               </p>
               <div className="flex ml-2.5 gap-5 ">
                 <p className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
@@ -160,7 +152,7 @@ const ProfileLayout = ({
               <button className="absolute right-20 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
                 <FollowButton
                   followingId={posts[0].uid}
-                  followNickName={posts[0].userNickname}
+                  follwingNickname={posts[0].userNickname}
                 />
               </button>
             )}

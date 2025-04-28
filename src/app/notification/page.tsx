@@ -155,7 +155,7 @@ const page = () => {
   return (
     <div>
       page
-      {/* <NotificationListPage /> */}
+      <NotificationListPage />
     </div>
   );
 };
