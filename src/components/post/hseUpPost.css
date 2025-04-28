@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@layer components {
+  .upPostInput {
+    @apply bg-white border rounded px-2 py-2 border-gray-400 placeholder:text-gray-500;
+  }
+  .upPostButton {
+    @apply rounded px-2.5 py-1 cursor-pointer;
+  }
+}

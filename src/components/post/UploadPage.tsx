@@ -193,11 +193,13 @@ const UploadPostPage = () => {
     <form
       action=""
       onSubmit={onSubmit}
-      className="flex-1 grid grid-cols-1 gap-2 dark:text-gray-700  lg:grid-cols-2 lg:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border rounded border-gray-400 h-full relative"
+      className="h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  lg:grid-cols-2 lg:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border rounded border-gray-400  relative"
     >
       {isPending && <Loaiding />}
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold text-black">새글작성</h1>
+        <h1 className="text-3xl font-bold text-black dark:text-white">
+          새글작성
+        </h1>
         <input
           type="text"
           value={title}
@@ -207,7 +209,7 @@ const UploadPostPage = () => {
               title: e.target.value,
             }))
           }
-          className={input}
+          className={twMerge("upPostInput")}
           ref={titleRef}
           placeholder="제목을 입력하세요."
         />
@@ -215,7 +217,7 @@ const UploadPostPage = () => {
           name=""
           id=""
           placeholder="소개하고 싶은 관광지의 소개글이나 리뷰를 작성해주세요."
-          className={twMerge("h-50 resize-none", input)}
+          className={twMerge("h-50 resize-none upPostInput")}
           value={content}
           ref={descRef}
           // 변경은 post는 객체라서 전개연산자 사용후 content만 변경
@@ -255,7 +257,7 @@ const UploadPostPage = () => {
             value={tag}
             onChange={(e) => setTag(e.target.value)}
             ref={tagRef}
-            className={twMerge("w-full ", input)}
+            className={twMerge("w-full upPostInput")}
             placeholder="태그를 입력후 추가버튼을 눌러주세요."
           />
           <button
@@ -281,7 +283,9 @@ const UploadPostPage = () => {
               }));
               return setTag("");
             }}
-            className=" min-w-20 flex-1 rounded bg-[rgba(116,212,186)] cursor-pointer"
+            className={twMerge(
+              " min-w-20 flex-1 rounded bg-[rgba(116,212,186)] dark:bg-[rgba(116,212,186,0.5)] dark:text-white "
+            )}
           >
             추가
           </button>
@@ -324,11 +328,15 @@ const UploadPostPage = () => {
               return alert("취소되었습니다.");
             }
           }}
-          className={twMerge("bg-gray-300 ", button)}
+          className={twMerge("bg-gray-300  upPostButton")}
         >
           취소
         </button>
-        <button className={twMerge("bg-[rgba(62,188,154)]", button)}>
+        <button
+          className={twMerge(
+            "bg-[rgba(62,188,154)] upPostButton dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
+          )}
+        >
           게시
         </button>
       </div>
@@ -337,6 +345,3 @@ const UploadPostPage = () => {
 };
 
 export default UploadPostPage;
-
-const input = "bg-white border rounded px-2 py-2 border-gray-400";
-const button = " rounded px-2.5 py-1 cursor-pointer";
