@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { AUTH } from "@/contextapi/context";
@@ -21,19 +21,7 @@ const LoginForm = () => {
     if (savedPassword) setPassword(savedPassword);
   }, []);
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
-    sessionStorage.setItem("login_email", value); // 저장
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPassword(value);
-    sessionStorage.setItem("login_password", value); // 저장
-  };
-
-  const handleLogin = async () => {
+  const handleLogin = useCallback(async () => {
     if (!email && !password) {
       alert("아이디와 비밀번호를 입력해주세요.");
       return;
@@ -46,7 +34,9 @@ const LoginForm = () => {
       alert("비밀번호를 입력해주세요.");
       return;
     }
+
     console.log(email, password);
+
     const result = await signin(email, password);
     console.log(result);
 
@@ -63,7 +53,7 @@ const LoginForm = () => {
     }
 
     router.push("/");
-  };
+  }, [email, password, signin, router]);
 
   return (
     <>
@@ -75,14 +65,14 @@ const LoginForm = () => {
               className={InputStyle}
               placeholder="아이디"
               value={email}
-              onChange={handleEmailChange}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <input
               type="password"
               className={InputStyle}
               placeholder="비밀번호"
               value={password}
-              onChange={handlePasswordChange}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className="flex gap-x-20 justify-start w-100 lg:w-120   ">
