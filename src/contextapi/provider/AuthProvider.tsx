@@ -9,8 +9,9 @@ import {
   useEffect,
 } from "react";
 import { authService, dbService, FBCollection } from "@/lib";
-import { onAuthStateChanged } from "firebase/auth";
 import { PropsWithChildren } from "react";
+import { AUTH } from "../context";
+import Loaiding from "@/components/Loading";
 
 // 🔥 Context 두개로 나눈다
 const AuthUserContext = createContext<User | null>(null);
@@ -21,31 +22,44 @@ const AuthFunctionContext = createContext<{
   updateUser: (target: keyof User, value: any) => Promise<PromiseResult>;
 } | null>(null);
 
+const ref = dbService.collection(FBCollection.USERS);
 const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
-  const ref = dbService.collection(FBCollection.USERS);
 
   const signin = useCallback(
     async (email: string, password: string): Promise<PromiseResult> => {
       try {
-        const { user: fbUser } = await authService.signInWithEmailAndPassword(
+        console.log(email, password);
+        const userCredential = await authService.signInWithEmailAndPassword(
           email,
           password
         );
+        console.log("✅ 로그인 성공! userCredential:", userCredential);
+
+        const fbUser = userCredential.user;
         if (!fbUser) return { success: false, message: "데이터 못가져옴" };
 
+        console.log("✅ 로그인된 유저 uid:", fbUser.uid);
+
         const snap = await ref.doc(fbUser.uid).get();
+        console.log("✅ Firestore에서 가져온 snap:", snap.exists);
+
         const data = snap.data() as User;
         if (!data) return { success: false, message: "존재하지 않음" };
 
         setUser(data);
         return { success: true };
       } catch (error: any) {
+        console.error("❌ 로그인 실패:", error.message);
         return { success: false, message: error.message };
       }
     },
     [ref]
   );
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
 
   const signout = useCallback(async (): Promise<PromiseResult> => {
     try {
@@ -98,8 +112,11 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     [user, ref]
   );
 
+  const [initialized, setInitialized] = useState(false);
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(authService, async (fbUser) => {
+    const unsubscribe = authService.onAuthStateChanged(async (fbUser) => {
+      console.log(fbUser);
       if (fbUser) {
         const snap = await ref.doc(fbUser.uid).get();
         const data = snap.data() as User;
@@ -107,38 +124,26 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       } else {
         setUser(null);
       }
+      setInitialized(true);
     });
-
-    return () => unsubscribe();
-  }, [ref]);
-
-  const actions = useMemo(
-    () => ({ signin, signout, signup, updateUser }),
-    [signin, signout, signup, updateUser]
-  );
+    // unsubscribe();
+    return unsubscribe;
+  }, []);
 
   return (
-    <AuthUserContext.Provider value={user}>
-      <AuthFunctionContext.Provider value={actions}>
-        {children}
-      </AuthFunctionContext.Provider>
-    </AuthUserContext.Provider>
+    <AUTH.context.Provider
+      value={{
+        signin,
+
+        signout,
+        signup,
+        user,
+        updateUser,
+      }}
+    >
+      {initialized ? children : <Loaiding />}
+    </AUTH.context.Provider>
   );
 };
 
 export default AuthProvider;
-
-// 🔥 Context 사용 헬퍼
-export const useAuthUser = () => {
-  const context = useContext(AuthUserContext);
-  if (context === undefined)
-    throw new Error("useAuthUser must be used within AuthProvider");
-  return context;
-};
-
-export const useAuthFunction = () => {
-  const context = useContext(AuthFunctionContext);
-  if (context === undefined)
-    throw new Error("useAuthFunction must be used within AuthProvider");
-  return context;
-};
