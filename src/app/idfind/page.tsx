@@ -33,16 +33,7 @@ const IdFind = () => {
     return `${maskedId}@${domain}`;
   };
 
-  const validateField = useCallback(
-    (field: "name" | "phone", value: string) => {
-      let message = "";
-      if (field === "name") message = validateName(value) || "";
-      if (field === "phone") message = validatePhone(value) || "";
-      setErrors((prev) => ({ ...prev, [field]: message }));
-    },
-    []
-  );
-
+  // ✅ 새로고침 시 sessionStorage에서 복구
   useEffect(() => {
     const saved = sessionStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -53,17 +44,12 @@ const IdFind = () => {
       setGeneratedCode(parsed.generatedCode || "");
       setFoundEmail(parsed.foundEmail || "");
       setShowCode(parsed.showCode || false);
-      setCodeRequested(parsed.codeRequested || false); // ✅
-      setCodeSentOnce(parsed.codeSentOnce || false); // ✅
-
-      validateField("name", parsed.name || "");
-      validateField("phone", parsed.phone || "");
-    } else {
-      validateField("name", "");
-      validateField("phone", "");
+      setCodeRequested(parsed.codeRequested || false);
+      setCodeSentOnce(parsed.codeSentOnce || false);
     }
-  }, [validateField]);
+  }, []);
 
+  // ✅ 입력값 바뀔 때마다 sessionStorage 업데이트
   useEffect(() => {
     sessionStorage.setItem(
       STORAGE_KEY,
@@ -75,7 +61,7 @@ const IdFind = () => {
         foundEmail,
         showCode,
         codeRequested,
-        codeSentOnce, // ✅ 추가해야 함!
+        codeSentOnce,
       })
     );
   }, [
@@ -89,23 +75,27 @@ const IdFind = () => {
     codeSentOnce,
   ]);
 
-  const handleNameChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setName(value);
-      validateField("name", value);
+  const validateField = useCallback(
+    (field: "name" | "phone", value: string) => {
+      let message = "";
+      if (field === "name") message = validateName(value) || "";
+      if (field === "phone") message = validatePhone(value) || "";
+      setErrors((prev) => ({ ...prev, [field]: message }));
     },
-    [setName, validateField]
+    []
   );
 
-  const handlePhoneChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setPhone(value);
-      validateField("phone", value);
-    },
-    [setPhone, validateField]
-  );
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setName(value);
+    validateField("name", value);
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPhone(value);
+    validateField("phone", value);
+  };
 
   const handleVerifyCode = useCallback(async () => {
     const nameErr = validateName(name);
@@ -132,8 +122,7 @@ const IdFind = () => {
       }
 
       const emails = snap.docs.map((doc) => doc.data().email);
-      sessionStorage.setItem("realEmail", emails.join(",")); // 여러 개 저장 (쉼표로 구분)
-
+      sessionStorage.setItem("realEmail", emails.join(","));
       const maskedEmails = emails.map((email) => maskEmail(email)).join(", ");
       setFoundEmail(maskedEmails);
     } catch (error) {
@@ -168,7 +157,7 @@ const IdFind = () => {
     }
   }, [foundEmail, selectedEmail, router]);
 
-  const handleCodeSend = useCallback(() => {
+  const handleCodeSend = () => {
     const nameErr = validateName(name);
     const phoneErr = validatePhone(phone);
     setErrors({ name: nameErr || "", phone: phoneErr || "" });
@@ -181,17 +170,9 @@ const IdFind = () => {
     setCodeRequested(true);
     setCodeSentOnce(true);
     alert("인증번호가 전송되었습니다: " + newCode);
-  }, [
-    name,
-    phone,
-    setErrors,
-    setGeneratedCode,
-    setShowCode,
-    setCodeRequested,
-    setCodeSentOnce,
-  ]);
+  };
 
-  const handleResend = useCallback(() => {
+  const handleResend = () => {
     if (!codeSentOnce) {
       alert("먼저 인증번호찾기를 눌러주세요.");
       return;
@@ -201,7 +182,7 @@ const IdFind = () => {
     setGeneratedCode(newCode);
     setShowCode(true);
     alert("인증번호가 재전송되었습니다: " + newCode);
-  }, [codeSentOnce, setGeneratedCode, setShowCode]);
+  };
 
   const IdFinds = [
     {
@@ -232,6 +213,7 @@ const IdFind = () => {
 
   return (
     <form onSubmit={(e: FormEvent) => e.preventDefault()}>
+      {/* ⬇️ 여기서부터 네가 짜놓은 구조 스타일 그대로 유지 */}
       <div className="w-full bg-emerald-100 p-4">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
@@ -249,7 +231,7 @@ const IdFind = () => {
 
       {IdFinds.map((idf, index) => (
         <div key={index}>
-          <div className="flex gap-2 p-5 lg:flex lg:items-center lg:justify-center">
+          <div className="flex gap-2 p-3 lg:flex lg:items-center lg:justify-center">
             <input
               type={idf.type || "text"}
               placeholder={idf.label}
@@ -294,7 +276,7 @@ const IdFind = () => {
           )}
 
           {index === 2 && showCode && (
-            <p className="text-center text-sm text-green-600 mt-1">
+            <p className="text-center text-sm text-green-600 sm:mr-50 ">
               인증번호: {generatedCode}
             </p>
           )}
@@ -317,7 +299,7 @@ const IdFind = () => {
       </div>
 
       {foundEmail && (
-        <p className="text-center  text-amber-600 font-bold mt-4 text-sm">
+        <p className="text-center text-amber-600 font-bold mt-1 text-sm">
           내 아이디는 <span className="underline">{foundEmail}</span> 입니다.
         </p>
       )}

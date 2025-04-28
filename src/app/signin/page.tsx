@@ -32,6 +32,13 @@ const LoginForm = () => {
       alert("비밀번호를 입력해주세요.");
       return;
     }
+    // const methods = await fetchSignInMethodsForEmail(authService, email);
+    // console.log("fetchSignInMethodsForEmail 결과:", methods);
+
+    // if (methods.length === 0) {
+    //   alert("존재하지 않는 아이디입니다.");
+    //   return;
+    // }
 
     console.log(email, password);
 
