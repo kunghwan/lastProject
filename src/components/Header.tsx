@@ -95,7 +95,7 @@ const Header = () => {
           {!isAuthPage && (
             <li>
               <button
-                className="grayButton text-sm font-bold h-14"
+                className="text-2xl font-bold h-14"
                 onClick={() => (user ? handleLogout() : router.push("/signin"))}
               >
                 {user ? "로그아웃" : "로그인"}
@@ -175,7 +175,7 @@ const Header = () => {
             </button>
 
             <button
-              className="grayButton w-full mt-2 text-lg"
+              className="grayButton w-full mt-2 text-xl font-bold"
               onClick={() => {
                 user ? handleLogout() : router.push("/signin");
                 setIsMenuOpen(false);

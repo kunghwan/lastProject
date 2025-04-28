@@ -3,16 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer components {
-  .themeButton {
-    @apply p-3 rounded-full  cursor-pointer hover:opacity-70 justify-center flex items-center dark:text-gray-800 text-3xl bg-teal-100;
-  }
   .grayButton {
     @apply p-3 rounded-full cursor-pointer hover:opacity-70 justify-center flex items-center dark:text-gray-800 text-3xl bg-gray-200;
-  }
-}
-
-@media (min-width: 800px) {
-  .custom-nav {
-    display: flex !important;
   }
 }
