@@ -95,7 +95,7 @@ const NotificationListPage = () => {
       if (pageParam) {
         query = ref.startAfter(pageParam).limit(10);
       }
-      //쿼리를 실행해서 문서 스냅샷을 가져옵니다.
+      //쿼리를 실행해서 문서 스냅샷(docs)을 가져옵니다.
       const snap = await query.get();
       //데이터를 Notification 타입으로 변환하여 리스트에 담기
       //snap.docs는 Firestore에서 가져온 알림 문서들의 배열
@@ -152,7 +152,7 @@ const NotificationListPage = () => {
     enabled: !!user?.uid, //로그인한 경우에만 실행
   });
 
-  // console.log(data, 75);
+  console.log(data, 75);
   console.log("리렌더링");
 
   //각 페이지에서 notifications 키로 알림 배열을 꺼냄 =>flatMap을 사용하면 여러 페이지의 알림을 하나의 배열로 합쳐줌
