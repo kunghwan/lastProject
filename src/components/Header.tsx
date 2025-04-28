@@ -57,7 +57,7 @@ const Header = () => {
         </Link>
 
         {/* 데스크탑 메뉴 */}
-        <ul className="hidden sm:flex items-center gap-x-4">
+        <ul className="hidden sm:flex items-center gap-x-4 ">
           {user && (
             <>
               <div className="text-2xl font-bold whitespace-nowrap flex">
@@ -174,7 +174,7 @@ const Header = () => {
             </button>
 
             <button
-              className="grayButton w-full mt-2 text-xl font-bold"
+              className="grayButton w-full mt-2 text-xl font-bold sm:hidden"
               onClick={() => {
                 user ? handleLogout() : router.push("/signin");
                 setIsMenuOpen(false);

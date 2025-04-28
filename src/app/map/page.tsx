@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-type Place = {
+type PlaceProps = {
   id: string;
   place_name: string;
   address_name: string;
@@ -21,8 +21,8 @@ type Place = {
 const MapPage = () => {
   const [map, setMap] = useState<any>(null);
 
-  const [places, setPlaces] = useState<Place[]>([]);
-  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+  const [places, setPlaces] = useState<PlaceProps[]>([]);
+  const [selectedPlace, setSelectedPlace] = useState<PlaceProps | null>(null);
 
   const [keyword, setKeyword] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -34,16 +34,36 @@ const MapPage = () => {
   useEffect(() => {
     const initMap = () => {
       if (!mapRef.current) return;
+
       const center = new window.kakao.maps.LatLng(36.3324, 127.4345);
       const mapInstance = new window.kakao.maps.Map(mapRef.current, {
         center,
         level: 7,
       });
+
       setMap(mapInstance);
     };
 
-    if (window.kakao && window.kakao.maps) {
-      window.kakao.maps.load(initMap);
+    const loadKakaoMapScript = () => {
+      const script = document.createElement("script");
+      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_API_KEY}&autoload=false&libraries=services`;
+      script.async = true;
+      script.onload = () => {
+        window.kakao.maps.load(() => {
+          initMap();
+        });
+      };
+      document.head.appendChild(script);
+    };
+
+    if (typeof window !== "undefined") {
+      if (window.kakao && window.kakao.maps) {
+        window.kakao.maps.load(() => {
+          initMap();
+        });
+      } else {
+        loadKakaoMapScript();
+      }
     }
   }, []);
 
@@ -58,7 +78,7 @@ const MapPage = () => {
 
     ps.keywordSearch(
       keyword,
-      (data: Place[], status: string) => {
+      (data: PlaceProps[], status: string) => {
         if (status !== maps.services.Status.OK) return;
 
         setPlaces(data);
@@ -86,7 +106,7 @@ const MapPage = () => {
     }
   }, [map, keyword]);
 
-  const handlePlaceClick = (place: Place, showDetail: boolean = true) => {
+  const handlePlaceClick = (place: PlaceProps, showDetail: boolean = true) => {
     if (!map) return;
 
     const latlng = new window.kakao.maps.LatLng(
@@ -94,15 +114,15 @@ const MapPage = () => {
       Number(place.x)
     );
 
-    // 마커 위치 기준으로 픽셀 보정
+    //! 마커 위치 기준으로 픽셀 보정
     const projection = map.getProjection();
     const point = projection.pointFromCoords(latlng);
 
-    // 좌측 패널 너비만큼 우측으로 이동 (예: 150px)
+    //! 좌측 패널 너비만큼 우측으로 이동 (예: 150px)
     const adjustedPoint = new window.kakao.maps.Point(point.x + 150, point.y);
     const newCenter = projection.coordsFromPoint(adjustedPoint);
 
-    // 💡 panTo 사용 시 부드럽게 이동
+    //! panTo 사용 시 부드럽게 이동
     map.panTo(newCenter);
 
     if (showDetail) {
@@ -114,26 +134,25 @@ const MapPage = () => {
     setKeyword(inputValue.trim());
   };
 
-  //! 불필요한 코드 줄이기
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") handleSearch();
-  };
-
   return (
-    <div className="flex flex-col relative dark:text-black h-190 overflow-hidden ">
-      {/* //! form 바꾸고 onSubmit */}
-      <div className="p-2.5 flex bg-white absolute z-50 left-10 top-10 rounded-full shadow-md">
+    <div className="flex flex-col relative dark:text-black h-[80vh] overflow-hidden my-5">
+      <form
+        className="p-2.5 flex bg-white absolute z-50 left-10 top-10 rounded-full shadow-md border border-gray-300 "
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSearch();
+        }}
+      >
         <input
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
           placeholder="원하는 장소를 입력하세요."
-          className="p-1 text-base mx-2.5 w-60 focus:outline-none placeholder:text-gray-500 "
+          className="p-1 text-base mx-2.5 w-60 focus:outline-none placeholder:text-gray-500 flex-1"
         />
         <button onClick={handleSearch} className="text-2xl px-1 cursor-pointer">
           <IoSearch />
         </button>
-      </div>
+      </form>
       {/* 상세정보 */}
       <div className="flex flex-1">
         {selectedPlace && (
@@ -145,13 +164,13 @@ const MapPage = () => {
               <IoCloseSharp className="dark:text-black" />
             </button>
 
-            <h2 className="text-lg font-semibold mb-2">📌 상세 정보</h2>
+            <h2 className="text-lg font-semibold mb-2">상세 정보</h2>
             <p className="font-bold">{selectedPlace.place_name}</p>
             <p>
               {selectedPlace.road_address_name || selectedPlace.address_name}
             </p>
             <p className="text-sm text-gray-600">
-              ☎ {selectedPlace.phone || "전화번호 없음"}
+              {selectedPlace.phone || "전화번호 없음"}
             </p>
           </div>
         )}
@@ -161,17 +180,17 @@ const MapPage = () => {
 
         {/* 검색 결과 리스트 */}
         {keyword.length !== 0 && (
-          <div className="md:w-72 w-full h-190 p-4 bg-gray-100 border-l border-gray-300 flex flex-col gap-y-2 ">
+          <div className="md:w-72 w-full h-[80vh] p-4 bg-gray-100 border-l border-gray-300 flex flex-col gap-y-2 ">
             <div className="p-2.5 flex bg-white rounded-full shadow-md w-full max-w-full overflow-hidden">
               <input
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleKeyDown}
+                // onKeyDown={handleKeyDown} // 제거됨
                 className="p-1 text-xs focus:outline-none placeholder:text-gray-500 flex-grow min-w-0"
               />
               <button
                 onClick={handleSearch}
-                className="text-xl px-2 cursor-pointer  flex-shrink-0"
+                className="text-xl px-2 cursor-pointer  flex-shrink-0"
               >
                 <IoSearch />
               </button>
