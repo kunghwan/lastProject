@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { FaRegMessage, FaPencil } from "react-icons/fa6";
 import { IoPersonSharp, IoCloseOutline, IoStarOutline } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
@@ -43,32 +43,57 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="flex relative lg:max-w-300 lg:mx-auto h-auto justify-center">
+      <div className="flex relative lg:max-w-300 lg:mx-auto h-auto ">
         {pathname !== "/signin" && pathname !== "/signup" && (
-          <div className="fixed bottom-0 left-0 w-full z-50 h-20">
-            <nav className="absolute left-1/2 -translate-x-1/2 bottom-0 bg-gray-200 shadow-md rounded-full w-[90%] max-w-[300px] h-16">
-              <ul className="flex justify-around items-center h-full">
-                {NavBtns.map((btn, index) => (
-                  <li
-                    key={index}
-                    className={twMerge(
-                      "flex justify-center items-center",
-                      pathname === btn.path && "text-blue-800"
-                    )}
-                  >
-                    <button
-                      className="grayButton text-xl flex flex-col items-center gap-y-1"
-                      onClick={() => navBtnClick(btn, index)}
+          <div className="mx-auto max-w-100 ">
+            <div className="fixed w-full max-w-100 left-[50%] translate-x-[-50%]">
+              <nav className="hidden xl:flex absolute h-140 w-20 -left-[130%] justify-center bg-gray-200 z-30 rounded-full">
+                <ul className="flex flex-col justify-between py-5">
+                  {NavBtns.map((btn, index) => (
+                    <li
+                      key={index}
+                      className="flex justify-center items-center"
                     >
-                      {btn.icon}
-                      <p className="text-xs">{btn.name}</p>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+                      <button
+                        className={twMerge(
+                          "grayButton flex flex-col gap-y-1.5 items-center",
+                          pathname === btn.path
+                            ? "text-blue-500"
+                            : "text-gray-600"
+                        )}
+                        onClick={() => navBtnClick(btn, index)}
+                      >
+                        {btn.icon}
+                        <p className="text-xs">{btn.name}</p>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
           </div>
         )}
+
+        <nav
+          className={twMerge(
+            "fixed bottom-0 left-0 right-0 bg-gray-200 z-30 p-3 flex justify-around xl:hidden rounded-t-2xl",
+            ["/signin", "/signup"].includes(pathname!) && "hidden"
+          )}
+        >
+          <ul className="flex justify-around w-full">
+            {NavBtns.map((btn, index) => (
+              <li key={index}>
+                <button
+                  className="grayButton text-2xl flex flex-col gap-y-1.5 items-center"
+                  onClick={() => navBtnClick(btn, index)}
+                >
+                  {btn.icon}
+                  <p className="text-black text-xs">{btn.name}</p>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
         {/* 모달 */}
         {isShowingModal && (

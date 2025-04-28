@@ -14,6 +14,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { AUTH } from "@/contextapi/context";
 import { twMerge } from "tailwind-merge";
+import Navbar from "./features/navber/Navbar";
 
 const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -21,7 +22,6 @@ const Header = () => {
 
   const router = useRouter();
   const pathname = usePathname();
-
   const { user, signout } = AUTH.use();
 
   const isAuthPage = ["/signin", "/signup"].includes(pathname!);
@@ -185,6 +185,7 @@ const Header = () => {
           </div>
         </div>
       )}
+      <Navbar />
     </>
   );
 };
