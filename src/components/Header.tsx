@@ -14,6 +14,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { AUTH } from "@/contextapi/context";
 import { twMerge } from "tailwind-merge";
+import Navbar from "./features/navber/Navbar";
 
 const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -184,6 +185,7 @@ const Header = () => {
           </div>
         </div>
       )}
+      <Navbar />
     </>
   );
 };
