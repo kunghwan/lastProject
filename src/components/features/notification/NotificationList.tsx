@@ -115,7 +115,7 @@ const NotificationListPage = () => {
     [uid]
   );
 
-  useEffect(() => console.log(fetchNotifications), []);
+  // useEffect(() => console.log(fetchNotifications), []);
 
   const {
     data,
@@ -216,8 +216,8 @@ const NotificationListPage = () => {
     return await refetch(); //  데이터 새로고침 //서버에 요청 → 최신 데이터로 갱신
   };
 
-  const isNotifications = data?.pages.map((page) => page.notifications);
-  console.log(isNotifications, "알림확인용");
+  // const isNotifications = data?.pages.map((page) => page.notifications);
+  // console.log(isNotifications, "알림확인용");
 
   //! 안읽은 알림이 없느가를 처음 페이지가 렌더링될때 확인용
   useEffect(() => {
@@ -234,8 +234,9 @@ const NotificationListPage = () => {
   }
 
   return (
-    <div>
-      <div className="flex flex-col gap-y-2.5 h-[calc(100vh-80px)] overflow-y-auto">
+    <div className=" flex flex-col gap-y-2.5">
+      {/* <div className="flex flex-col gap-y-2.5 h-[calc(100vh-80px)] overflow-y-auto"> */}
+      <div>
         {/* isUnRead는 읽지 않은 알림이 하나라도 있으면 true 없다면 false임 */}
         {/* data 안에 있는 pages 배열을 돌면서,알림(notifications)이 하나라도 있는 페이지가 있는지 확인 */}
         {/* 읽지 않은 알림이 있고, 실제 알림 데이터도 존재할 때만 버튼을 보여줌 */}
@@ -244,7 +245,7 @@ const NotificationListPage = () => {
             <div className="flex justify-end">
               {/* isRead가 다 true라면 버튼을 비활성화함 */}
               <button
-                onClick={handleAllRead}
+                onClick={() => handleAllRead()}
                 disabled={!isUnRead}
                 className="cursor-pointer mr-2.5 bg-[rgba(232,255,241)] disabled:text-gray-400  disabled:bg-gray-200 dark:bg-[rgba(232,255,241,0.5)] p-2 rounded"
               >
@@ -262,7 +263,7 @@ const NotificationListPage = () => {
                   return navi.push(`/profile/${noti.follwerId}`);
                 }}
                 className={twMerge(
-                  "flex flex-col  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer hover:border hover:border-gray-300",
+                  "flex flex-col  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer ",
                   noti.isRead
                     ? "text-gray-500 bg-gray-200 dark:bg-gray-500 dark:text-white"
                     : "text-black font-semibold bg-[rgba(232,255,241)] dark:bg-[rgba(232,255,241,0.7)] dark:text-white"
@@ -280,7 +281,7 @@ const NotificationListPage = () => {
         </ul>
       </div>
 
-      <div className="flex justify-center mr-2.5 pb-20 bg-transparent">
+      <div className="flex justify-center mr-2.5 pb-20 lg:pb-0 ">
         {hasNextPage && (
           <button
             onClick={() => fetchNextPage()}
