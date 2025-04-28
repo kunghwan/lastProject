@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { firebase, dbService } from "@/lib/firebase";
 import { AUTH } from "@/contextapi/context";
 
@@ -45,7 +45,7 @@ const UpPlaceLikeButton = ({ contentId, onLiked }: UpPlaceLikeButtonProps) => {
     loadLikeData();
   }, [user, contentId]);
 
-  const toggleLike = async () => {
+  const toggleLike = useCallback(async () => {
     if (!user || loading) return;
 
     try {
@@ -59,7 +59,7 @@ const UpPlaceLikeButton = ({ contentId, onLiked }: UpPlaceLikeButtonProps) => {
       const batch = dbService.batch();
 
       if (liked) {
-        //  🔻 좋아요 취소
+        // 🔻 좋아요 취소
         batch.delete(likeRef);
         batch.update(placeRef, {
           likeCount: firebase.firestore.FieldValue.increment(-1),
@@ -70,7 +70,7 @@ const UpPlaceLikeButton = ({ contentId, onLiked }: UpPlaceLikeButtonProps) => {
         setCount(newCount);
         if (onLiked) onLiked(newCount);
       } else {
-        //🔺 좋아요 누르기
+        // 🔺 좋아요 누르기
         const latest = await likeRef.get();
         if (latest.exists) return; // 중복 방지
 
@@ -90,7 +90,7 @@ const UpPlaceLikeButton = ({ contentId, onLiked }: UpPlaceLikeButtonProps) => {
     } catch (error) {
       console.error("🔥 좋아요 처리 실패", error);
     }
-  };
+  }, [user, loading, liked, count, contentId, onLiked]);
 
   if (!user)
     return <p className="text-sm text-gray-500">로그인 후 좋아요 가능</p>;

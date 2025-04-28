@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useState, ChangeEvent, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { AUTH } from "@/contextapi/context";
 import { validatePassword } from "@/lib/validations";
@@ -22,7 +22,7 @@ interface FindPasswordValidation {
 
 const IdFindResult = () => {
   const router = useRouter();
-  const { signin } = AUTH.use(); // ✅ context에서 signin 사용
+  const { signin } = AUTH.use();
   const [email, setEmail] = useState("");
   const [form, setForm] = useState<FindPasswordForm>({
     newPassword: "",
@@ -35,11 +35,7 @@ const IdFindResult = () => {
     if (storedEmail) setEmail(storedEmail);
   }, []);
 
-  useEffect(() => {
-    validateForm();
-  }, [form]);
-
-  const validateForm = (): boolean => {
+  const validateForm = useCallback((): boolean => {
     const errors: FindPasswordValidation = {};
     const { newPassword, confirmPassword } = form;
 
@@ -65,26 +61,29 @@ const IdFindResult = () => {
 
     setValidation(errors);
     return Object.keys(errors).length === 0;
-  };
+  }, [form]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    validateForm();
+  }, [form, validateForm]);
+
+  const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (!validateForm()) return;
 
     alert("비밀번호가 성공적으로 변경되었습니다.");
 
-    // ✅ 비밀번호 변경 후 로그인 처리
     const result = await signin(email, form.newPassword);
     if (result.success) {
       router.push("/");
     } else {
       alert("자동 로그인 실패: " + result.message);
     }
-  };
+  }, [email, form.newPassword, router, signin, validateForm]);
 
   return (
     <div className="p-2">

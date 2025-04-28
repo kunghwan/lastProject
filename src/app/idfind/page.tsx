@@ -24,6 +24,7 @@ const IdFind = () => {
   const [foundEmail, setFoundEmail] = useState("");
   const [codeRequested, setCodeRequested] = useState(false);
   const [codeSentOnce, setCodeSentOnce] = useState(false);
+  const [selectedEmail, setSelectedEmail] = useState("");
 
   const maskEmail = (email: string) => {
     const [id, domain] = email.split("@");
@@ -88,17 +89,23 @@ const IdFind = () => {
     codeSentOnce,
   ]);
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setName(value);
-    validateField("name", value);
-  };
+  const handleNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setName(value);
+      validateField("name", value);
+    },
+    [setName, validateField]
+  );
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPhone(value);
-    validateField("phone", value);
-  };
+  const handlePhoneChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setPhone(value);
+      validateField("phone", value);
+    },
+    [setPhone, validateField]
+  );
 
   const handleVerifyCode = useCallback(async () => {
     const nameErr = validateName(name);
@@ -124,26 +131,44 @@ const IdFind = () => {
         return;
       }
 
-      const email = snap.docs[0].data().email;
-      sessionStorage.setItem("realEmail", email); // ✅ 실 이메일 저장
-      const masked = maskEmail(email);
-      setFoundEmail(masked);
+      const emails = snap.docs.map((doc) => doc.data().email);
+      sessionStorage.setItem("realEmail", emails.join(",")); // 여러 개 저장 (쉼표로 구분)
+
+      const maskedEmails = emails.map((email) => maskEmail(email)).join(", ");
+      setFoundEmail(maskedEmails);
     } catch (error) {
       console.error("이메일 조회 실패", error);
       alert("이메일 조회 중 오류가 발생했습니다.");
     }
   }, [name, phone, code, generatedCode]);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     if (!foundEmail) {
       alert("먼저 인증확인을 완료해주세요.");
       return;
     }
 
-    router.push("/idfind/resultid");
-  };
+    if (!selectedEmail) {
+      alert("아이디를 선택해주세요.");
+      return;
+    }
 
-  const handleCodeSend = () => {
+    const maskedEmails = foundEmail.split(", ");
+    const realEmails = sessionStorage.getItem("realEmail")?.split(",") || [];
+    const selectedIndex = maskedEmails.findIndex(
+      (email) => email === selectedEmail
+    );
+
+    if (selectedIndex !== -1) {
+      const realSelectedEmail = realEmails[selectedIndex];
+      sessionStorage.setItem("selectedRealEmail", realSelectedEmail);
+      router.push("/idfind/resultid");
+    } else {
+      alert("선택한 이메일을 찾을 수 없습니다.");
+    }
+  }, [foundEmail, selectedEmail, router]);
+
+  const handleCodeSend = useCallback(() => {
     const nameErr = validateName(name);
     const phoneErr = validatePhone(phone);
     setErrors({ name: nameErr || "", phone: phoneErr || "" });
@@ -156,9 +181,17 @@ const IdFind = () => {
     setCodeRequested(true);
     setCodeSentOnce(true);
     alert("인증번호가 전송되었습니다: " + newCode);
-  };
+  }, [
+    name,
+    phone,
+    setErrors,
+    setGeneratedCode,
+    setShowCode,
+    setCodeRequested,
+    setCodeSentOnce,
+  ]);
 
-  const handleResend = () => {
+  const handleResend = useCallback(() => {
     if (!codeSentOnce) {
       alert("먼저 인증번호찾기를 눌러주세요.");
       return;
@@ -168,7 +201,7 @@ const IdFind = () => {
     setGeneratedCode(newCode);
     setShowCode(true);
     alert("인증번호가 재전송되었습니다: " + newCode);
-  };
+  }, [codeSentOnce, setGeneratedCode, setShowCode]);
 
   const IdFinds = [
     {
@@ -287,6 +320,26 @@ const IdFind = () => {
         <p className="text-center text-lg text-amber-600 font-bold mt-4">
           내 아이디는 <span className="underline">{foundEmail}</span> 입니다.
         </p>
+      )}
+      {foundEmail && (
+        <div className="text-center mt-4">
+          <p className="text-lg text-amber-600 font-bold">
+            아이디를 선택해주세요:
+          </p>
+          {foundEmail.split(", ").map((email, idx) => (
+            <div key={idx}>
+              <input
+                type="radio"
+                id={`email-${idx}`}
+                name="selected-email"
+                value={email}
+                checked={selectedEmail === email}
+                onChange={() => setSelectedEmail(email)}
+              />
+              <label htmlFor={`email-${idx}`}>{email}</label>
+            </div>
+          ))}
+        </div>
       )}
     </form>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const TopButton = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -14,16 +14,16 @@ const TopButton = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ window 기준으로 수정
-  };
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   if (!isVisible) return null;
 
   return (
     <button
       onClick={scrollToTop}
-      className="fixed z-50 bottom-8 right-8 px-4 py-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition cursor-pointer"
+      className="fixed z-40 bottom-30 right-1 px-4 py-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition cursor-pointer h-20 sm:right-1"
     >
       Top
     </button>
