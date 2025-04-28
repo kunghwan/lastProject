@@ -1,4 +1,4 @@
-export interface Notification {
+export interface Notifications {
   id?: string; //firebase에서 자동으로 생성되는 ID
   follwingId: string; // 팔로우된 사람의 ID
   follwingNickname?: string; // 팔로우된 사람의 닉네임

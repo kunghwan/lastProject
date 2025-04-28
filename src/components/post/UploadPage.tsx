@@ -66,6 +66,7 @@ const UploadPostPage = () => {
   const titleRef = useRef<HTMLInputElement>(null);
   const descRef = useRef<HTMLTextAreaElement>(null);
   const jusoRef = useRef<HTMLInputElement>(null);
+  const tagRef = useRef<HTMLInputElement>(null);
 
   const titleMessage = useMemo(() => {
     if (title.length === 0 || title.trim() === "") {
@@ -83,6 +84,25 @@ const UploadPostPage = () => {
       return "주소를 입력해주세요.";
     }
   }, [juso]);
+
+  const tagMessage = useMemo(() => {
+    const validateText = /^[\p{L}\p{N}\s]+$/u;
+    if (!validateText.test(tag)) {
+      return "특수기호를 포함하면 안됩니다.";
+    }
+    if (tag.length === 0) {
+      return "태그를 입력해 주세요.";
+    }
+    if (tag.trim() === "") {
+      return "공백은 입력이 안됩니다";
+    }
+  }, [tag]);
+
+  const tagsMessage = useMemo(() => {
+    if (tags.length === 0) {
+      return "태그를 추가해주세요.";
+    }
+  }, [tags]);
 
   const onChangeFiles = useCallback(
     (items: FileList) => {
@@ -108,6 +128,10 @@ const UploadPostPage = () => {
         alert(jusoMessage);
         return jusoRef.current?.focus();
       }
+      if (tagsMessage) {
+        alert(tagsMessage);
+        return tagRef.current?.focus();
+      }
 
       startTransition(async () => {
         try {
@@ -124,7 +148,7 @@ const UploadPostPage = () => {
             imgUrls.push(url);
           }
           //2. Firestore에 새 게시글 추가 (add 사용)
-          const postRef = await dbService.collection(FBCollection.POSTS).add({
+          await dbService.collection(FBCollection.POSTS).add({
             uid: user.uid,
             imageUrl: imgUrls[0] || null, // 대표 이미지
             imgs: imgUrls,
@@ -229,17 +253,24 @@ const UploadPostPage = () => {
             type="text"
             value={tag}
             onChange={(e) => setTag(e.target.value)}
+            ref={tagRef}
             className={twMerge("w-full ", input)}
             placeholder="태그를 입력후 추가버튼을 눌러주세요."
           />
           <button
             type="button"
             onClick={() => {
+              if (tagMessage) {
+                alert(tagMessage);
+                tagRef.current?.focus();
+                return;
+              }
               const formattedTag = tag.startsWith("#") ? tag : `#${tag}`;
               const newTag: Tag = {
                 id: v4(),
                 name: formattedTag,
               };
+
               if (tags.find((t) => t.name === newTag.name)) {
                 return alert("이미 존재하는 태그입니다.");
               }
@@ -270,7 +301,7 @@ const UploadPostPage = () => {
                       return alert("취소되었습니다.");
                     }
                   }}
-                  className="cursor-pointer font-extrabold"
+                  className="cursor-pointer font-bold hover:text-lime-500 hover:underline"
                 >
                   {t.name}
                 </button>
