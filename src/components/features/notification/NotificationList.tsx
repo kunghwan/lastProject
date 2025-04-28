@@ -107,7 +107,7 @@ const NotificationListPage = () => {
       })) as Notifications[];
       console.log(notifications, "알림확인용");
       //마지막 문서를 저장해서 다음 페이지 기준점으로 사용할 준비를 함
-      //snap.docs의 마지막 인덱스 이거나 null 임
+      //snap.docs의 마지막 인덱스 이거나 null 임 (만약 마지막 문서가 **없으면** → 대신 `null`을 반환)
       const lastDoc = snap.docs[snap.docs.length - 1] ?? null;
 
       return { notifications, lastDoc };
@@ -235,7 +235,7 @@ const NotificationListPage = () => {
 
   return (
     <div>
-      <div className="flex flex-col gap-y-2.5 ">
+      <div className="flex flex-col gap-y-2.5 h-[calc(100vh-80px)] overflow-y-auto">
         {/* isUnRead는 읽지 않은 알림이 하나라도 있으면 true 없다면 false임 */}
         {/* data 안에 있는 pages 배열을 돌면서,알림(notifications)이 하나라도 있는 페이지가 있는지 확인 */}
         {/* 읽지 않은 알림이 있고, 실제 알림 데이터도 존재할 때만 버튼을 보여줌 */}
@@ -252,7 +252,7 @@ const NotificationListPage = () => {
               </button>
             </div>
           )}
-        <ul className=" grid md:grid-cols-2 gap-2.5  items-center  w-full p-2.5">
+        <ul className=" grid md:grid-cols-2 gap-5  items-center  w-full p-2.5 ">
           {data?.pages.map((page) =>
             page.notifications.map((noti) => (
               <li
@@ -265,22 +265,27 @@ const NotificationListPage = () => {
                   "flex flex-col  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer",
                   noti.isRead
                     ? "text-gray-500 bg-gray-200 dark:bg-gray-500 dark:text-white"
-                    : "text-black font-semibold bg-[rgba(232,255,241)] dark:bg-[rgba(232,255,241,0.5)] dark:text-white"
+                    : "text-black font-semibold bg-[rgba(232,255,241)] dark:bg-[rgba(232,255,241,0.7)] dark:text-white"
                 )}
               >
-                <p>{noti.followerNickname}님이 팔로우했습니다.</p>
-                <p>{noti.createdAt.toString()}</p>
+                <p className="font-bold text-md">
+                  {noti.followerNickname}님이 팔로우했습니다.
+                </p>
+                <p className="text-sm font-light">
+                  {noti.createdAt.toString()}
+                </p>
               </li>
             ))
           )}
         </ul>
       </div>
-      <div className="flex justify-center mr-2.5">
+
+      <div className="flex justify-center mr-2.5 pb-20 bg-transparent">
         {hasNextPage && (
           <button
             onClick={() => fetchNextPage()}
             disabled={isFetchingNextPage}
-            className="border border-gray-400 p-2.5 rounded-xl min-w-30 dark:text-black hover:text-green-800"
+            className="border border-gray-400 p-2.5 rounded-xl min-w-30  hover:text-green-800"
           >
             {isFetchingNextPage ? "불러오는 중..." : "더보기"}
           </button>
