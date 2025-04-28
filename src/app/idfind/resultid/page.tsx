@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FaIdCard } from "react-icons/fa6";
 import { TbPassword } from "react-icons/tb";
 
@@ -25,13 +25,16 @@ const IdFindResult = () => {
     setIsLoading(false);
   }, []);
 
-  const handleClick = (url: string) => {
-    if (!isChecked) {
-      alert("체크박스를 체크해주세요.");
-      return;
-    }
-    window.location.href = url;
-  };
+  const handleClick = useCallback(
+    (url: string) => {
+      if (!isChecked) {
+        alert("체크박스를 체크해주세요.");
+        return;
+      }
+      window.location.href = url;
+    },
+    [isChecked]
+  );
 
   return (
     <>

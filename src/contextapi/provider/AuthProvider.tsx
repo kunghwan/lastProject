@@ -12,19 +12,22 @@ import { authService, dbService, FBCollection } from "@/lib";
 import { PropsWithChildren } from "react";
 import { AUTH } from "../context";
 import Loaiding from "@/components/Loading";
+import { fetchSignInMethodsForEmail } from "firebase/auth";
 
 // 🔥 Context 두개로 나눈다
-const AuthUserContext = createContext<User | null>(null);
-const AuthFunctionContext = createContext<{
-  signin: (email: string, password: string) => Promise<PromiseResult>;
-  signout: () => Promise<PromiseResult>;
-  signup: (newUser: User, password: string) => Promise<PromiseResult>;
-  updateUser: (target: keyof User, value: any) => Promise<PromiseResult>;
-} | null>(null);
+// const AuthUserContext = createContext<User | null>(null);
+// const AuthFunctionContext = createContext<{
+//   signin: (email: string, password: string) => Promise<PromiseResult>;
+//   signout: () => Promise<PromiseResult>;
+//   signup: (newUser: User, password: string) => Promise<PromiseResult>;
+//   updateUser: (target: keyof User, value: any) => Promise<PromiseResult>;
+// } | null>(null);
 
 const ref = dbService.collection(FBCollection.USERS);
 const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
+  const [initialized, setInitialized] = useState(false);
+  const [isPending, setIsPending] = useState(true);
 
   const signin = useCallback(
     async (email: string, password: string): Promise<PromiseResult> => {
@@ -112,8 +115,6 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     [user, ref]
   );
 
-  const [initialized, setInitialized] = useState(false);
-
   useEffect(() => {
     const unsubscribe = authService.onAuthStateChanged(async (fbUser) => {
       console.log(fbUser);
@@ -124,7 +125,10 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       } else {
         setUser(null);
       }
-      setInitialized(true);
+      setTimeout(() => {
+        setInitialized(true);
+        setIsPending(false);
+      }, 1000);
     });
     // unsubscribe();
     return unsubscribe;
@@ -134,14 +138,15 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     <AUTH.context.Provider
       value={{
         signin,
-
+        isPending,
+        initialized,
         signout,
         signup,
         user,
         updateUser,
       }}
     >
-      {initialized ? children : <Loaiding />}
+      {!isPending || initialized ? children : <Loaiding />}
     </AUTH.context.Provider>
   );
 };

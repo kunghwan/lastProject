@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { IoAdd } from "react-icons/io5";
 import { storageService, dbService, FBCollection } from "@/lib/firebase";
@@ -48,42 +48,46 @@ const SettingProfile = () => {
     }
   }, [router]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
 
-    setProfile((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    if (name === "nickname") {
-      setNicknameError(validateNickname(value));
-    }
-
-    if (name === "bio") {
-      setBioError(validateBio(value));
-    }
-  };
-
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const previewUrl = URL.createObjectURL(file);
       setProfile((prev) => ({
         ...prev,
-        profileImageUrl: previewUrl,
+        [name]: value,
       }));
-      setImageFile(file);
-    }
-  };
 
-  const triggerFileSelect = () => {
+      if (name === "nickname") {
+        setNicknameError(validateNickname(value));
+      }
+
+      if (name === "bio") {
+        setBioError(validateBio(value));
+      }
+    },
+    [] // 🚨 주의: 이건 validateNickname, validateBio가 바깥에 있고 불변이니까 의존성 없이 가능
+  );
+
+  const handleImageSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const previewUrl = URL.createObjectURL(file);
+        setProfile((prev) => ({
+          ...prev,
+          profileImageUrl: previewUrl,
+        }));
+        setImageFile(file);
+      }
+    },
+    []
+  );
+
+  const triggerFileSelect = useCallback(() => {
     fileInputRef.current?.click();
-  };
+  }, []);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (!profile.nickname?.trim()) {
       alert("닉네임을 입력하세요");
       return;
@@ -145,7 +149,7 @@ const SettingProfile = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile, nicknameError, bioError, imageFile, router, signin]);
 
   return (
     <>

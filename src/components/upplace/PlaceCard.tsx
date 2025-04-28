@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useRouter } from "next/navigation"; // ✅ 추가
 import UpPlaceLikeButton from "@/components/upplace/UpPlaceLikeButton";
 
@@ -8,7 +8,7 @@ const fallbackImages: Record<string, string> = {
   테미오래: "/custom/temiora.jpg",
 };
 
-interface Place {
+interface UpPlace {
   contentid: string;
   title: string;
   addr1: string;
@@ -16,7 +16,7 @@ interface Place {
   likeCount: number;
 }
 
-const PlaceCard: React.FC<{ place?: Place }> = ({ place }) => {
+const PlaceCard: React.FC<{ place?: UpPlace }> = ({ place }) => {
   const router = useRouter(); // ✅ 추가
   if (!place) return null;
 
@@ -29,16 +29,16 @@ const PlaceCard: React.FC<{ place?: Place }> = ({ place }) => {
 
   const [likeCount, setLikeCount] = useState(place.likeCount);
 
-  const handleLiked = (newCount: number) => {
+  const handleLiked = useCallback((newCount: number) => {
     setLikeCount(newCount);
-  };
+  }, []);
 
-  const handleClickImage = () => {
-    router.push(`/upplace/${place.contentid}`); // ✅ 이동
-  };
+  const handleClickImage = useCallback(() => {
+    router.push(`/upplace/${place.contentid}`);
+  }, [router, place.contentid]);
 
   return (
-    <div className="border p-4 rounded-lg shadow">
+    <div className=" p-4 rounded-lg shadow">
       <img
         src={imageUrl}
         onError={(e) => {
