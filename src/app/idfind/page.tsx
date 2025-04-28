@@ -46,6 +46,7 @@ const IdFind = () => {
       setShowCode(parsed.showCode || false);
       setCodeRequested(parsed.codeRequested || false);
       setCodeSentOnce(parsed.codeSentOnce || false);
+      setErrors(parsed.errors || { name: "", phone: "" });
     }
   }, []);
 
@@ -62,6 +63,7 @@ const IdFind = () => {
         showCode,
         codeRequested,
         codeSentOnce,
+        errors,
       })
     );
   }, [
@@ -73,6 +75,7 @@ const IdFind = () => {
     showCode,
     codeRequested,
     codeSentOnce,
+    errors,
   ]);
 
   const validateField = useCallback(
@@ -88,7 +91,13 @@ const IdFind = () => {
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setName(value);
-    validateField("name", value);
+    sessionStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        ...JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "{}"),
+        name: value,
+      })
+    );
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
