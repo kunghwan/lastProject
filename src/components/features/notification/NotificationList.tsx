@@ -10,10 +10,10 @@ import { twMerge } from "tailwind-merge";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { Notifications } from "@/types/notification";
-import { firebase } from "@/lib/firebase";
 
 const NotificationListPage = () => {
   const { user } = AUTH.use();
+  //모두읽음 알림버튼을 확인용 useState
   const [isUnRead, setIsUnRead] = useState(false);
   const navi = useRouter();
 
@@ -123,9 +123,11 @@ const NotificationListPage = () => {
     error,
     refetch, //현재 쿼리(데이터 요청)를 다시 실행해서 서버나 DB에서 최신 데이터를 다시 불러오는 함수
   } = useInfiniteQuery({
-    queryKey: ["notifications"],
+    queryKey: ["notifications", uid],
     queryFn: ({ pageParam }) => {
-      if (!uid) return Promise.resolve({ notifications: [], lastDoc: null });
+      if (!uid) {
+        return Promise.resolve({ notifications: [], lastDoc: null });
+      }
       return fetchNotifications({ pageParam, uid });
     },
     //다음 페이지를 가져올 때 기준(lastDoc)
@@ -149,6 +151,19 @@ const NotificationListPage = () => {
   //   [data]
   // );
 
+  //! 받아온 data중에 isRead가 false가 있냐 없냐를 검사하는 함수
+  const checkUnreadNotifications = useCallback(async () => {
+    //data가 없으면 리턴
+    if (!data) return;
+    // some은 각 요소들 중 하나라도 true를 리턴하면 값은 true
+    const unread = data.pages.some((page) =>
+      page.notifications.some((noti) => !noti.isRead)
+    );
+
+    return setIsUnRead(unread);
+  }, [data]);
+
+  //! 알림을 클릭하면 그알림을 isRead를 true로 바꾸는 함수
   const handleNotificationClick = async (noti: Notifications) => {
     if (!noti.isRead) {
       await dbService
@@ -160,10 +175,11 @@ const NotificationListPage = () => {
     }
     //매개변수로 받은 특정 알림 한 건만 .update()하기 때문 //하나의 알림 에만 update를 검("하나만" 업데이트하는 용도)
     // 예: 상세페이지 이동 등
-    console.log("알림 클릭됨:", noti.id);
+    return console.log("알림 클릭됨:", noti.id);
   };
+
   //! 현재 불러온 알림 목록을 forEach 돌면서 모두 isRead: true로 업데이트 해야됨
-  const handleMarkAllAsRead = async () => {
+  const handleAllRead = async () => {
     if (!data || !uid) return;
 
     const batch = dbService.batch(); // Firestore batch 사용 (한 번에 여러 문서 처리 최대 500개까지)
@@ -184,15 +200,22 @@ const NotificationListPage = () => {
 
     await batch.commit(); // 배치 실행(배치를 실행시킬려면 commit함수를 꼭 붙여야함)
     console.log("모든 알림을 읽음 처리했습니다.");
-    await refetch(); //  데이터 새로고침 //서버에 요청 → 최신 데이터로 갱신
+    return await refetch(); //  데이터 새로고침 //서버에 요청 → 최신 데이터로 갱신
   };
+
+  //! 안읽은 알림이 없느가를 처음 페이지가 렌더링될때 확인용
+  useEffect(() => {
+    checkUnreadNotifications();
+  }, [checkUnreadNotifications]);
 
   if (isPending) {
     return <Loaiding />;
   }
+
   if (error || !data) {
     return <h1>Error: {error.message}</h1>;
   }
+
   return (
     <div>
       {data?.pages.length === 0 ? (
@@ -202,8 +225,10 @@ const NotificationListPage = () => {
         </div>
       ) : (
         <div>
-          <button onClick={handleMarkAllAsRead}>모두 읽음</button>
-
+          {/* isRead가 다 true라면 버튼을 비활성화함 */}
+          <button onClick={handleAllRead} disabled={!isUnRead}>
+            모두 읽음
+          </button>
           <ul className="flex gap-y-2.5">
             {data?.pages.map((page) =>
               page.notifications.map((noti) => (

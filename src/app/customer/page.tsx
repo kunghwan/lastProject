@@ -15,9 +15,6 @@ const QnaPage = () => {
   const toggleQuestion = (question: string) => {
     setIsanswerShowing((prev) => (prev === question ? null : question));
   };
-  // const { user } = AUTH.use();
-
-  console.log("리렌더링됨");
 
   return (
     <div className="mt-5 relative h-screen flex flex-col gap-y-2.5 ">
@@ -50,12 +47,12 @@ const QnaPage = () => {
         </ul>
       </div>
 
-      <div className="text-xl font-bold flex flex-col justify-end items-center  ">
+      <div className=" md:text-xl font-bold flex flex-col justify-end items-center  ">
         <p>추가로 질문사항이 있으시면 </p>
         <p>
           <a
             href="mailto:test@test.com"
-            className="text-green-800 font-bold hover:underline"
+            className="text-green-800 font-bold hover:underline dark:text-green-200"
           >
             test@test.com
           </a>
