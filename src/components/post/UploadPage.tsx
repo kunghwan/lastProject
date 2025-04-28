@@ -114,6 +114,28 @@ const UploadPostPage = () => {
     [files]
   );
 
+  const onCilckTag = useCallback(() => {
+    if (tagMessage) {
+      alert(tagMessage);
+      tagRef.current?.focus();
+      return;
+    }
+    const formattedTag = tag.startsWith("#") ? tag : `#${tag}`;
+    const newTag: Tag = {
+      id: v4(),
+      name: formattedTag,
+    };
+
+    if (tags.find((t) => t.name === newTag.name)) {
+      return alert("이미 존재하는 태그입니다.");
+    }
+    setPost((prev) => ({
+      ...prev,
+      tags: [...prev.tags, newTag],
+    }));
+    return setTag("");
+  }, [tagMessage, tags, post, tag]);
+
   const onSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
@@ -262,27 +284,7 @@ const UploadPostPage = () => {
           />
           <button
             type="button"
-            onClick={() => {
-              if (tagMessage) {
-                alert(tagMessage);
-                tagRef.current?.focus();
-                return;
-              }
-              const formattedTag = tag.startsWith("#") ? tag : `#${tag}`;
-              const newTag: Tag = {
-                id: v4(),
-                name: formattedTag,
-              };
-
-              if (tags.find((t) => t.name === newTag.name)) {
-                return alert("이미 존재하는 태그입니다.");
-              }
-              setPost((prev) => ({
-                ...prev,
-                tags: [...prev.tags, newTag],
-              }));
-              return setTag("");
-            }}
+            onClick={() => onCilckTag()}
             className={twMerge(
               " min-w-20 flex-1 rounded bg-[rgba(116,212,186)] dark:bg-[rgba(116,212,186,0.5)] dark:text-white "
             )}
