@@ -1,6 +1,5 @@
 "use client";
 
-import { AUTH } from "@/contextapi/context";
 import React, { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
@@ -18,7 +17,7 @@ const QnaPage = () => {
 
   return (
     <div className="mt-5 relative h-screen flex flex-col gap-y-2.5 ">
-      <div>
+      <div className="z-50">
         <ul className="px-2">
           {qna.map((item) => (
             <li key={item.question} className="flex flex-col mb-2 w-full">
@@ -38,7 +37,7 @@ const QnaPage = () => {
               {/*조건부 렌더링: openQuestion === item.question일 때만 답변을 표시합니다.
                */}
               {isanswerShowing === item.question && (
-                <p className="mt-1  text-gray-600 rounded p-2.5 bg-[rgba(240,255,251)] dark:bg-[rgba(240,255,251,0.5) lg:text-xl">
+                <p className="mt-1  text-gray-600 rounded p-2.5 bg-[rgba(240,255,251)] dark:bg-[rgba(240,255,251,0.5)] lg:text-xl dark:text-white">
                   {item.answer}
                 </p>
               )}
@@ -47,7 +46,7 @@ const QnaPage = () => {
         </ul>
       </div>
 
-      <div className=" md:text-xl font-bold flex flex-col justify-end items-center  ">
+      <div className=" md:text-xl font-bold flex flex-col justify-end items-center z-50 ">
         <p>추가로 질문사항이 있으시면 </p>
         <p>
           <a
@@ -59,6 +58,11 @@ const QnaPage = () => {
           으로 메일을 보내주시면 감사하겠습니다.
         </p>
       </div>
+      {/* 빈화면을 눌러도 닫히게 코드 추가 z를 0주고 나머지 요소들은 위로 보이게 z를 50을 줌 */}
+      <span
+        className=" w-full absolute size-full top-0 left-0 z-0"
+        onClick={() => setIsanswerShowing(null)}
+      />
     </div>
   );
 };
