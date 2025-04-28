@@ -88,17 +88,23 @@ const IdFind = () => {
     codeSentOnce,
   ]);
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setName(value);
-    validateField("name", value);
-  };
+  const handleNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setName(value);
+      validateField("name", value);
+    },
+    [setName, validateField]
+  );
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPhone(value);
-    validateField("phone", value);
-  };
+  const handlePhoneChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setPhone(value);
+      validateField("phone", value);
+    },
+    [setPhone, validateField]
+  );
 
   const handleVerifyCode = useCallback(async () => {
     const nameErr = validateName(name);
@@ -134,16 +140,16 @@ const IdFind = () => {
     }
   }, [name, phone, code, generatedCode]);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     if (!foundEmail) {
       alert("먼저 인증확인을 완료해주세요.");
       return;
     }
 
     router.push("/idfind/resultid");
-  };
+  }, [foundEmail, router]);
 
-  const handleCodeSend = () => {
+  const handleCodeSend = useCallback(() => {
     const nameErr = validateName(name);
     const phoneErr = validatePhone(phone);
     setErrors({ name: nameErr || "", phone: phoneErr || "" });
@@ -156,9 +162,17 @@ const IdFind = () => {
     setCodeRequested(true);
     setCodeSentOnce(true);
     alert("인증번호가 전송되었습니다: " + newCode);
-  };
+  }, [
+    name,
+    phone,
+    setErrors,
+    setGeneratedCode,
+    setShowCode,
+    setCodeRequested,
+    setCodeSentOnce,
+  ]);
 
-  const handleResend = () => {
+  const handleResend = useCallback(() => {
     if (!codeSentOnce) {
       alert("먼저 인증번호찾기를 눌러주세요.");
       return;
@@ -168,7 +182,7 @@ const IdFind = () => {
     setGeneratedCode(newCode);
     setShowCode(true);
     alert("인증번호가 재전송되었습니다: " + newCode);
-  };
+  }, [codeSentOnce, setGeneratedCode, setShowCode]);
 
   const IdFinds = [
     {
