@@ -19,6 +19,7 @@ import Navbar from "./features/navber/Navbar";
 const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -102,6 +103,11 @@ const Header = () => {
               </button>
             </li>
           )}
+          <li>
+            <button>
+              <IoMenu />
+            </button>
+          </li>
         </ul>
 
         {/* 모바일 메뉴 버튼 */}
