@@ -2,8 +2,22 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@layer base {
+  button,
+  a {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  .grayButton {
+    @apply p-3 rounded-full hover:opacity-70 justify-center flex items-center dark:text-gray-800 text-3xl bg-gray-200;
+  }
+}
+
 @layer components {
   .grayButton {
     @apply p-3 rounded-full cursor-pointer hover:opacity-70 justify-center flex items-center dark:text-gray-800 text-3xl bg-gray-200;
   }
 }
+
