@@ -34,6 +34,7 @@
    - customer
    - notification
    - uploadpostpage
+   - followButton (컴포넌트)
 
 # 오늘 할일
 

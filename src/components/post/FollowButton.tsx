@@ -4,24 +4,20 @@ import { AUTH } from "@/contextapi/context";
 import { dbService, FBCollection } from "@/lib";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState, useTransition } from "react";
-import Loaiding from "../Loading/page";
+import Loaiding from "../Loading";
 
 interface FollowButtonProps {
   followingId: string; // 팔로잉할 유저의 uid
-
-
-  followNickName: string; // 팔로잉할 유저의 닉네임
-
-  follwingNickname: string; // 팔로잉할 유저의 닉네임
-
+  followNickname: string; // 팔로잉할 유저의 닉네임
 }
 
-const FollowButton = ({ followingId, follwingNickname }: FollowButtonProps) => {
+const FollowButton = ({ followingId, followNickname }: FollowButtonProps) => {
   const { user } = AUTH.use();
   const navi = useRouter();
+  // user가 팔로우를 한 사람인가를 확인하는 용도
   const [isFollowing, setIsFollowing] = useState(false);
-  const handleFollow = () => setIsFollowing((prev) => !prev);
-  const [isPening, startTransition] = useTransition();
+
+  const [isPending, startTransition] = useTransition();
 
   const onFollow = useCallback(() => {
     if (!user) {
@@ -33,49 +29,47 @@ const FollowButton = ({ followingId, follwingNickname }: FollowButtonProps) => {
     //   return null;
     // }
     startTransition(async () => {
-      // 1. 내 팔로잉에 추가
-      await dbService
-        .collection(FBCollection.USERS)
-        .doc(user.uid)
-        .collection("followings")
-        .doc(followingId)
-        .set({
-
-          followNickName: followNickName,
-
-          followNickName: followingId,
-
-          follwingNickname: followingId,
-
-
-          createdAt: new Date().toLocaleString(),
-        });
-      // 2. 상대방 팔로워에 나 추가
-      await dbService
-        .collection(FBCollection.USERS)
-        .doc(followingId)
-        .collection("followers")
-        .doc(user.uid)
-        .set({
-          followerNickname: user?.nickname,
-          createdAt: new Date().toLocaleString(),
-        });
-      // 3. 상대방에게 알림 전송
-      await dbService
-        .collection(FBCollection.USERS)
-        .doc(followingId)
-        .collection("notification")
-        .add({
-          follwingId: followingId,
-          followerId: user.uid,
-          followerNickname: user?.nickname,
-          createdAt: new Date().toLocaleString(),
-          isRead: false,
-        });
-      console.log(followingId, follwingNickname, user.uid, 51);
-      setIsFollowing(true);
+      try {
+        // 1. 내 팔로잉에 추가
+        await dbService
+          .collection(FBCollection.USERS)
+          .doc(user.uid)
+          .collection(FBCollection.FOLLOWINGS)
+          .doc(followingId)
+          .set({
+            followingId: followingId,
+            follwingNickname: followNickname,
+            createdAt: new Date().toLocaleString(),
+          });
+        // 2. 상대방 팔로워에 나 추가
+        await dbService
+          .collection(FBCollection.USERS)
+          .doc(followingId)
+          .collection(FBCollection.FOLLOWERS)
+          .doc(user.uid)
+          .set({
+            followerNickname: user?.nickname,
+            createdAt: new Date().toLocaleString(),
+          });
+        // 3. 상대방에게 알림 전송
+        await dbService
+          .collection(FBCollection.USERS)
+          .doc(followingId)
+          .collection(FBCollection.NOTIFICATION)
+          .add({
+            follwingId: followingId,
+            followerId: user.uid,
+            followerNickname: user?.nickname,
+            createdAt: new Date().toLocaleString(),
+            isRead: false,
+          });
+        console.log(followingId, followNickname, user.uid, 51);
+        setIsFollowing(true);
+        alert(`${followNickname}님을 팔로우 했습니다`);
+      } catch (error: any) {
+        return console.log(error.message);
+      }
     });
-    return alert(`${followNickName}님을 팔로우 했습니다`);
   }, [user, followingId, navi]);
   //언팔로우 처리
   const onUnFollow = useCallback(() => {
@@ -84,61 +78,64 @@ const FollowButton = ({ followingId, follwingNickname }: FollowButtonProps) => {
       return navi.push("/signin");
     }
     startTransition(async () => {
-      //내 followings에서 제거
-      const ref = await dbService
-        .collection(FBCollection.USERS)
-        .doc(user.uid)
-        .collection("followings")
-        .doc(followingId);
+      try {
+        //! 내 followings에서 제거
+        const ref = dbService
+          .collection(FBCollection.USERS)
+          .doc(user.uid)
+          .collection(FBCollection.FOLLOWINGS)
+          .doc(followingId);
 
-      //delete() 메서드는 문서를 삭제하는 메서드
+        //delete() 메서드는 문서를 삭제하는 메서드
 
-      //delete() 메서드는 문서를 삭제하는 메서드
+        await ref.delete();
 
-      await ref.delete();
+        //! 상대방 followers에서 나 제거
+        const followerRef = dbService
+          .collection(FBCollection.USERS)
+          .doc(followingId)
+          .collection(FBCollection.FOLLOWERS)
+          .doc(user.uid);
 
-      // 상대방 followers에서 나 제거
-      const followerRef = await dbService
-        .collection(FBCollection.USERS)
-        .doc(followingId)
-        .collection("followers")
-        .doc(user.uid);
+        //delete() 메서드는 문서를 삭제하는 메서드
 
-      //delete() 메서드는 문서를 삭제하는 메서드
+        await followerRef.delete();
 
-      //delete() 메서드는 문서를 삭제하는 메서드
-
-      await followerRef.delete();
-
-      setIsFollowing(false);
+        setIsFollowing(false);
+      } catch (error: any) {
+        return console.log(error.message);
+      }
     });
   }, [user, navi, followingId]);
-  //현재 유저를 팔로우하고 있는지 확인용도
+
+  //! 현재 유저를 팔로우하고 있는지 확인용도
   useEffect(() => {
     const checkFollowing = async () => {
       if (!user?.uid || !followingId) {
-        return console.log("no");
+        return console.log("no user");
       }
 
       try {
         const ref = dbService
           .collection(FBCollection.USERS)
           .doc(user.uid)
-          .collection("followings")
+          .collection(FBCollection.FOLLOWINGS)
           .doc(followingId);
         const snap = await ref.get();
         //extsts는 문서가 존재하는지 확인하는 메서드(불리언타입임)
+        //snap.exists를 통해 그 문서가 존재하는지 확인// 문서가 존재하면 setIsFollowing(true),문서가 존재하지 않으면 setIsFollowing(false)
         setIsFollowing(snap.exists);
       } catch (error: any) {
-        console.error(error.message);
+        return console.error(error.message);
       }
-
-      checkFollowing();
     };
+    checkFollowing();
+    //리턴으로 청소 작업필요
+    return;
   }, [user, followingId]);
   return (
     <div>
-      {isPening && <Loaiding />}
+      {isPending && <Loaiding />}
       {isFollowing ? (
         <button
           className="border-2 border-gray-300 rounded-full px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
@@ -147,7 +144,12 @@ const FollowButton = ({ followingId, follwingNickname }: FollowButtonProps) => {
           UnFollow
         </button>
       ) : (
-        <button onClick={() => onFollow()}>Follow</button>
+        <button
+          className="border-2 border-gray-300 rounded-full px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+          onClick={() => onFollow()}
+        >
+          Follow
+        </button>
       )}
     </div>
   );

@@ -3,12 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaRegMessage, FaPencil } from "react-icons/fa6";
-import {
-  IoPersonSharp,
-  IoCloseOutline,
-  IoStarOutline,
-  IoCloseSharp,
-} from "react-icons/io5";
+import { IoPersonSharp, IoCloseOutline, IoStarOutline } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
 import { AUTH } from "@/contextapi/context";
 import { FaRegQuestionCircle } from "react-icons/fa";
@@ -81,7 +76,7 @@ const Navbar = () => {
 
         <nav
           className={twMerge(
-            "fixed bottom-0 left-0 right-0 bg-gray-200 z-30 p-2.5 flex justify-around [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto",
+            "fixed bottom-0 left-0 right-0 bg-gray-200 z-30 flex justify-around [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto",
             ["/signin", "/signup"].includes(pathname!) && "hidden"
           )}
         >
@@ -127,5 +122,4 @@ const NavBtns = [
   { name: "피드", icon: <FaRegMessage />, modal: true },
   { name: "글쓰기", icon: <FaPencil />, path: "/profile/create" },
   { name: "MY", icon: <IoPersonSharp />, path: "/profile" },
-  { name: "닫기", icon: <IoCloseSharp /> },
 ];

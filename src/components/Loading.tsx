@@ -22,7 +22,7 @@ const Loaiding = () => {
 
     const timeset = setTimeout(() => {
       setLoading({ isLoading: false });
-    }, 500);
+    }, 3000);
 
     return () => clearTimeout(timeset);
   }, [pathname]);

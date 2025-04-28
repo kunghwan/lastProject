@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { AUTH } from "@/contextapi/context";
+import { error } from "console";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -20,19 +21,7 @@ const LoginForm = () => {
     if (savedPassword) setPassword(savedPassword);
   }, []);
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
-    sessionStorage.setItem("login_email", value); // 저장
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPassword(value);
-    sessionStorage.setItem("login_password", value); // 저장
-  };
-
-  const handleLogin = async () => {
+  const handleLogin = useCallback(async () => {
     if (!email && !password) {
       alert("아이디와 비밀번호를 입력해주세요.");
       return;
@@ -46,7 +35,10 @@ const LoginForm = () => {
       return;
     }
 
+    console.log(email, password);
+
     const result = await signin(email, password);
+    console.log(result);
 
     if (!result.success) {
       const message = result.message?.toLowerCase();
@@ -61,42 +53,44 @@ const LoginForm = () => {
     }
 
     router.push("/");
-  };
+  }, [email, password, signin, router]);
 
   return (
     <>
-      <div className=" flex flex-col gap-y-2.5 items-center justify-center h-120 ">
-        <div className="flex flex-col gap-y-2.5">
-          <input
-            type="text"
-            className={InputStyle}
-            placeholder="아이디"
-            value={email}
-            onChange={handleEmailChange}
-          />
-          <input
-            type="password"
-            className={InputStyle}
-            placeholder="비밀번호"
-            value={password}
-            onChange={handlePasswordChange}
-          />
-        </div>
-        <div className="flex gap-x-20 justify-start w-100 lg:w-120   ">
-          <Link href="/idfind" className={Find}>
-            아이디찾기
+      <form onSubmit={(e) => e.preventDefault()}>
+        <div className=" flex flex-col gap-y-2.5 items-center justify-center h-120 ">
+          <div className="flex flex-col gap-y-2.5">
+            <input
+              type="text"
+              className={InputStyle}
+              placeholder="아이디"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              className={InputStyle}
+              placeholder="비밀번호"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <div className="flex gap-x-20 justify-start w-100 lg:w-120   ">
+            <Link href="/idfind" className={Find}>
+              아이디찾기
+            </Link>
+            <Link href="/pwfind" className={Find}>
+              비밀번호찾기
+            </Link>
+          </div>
+          <button className={LoginButton} onClick={handleLogin}>
+            로그인
+          </button>
+          <Link href="/signup" className={SignUserButton}>
+            회원가입
           </Link>
-          <Link href="/pwfind" className={Find}>
-            비밀번호찾기
-          </Link>
         </div>
-        <button className={LoginButton} onClick={handleLogin}>
-          로그인
-        </button>
-        <Link href="/signup" className={SignUserButton}>
-          회원가입
-        </Link>
-      </div>
+      </form>
     </>
   );
 };

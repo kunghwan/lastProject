@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { IoAdd } from "react-icons/io5";
 import { storageService, dbService, FBCollection } from "@/lib/firebase";
 import { AUTH } from "@/contextapi/context";
-import LoadingPage from "@/components/Loading/page"; // 로딩 컴포넌트
+import LoadingPage from "@/components/Loading"; // 로딩 컴포넌트
 
 const SettingProfile = () => {
   const [profile, setProfile] = useState<
@@ -159,7 +159,9 @@ const SettingProfile = () => {
             value={profile.nickname}
             onChange={handleChange}
             placeholder="유저이름"
-            className={`${settingProfile} ${nicknameError ? "border-red-500" : ""}`}
+            className={`${settingProfile} ${
+              nicknameError ? "border-red-500" : ""
+            }`}
           />
           {nicknameError && (
             <div className="absolute text-red-500 text-xs mt-1">
