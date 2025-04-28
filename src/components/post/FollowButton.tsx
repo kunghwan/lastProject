@@ -9,10 +9,14 @@ import Loaiding from "../Loading/page";
 interface FollowButtonProps {
   followingId: string; // 팔로잉할 유저의 uid
 
+
+  followNickName: string; // 팔로잉할 유저의 닉네임
+
   follwingNickname: string; // 팔로잉할 유저의 닉네임
+
 }
 
-const FollowButton = ({ followingId, follwingNickname }: FollowButtonProps) => {
+const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
   const { user } = AUTH.use();
   const navi = useRouter();
   // user가 팔로우를 한 사람인가를 확인하는 용도
@@ -37,7 +41,13 @@ const FollowButton = ({ followingId, follwingNickname }: FollowButtonProps) => {
         .collection("followings")
         .doc(followingId)
         .set({
+
+          followNickName: followNickName,
+
+          follwingNickname: followingId,
+
           followNickName: follwingNickname,
+
           createdAt: new Date().toLocaleString(),
         });
       // 2. 상대방 팔로워에 나 추가
@@ -62,7 +72,7 @@ const FollowButton = ({ followingId, follwingNickname }: FollowButtonProps) => {
           createdAt: new Date().toLocaleString(),
           isRead: false,
         });
-      console.log(followingId, follwingNickname, user.uid, 51);
+      console.log(followingId, followNickName, user.uid, 51);
       setIsFollowing(true);
     });
     return alert(`${follwingNickname}님을 팔로우 했습니다`);
