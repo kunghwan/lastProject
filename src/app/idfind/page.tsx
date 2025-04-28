@@ -317,28 +317,35 @@ const IdFind = () => {
       </div>
 
       {foundEmail && (
-        <p className="text-center text-lg text-amber-600 font-bold mt-4">
+        <p className="text-center  text-amber-600 font-bold mt-4 text-sm">
           내 아이디는 <span className="underline">{foundEmail}</span> 입니다.
         </p>
       )}
       {foundEmail && (
-        <div className="text-center mt-4">
-          <p className="text-lg text-amber-600 font-bold">
-            아이디를 선택해주세요:
+        <div className="text-center mt-4 text-sm flex flex-col items-center justify-center">
+          <p className="text-sm text-amber-600 font-bold whitespace-nowrap mb-2">
+            id 선택
           </p>
-          {foundEmail.split(", ").map((email, idx) => (
-            <div key={idx}>
-              <input
-                type="radio"
-                id={`email-${idx}`}
-                name="selected-email"
-                value={email}
-                checked={selectedEmail === email}
-                onChange={() => setSelectedEmail(email)}
-              />
-              <label htmlFor={`email-${idx}`}>{email}</label>
-            </div>
-          ))}
+          <div className="grid grid-cols-2 gap-4">
+            {foundEmail.split(", ").map((email, idx) => (
+              <div key={idx} className="flex items-center gap-x-2.5">
+                <input
+                  type="radio"
+                  id={`email-${idx}`}
+                  name="selected-email"
+                  value={email}
+                  checked={selectedEmail === email}
+                  onChange={() => setSelectedEmail(email)}
+                />
+                <label
+                  htmlFor={`email-${idx}`}
+                  className="whitespace-nowrap z-50"
+                >
+                  {email}
+                </label>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </form>
