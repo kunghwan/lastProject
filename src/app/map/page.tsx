@@ -135,7 +135,7 @@ const MapPage = () => {
   };
 
   return (
-    <div className="flex flex-col relative dark:text-black h-[80vh] overflow-hidden my-5">
+    <div className="flex flex-col relative dark:text-black h-[80vh] overflow-hidden mb-5">
       <form
         className="p-2.5 flex bg-white absolute z-50 left-10 top-10 rounded-full shadow-md border border-gray-300 "
         onSubmit={(e) => {
