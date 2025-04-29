@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, ChangeEvent, useCallback } from "react";
+import { useEffect, useState, ChangeEvent, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { dbService, FBCollection } from "@/lib/firebase";
 import {
@@ -36,6 +36,17 @@ const PwFindResult = () => {
   const router = useRouter();
   const { user } = AUTH.use();
 
+  // ✅ 비로그인용 Ref 추가
+  const nameRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const findPasswordButtonRef = useRef<HTMLButtonElement>(null);
+
+  // ✅ 비밀번호 변경용 Ref 추가
+  const newPasswordRef = useRef<HTMLInputElement>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement>(null);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
   const [inputName, setInputName] = useState("");
   const [inputPhone, setInputPhone] = useState("");
   const [inputEmail, setInputEmail] = useState("");
@@ -53,13 +64,46 @@ const PwFindResult = () => {
   });
   const [validation, setValidation] = useState<FindPasswordValidation>({});
 
-  // ✅ 페이지 진입 시 selectedRealEmail 복구
+  // ✅ 페이지 진입 시 input focus 처리
+  useEffect(() => {
+    if (user || email) {
+      newPasswordRef.current?.focus();
+    } else {
+      nameRef.current?.focus();
+    }
+  }, [user, email]);
+
+  // ✅ 비로그인 input 엔터 핸들러
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (e.currentTarget.name === "name") {
+        phoneRef.current?.focus();
+      } else if (e.currentTarget.name === "phone") {
+        emailRef.current?.focus();
+      } else if (e.currentTarget.name === "email") {
+        findPasswordButtonRef.current?.click();
+      }
+    }
+  };
+
+  // ✅ 비밀번호변경 input 엔터 핸들러
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (e.currentTarget.name === "newPassword") {
+        confirmPasswordRef.current?.focus();
+      } else if (e.currentTarget.name === "confirmPassword") {
+        submitButtonRef.current?.click();
+      }
+    }
+  };
+
   useEffect(() => {
     const realEmail = sessionStorage.getItem("selectedRealEmail");
     if (realEmail) {
       setEmail(realEmail);
     } else {
-      // 없으면 기존 저장된 이름/폰/이메일 복구
       const savedName = sessionStorage.getItem(STORAGE_KEYS.NAME) || "";
       const savedPhone = sessionStorage.getItem(STORAGE_KEYS.PHONE) || "";
       const savedEmail = sessionStorage.getItem(STORAGE_KEYS.EMAIL) || "";
@@ -90,10 +134,7 @@ const PwFindResult = () => {
 
     const newPasswordMessage = validatePassword(newPassword);
     if (newPasswordMessage) {
-      errors.newPassword = {
-        isValid: false,
-        message: newPasswordMessage,
-      };
+      errors.newPassword = { isValid: false, message: newPasswordMessage };
     }
 
     if (!confirmPassword) {
@@ -125,8 +166,8 @@ const PwFindResult = () => {
     if (!validateForm()) return;
 
     alert("비밀번호가 성공적으로 변경되었습니다.");
-    sessionStorage.removeItem("selectedRealEmail"); // ✅ selectedRealEmail 삭제
-    router.push("/");
+    sessionStorage.removeItem("selectedRealEmail");
+    router.push("/signin");
   }, [router, validateForm]);
 
   const handleInputChange = useCallback(
@@ -190,15 +231,17 @@ const PwFindResult = () => {
     <div className="p-2">
       <h2 className="text-2xl font-bold mb-4">비밀번호 재설정</h2>
 
-      {/* ✅ 이름/폰/이메일 입력 폼 */}
+      {/* 이름/폰/이메일 입력 폼 */}
       {!user && !email && (
         <div className="flex flex-col gap-2 mb-4">
           <input
             type="text"
-            placeholder="이름 입력"
             name="name"
+            ref={nameRef}
             value={inputName}
             onChange={handleInputChange}
+            onKeyDown={handleInputKeyDown}
+            placeholder="이름 입력"
             className="border p-2 border-emerald-300 placeholder:text-emerald-300"
           />
           {inputErrors.name && (
@@ -207,10 +250,12 @@ const PwFindResult = () => {
 
           <input
             type="text"
-            placeholder="전화번호 입력"
             name="phone"
+            ref={phoneRef}
             value={inputPhone}
             onChange={handleInputChange}
+            onKeyDown={handleInputKeyDown}
+            placeholder="전화번호 입력"
             className="border p-2 border-emerald-300 placeholder:text-emerald-300"
           />
           {inputErrors.phone && (
@@ -219,10 +264,12 @@ const PwFindResult = () => {
 
           <input
             type="email"
-            placeholder="이메일 입력"
             name="email"
+            ref={emailRef}
             value={inputEmail}
             onChange={handleInputChange}
+            onKeyDown={handleInputKeyDown}
+            placeholder="이메일 입력"
             className="border p-2 border-emerald-300 placeholder:text-emerald-300"
           />
           {inputErrors.email && (
@@ -230,6 +277,7 @@ const PwFindResult = () => {
           )}
 
           <button
+            ref={findPasswordButtonRef}
             type="button"
             className="bg-gray-300 rounded-2xl p-3 mt-2 flex justify-center w-50 items-center lg:w-80"
             onClick={handleFindPassword}
@@ -239,7 +287,7 @@ const PwFindResult = () => {
         </div>
       )}
 
-      {/* ✅ 새 비밀번호/비밀번호 확인 폼 */}
+      {/* 새 비밀번호/비밀번호 확인 폼 */}
       {(user || email) && (
         <>
           <div className="border h-80 justify-center flex items-center">
@@ -255,8 +303,10 @@ const PwFindResult = () => {
                 <input
                   type="password"
                   name="newPassword"
+                  ref={newPasswordRef}
                   value={form.newPassword}
                   onChange={handleChange}
+                  onKeyDown={handleKeyDown}
                   placeholder="새비밀번호"
                   className="border p-2 border-emerald-300 placeholder:text-emerald-300"
                 />
@@ -269,8 +319,10 @@ const PwFindResult = () => {
                 <input
                   type="password"
                   name="confirmPassword"
+                  ref={confirmPasswordRef}
                   value={form.confirmPassword}
                   onChange={handleChange}
+                  onKeyDown={handleKeyDown}
                   placeholder="새 비밀번호 확인"
                   className="border p-2 border-emerald-300 mt-2 placeholder:text-emerald-300"
                 />
@@ -285,6 +337,7 @@ const PwFindResult = () => {
 
           <div className="flex justify-center">
             <button
+              ref={submitButtonRef}
               className="bg-gray-300 rounded-2xl p-5 mt-3 flex justify-center w-50 items-center lg:w-80"
               onClick={handleSubmit}
             >
