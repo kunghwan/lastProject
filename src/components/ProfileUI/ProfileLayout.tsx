@@ -83,12 +83,12 @@ const ProfileLayout = ({
                 )}
               </div>
               <div className="flex ml-2.5 gap-5 ">
-                <p className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
+                <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
                   게시물 <span>{actualPostCount}</span>
-                </p>
-                <p className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
+                </div>
+                <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
                   구독수 <span>{posts[0]?.shares?.length || 0}</span>
-                </p>
+                </div>
               </div>
             </div>
           </div>
@@ -142,12 +142,12 @@ const ProfileLayout = ({
             </h1>
             <div className="flex flex-1 justify-center mx-auto">
               <div className="flex gap-5 ">
-                <p className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
+                <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
                   게시물 <span>{actualPostCount}</span>
-                </p>
-                <p className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
+                </div>
+                <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
                   구독수 <span>{posts[0]?.shares?.length || 0}</span>
-                </p>
+                </div>
               </div>
             </div>
             <div>

@@ -18,19 +18,19 @@ export interface FeedPageProps {
 // 포스트 하나에 대한 타입
 export interface Post {
   id?: string; // 게시물 고유 ID
+  imageUrl?: string | null; // 게시물 대표 이미지 URL
   uid: string; // 작성자 ID
-  title: string; // 게시물 제목
-  userNickname: string; // 작성자 닉네임
-  userProfileImage: string; // 작성자 프로필 이미지 URL
-  imageUrl: string | null; // 게시물 대표 이미지 URL
   content: string; // 게시물 내용 또는 설명
-  lo: Location; // 장소 정보 (위치, 주소 등)
-  // likes: number; // 좋아요 수를 카운트하기위해 uid 좋아요를 클릭한 사람의 uid를 담음 취소하면 uid를 뺌
   likes: Array<string>;
   shares: Array<{ uid: string; count: number }>; // 공유 수
+  lo: Location; // 장소 정보 (위치, 주소 등)
+  // likes: number; // 좋아요 수를 카운트하기위해 uid 좋아요를 클릭한 사람의 uid를 담음 취소하면 uid를 뺌
+  title: string; // 게시물 제목
+  createdAt: string; // 작성일시 (ISO 8601)
+  userNickname: string; // 작성자 닉네임
+  userProfileImage: string; // 작성자 프로필 이미지 URL
   bookmarked: Array<string>;
   isLiked: boolean; // 현재 유저가 좋아요 눌렀는지 여부
-  createdAt: string; // 작성일시 (ISO 8601)
 }
 
 // const post1: Post = {
