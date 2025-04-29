@@ -175,13 +175,8 @@ const SettingProfile = () => {
         </div>
 
         {/* 프로필 추가 */}
-        <div className="flex flex-col gap-y-5">
-          <input
-            type="text"
-            placeholder="프로필추가"
-            className={settingProfile}
-            disabled
-          />
+        <div className="flex flex-col gap-y-5 ">
+          <input type="text" placeholder="프로필추가" disabled />
           <button
             type="button"
             onClick={triggerFileSelect}
@@ -212,7 +207,7 @@ const SettingProfile = () => {
             value={profile.bio}
             onChange={handleChange}
             placeholder="자기소개를 작성해주세요"
-            className="border w-full h-32 p-3 resize-none mt-5"
+            className="border w-full h-20 p-3 resize-none mt-5"
           />
           {bioError && (
             <div className="absolute text-red-500 text-xs mt-1">{bioError}</div>
@@ -233,4 +228,4 @@ const SettingProfile = () => {
 
 export default SettingProfile;
 
-const settingProfile = "bg-lime-300 p-3 rounded w-110 sm:w-122 mt-5 ";
+const settingProfile = "bg-lime-400 p-3 rounded w-110 sm:w-122 mt-5 ";
