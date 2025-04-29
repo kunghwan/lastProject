@@ -4,27 +4,17 @@ import {
   createContext,
   useContext,
   useCallback,
-  useMemo,
   useState,
   useEffect,
 } from "react";
 import { authService, dbService, FBCollection } from "@/lib";
 import { PropsWithChildren } from "react";
 import { AUTH } from "../context";
-import Loaiding from "@/components/Loading";
-import { fetchSignInMethodsForEmail } from "firebase/auth";
-
-// 🔥 Context 두개로 나눈다
-// const AuthUserContext = createContext<User | null>(null);
-// const AuthFunctionContext = createContext<{
-//   signin: (email: string, password: string) => Promise<PromiseResult>;
-//   signout: () => Promise<PromiseResult>;
-//   signup: (newUser: User, password: string) => Promise<PromiseResult>;
-//   updateUser: (target: keyof User, value: any) => Promise<PromiseResult>;
-// } | null>(null);
+import Loading from "@/components/Loading";
 
 const ref = dbService.collection(FBCollection.USERS);
-const AuthProvider = ({ children }: PropsWithChildren) => {
+
+export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
   const [initialized, setInitialized] = useState(false);
   const [isPending, setIsPending] = useState(true);
@@ -32,37 +22,61 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   const signin = useCallback(
     async (email: string, password: string): Promise<PromiseResult> => {
       try {
-        console.log(email, password);
-        const userCredential = await authService.signInWithEmailAndPassword(
-          email,
-          password
-        );
-        console.log("✅ 로그인 성공! userCredential:", userCredential);
+        // 1. Firestore users에서 email 존재 확인
+        const snapshot = await ref.where("email", "==", email).limit(1).get();
 
-        const fbUser = userCredential.user;
-        if (!fbUser) return { success: false, message: "데이터 못가져옴" };
+        if (snapshot.empty) {
+          return {
+            success: false,
+            message: "아이디가 일치하지 않습니다.",
+            reason: "user-not-found",
+          };
+        }
 
-        console.log("✅ 로그인된 유저 uid:", fbUser.uid);
+        // 2. 이메일이 있으면 로그인 시도
+        try {
+          const userCredential = await authService.signInWithEmailAndPassword(
+            email,
+            password
+          );
+          const fbUser = userCredential.user;
+          if (!fbUser)
+            return {
+              success: false,
+              message: "유저 정보를 불러올 수 없습니다.",
+              reason: "unknown-error",
+            };
 
-        const snap = await ref.doc(fbUser.uid).get();
-        console.log("✅ Firestore에서 가져온 snap:", snap.exists);
+          const snap = await ref.doc(fbUser.uid).get();
+          const data = snap.data() as User;
+          if (!data)
+            return {
+              success: false,
+              message: "Firestore 유저 정보 없음",
+              reason: "unknown-error",
+            };
 
-        const data = snap.data() as User;
-        if (!data) return { success: false, message: "존재하지 않음" };
-
-        setUser(data);
-        return { success: true };
+          setUser(data);
+          return { success: true };
+        } catch (loginError: any) {
+          console.error("❌ 로그인 실패:", loginError.message);
+          return {
+            success: false,
+            message: "비밀번호가 틀렸습니다.",
+            reason: "wrong-password",
+          };
+        }
       } catch (error: any) {
-        console.error("❌ 로그인 실패:", error.message);
-        return { success: false, message: error.message };
+        console.error("❌ signin 오류:", error.message);
+        return {
+          success: false,
+          message: "로그인 과정 오류",
+          reason: "unknown-error",
+        };
       }
     },
     [ref]
   );
-
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
 
   const signout = useCallback(async (): Promise<PromiseResult> => {
     try {
@@ -70,7 +84,11 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       setUser(null);
       return { success: true };
     } catch (error: any) {
-      return { success: false, message: error.message };
+      return {
+        success: false,
+        message: error.message,
+        reason: "unknown-error",
+      };
     }
   }, []);
 
@@ -82,13 +100,22 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
             newUser.email!,
             password
           );
-        if (!fbUser) return { success: false, message: "유저 가입안됨" };
+        if (!fbUser)
+          return {
+            success: false,
+            message: "유저 가입 실패",
+            reason: "unknown-error",
+          };
 
         const storedUser: User = { ...newUser, uid: fbUser.uid };
-        sessionStorage.setItem("signupUser", JSON.stringify(storedUser));
+        await ref.doc(fbUser.uid).set(storedUser); // ✅ Firestore 저장
         return { success: true };
       } catch (error: any) {
-        return { success: false, message: error.message };
+        return {
+          success: false,
+          message: error.message,
+          reason: "unknown-error",
+        };
       }
     },
     []
@@ -96,20 +123,23 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
 
   const updateUser = useCallback(
     async (target: keyof User, value: any): Promise<PromiseResult> => {
-      if (!user) {
+      if (!user)
         return {
           success: false,
-          message: "로그인 한 유저만 사용할 수 있는 기능입니다.",
+          message: "로그인 필요",
+          reason: "unknown-error",
         };
-      }
-
       try {
         const updated = { ...user, [target]: value };
         await ref.doc(user.uid).update({ [target]: value });
         setUser(updated);
         return { success: true };
       } catch (error: any) {
-        return { success: false, message: error.message };
+        return {
+          success: false,
+          message: error.message,
+          reason: "unknown-error",
+        };
       }
     },
     [user, ref]
@@ -117,7 +147,6 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     const unsubscribe = authService.onAuthStateChanged(async (fbUser) => {
-      console.log(fbUser);
       if (fbUser) {
         const snap = await ref.doc(fbUser.uid).get();
         const data = snap.data() as User;
@@ -130,7 +159,6 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         setIsPending(false);
       }, 1000);
     });
-    // unsubscribe();
     return unsubscribe;
   }, []);
 
@@ -146,7 +174,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         updateUser,
       }}
     >
-      {!isPending || initialized ? children : <Loaiding />}
+      {!isPending || initialized ? children : <Loading />}
     </AUTH.context.Provider>
   );
 };

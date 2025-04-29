@@ -125,12 +125,24 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         //extsts는 문서가 존재하는지 확인하는 메서드(불리언타입임)
         setIsFollowing(snap.exists);
       } catch (error: any) {
+
         console.error(error.message);
+
+        return console.log(error.message);
+
       }
 
       checkFollowing();
     };
+
+    checkFollowing();
+    //리턴으로 청소 작업필요
+    return () => {
+      checkFollowing();
+    };
+
   }, [user, followingId]);
+
   return (
     <div>
       {isPening && <Loaiding />}

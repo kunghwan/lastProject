@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   IoMoon,
   IoSunny,
@@ -16,8 +16,10 @@ import { AUTH } from "@/contextapi/context";
 import { twMerge } from "tailwind-merge";
 import Navbar from "./features/navber/Navbar";
 
+const headBtn = "grayButton text-xl sm:text-2xl";
+const darkText = "grayButton w-full dark:bg-[#333333] dark:text-[#F1F5F9]";
+
 const Header = () => {
-  // 처음 시작은 라이트 모드 (false) 로 설정
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -25,12 +27,11 @@ const Header = () => {
   const pathname = usePathname();
   const { user, signout } = AUTH.use();
 
-  const isAuthPage = ["/signin", "/signup"].includes(pathname!);
-
-  const headBtn = "grayButton text-xl sm:text-2xl";
+  const isAuthPage = useMemo(() => {
+    return ["/signin", "/signup"].includes(pathname!);
+  }, [pathname]);
 
   useEffect(() => {
-    // 페이지 로드시 로컬 스토리지에서 다크 모드 설정 읽어오기
     const storedDarkMode = localStorage.getItem("darkMode");
     if (storedDarkMode === "true") {
       setIsDarkMode(true);
@@ -38,25 +39,70 @@ const Header = () => {
     } else {
       document.documentElement.classList.remove("dark");
     }
-  }, []); // 빈 의존성 배열로 초기 로드 시에만 실행
+  }, []);
 
   useEffect(() => {
-    // isDarkMode 상태가 변경될 때마다 document 클래스 토글 및 로컬 스토리지 업데이트
     document.documentElement.classList.toggle("dark", isDarkMode);
     localStorage.setItem("darkMode", isDarkMode.toString());
   }, [isDarkMode]);
 
-  const handleDarkModeToggle = () => {
-    setIsDarkMode(!isDarkMode);
-  };
+  const handleDarkModeToggle = useCallback(() => {
+    setIsDarkMode((prev) => !prev);
+  }, []);
 
-  const handleLogout = () => {
-    if (window.confirm("로그아웃 하시겠습니까?")) {
+  const handleLogout = useCallback(() => {
+    if (confirm("로그아웃 하시겠습니까?")) {
       signout();
       alert("로그아웃 되었습니다.");
       router.push("/");
     }
-  };
+  }, [signout, router]);
+
+  // 데스크탑 + 모바일 버튼 목록 정리
+  const headerButtons = useMemo(() => {
+    const buttons = [];
+
+    // 로그인 했을때 보이는 버튼
+    if (user) {
+      buttons.push(
+        {
+          icon: <IoBookmarkOutline />,
+          onClick: () => router.push("/map"),
+        },
+        {
+          icon: <IoNotificationsOutline />,
+          onClick: () => router.push("/notification"),
+        }
+      );
+    }
+    //다크모드 구현 버튼
+    buttons.push({
+      icon: isDarkMode ? <IoMoon /> : <IoSunny />,
+      onClick: handleDarkModeToggle,
+      className: twMerge(
+        headBtn,
+        isDarkMode ? "text-gray-800" : "text-white bg-black"
+      ),
+    });
+
+    // 로그인/로그아웃 버튼
+    if (!isAuthPage) {
+      buttons.push({
+        label: user ? "로그아웃" : "로그인",
+        onClick: () => (user ? handleLogout() : router.push("/signin")),
+        className: "text-2xl font-bold h-14 ",
+      });
+    }
+
+    return buttons;
+  }, [
+    user,
+    isDarkMode,
+    handleDarkModeToggle,
+    handleLogout,
+    isAuthPage,
+    router,
+  ]);
 
   return (
     <>
@@ -71,54 +117,26 @@ const Header = () => {
             height={80}
             width={80}
           />
-          {/* <p className="text-bold">방방콕콕</p> */}
         </Link>
 
         {/* 데스크탑 메뉴 */}
-        <ul className="hidden sm:flex items-center gap-x-4 ">
+        <ul className="hidden sm:flex items-center gap-x-4">
           {user && (
-            <>
-              <div className="text-2xl font-bold whitespace-nowrap flex">
-                <div className="max-w-40 truncate">{user.nickname}</div>
-                <p>님</p>
-              </div>
-
-              <li>
-                <button className={headBtn} onClick={() => router.push("/map")}>
-                  <IoBookmarkOutline />
-                </button>
-              </li>
-              <li>
-                <button
-                  className={headBtn}
-                  onClick={() => router.push("/notification")}
-                >
-                  <IoNotificationsOutline />
-                </button>
-              </li>
-            </>
+            <div className="text-2xl font-bold whitespace-nowrap flex">
+              <div className="max-w-40 truncate">{user.nickname}</div>
+              <p>님</p>
+            </div>
           )}
-          <li>
-            <button
-              onClick={handleDarkModeToggle}
-              className={twMerge(
-                headBtn,
-                isDarkMode ? "text-gray-800" : "text-white bg-black"
-              )}
-            >
-              {isDarkMode ? <IoMoon /> : <IoSunny />}
-            </button>
-          </li>
-          {!isAuthPage && (
-            <li>
+          {headerButtons.map((btn, index) => (
+            <li key={index}>
               <button
-                className="text-2xl font-bold h-14"
-                onClick={() => (user ? handleLogout() : router.push("/signin"))}
+                onClick={btn.onClick}
+                className={btn.className || headBtn}
               >
-                {user ? "로그아웃" : "로그인"}
+                {btn.icon || btn.label}
               </button>
             </li>
-          )}
+          ))}
         </ul>
 
         {/* 모바일 메뉴 버튼 */}
@@ -147,65 +165,39 @@ const Header = () => {
       {/* 모바일 팝업 메뉴 */}
       {isMenuOpen && !isAuthPage && (
         <div className="fixed inset-0 bg-gray-500/50 z-50 flex items-center justify-center sm:hidden">
-          <div className="bg-white dark:bg-gray-300  p-6 rounded-xl shadow-lg w-[65vw] max-w-sm text-center ">
+          <div className="bg-white dark:bg-gray-300 p-6 rounded-xl shadow-lg w-[65vw] max-w-sm text-center">
             <div className="flex justify-end mb-1">
-              <button
-                onClick={() => setIsMenuOpen(false)}
-                className="text-2xl "
-              >
+              <button onClick={() => setIsMenuOpen(false)} className="text-2xl">
                 <IoCloseSharp className="dark:text-black" />
               </button>
             </div>
 
             {user && (
-              <>
-                <div className="text-2xl font-bold whitespace-nowrap flex justify-center mb-3 text-black ">
-                  <div className="max-w-40 truncate">{user.nickname}</div>
-                  <p>님</p>
-                </div>
-                <button
-                  className="grayButton dark:bg-[#333333] dark:text-[#F1F5F9] w-full mb-2"
-                  onClick={() => {
-                    router.push("/map");
-                    setIsMenuOpen(false);
-                  }}
-                >
-                  <IoBookmarkOutline />
-                </button>
-                <button
-                  className="grayButton w-full mb-2 dark:bg-[#333333] dark:text-[#F1F5F9]"
-                  onClick={() => {
-                    router.push("/notification");
-                    setIsMenuOpen(false);
-                  }}
-                >
-                  <IoNotificationsOutline />
-                </button>
-              </>
+              <div className="text-2xl font-bold whitespace-nowrap flex justify-center mb-3 text-black">
+                <div className="max-w-40 truncate">{user.nickname}</div>
+                <p>님</p>
+              </div>
             )}
-
-            <button
-              className="grayButton w-full mb-2 dark:bg-[#333333] dark:text-[#F1F5F9]"
-              onClick={() => {
-                handleDarkModeToggle();
-                setIsMenuOpen(false);
-              }}
-            >
-              {isDarkMode ? <IoMoon /> : <IoSunny />}
-            </button>
-
-            <button
-              className="grayButton w-full mt-2 text-xl font-bold sm:hidden dark:bg-[#333333] dark:text-[#F1F5F9]"
-              onClick={() => {
-                user ? handleLogout() : router.push("/signin");
-                setIsMenuOpen(false);
-              }}
-            >
-              {user ? "로그아웃" : "로그인"}
-            </button>
+            {headerButtons.map((btn, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  btn.onClick();
+                  setIsMenuOpen(false);
+                }}
+                className={twMerge(
+                  "w-full mb-2 ",
+                  darkText,
+                  btn.icon ? darkText : "mt-2 text-2xl font-bold sm:hidden"
+                )}
+              >
+                {btn.icon || btn.label}
+              </button>
+            ))}
           </div>
         </div>
       )}
+
       <Navbar />
     </>
   );
