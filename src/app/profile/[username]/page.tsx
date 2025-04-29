@@ -1,98 +1,83 @@
 "use client";
+import { useQuery } from "react-query";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { dbService } from "@/lib/firebase";
 import { Post } from "@/types/post";
 import ProfileLayout from "@/components/ProfileUI/ProfileLayout";
-import { useState, useEffect } from "react";
 
 interface Props {
   params: { username: string };
 }
 
+const fetchPostsAndUserId = async (username: string) => {
+  const postsRef = collection(dbService, "posts");
+  const q = query(postsRef, where("userNickname", "==", username));
+  const querySnapshot = await getDocs(q);
+
+  const fetchedPosts: Post[] = [];
+  let fetchedUserId: string | null = null;
+
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    fetchedPosts.push({ id: doc.id, ...data } as Post);
+  });
+
+  // Firestore에서 users 컬렉션에서 nickname과 uid 가져오기
+  const usersRef = collection(dbService, "users");
+  const userQuery = query(usersRef, where("nickname", "==", username));
+  const userSnapshot = await getDocs(userQuery);
+
+  userSnapshot.forEach((doc) => {
+    const userData = doc.data();
+    const uid = userData.uid || null; // uid 가져오기
+    if (uid) {
+      fetchedUserId = uid; // 해당 유저의 uid 저장
+    }
+  });
+
+  // 데이터가 없을 경우 기본값 추가
+  if (fetchedPosts.length === 0) {
+    fetchedPosts.push({
+      title: "title 없음",
+      id: username === "user1" ? "my-default" : "default",
+      uid: fetchedUserId || "default",
+      userNickname: username,
+      userProfileImage: username === "user1" ? "/images/my-profile.png" : "",
+      imageUrl: "",
+      content:
+        username === "user1" ? "내 게시물이 없습니다." : "게시물이 없습니다.",
+      lo: { latitude: 0, longitude: 0, address: "" },
+      likes: [],
+      shares: [],
+      bookmarked: [],
+      isLiked: false,
+      createdAt: new Date().toISOString(),
+    });
+  }
+
+  return { posts: fetchedPosts, userId: fetchedUserId };
+};
+
 const UserPage = ({ params }: Props) => {
-  const { username } = params; // URL에서 username 가져오기
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { username } = params;
 
-  useEffect(() => {
-    const fetchPostsAndUserId = async () => {
-      try {
-        // Firestore에서 해당 유저의 게시물 가져오기
-        const postsRef = collection(dbService, "posts");
-        const q = query(postsRef, where("userNickname", "==", username));
-        const querySnapshot = await getDocs(q);
+  const { data, isLoading, isError } = useQuery(
+    ["posts", username],
+    () => fetchPostsAndUserId(username),
+    {
+      staleTime: 1000 * 60 * 5, // 5분 동안 데이터 캐싱
+    }
+  );
 
-        const fetchedPosts: Post[] = [];
-        let fetchedUserId: string | null = null;
-
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          fetchedPosts.push({ id: doc.id, ...data } as Post);
-        });
-
-        // Firestore에서 users 컬렉션에서 nickname과 uid 가져오기
-        const usersRef = collection(dbService, "users");
-        const userQuery = query(usersRef, where("nickname", "==", username));
-        const userSnapshot = await getDocs(userQuery);
-
-        userSnapshot.forEach((doc) => {
-          const userData = doc.data();
-          const nickname = userData.nickname || null; // nickname 가져오기
-          const uid = userData.uid || null; // uid 가져오기
-
-          console.log("Nickname:", nickname);
-          console.log("UID:", uid);
-
-          if (uid) {
-            fetchedUserId = uid; // 해당 유저의 uid 저장
-          }
-        });
-
-        // 데이터가 없을 경우 기본값 추가
-        if (fetchedPosts.length === 0) {
-          fetchedPosts.push({
-            title: "title 없음",
-            id: username === "user1" ? "my-default" : "default", // 로그인한 유저와 다른 유저 구분
-            uid: fetchedUserId || "default",
-            userNickname: username,
-            userProfileImage:
-              username === "user1" ? "/images/my-profile.png" : "", // 기본 프로필 이미지
-            imageUrl: "",
-            content:
-              username === "user1"
-                ? "내 게시물이 없습니다."
-                : "게시물이 없습니다.",
-            lo: { latitude: 0, longitude: 0, address: "" },
-            likes: [],
-            shares: [],
-            bookmarked: [],
-            isLiked: false,
-            createdAt: new Date().toISOString(),
-          });
-        }
-
-        setPosts(fetchedPosts);
-        setUserId(fetchedUserId);
-      } catch (err) {
-        console.error("데이터 가져오기 오류:", err);
-        setError("데이터를 불러오는 중 오류가 발생했습니다.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPostsAndUserId();
-  }, [username]);
-
-  if (loading) {
+  if (isLoading) {
     return <h1>로딩 중...</h1>;
   }
 
-  if (error) {
-    return <h1>{error}</h1>;
+  if (isError) {
+    return <h1>데이터를 불러오는 중 오류가 발생했습니다.</h1>;
   }
+
+  const { posts, userId } = data || { posts: [], userId: null };
 
   // 로그인한 유저와 현재 페이지 유저 비교
   const isMyPage = userId === "userId"; // "my-uid"는 로그인한 유저의 아이디로 가정

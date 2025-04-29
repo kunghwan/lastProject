@@ -24,6 +24,7 @@ const IdFind = () => {
   const [foundEmail, setFoundEmail] = useState("");
   const [codeRequested, setCodeRequested] = useState(false);
   const [codeSentOnce, setCodeSentOnce] = useState(false);
+  const [selectedEmail, setSelectedEmail] = useState("");
 
   const maskEmail = (email: string) => {
     const [id, domain] = email.split("@");
@@ -52,16 +53,19 @@ const IdFind = () => {
       setGeneratedCode(parsed.generatedCode || "");
       setFoundEmail(parsed.foundEmail || "");
       setShowCode(parsed.showCode || false);
-      setCodeRequested(parsed.codeRequested || false); // ✅
-      setCodeSentOnce(parsed.codeSentOnce || false); // ✅
-
-      validateField("name", parsed.name || "");
-      validateField("phone", parsed.phone || "");
-    } else {
-      validateField("name", "");
-      validateField("phone", "");
+      setCodeRequested(parsed.codeRequested || false);
+      setCodeSentOnce(parsed.codeSentOnce || false);
+      setErrors(parsed.errors || { name: "", phone: "" });
     }
-  }, [validateField]);
+  }, []);
+
+  useEffect(() => {
+    validateField("name", name);
+  }, [name, validateField]);
+
+  useEffect(() => {
+    validateField("phone", phone);
+  }, [phone, validateField]);
 
   useEffect(() => {
     sessionStorage.setItem(
@@ -74,7 +78,8 @@ const IdFind = () => {
         foundEmail,
         showCode,
         codeRequested,
-        codeSentOnce, // ✅ 추가해야 함!
+        codeSentOnce,
+        errors,
       })
     );
   }, [
@@ -86,18 +91,42 @@ const IdFind = () => {
     showCode,
     codeRequested,
     codeSentOnce,
+    errors,
   ]);
-
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setName(value);
+    setName(value); // state 업데이트
     validateField("name", value);
+
+    // ✅ 여기 value를 직접 저장해야 한다.
+    const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "{}");
+    sessionStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ...saved, name: value })
+    );
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setPhone(value);
     validateField("phone", value);
+
+    const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "{}");
+    sessionStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ...saved, phone: value })
+    );
+  };
+
+  const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCode(value);
+
+    const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "{}");
+    sessionStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ...saved, code: value })
+    );
   };
 
   const handleVerifyCode = useCallback(async () => {
@@ -124,24 +153,41 @@ const IdFind = () => {
         return;
       }
 
-      const email = snap.docs[0].data().email;
-      sessionStorage.setItem("realEmail", email); // ✅ 실 이메일 저장
-      const masked = maskEmail(email);
-      setFoundEmail(masked);
+      const emails = snap.docs.map((doc) => doc.data().email);
+      sessionStorage.setItem("realEmail", emails.join(","));
+      const maskedEmails = emails.map((email) => maskEmail(email)).join(", ");
+      setFoundEmail(maskedEmails);
     } catch (error) {
       console.error("이메일 조회 실패", error);
       alert("이메일 조회 중 오류가 발생했습니다.");
     }
   }, [name, phone, code, generatedCode]);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     if (!foundEmail) {
       alert("먼저 인증확인을 완료해주세요.");
       return;
     }
 
-    router.push("/idfind/resultid");
-  };
+    if (!selectedEmail) {
+      alert("아이디를 선택해주세요.");
+      return;
+    }
+
+    const maskedEmails = foundEmail.split(", ");
+    const realEmails = sessionStorage.getItem("realEmail")?.split(",") || [];
+    const selectedIndex = maskedEmails.findIndex(
+      (email) => email === selectedEmail
+    );
+
+    if (selectedIndex !== -1) {
+      const realSelectedEmail = realEmails[selectedIndex];
+      sessionStorage.setItem("selectedRealEmail", realSelectedEmail);
+      router.push("/idfind/resultid");
+    } else {
+      alert("선택한 이메일을 찾을 수 없습니다.");
+    }
+  }, [foundEmail, selectedEmail, router]);
 
   const handleCodeSend = () => {
     const nameErr = validateName(name);
@@ -188,8 +234,7 @@ const IdFind = () => {
     {
       label: "인증번호 6자리 숫자 입력",
       value: code,
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-        setCode(e.target.value),
+      onChange: handleCodeChange,
       bt: "재전송",
       bt1: "인증확인",
       btAction: handleResend,
@@ -199,6 +244,7 @@ const IdFind = () => {
 
   return (
     <form onSubmit={(e: FormEvent) => e.preventDefault()}>
+      {/* 헤더 */}
       <div className="w-full bg-emerald-100 p-4">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
@@ -214,9 +260,10 @@ const IdFind = () => {
         </div>
       </div>
 
+      {/* 입력폼 */}
       {IdFinds.map((idf, index) => (
         <div key={index}>
-          <div className="flex gap-2 p-5 lg:flex lg:items-center lg:justify-center">
+          <div className="flex gap-2 p-3 lg:flex lg:items-center lg:justify-center">
             <input
               type={idf.type || "text"}
               placeholder={idf.label}
@@ -228,14 +275,14 @@ const IdFind = () => {
               <>
                 <button
                   type="button"
-                  className="bg-emerald-300 p-5 font-bold w-18 text-sm whitespace-nowrap lg:w-20 flex justify-center"
+                  className="bg-emerald-300 p-5 font-bold w-19 text-sm whitespace-nowrap lg:w-20 flex justify-center"
                   onClick={idf.btAction}
                 >
                   {idf.bt}
                 </button>
                 <button
                   type="button"
-                  className="bg-emerald-300 p-5 font-bold w-17 whitespace-nowrap text-sm flex justify-center lg:w-20"
+                  className="bg-emerald-300 p-5 font-bold w-19 whitespace-nowrap text-sm flex justify-center lg:w-20"
                   onClick={handleVerifyCode}
                 >
                   {idf.bt1}
@@ -253,21 +300,20 @@ const IdFind = () => {
               <div className="lg:block w-40" />
             )}
           </div>
-
           {idf.error && (
             <p className="text-red-500 text-sm mt-0.5 ml-5 lg:ml-80">
               {idf.error}
             </p>
           )}
-
           {index === 2 && showCode && (
-            <p className="text-center text-sm text-green-600 mt-1">
+            <p className="text-center text-sm text-green-600 sm:mr-50">
               인증번호: {generatedCode}
             </p>
           )}
         </div>
       ))}
 
+      {/* 확인 버튼 */}
       <div className="w-full px-5">
         <div className="flex flex-col lg:flex-row lg:justify-center">
           <div className="w-[240px] md:w-[400px]">
@@ -283,10 +329,38 @@ const IdFind = () => {
         </div>
       </div>
 
+      {/* 이메일 결과 */}
       {foundEmail && (
-        <p className="text-center text-lg text-amber-600 font-bold mt-4">
-          내 아이디는 <span className="underline">{foundEmail}</span> 입니다.
-        </p>
+        <>
+          <p className="text-center text-amber-600 font-bold mt-1 text-sm">
+            내 아이디는 <span className="underline">{foundEmail}</span> 입니다.
+          </p>
+          <div className="text-center mt-4 text-sm flex flex-col items-center justify-center">
+            <p className="text-sm text-amber-600 font-bold whitespace-nowrap mb-2">
+              id 선택
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              {foundEmail.split(", ").map((email, idx) => (
+                <div key={idx} className="flex items-center gap-x-2.5">
+                  <input
+                    type="radio"
+                    id={`email-${idx}`}
+                    name="selected-email"
+                    value={email}
+                    checked={selectedEmail === email}
+                    onChange={() => setSelectedEmail(email)}
+                  />
+                  <label
+                    htmlFor={`email-${idx}`}
+                    className="whitespace-nowrap z-50"
+                  >
+                    {email}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
       )}
     </form>
   );

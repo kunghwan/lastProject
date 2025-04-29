@@ -17,6 +17,7 @@ import { twMerge } from "tailwind-merge";
 import Navbar from "./features/navber/Navbar";
 
 const Header = () => {
+  // 처음 시작은 라이트 모드 (false) 로 설정
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -29,8 +30,25 @@ const Header = () => {
   const headBtn = "grayButton text-xl sm:text-2xl";
 
   useEffect(() => {
+    // 페이지 로드시 로컬 스토리지에서 다크 모드 설정 읽어오기
+    const storedDarkMode = localStorage.getItem("darkMode");
+    if (storedDarkMode === "true") {
+      setIsDarkMode(true);
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, []); // 빈 의존성 배열로 초기 로드 시에만 실행
+
+  useEffect(() => {
+    // isDarkMode 상태가 변경될 때마다 document 클래스 토글 및 로컬 스토리지 업데이트
     document.documentElement.classList.toggle("dark", isDarkMode);
+    localStorage.setItem("darkMode", isDarkMode.toString());
   }, [isDarkMode]);
+
+  const handleDarkModeToggle = () => {
+    setIsDarkMode(!isDarkMode);
+  };
 
   const handleLogout = () => {
     if (window.confirm("로그아웃 하시겠습니까?")) {
@@ -57,7 +75,7 @@ const Header = () => {
         </Link>
 
         {/* 데스크탑 메뉴 */}
-        <ul className="hidden sm:flex items-center gap-x-4">
+        <ul className="hidden sm:flex items-center gap-x-4 ">
           {user && (
             <>
               <div className="text-2xl font-bold whitespace-nowrap flex">
@@ -82,7 +100,7 @@ const Header = () => {
           )}
           <li>
             <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
+              onClick={handleDarkModeToggle}
               className={twMerge(
                 headBtn,
                 isDarkMode ? "text-gray-800" : "text-white bg-black"
@@ -107,7 +125,7 @@ const Header = () => {
         <div className="sm:hidden">
           {isAuthPage ? (
             <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
+              onClick={handleDarkModeToggle}
               className={twMerge(
                 "grayButton text-xl",
                 isDarkMode ? "text-gray-800" : "text-white bg-black"
@@ -129,9 +147,12 @@ const Header = () => {
       {/* 모바일 팝업 메뉴 */}
       {isMenuOpen && !isAuthPage && (
         <div className="fixed inset-0 bg-gray-500/50 z-50 flex items-center justify-center sm:hidden">
-          <div className="bg-white dark:bg-gray-400 p-6 rounded-xl shadow-lg w-[65vw] max-w-sm text-center">
+          <div className="bg-white dark:bg-gray-300  p-6 rounded-xl shadow-lg w-[65vw] max-w-sm text-center ">
             <div className="flex justify-end mb-1">
-              <button onClick={() => setIsMenuOpen(false)} className="text-2xl">
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                className="text-2xl "
+              >
                 <IoCloseSharp className="dark:text-black" />
               </button>
             </div>
@@ -143,7 +164,7 @@ const Header = () => {
                   <p>님</p>
                 </div>
                 <button
-                  className="grayButton w-full mb-2"
+                  className="grayButton dark:bg-[#333333] dark:text-[#F1F5F9] w-full mb-2"
                   onClick={() => {
                     router.push("/map");
                     setIsMenuOpen(false);
@@ -152,7 +173,7 @@ const Header = () => {
                   <IoBookmarkOutline />
                 </button>
                 <button
-                  className="grayButton w-full mb-2"
+                  className="grayButton w-full mb-2 dark:bg-[#333333] dark:text-[#F1F5F9]"
                   onClick={() => {
                     router.push("/notification");
                     setIsMenuOpen(false);
@@ -164,9 +185,9 @@ const Header = () => {
             )}
 
             <button
-              className="grayButton w-full mb-2"
+              className="grayButton w-full mb-2 dark:bg-[#333333] dark:text-[#F1F5F9]"
               onClick={() => {
-                setIsDarkMode(!isDarkMode);
+                handleDarkModeToggle();
                 setIsMenuOpen(false);
               }}
             >
@@ -174,7 +195,7 @@ const Header = () => {
             </button>
 
             <button
-              className="grayButton w-full mt-2 text-xl font-bold"
+              className="grayButton w-full mt-2 text-xl font-bold sm:hidden dark:bg-[#333333] dark:text-[#F1F5F9]"
               onClick={() => {
                 user ? handleLogout() : router.push("/signin");
                 setIsMenuOpen(false);

@@ -154,12 +154,9 @@ import React from "react";
 const page = () => {
   return (
     <div>
-      page
       <NotificationListPage />
     </div>
   );
 };
 
 export default page;
-
-page;

@@ -3,7 +3,11 @@ import { AUTH } from "@/contextapi/context";
 import React from "react";
 
 const PostCreatePage = () => {
-  return <UploadPostPage />;
+  return (
+    <div className="p-5 mb-15">
+      <UploadPostPage />
+    </div>
+  );
 };
 
 export default PostCreatePage;

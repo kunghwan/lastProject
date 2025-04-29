@@ -19,8 +19,9 @@ import { AUTH } from "@/contextapi/context";
 import { getDownloadURL, uploadBytes } from "firebase/storage";
 import JusoComponents from "./UpoladPostJusoComponents";
 import Loaiding from "../Loading";
+import UploadTag from "./UploadTag";
 
-interface UploadPostProps extends Post {
+export interface UploadPostProps extends Post {
   imgs: string[];
   tags: Tag[];
 }
@@ -85,19 +86,6 @@ const UploadPostPage = () => {
       return "주소를 입력해주세요.";
     }
   }, [juso]);
-
-  const tagMessage = useMemo(() => {
-    const validateText = /^[\p{L}\p{N}\s]+$/u;
-    if (!validateText.test(tag)) {
-      return "특수기호를 포함하면 안됩니다.";
-    }
-    if (tag.length === 0) {
-      return "태그를 입력해 주세요.";
-    }
-    if (tag.trim() === "") {
-      return "공백은 입력이 안됩니다";
-    }
-  }, [tag]);
 
   const tagsMessage = useMemo(() => {
     if (tags.length === 0) {
@@ -193,11 +181,13 @@ const UploadPostPage = () => {
     <form
       action=""
       onSubmit={onSubmit}
-      className="flex-1 grid grid-cols-1 gap-2 dark:text-gray-700  lg:grid-cols-2 lg:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border rounded border-gray-400 h-full relative"
+      className="h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  lg:grid-cols-2 lg:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border rounded border-gray-400  relative"
     >
       {isPending && <Loaiding />}
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold text-black">새글작성</h1>
+        <h1 className="text-3xl font-bold text-black dark:text-white">
+          새글작성
+        </h1>
         <input
           type="text"
           value={title}
@@ -207,7 +197,7 @@ const UploadPostPage = () => {
               title: e.target.value,
             }))
           }
-          className={input}
+          className={twMerge("upPostInput")}
           ref={titleRef}
           placeholder="제목을 입력하세요."
         />
@@ -215,7 +205,7 @@ const UploadPostPage = () => {
           name=""
           id=""
           placeholder="소개하고 싶은 관광지의 소개글이나 리뷰를 작성해주세요."
-          className={twMerge("h-50 resize-none", input)}
+          className={twMerge("h-50 resize-none upPostInput")}
           value={content}
           ref={descRef}
           // 변경은 post는 객체라서 전개연산자 사용후 content만 변경
@@ -249,68 +239,14 @@ const UploadPostPage = () => {
       </div>
 
       <div className="flex flex-col gap-2 lg:mt-11">
-        <div className="flex gap-x-2">
-          <input
-            type="text"
-            value={tag}
-            onChange={(e) => setTag(e.target.value)}
-            ref={tagRef}
-            className={twMerge("w-full ", input)}
-            placeholder="태그를 입력후 추가버튼을 눌러주세요."
-          />
-          <button
-            type="button"
-            onClick={() => {
-              if (tagMessage) {
-                alert(tagMessage);
-                tagRef.current?.focus();
-                return;
-              }
-              const formattedTag = tag.startsWith("#") ? tag : `#${tag}`;
-              const newTag: Tag = {
-                id: v4(),
-                name: formattedTag,
-              };
-
-              if (tags.find((t) => t.name === newTag.name)) {
-                return alert("이미 존재하는 태그입니다.");
-              }
-              setPost((prev) => ({
-                ...prev,
-                tags: [...prev.tags, newTag],
-              }));
-              return setTag("");
-            }}
-            className=" min-w-20 flex-1 rounded bg-[rgba(116,212,186)] cursor-pointer"
-          >
-            추가
-          </button>
-        </div>
-        <div>
-          <ul className="flex gap-x-2 items-center flex-wrap">
-            {tags.map((t) => (
-              <li key={t.id}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (confirm("삭제하시겠습니까?")) {
-                      return setPost((prev) => ({
-                        ...prev,
-                        tags: prev.tags.filter((tag) => tag.id !== t.id),
-                      }));
-                    } else {
-                      return alert("취소되었습니다.");
-                    }
-                  }}
-                  className="cursor-pointer font-bold hover:text-lime-500 hover:underline"
-                >
-                  {t.name}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-
+        <UploadTag
+          post={post}
+          setPost={setPost}
+          setTag={setTag}
+          tag={tag}
+          tagRef={tagRef}
+          tags={tags}
+        />
         <JusoComponents juso={juso} setJuso={setJuso} jusoRef={jusoRef} />
       </div>
 
@@ -324,11 +260,15 @@ const UploadPostPage = () => {
               return alert("취소되었습니다.");
             }
           }}
-          className={twMerge("bg-gray-300 ", button)}
+          className={twMerge("bg-gray-300  upPostButton")}
         >
           취소
         </button>
-        <button className={twMerge("bg-[rgba(62,188,154)]", button)}>
+        <button
+          className={twMerge(
+            "bg-[rgba(62,188,154)] upPostButton dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
+          )}
+        >
           게시
         </button>
       </div>
@@ -337,6 +277,3 @@ const UploadPostPage = () => {
 };
 
 export default UploadPostPage;
-
-const input = "bg-white border rounded px-2 py-2 border-gray-400";
-const button = " rounded px-2.5 py-1 cursor-pointer";

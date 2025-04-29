@@ -22,6 +22,7 @@ interface User {
 interface PromiseResult {
   message?: string;
   success?: boolean;
+  code?: string;
 }
 //  로딩 상태
 interface LoadingState {

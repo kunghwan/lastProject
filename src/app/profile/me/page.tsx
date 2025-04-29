@@ -8,24 +8,24 @@ import ProfileLayout from "@/components/ProfileUI/ProfileLayout";
 import { Post } from "@/types/post";
 
 const MePage = () => {
-  // const [posts, setPosts] = useState<Post[]>([]);
-  const posts: Post[] = [
-    {
-      id: "1",
-      title: "예제 게시물 제목",
-      content: "이것은 예제 게시물 내용입니다.",
-      uid: "example-user-id",
-      userNickname: "exampleNickname",
-      userProfileImage: "/images/example-profile.png",
-      imageUrl: "/images/example-image.png",
-      lo: { latitude: 37.5665, longitude: 126.978, address: "서울특별시" },
-      likes: ["user1", "user2"],
-      shares: [{ count: 1, uid: "user3" }],
-      bookmarked: ["user4"],
-      isLiked: false,
-      createdAt: new Date().toISOString(),
-    },
-  ];
+  const [posts, setPosts] = useState<Post[]>([]);
+  // const posts: Post[] = [
+  //   {
+  //     id: "1",
+  //     title: "예제 게시물 제목",
+  //     content: "이것은 예제 게시물 내용입니다.",
+  //     uid: "example-user-id",
+  //     userNickname: "exampleNickname",
+  //     userProfileImage: "/images/example-profile.png",
+  //     imageUrl: "/images/example-image.png",
+  //     lo: { latitude: 37.5665, longitude: 126.978, address: "서울특별시" },
+  //     likes: ["user1", "user2"],
+  //     shares: [{ count: 1, uid: "user3" }],
+  //     bookmarked: ["user4"],
+  //     isLiked: false,
+  //     createdAt: new Date().toISOString(),
+  //   },
+  // ];
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

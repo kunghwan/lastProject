@@ -1,10 +1,10 @@
 "use client";
 
 import { Post, Tag } from "@/types/post";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IoSettingsOutline } from "react-icons/io5";
 import ProfileFeed from "./ProfileFeed";
-import { getUserNickname } from "@/app/profile/page";
+import { useGetUserNickname } from "@/app/profile/page";
 import FollowButton from "../post/FollowButton";
 
 const ProfileLayout = ({
@@ -20,8 +20,8 @@ const ProfileLayout = ({
 
   useEffect(() => {
     const fetchNickname = async () => {
-      const userNickname = await getUserNickname();
-      setNickname(userNickname);
+      const userNickname = useGetUserNickname();
+      setNickname(userNickname.name);
     };
 
     fetchNickname();
@@ -39,12 +39,12 @@ const ProfileLayout = ({
   }, []);
   const actualPostCount = posts.filter((post) => post.id !== "default").length;
 
-  const getRandomColor = () => {
+  const getRandomColor = useCallback(() => {
     let red = Math.floor(Math.random() * 256);
     let green = Math.floor(Math.random() * 256);
     let blue = Math.floor(Math.random() * 256);
     return `rgb(${red}, ${green}, ${blue})`;
-  };
+  }, []);
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -64,7 +64,7 @@ const ProfileLayout = ({
               )}
             </div>
             <div className="ml-10 w-120 flex-col flex flex-1 ">
-              <p className="flex justify-between">
+              <div className="flex justify-between">
                 <h1 className="font-medium text-4xl p-1 hover:scale-103 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
                   {nickname || `${posts[0]?.userNickname || `MyProfile`}`}
                 </h1>
@@ -74,13 +74,14 @@ const ProfileLayout = ({
                   </button>
                 ) : (
                   <button>
-                    <FollowButton
+                    {/* <FollowButton
                       followingId={posts[0].uid}
                       followNickName={posts[0].userNickname}
-                    />
+                    /> */}
+                    sdf
                   </button>
                 )}
-              </p>
+              </div>
               <div className="flex ml-2.5 gap-5 ">
                 <p className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
                   게시물 <span>{actualPostCount}</span>
@@ -126,11 +127,12 @@ const ProfileLayout = ({
                 <IoSettingsOutline />
               </button>
             ) : (
-              <button className="absolute right-20 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
-                <FollowButton
+              <button className="absolute right-15 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
+                {/* <FollowButton
                   followingId={posts[0].uid}
                   followNickName={posts[0].userNickname}
-                />
+                /> */}
+                sdf
               </button>
             )}
           </div>

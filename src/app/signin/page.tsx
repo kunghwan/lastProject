@@ -5,7 +5,6 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { AUTH } from "@/contextapi/context";
-import { error } from "console";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -16,9 +15,8 @@ const LoginForm = () => {
 
   useEffect(() => {
     const savedEmail = sessionStorage.getItem("login_email");
-    const savedPassword = sessionStorage.getItem("login_password");
+
     if (savedEmail) setEmail(savedEmail);
-    if (savedPassword) setPassword(savedPassword);
   }, []);
 
   const handleLogin = useCallback(async () => {
@@ -34,6 +32,13 @@ const LoginForm = () => {
       alert("비밀번호를 입력해주세요.");
       return;
     }
+    // const methods = await fetchSignInMethodsForEmail(authService, email);
+    // console.log("fetchSignInMethodsForEmail 결과:", methods);
+
+    // if (methods.length === 0) {
+    //   alert("존재하지 않는 아이디입니다.");
+    //   return;
+    // }
 
     console.log(email, password);
 
@@ -65,7 +70,10 @@ const LoginForm = () => {
               className={InputStyle}
               placeholder="아이디"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                sessionStorage.setItem("login_email", e.target.value);
+              }}
             />
             <input
               type="password"
