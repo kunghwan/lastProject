@@ -26,7 +26,7 @@ const QnaPage = () => {
             <li key={item.question} className="flex flex-col mb-2 w-full">
               <button
                 onClick={() => toggleQuestion(item.question)}
-                className="text-left font-bold  flex justify-between items-center p-2.5 rounded bg-[rgba(151,218,200)] dark:bg-[rgba(151,218,200,0.5)] lg:text-xl cursor-pointer"
+                className="text-sm text-left font-bold  flex justify-between items-center p-2.5 rounded bg-[rgba(151,218,200)] dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer"
               >
                 <p> {item.question}</p>
                 <span>
@@ -40,9 +40,9 @@ const QnaPage = () => {
               {/*조건부 렌더링: openQuestion === item.question일 때만 답변을 표시합니다.
                */}
               {isanswerShowing === item.question && (
-                <div className="mt-1 flex flex-col gap-y-1.5 text-sm text-gray-600 rounded p-2.5 bg-[rgba(240,255,251)] dark:bg-[rgba(240,255,251,0.5)] lg:text-xl dark:text-white">
+                <div className="mt-1 flex flex-col gap-y-1.5 text-sm text-gray-600 rounded p-2.5 bg-[rgba(240,255,251)] dark:bg-[rgba(240,255,251,0.5)] md:text-xl dark:text-white">
                   {item.answer[0]}
-                  <div className="text-sm">{item.answer[1]}</div>
+                  <div className="text-sm md:text-xl">{item.answer[1]}</div>
                 </div>
               )}
             </li>
