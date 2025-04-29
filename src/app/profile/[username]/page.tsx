@@ -1,9 +1,8 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { fetchUsers } from "@/lib/user"; // fetchUsers 함수
-import { fetchPostsAndUserId } from "@/lib/post"; // 기존 fetchPostsAndUserId 함수
+import { fetchPostsAndUserId } from "@/lib/user"; // fetchPostsAndUserId 함수
 import { Post, Tag } from "@/types/post";
-import { User } from "@/types"; // User 타입 가져오기 (index.d.ts)
 import ProfileLayout from "@/components/ProfileUI/ProfileLayout";
 
 interface Props {
@@ -80,7 +79,7 @@ const UserPage = ({ params }: Props) => {
 
   return (
     <ProfileLayout
-      key={posts[0]?.id || "default-key"}
+      key={posts[0]?.id || "default-key"} // 기본값 추가
       tags={tags}
       posts={posts}
       isMyPage={isMyPage}

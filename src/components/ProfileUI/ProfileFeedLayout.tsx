@@ -1,7 +1,7 @@
 import { Post } from "@/types/post";
 import PostComponent from "../post/PostComponent";
 
-const ProfileFeed = ({
+const ProfileFeedComponent = ({
   posts,
   isMyPage,
 }: {
@@ -13,7 +13,7 @@ const ProfileFeed = ({
       <ul className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
         {posts.map((post) => (
           <li key={post.id} className="border">
-            <PostComponent post={post} />
+            <PostComponent />
           </li>
         ))}
       </ul>
@@ -21,4 +21,4 @@ const ProfileFeed = ({
   );
 };
 
-export default ProfileFeed;
+export default ProfileFeedComponent;

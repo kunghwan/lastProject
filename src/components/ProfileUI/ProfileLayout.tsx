@@ -3,9 +3,10 @@
 import { Post, Tag } from "@/types/post";
 import { useCallback, useEffect, useState } from "react";
 import { IoSettingsOutline } from "react-icons/io5";
-import ProfileFeed from "./ProfileFeed";
+// import ProfileFeed from "./ProfileFeed";
 import { useGetUserNickname } from "@/app/profile/page";
 import FollowButton from "../post/FollowButton";
+import ProfileFeedComponent from "./ProfileFeedLayout";
 
 const ProfileLayout = ({
   posts,
@@ -66,7 +67,8 @@ const ProfileLayout = ({
             <div className="ml-10 w-120 flex-col flex flex-1 ">
               <div className="flex justify-between">
                 <h1 className="font-medium text-4xl p-1 hover:scale-103 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
-                  {nickname || `${posts[0]?.userNickname || `MyProfile`}`}
+                  {nickname ||
+                    `${posts[0]?.userNickname || `없는 유저입니다.`}`}
                 </h1>
                 {isMyPage ? (
                   <button className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400 dark:active:text-gray-100">
@@ -138,7 +140,7 @@ const ProfileLayout = ({
           </div>
           <div className="flex flex-col justify-center items-center">
             <h1 className="font-medium text-2xl p-1 hover:scale-103 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
-              {nickname || `${posts[0]?.userNickname || `MyProfile`}`}
+              {nickname || `${posts[0]?.userNickname || `없는 유저입니다.`}`}
             </h1>
             <div className="flex flex-1 justify-center mx-auto">
               <div className="flex gap-5 ">
@@ -171,7 +173,7 @@ const ProfileLayout = ({
       )}
       <div className="flex flex-col items-center justify-center">
         {posts?.length > 1 ? (
-          <ProfileFeed posts={posts} isMyPage={isMyPage} />
+          <ProfileFeedComponent posts={posts} isMyPage={isMyPage} />
         ) : (
           <div className="flex border-t pt-10 border-blue-200 w-full justify-center">
             <div className="text-gray-800 text-xl mt-30 animate-bounce dark:text-gray-200">
