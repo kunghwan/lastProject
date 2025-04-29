@@ -126,13 +126,16 @@ const FollowButton = ({ followingId, followNickname }: FollowButtonProps) => {
         //snap.exists를 통해 그 문서가 존재하는지 확인// 문서가 존재하면 setIsFollowing(true),문서가 존재하지 않으면 setIsFollowing(false)
         setIsFollowing(snap.exists);
       } catch (error: any) {
-        return console.error(error.message);
+        return console.log(error.message);
       }
     };
     checkFollowing();
     //리턴으로 청소 작업필요
-    return;
+    return () => {
+      checkFollowing();
+    };
   }, [user, followingId]);
+
   return (
     <div>
       {isPending && <Loaiding />}

@@ -10,6 +10,8 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { Notifications } from "@/types/notification";
 import Loaiding from "@/components/Loading";
+//! limit변수처리하기
+const limit = 20;
 
 const NotificationListPage = () => {
   const { user } = AUTH.use();
@@ -91,9 +93,9 @@ const NotificationListPage = () => {
       pageParam?: any;
     }): Promise<{ notifications: Notifications[]; lastDoc: any }> => {
       //처음이면 그냥 10개 가져오고 이어지는 페이지라면 pageParam 이후부터 10개 가져옴
-      let query = ref.limit(10);
+      let query = ref.limit(limit);
       if (pageParam) {
-        query = ref.startAfter(pageParam).limit(10);
+        query = ref.startAfter(pageParam).limit(limit);
       }
       //쿼리를 실행해서 문서 스냅샷(docs)을 가져옵니다.
       const snap = await query.get();
@@ -140,7 +142,7 @@ const NotificationListPage = () => {
       if (
         !lastPage ||
         lastPage.notifications.length === 0 ||
-        lastPage.notifications.length < 10
+        lastPage.notifications.length < 20
       ) {
         return undefined; //다음페이지가 없으면 undefined임
       }
@@ -177,22 +179,25 @@ const NotificationListPage = () => {
   }, [data]);
 
   //! 알림을 클릭하면 그알림을 isRead를 true로 바꾸는 함수
-  const handleNotificationClick = async (noti: Notifications) => {
-    if (!noti.isRead) {
-      await dbService
-        .collection(FBCollection.USERS)
-        .doc(uid)
-        .collection("notification")
-        .doc(noti.id) // 이 알림 하나!
-        .update({ isRead: true });
-    }
-    //매개변수로 받은 특정 알림 한 건만 .update()하기 때문 //하나의 알림 에만 update를 검("하나만" 업데이트하는 용도)
-    // 예: 상세페이지 이동 등
-    return console.log("알림 클릭됨:", noti.id);
-  };
+  const handleNotificationClick = useCallback(
+    async (noti: Notifications) => {
+      if (!noti.isRead) {
+        await dbService
+          .collection(FBCollection.USERS)
+          .doc(uid)
+          .collection(FBCollection.NOTIFICATION)
+          .doc(noti.id) // 이 알림 하나!
+          .update({ isRead: true });
+      }
+      //매개변수로 받은 특정 알림 한 건만 .update()하기 때문 //하나의 알림 에만 update를 검("하나만" 업데이트하는 용도)
+      // 예: 상세페이지 이동 등
+      return console.log("알림 클릭됨:", noti.id);
+    },
+    [uid]
+  );
 
   //! 현재 불러온 알림 목록을 forEach 돌면서 모두 isRead: true로 업데이트 해야됨
-  const handleAllRead = async () => {
+  const handleAllRead = useCallback(async () => {
     if (!data || !uid) return;
 
     const batch = dbService.batch(); // Firestore batch 사용 (한 번에 여러 문서 처리 최대 500개까지)
@@ -214,7 +219,7 @@ const NotificationListPage = () => {
     await batch.commit(); // 배치 실행(배치를 실행시킬려면 commit함수를 꼭 붙여야함)
     console.log("모든 알림을 읽음 처리했습니다.");
     return await refetch(); //  데이터 새로고침 //서버에 요청 → 최신 데이터로 갱신
-  };
+  }, [data, uid, refetch]);
 
   // const isNotifications = data?.pages.map((page) => page.notifications);
   // console.log(isNotifications, "알림확인용");
