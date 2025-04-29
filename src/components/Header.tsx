@@ -16,6 +16,10 @@ import { AUTH } from "@/contextapi/context";
 import { twMerge } from "tailwind-merge";
 import Navbar from "./features/navber/Navbar";
 
+const headBtn = "grayButton text-xl sm:text-2xl";
+
+const darkText = "grayButton w-full dark:bg-[#333333] dark:text-[#F1F5F9]";
+
 const Header = () => {
   // 처음 시작은 라이트 모드 (false) 로 설정
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -25,9 +29,8 @@ const Header = () => {
   const pathname = usePathname();
   const { user, signout } = AUTH.use();
 
+  //! useMemo로
   const isAuthPage = ["/signin", "/signup"].includes(pathname!);
-
-  const headBtn = "grayButton text-xl sm:text-2xl";
 
   useEffect(() => {
     // 페이지 로드시 로컬 스토리지에서 다크 모드 설정 읽어오기
@@ -46,12 +49,13 @@ const Header = () => {
     localStorage.setItem("darkMode", isDarkMode.toString());
   }, [isDarkMode]);
 
+  //! usecallback으로 하기
   const handleDarkModeToggle = () => {
     setIsDarkMode(!isDarkMode);
   };
 
   const handleLogout = () => {
-    if (window.confirm("로그아웃 하시겠습니까?")) {
+    if (confirm("로그아웃 하시겠습니까?")) {
       signout();
       alert("로그아웃 되었습니다.");
       router.push("/");
@@ -82,7 +86,7 @@ const Header = () => {
                 <div className="max-w-40 truncate">{user.nickname}</div>
                 <p>님</p>
               </div>
-
+              {/* headButton 컴포넌트로 만들기 */}
               <li>
                 <button className={headBtn} onClick={() => router.push("/map")}>
                   <IoBookmarkOutline />
@@ -163,6 +167,7 @@ const Header = () => {
                   <div className="max-w-40 truncate">{user.nickname}</div>
                   <p>님</p>
                 </div>
+
                 <button
                   className="grayButton dark:bg-[#333333] dark:text-[#F1F5F9] w-full mb-2"
                   onClick={() => {
@@ -172,6 +177,7 @@ const Header = () => {
                 >
                   <IoBookmarkOutline />
                 </button>
+
                 <button
                   className="grayButton w-full mb-2 dark:bg-[#333333] dark:text-[#F1F5F9]"
                   onClick={() => {
@@ -185,7 +191,7 @@ const Header = () => {
             )}
 
             <button
-              className="grayButton w-full mb-2 dark:bg-[#333333] dark:text-[#F1F5F9]"
+              className={twMerge("mb-2", darkText)}
               onClick={() => {
                 handleDarkModeToggle();
                 setIsMenuOpen(false);
@@ -195,7 +201,7 @@ const Header = () => {
             </button>
 
             <button
-              className="grayButton w-full mt-2 text-xl font-bold sm:hidden dark:bg-[#333333] dark:text-[#F1F5F9]"
+              className={twMerge("mt-2 text-xl font-bold sm:hidden", darkText)}
               onClick={() => {
                 user ? handleLogout() : router.push("/signin");
                 setIsMenuOpen(false);
