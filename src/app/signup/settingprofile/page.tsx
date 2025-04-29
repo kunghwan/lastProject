@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { IoAdd } from "react-icons/io5";
 import { storageService, dbService, FBCollection } from "@/lib/firebase";
 import { AUTH } from "@/contextapi/context";
-import LoadingPage from "@/components/Loading"; // 로딩 컴포넌트
+import LoadingPage from "@/components/Loading";
 
 const SettingProfile = () => {
   const [profile, setProfile] = useState<
@@ -25,11 +25,23 @@ const SettingProfile = () => {
   const router = useRouter();
   const { signin } = AUTH.use();
 
-  const validateNickname = (nickname: string) => {
+  // ✅ validateNickname 수정 (firebase 중복검사 추가)
+  const validateNickname = async (nickname: string) => {
     if (!nickname) return "닉네임을 입력해주세요";
     if (!/^[a-zA-Z0-9]+$/.test(nickname)) return "한글은 입력 안됩니다";
     if (nickname.length >= 18)
       return "닉네임은 18글자 미만으로만 입력가능합니다";
+
+    // ✅ 닉네임 중복 체크
+    const snapshot = await dbService
+      .collection(FBCollection.USERS)
+      .where("nickname", "==", nickname)
+      .get();
+
+    if (!snapshot.empty) {
+      return "닉네임이 중복됩니다";
+    }
+
     return null;
   };
 
@@ -48,8 +60,9 @@ const SettingProfile = () => {
     }
   }, [router]);
 
+  // ✅ handleChange 수정 (닉네임은 await)
   const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
 
       setProfile((prev) => ({
@@ -58,14 +71,16 @@ const SettingProfile = () => {
       }));
 
       if (name === "nickname") {
-        setNicknameError(validateNickname(value));
+        const error = await validateNickname(value);
+        setNicknameError(error);
       }
 
       if (name === "bio") {
-        setBioError(validateBio(value));
+        const error = validateBio(value);
+        setBioError(error);
       }
     },
-    [] // 🚨 주의: 이건 validateNickname, validateBio가 바깥에 있고 불변이니까 의존성 없이 가능
+    []
   );
 
   const handleImageSelect = useCallback(
@@ -87,11 +102,20 @@ const SettingProfile = () => {
     fileInputRef.current?.click();
   }, []);
 
+  // ✅ handleSubmit 수정 (최종 닉네임 중복 검사 추가)
   const handleSubmit = useCallback(async () => {
     if (!profile.nickname?.trim()) {
       alert("닉네임을 입력하세요");
       return;
     }
+
+    const nicknameDuplicationCheck = await validateNickname(profile.nickname);
+    if (nicknameDuplicationCheck) {
+      setNicknameError(nicknameDuplicationCheck);
+      alert("입력값을 다시 확인해주세요.");
+      return;
+    }
+
     if (nicknameError || bioError) {
       alert("입력값을 다시 확인해주세요.");
       return;
@@ -228,4 +252,4 @@ const SettingProfile = () => {
 
 export default SettingProfile;
 
-const settingProfile = "bg-lime-400 p-3 rounded w-110 sm:w-122 mt-5 ";
+const settingProfile = "bg-lime-400 p-3 rounded w-110 sm:w-122 mt-5";
