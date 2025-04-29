@@ -19,7 +19,7 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
             }
           }}
           multiple
-          className="border max-w-25 min-h-25 border-gray-500  relative  opacity-0 cursor-pointer z-30"
+          className="border max-w-25 min-h-25 border-gray-500  relative  opacity-0 cursor-pointer z-10"
         />
       ) : (
         <button
