@@ -3,12 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 import { FaRegMessage, FaPencil } from "react-icons/fa6";
-import {
-  IoPersonSharp,
-  IoCloseOutline,
-  IoStarOutline,
-  IoGridOutline,
-} from "react-icons/io5";
+import { IoPersonSharp, IoStarOutline, IoGridOutline } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
 import { AUTH } from "@/contextapi/context";
 import { FaRegQuestionCircle } from "react-icons/fa";
@@ -111,7 +106,10 @@ const Navbar = () => {
               {NavBtns.map((btn, index) => (
                 <li key={index}>
                   <button
-                    className="grayButton text-2xl flex flex-col gap-y-1.5 items-center"
+                    className={twMerge(
+                      "grayButton text-2xl flex flex-col gap-y-1.5 items-center",
+                      pathname === btn.path && "text-blue-500"
+                    )}
                     onClick={() => navBtnClick(btn, index)}
                   >
                     {btn.icon}
