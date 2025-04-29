@@ -23,7 +23,7 @@ const TopButton = () => {
   return (
     <button
       onClick={scrollToTop}
-      className="fixed z-40 bottom-30 right-1 px-4 py-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition cursor-pointer h-20 sm:right-1"
+      className="fixed z-40 bottom-30 right-1 px-4 py-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition cursor-pointer  sm:right-1 h-10"
     >
       Top
     </button>

@@ -93,41 +93,49 @@ const IdFind = () => {
     codeSentOnce,
     errors,
   ]);
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setName(value); // state 업데이트
-    validateField("name", value);
+  const handleNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setName(value);
+      validateField("name", value);
 
-    // ✅ 여기 value를 직접 저장해야 한다.
-    const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "{}");
-    sessionStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ ...saved, name: value })
-    );
-  };
+      const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "{}");
+      sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ ...saved, name: value })
+      );
+    },
+    [validateField]
+  );
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPhone(value);
-    validateField("phone", value);
+  const handlePhoneChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setPhone(value);
+      validateField("phone", value);
 
-    const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "{}");
-    sessionStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ ...saved, phone: value })
-    );
-  };
+      const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "{}");
+      sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ ...saved, phone: value })
+      );
+    },
+    [validateField]
+  );
 
-  const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setCode(value);
+  const handleCodeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setCode(value);
 
-    const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "{}");
-    sessionStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ ...saved, code: value })
-    );
-  };
+      const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "{}");
+      sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ ...saved, code: value })
+      );
+    },
+    []
+  );
 
   const handleVerifyCode = useCallback(async () => {
     const nameErr = validateName(name);
@@ -189,7 +197,7 @@ const IdFind = () => {
     }
   }, [foundEmail, selectedEmail, router]);
 
-  const handleCodeSend = () => {
+  const handleCodeSend = useCallback(() => {
     const nameErr = validateName(name);
     const phoneErr = validatePhone(phone);
     setErrors({ name: nameErr || "", phone: phoneErr || "" });
@@ -202,9 +210,9 @@ const IdFind = () => {
     setCodeRequested(true);
     setCodeSentOnce(true);
     alert("인증번호가 전송되었습니다: " + newCode);
-  };
+  }, [name, phone]);
 
-  const handleResend = () => {
+  const handleResend = useCallback(() => {
     if (!codeSentOnce) {
       alert("먼저 인증번호찾기를 눌러주세요.");
       return;
@@ -214,7 +222,7 @@ const IdFind = () => {
     setGeneratedCode(newCode);
     setShowCode(true);
     alert("인증번호가 재전송되었습니다: " + newCode);
-  };
+  }, [codeSentOnce]);
 
   const IdFinds = [
     {

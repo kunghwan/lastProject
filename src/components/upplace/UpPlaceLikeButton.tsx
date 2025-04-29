@@ -103,7 +103,7 @@ const UpPlaceLikeButton = ({ contentId, onLiked }: UpPlaceLikeButtonProps) => {
         liked ? "bg-gray-300 text-black" : "bg-red-500 text-white "
       }`}
     >
-      {liked ? "❤️ 좋아요" : "🤍 좋아요"}
+      {liked ? "❤️ " : "🤍 "}
     </button>
   );
 };
