@@ -67,10 +67,11 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         setIsFollowing(true);
         alert(`${followNickName}님을 팔로우 했습니다`);
       } catch (error: any) {
-        return console.log(error.message);
+        console.log(error.message);
+        alert("팔로우 중 오류가 발생했습니다. 다시 시도해주세요.");
+        return;
       }
     });
-    return alert(`${followNickName}님을 팔로우 했습니다`);
   }, [user, followingId, navi]);
   //언팔로우 처리
   const onUnFollow = useCallback(() => {

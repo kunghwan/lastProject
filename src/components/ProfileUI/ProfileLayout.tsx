@@ -77,9 +77,9 @@ const ProfileLayout = ({
                 ) : (
                   <button>
                     {/* <FollowButton
-                      followingId={posts[0].uid}
-                      followNickName={posts[0].userNickname}
-                    /> */}
+                    followingId={posts[0].uid}
+                    followNickName={posts[0].userNickname}
+                  /> */}
                     sdf
                   </button>
                 )}
