@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useState } from "react";
-import { FaPlus } from "react-icons/fa";
+import { TiPlus } from "react-icons/ti";
 import { IoClose } from "react-icons/io5";
 interface QnA {
   question: string;
@@ -20,11 +20,11 @@ const QnaPage = () => {
   );
 
   return (
-    <div className="mt-5 relative h-screen flex flex-col gap-y-2.5 ">
+    <div className="mt-5 relative h-screen  hsecol gap-y-2.5 ">
       <div className="z-50">
         <ul className="px-2">
           {qna.map((item) => (
-            <li key={item.question} className="flex flex-col mb-2 w-full">
+            <li key={item.question} className=" hsecol mb-2 w-full">
               <button
                 onClick={() => toggleQuestion(item.question)}
                 className="text-sm text-left font-bold  flex justify-between items-center p-2.5 rounded bg-[rgba(151,218,200)] dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer"
@@ -34,7 +34,7 @@ const QnaPage = () => {
                   {isanswerShowing === item.question ? (
                     <IoClose className="text-2xl font-bold " />
                   ) : (
-                    <FaPlus className="text-lg" />
+                    <TiPlus className="text-2xl" />
                   )}
                 </span>
               </button>
@@ -42,9 +42,11 @@ const QnaPage = () => {
                */}
               {/* isanswerShowing에 저장된 질문이랑 아이템의 질문이랑 같으면 true */}
               {isanswerShowing === item.question && (
-                <div className="mt-1 flex flex-col gap-y-1.5 text-sm text-gray-600 rounded p-2.5 bg-[rgba(240,255,251)] dark:bg-[rgba(240,255,251,0.5)] md:text-xl dark:text-white">
+                <div className="mt-1 hsecol gap-y-1.5 text-sm text-gray-700 rounded p-2.5 bg-[rgba(240,255,251)] dark:bg-[rgba(240,255,251,0.5)] md:text-xl dark:text-white">
                   {item.answer[0]}
-                  <div className="text-sm md:text-xl">{item.answer[1]}</div>
+                  <div className="text-sm md:text-xl text-gray-700">
+                    {item.answer[1]}
+                  </div>
                 </div>
               )}
             </li>
@@ -52,7 +54,7 @@ const QnaPage = () => {
         </ul>
       </div>
 
-      <div className=" md:text-xl font-bold flex flex-col justify-end items-center  ">
+      <div className=" md:text-xl font-bold hsecol justify-end items-center  ">
         <p>추가로 질문사항이 있으시면 </p>
         <p className="z-50">
           <a
@@ -94,10 +96,31 @@ const qna: QnA[] = [
     ],
   },
   {
-    question: "이페이지는 어떤?",
+    question: "게시물작성시 추가한 태그를 삭제하고 싶어요.",
+    answer: ["추가하신 태그를 클릭시 삭제가됩니다."],
+  },
+  {
+    question: "추천장소로 들어가니까 장소가 바로안나와요.",
     answer: [
-      "이 코드는 SNS 페이지의 피드 컴포넌트와 관련된 타입 정의 및 게시물 업로드 페이지를 구현하는 코드입니다.",
-      "사용자가 게시물을 작성하고 태그를 추가할 수 있는 기능을 포함하고 있습니다.",
+      "많은양의 데이터를 부르고 있어서 그 데이터들을 다 부르는데 시간이 걸립니다.",
+    ],
+  },
+  {
+    question: "회원가입시 닉네임은 중복되나요?",
+    answer: [
+      "유감스럽지만 회원가입시 닉네임중복은 안됩니다. ",
+      "각자의 다른 닉네임을 설정하세요.",
+    ],
+  },
+  {
+    question: "대전말고 다른지역은 안되나요?",
+    answer: ["추후 개발및 추가할 예정입니다. "],
+  },
+  {
+    question: "업로드한 이미지가 정상적으로 보이지 않나요?",
+    answer: [
+      "권장 사이즈로 업로드해 주세요! (권장 이미지 크기: 480px x 300px) ",
+      "보다 선명하고 전체가 보이게 표시됩니다.",
     ],
   },
 ];

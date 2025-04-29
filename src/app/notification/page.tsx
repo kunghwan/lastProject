@@ -191,7 +191,7 @@ const NotificationListPage = () => {
   }
 
   return (
-    <div className=" flex flex-col gap-y-2.5">
+    <div className="hsecol  gap-y-2.5">
       {/* <div className="flex flex-col gap-y-2.5 h-[calc(100vh-80px)] overflow-y-auto"> */}
       <div>
         {/* isUnRead는 읽지 않은 알림이 하나라도 있으면 true 없다면 false임 */}
@@ -210,6 +210,7 @@ const NotificationListPage = () => {
               </button>
             </div>
           )}
+
         <ul className=" grid md:grid-cols-2 gap-5  items-center  w-full p-2.5 ">
           {data?.pages.map((page) =>
             page.notifications.map((noti) => (
@@ -220,7 +221,7 @@ const NotificationListPage = () => {
                   return navi.push(`/profile/${noti.follwerId}`);
                 }}
                 className={twMerge(
-                  "flex flex-col  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer ",
+                  " hsecol  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer ",
                   noti.isRead
                     ? "text-gray-500 border dark:border-gray-700 border-gray-200 bg-gray-100 dark:bg-gray-500 dark:text-gray-300"
                     : "text-black font-semibold border border-gray-200 hover:text-lime-800 bg-[rgba(232,255,241)] dark:bg-[rgba(232,255,241,0.4)] dark:text-white"

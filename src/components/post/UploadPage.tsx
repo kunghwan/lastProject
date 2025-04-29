@@ -196,7 +196,7 @@ const UploadPostPage = () => {
       className="h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  lg:grid-cols-2 lg:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border rounded border-gray-400  relative"
     >
       {isPending && <Loaiding />}
-      <div className="flex flex-col gap-2">
+      <div className="hsecol gap-2">
         <h1 className="text-3xl font-bold text-black dark:text-white">
           새글작성
         </h1>
@@ -250,7 +250,7 @@ const UploadPostPage = () => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 lg:mt-11">
+      <div className="hsecol gap-2 lg:mt-11">
         <UploadTag
           post={post}
           setPost={setPost}
