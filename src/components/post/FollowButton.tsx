@@ -38,7 +38,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
           .doc(followingId)
           .set({
             followingId: followingId,
-            follwingNickname: followNickname,
+            follwingNickname: followNickName,
             createdAt: new Date().toLocaleString(),
           });
         // 2. 상대방 팔로워에 나 추가
@@ -63,9 +63,9 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
             createdAt: new Date().toLocaleString(),
             isRead: false,
           });
-        console.log(followingId, followNickname, user.uid, 51);
+        console.log(followingId, followNickName, user.uid, 51);
         setIsFollowing(true);
-        alert(`${followNickname}님을 팔로우 했습니다`);
+        alert(`${followNickName}님을 팔로우 했습니다`);
       } catch (error: any) {
         return console.log(error.message);
       }
@@ -80,7 +80,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
     }
     startTransition(async () => {
       //내 followings에서 제거
-      const ref = await dbService
+      const ref = dbService
         .collection(FBCollection.USERS)
         .doc(user.uid)
         .collection("followings")
@@ -125,11 +125,9 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         //extsts는 문서가 존재하는지 확인하는 메서드(불리언타입임)
         setIsFollowing(snap.exists);
       } catch (error: any) {
-
         console.error(error.message);
 
         return console.log(error.message);
-
       }
 
       checkFollowing();
@@ -140,7 +138,6 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
     return () => {
       checkFollowing();
     };
-
   }, [user, followingId]);
 
   return (

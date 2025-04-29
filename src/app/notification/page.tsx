@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useInView } from "react-intersection-observer";
 import { Notifications } from "@/types/notification";
 import Loaiding from "@/components/Loading";
 
@@ -20,8 +19,6 @@ const NotificationListPage = () => {
   const [isUnRead, setIsUnRead] = useState(false);
   const navi = useRouter();
 
-  // const [countPage, setCountPage] = useState(1);
-  // const [totalPage, setTotalPage] = useState(0);
   const uid = user?.uid;
 
   const ref = dbService
@@ -38,54 +35,11 @@ const NotificationListPage = () => {
     }
   }, [user?.uid, navi]);
 
-  //📥 알림 데이터 불러오기
-  // 알림 가져오는 함수
-  //알림 가져오기//최신순부터 가져오기
-  //useInfiniteQuery에 전달할 알림을 가져오는 함수. Firestore에서 데이터를 불러옵니다.
-  //pageParam은 이전 페이지의 마지막 문서를 의미, 다음 알림을 어디서부터 가져올지 알려주는 기준점
-  // const fetchNotifications = useCallback(
-  //   async ({
-  //     pageParam = 1,
-  //     uid,
-  //   }: {
-  //     pageParam?: number;
-  //     uid?: string;
-  //   }): Promise<Notifications[]> => {
-  //     const snap = await ref.get();
-  //     console.log(snap, "snap");
-  //     const totalCount = snap.docs.length;
-  //     const totalPages = Math.ceil(totalCount / 10);
-  //     setTotalPage(totalPages); // 총 페이지 수 저장
-  //     setCountPage(pageParam); // 현재 페이지 수 저장
-  //     //? const query = pageParam ? ref.startAfter(pageParam) : ref;
-
-  //     //Firestore에서 위 쿼리를 실행해서 결과(snapshot)를 받아옵니다.(snap.docs에 문서들이 들어 있음)
-  //     const snap2 = await ref.get().then((allSnap) => {
-  //       const start = (pageParam - 1) * 10;
-  //       const end = pageParam * 10;
-  //       const slicedDocs = allSnap.docs.slice(start, end);
-  //       return {
-  //         docs: slicedDocs,
-  //       };
-  //     });
-  //     console.log(snap2, "snap2");
-  //     //? pageParam이 있으면 → 해당 문서 다음부터(startAfter) 가져오기,없으면 → 처음부터 가져오기
-  //     //? 이번에 가져온 문서들 중 마지막 문서를 저장=>다음 페이지를 가져올 때 기준점으로 사용(startAfter에서 사용됨).
-  //     //이전 마지막 문서(pageParam) 이후부터 시작하여 데이터를 불러옵니다.
-  //     //파이어베이스(Firebase)의 startAfter 속성은 쿼리에서 특정 문서 이후부터 데이터를 가져올 때 사용하는 기능
-  //     //orderBy와 함께 사용되어야 함
-
-  //     //데이터를 Notification 타입으로 변환하여 리스트에 담기
-  //     //snap.docs는 Firestore에서 가져온 알림 문서들의 배열
-  //     //문서들을 하나씩 돌면서 알림(Notification) 형식으로 변환
-  //     const notifications = snap2.docs.map(
-  //       (doc) => ({ ...doc.data(), id: doc.id } as Notifications)
-  //     );
-  //     console.log(notifications, "noti");
-  //     return notifications;
-  //   },
-  //   [countPage, totalPage]
-  // );
+  //? pageParam이 있으면 → 해당 문서 다음부터(startAfter) 가져오기,없으면 → 처음부터 가져오기
+  //? 이번에 가져온 문서들 중 마지막 문서를 저장=>다음 페이지를 가져올 때 기준점으로 사용(startAfter에서 사용됨).
+  //이전 마지막 문서(pageParam) 이후부터 시작하여 데이터를 불러옵니다.
+  //파이어베이스(Firebase)의 startAfter 속성은 쿼리에서 특정 문서 이후부터 데이터를 가져올 때 사용하는 기능
+  //orderBy와 함께 사용되어야 함
 
   const fetchNotifications = useCallback(
     async ({
@@ -157,12 +111,6 @@ const NotificationListPage = () => {
 
   console.log(data, 75);
   console.log("리렌더링");
-
-  //각 페이지에서 notifications 키로 알림 배열을 꺼냄 =>flatMap을 사용하면 여러 페이지의 알림을 하나의 배열로 합쳐줌
-  // const allNotifications = useMemo(
-  //   () => data?.pages.flatMap((page) => page) ?? [],
-  //   [data]
-  // );
 
   //! 받아온 data중에 isRead가 false가 있냐 없냐를 검사하는 함수
   //! 모두읽음 알림을 비활성화상태로 만들기 위해서 작성한 함수임
@@ -243,7 +191,7 @@ const NotificationListPage = () => {
   }
 
   return (
-    <div className=" flex flex-col gap-y-2.5">
+    <div className="hsecol  gap-y-2.5">
       {/* <div className="flex flex-col gap-y-2.5 h-[calc(100vh-80px)] overflow-y-auto"> */}
       <div>
         {/* isUnRead는 읽지 않은 알림이 하나라도 있으면 true 없다면 false임 */}
@@ -256,12 +204,13 @@ const NotificationListPage = () => {
               <button
                 onClick={handleAllRead}
                 disabled={!isUnRead}
-                className="cursor-pointer mr-2.5 bg-[rgba(232,255,241)] disabled:text-gray-400  disabled:bg-gray-200 dark:bg-[rgba(232,255,241,0.5)] p-2 rounded"
+                className="border-2 border-lime-800 hover:text-lime-800 cursor-pointer mr-2.5 bg-[#d7eadf] disabled:text-gray-400  disabled:bg-gray-200 dark:bg-[rgba(232,255,241,0.5)] p-2 rounded"
               >
                 모두 읽기
               </button>
             </div>
           )}
+
         <ul className=" grid md:grid-cols-2 gap-5  items-center  w-full p-2.5 ">
           {data?.pages.map((page) =>
             page.notifications.map((noti) => (
@@ -272,10 +221,10 @@ const NotificationListPage = () => {
                   return navi.push(`/profile/${noti.follwerId}`);
                 }}
                 className={twMerge(
-                  "flex flex-col  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer ",
+                  " hsecol  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer ",
                   noti.isRead
-                    ? "text-gray-500 bg-gray-200 dark:bg-gray-500 dark:text-white"
-                    : "text-black font-semibold bg-[rgba(232,255,241)] dark:bg-[rgba(232,255,241,0.7)] dark:text-white"
+                    ? "text-gray-500 border dark:border-gray-700 border-gray-200 bg-gray-100 dark:bg-gray-500 dark:text-gray-300"
+                    : "text-black font-semibold border border-gray-200 hover:text-lime-800 bg-[rgba(232,255,241)] dark:bg-[rgba(232,255,241,0.4)] dark:text-white"
                 )}
               >
                 <p className="font-bold text-md">
@@ -290,7 +239,7 @@ const NotificationListPage = () => {
         </ul>
       </div>
 
-      <div className="flex justify-center mr-2.5 pb-20 lg:pb-0 ">
+      <div className="flex justify-center mr-2.5 pb-20  md:pb-20 ">
         {hasNextPage && (
           <button
             onClick={() => fetchNextPage()}

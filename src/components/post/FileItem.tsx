@@ -19,7 +19,7 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
             }
           }}
           multiple
-          className="border max-w-25 min-h-25 border-gray-500  relative  opacity-0 cursor-pointer z-30"
+          className="border max-w-25 min-h-25 border-gray-500  relative  opacity-0 cursor-pointer z-10"
         />
       ) : (
         <button
@@ -35,7 +35,7 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
           <RiDeleteBin5Fill />
         </button>
       )}
-      <div className="absolute top-0 left-0  w-full h-full border rounded bg-white cursor-pointer  flex justify-center items-center overflow-hidden ">
+      <div className="absolute top-0 left-0  w-full h-full border border-gray-400 rounded bg-white cursor-pointer  flex justify-center items-center overflow-hidden ">
         {file ? (
           <div className="border max-w-25 min-h-25">
             <img
