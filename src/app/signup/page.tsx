@@ -144,11 +144,26 @@ const SignupForm = () => {
       return;
     }
 
+    // ✅ 여기서 회원가입을 먼저 진행해!
     const result = await signup(user as User, user.password!);
     if (!result.success) {
       alert("회원가입 실패: " + result.message);
       return;
     }
+
+    // ❗ 이 시점에 firebase에 등록 완료 → uid가 존재
+    const fbUser = authService.currentUser;
+    if (!fbUser) {
+      alert("회원 정보가 없습니다. 다시 시도해주세요.");
+      return;
+    }
+
+    const fullUser = {
+      ...user,
+      uid: fbUser.uid, // uid 추가!
+    };
+
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(fullUser));
 
     router.push("/signup/settingprofile");
   }, [errors, InfoAccount, router, signup, user, validateField, setErrors]);

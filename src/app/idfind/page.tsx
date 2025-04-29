@@ -25,6 +25,7 @@ const IdFind = () => {
   const [codeRequested, setCodeRequested] = useState(false);
   const [codeSentOnce, setCodeSentOnce] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState("");
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const maskEmail = (email: string) => {
     const [id, domain] = email.split("@");
@@ -46,42 +47,41 @@ const IdFind = () => {
   useEffect(() => {
     const saved = sessionStorage.getItem(STORAGE_KEY);
     if (saved) {
-      const parsed = JSON.parse(saved);
-      setName(parsed.name || "");
-      setPhone(parsed.phone || "");
-      setCode(parsed.code || "");
-      setGeneratedCode(parsed.generatedCode || "");
-      setFoundEmail(parsed.foundEmail || "");
-      setShowCode(parsed.showCode || false);
-      setCodeRequested(parsed.codeRequested || false);
-      setCodeSentOnce(parsed.codeSentOnce || false);
-      setErrors(parsed.errors || { name: "", phone: "" });
+      try {
+        const parsed = JSON.parse(saved);
+        setName(parsed.name || "");
+        setPhone(parsed.phone || "");
+        setCode(parsed.code || "");
+        setGeneratedCode(parsed.generatedCode || "");
+        setFoundEmail(parsed.foundEmail || "");
+        setShowCode(parsed.showCode || false);
+        setCodeRequested(parsed.codeRequested || false);
+        setCodeSentOnce(parsed.codeSentOnce || false);
+        setErrors(parsed.errors || { name: "", phone: "" });
+      } catch (err) {
+        console.error("세션 데이터 복원 실패", err);
+      }
     }
+    setIsLoaded(true);
   }, []);
 
   useEffect(() => {
-    validateField("name", name);
-  }, [name, validateField]);
-
-  useEffect(() => {
-    validateField("phone", phone);
-  }, [phone, validateField]);
-
-  useEffect(() => {
-    sessionStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        name,
-        phone,
-        code,
-        generatedCode,
-        foundEmail,
-        showCode,
-        codeRequested,
-        codeSentOnce,
-        errors,
-      })
-    );
+    if (isLoaded) {
+      sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          name,
+          phone,
+          code,
+          generatedCode,
+          foundEmail,
+          showCode,
+          codeRequested,
+          codeSentOnce,
+          errors,
+        })
+      );
+    }
   }, [
     name,
     phone,
@@ -92,7 +92,17 @@ const IdFind = () => {
     codeRequested,
     codeSentOnce,
     errors,
+    isLoaded,
   ]);
+
+  useEffect(() => {
+    validateField("name", name);
+  }, [name, validateField]);
+
+  useEffect(() => {
+    validateField("phone", phone);
+  }, [phone, validateField]);
+
   const handleNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -270,7 +280,7 @@ const IdFind = () => {
 
       {/* 입력폼 */}
       {IdFinds.map((idf, index) => (
-        <div key={index}>
+        <div key={index} className=" ml-3">
           <div className="flex gap-2 p-3 lg:flex lg:items-center lg:justify-center">
             <input
               type={idf.type || "text"}
@@ -309,7 +319,11 @@ const IdFind = () => {
             )}
           </div>
           {idf.error && (
-            <p className="text-red-500 text-sm mt-0.5 ml-5 lg:ml-80">
+            <p
+              className={`text-red-500 text-sm mt-0.5 ml-5 lg:mr-105 lg:flex  lg:justify-center md:mr-9 md:justify-start md:flex mx-auto sm:flex ${
+                idf.label === "이름" && "lg:mr-115"
+              }`}
+            >
               {idf.error}
             </p>
           )}
@@ -327,7 +341,7 @@ const IdFind = () => {
           <div className="w-[240px] md:w-[400px]">
             <button
               type="button"
-              className="w-full h-[80px] bg-emerald-300 rounded font-bold lg:text-lg hover:bg-emerald-400"
+              className="w-full h-[80px] bg-emerald-300 rounded font-bold lg:text-lg hover:bg-emerald-400 ml-1 mt-5"
               onClick={handleSubmit}
             >
               확인
