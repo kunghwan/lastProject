@@ -11,6 +11,7 @@ const QnaPage = () => {
   //useState로 상태 관리(openQuestion 상태를 추가하여 현재 열려 있는 질문을 관리,null이면 아무 질문도 열려 있지 않은 상태)
   const [isanswerShowing, setIsanswerShowing] = useState<string | null>(null);
   //클릭한 질문이 이미 열려 있으면 닫고, 그렇지 않으면 해당 질문을 엽니다.
+  //"isanswerShowing과 item.question이 같은지"를 비교한 결과로 true 또는 false가 나오는 것
   const toggleQuestion = useCallback(
     (question: string) => {
       setIsanswerShowing((prev) => (prev === question ? null : question));
@@ -39,6 +40,7 @@ const QnaPage = () => {
               </button>
               {/*조건부 렌더링: openQuestion === item.question일 때만 답변을 표시합니다.
                */}
+              {/* isanswerShowing에 저장된 질문이랑 아이템의 질문이랑 같으면 true */}
               {isanswerShowing === item.question && (
                 <div className="mt-1 flex flex-col gap-y-1.5 text-sm text-gray-600 rounded p-2.5 bg-[rgba(240,255,251)] dark:bg-[rgba(240,255,251,0.5)] md:text-xl dark:text-white">
                   {item.answer[0]}
