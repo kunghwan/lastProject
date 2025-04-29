@@ -49,7 +49,7 @@ const ProfileLayout = ({
   return (
     <div className="flex flex-col w-full h-screen">
       {!isSmallScreen ? (
-        <div className="mx-auto">
+        <div className="flex flex-col mx-auto">
           <div className="flex m-5 mb-0 pr-20 pl-20 gap-2.5 justify-center ">
             <div className="relative w-40 h-40">
               <img
@@ -69,7 +69,7 @@ const ProfileLayout = ({
                   {nickname || `${posts[0]?.userNickname || `MyProfile`}`}
                 </h1>
                 {isMyPage ? (
-                  <button className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400 dark:active:text-gray-200">
+                  <button className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400 dark:active:text-gray-100">
                     <IoSettingsOutline />
                   </button>
                 ) : (
@@ -122,11 +122,11 @@ const ProfileLayout = ({
               )}
             </div>
             {isMyPage ? (
-              <button className="text-2xl absolute right-30 sm:right-50 hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
+              <button className="text-2xl absolute right-30 sm:right-50 hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400  dark:active:text-gray-100">
                 <IoSettingsOutline />
               </button>
             ) : (
-              <button className="absolute right-20 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400 ">
+              <button className="absolute right-20 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
                 <FollowButton
                   followingId={posts[0].uid}
                   followNickName={posts[0].userNickname}
@@ -172,7 +172,7 @@ const ProfileLayout = ({
           <ProfileFeed posts={posts} isMyPage={isMyPage} />
         ) : (
           <div className="flex border-t pt-10 border-blue-200 w-full justify-center">
-            <div className="text-gray-700 text-xl mt-30 animate-bounce dark:text-gray-300">
+            <div className="text-gray-800 text-xl mt-30 animate-bounce dark:text-gray-200">
               게시물이 없습니다
             </div>
           </div>

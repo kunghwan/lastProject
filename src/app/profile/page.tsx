@@ -4,8 +4,9 @@
 import { redirect } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 import { authService, dbService, FBCollection } from "@/lib/firebase";
+import { useCallback } from "react";
 
-export const getUserNickname = async (): Promise<string | null> => {
+export const getUserNickname = useCallback(async (): Promise<string | null> => {
   const user = authService.currentUser; // 현재 로그인한 유저 정보 가져오기
   if (!user) return null; // 로그인하지 않은 경우 null 반환
 
@@ -24,7 +25,7 @@ export const getUserNickname = async (): Promise<string | null> => {
     console.error("유저 닉네임 가져오기 오류:", error);
     return null;
   }
-};
+}, [FBCollection.USERS]);
 
 // 특정 uid를 가진 다른 유저의 정보를 가져오는 함수 (새로운 함수)
 export const getOtherUserInfo = async (
@@ -46,7 +47,7 @@ export const getOtherUserInfo = async (
     }
   } catch (error) {
     console.error("다른 유저 정보 가져오기 오류:", error);
-    return <div>{error.message}</div>;
+    throw new Error("다른 유저 정보를 가져오는 중 오류가 발생했습니다.");
   }
 };
 

@@ -4,7 +4,6 @@ import { AUTH } from "@/contextapi/context";
 import { dbService, FBCollection } from "@/lib";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState, useTransition } from "react";
-// import Loaiding from "../Loading/page";
 import Loaiding from "../Loading";
 
 interface FollowButtonProps {
@@ -70,8 +69,6 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
     });
     return alert(`${followNickName}님을 팔로우 했습니다`);
   }, [user, followingId, navi]);
-
-
   //언팔로우 처리
   const onUnFollow = useCallback(() => {
     if (!user) {
@@ -80,7 +77,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
     }
     startTransition(async () => {
       //내 followings에서 제거
-      const ref = dbService
+      const ref = await dbService
         .collection(FBCollection.USERS)
         .doc(user.uid)
         .collection("followings")
@@ -93,7 +90,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
       await ref.delete();
 
       // 상대방 followers에서 나 제거
-      const followerRef = dbService
+      const followerRef = await dbService
         .collection(FBCollection.USERS)
         .doc(followingId)
         .collection("followers")
@@ -130,11 +127,10 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
 
       checkFollowing();
     };
-  }, [user, followingId]) 
-  // const checkFollowing = async () => { 
+  }, [user, followingId]);
   return (
     <div>
-      {isPening && <Loaiding />}asD
+      {isPening && <Loaiding />}
       {isFollowing ? (
         <button
           className="border-2 border-gray-300 rounded-full px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"

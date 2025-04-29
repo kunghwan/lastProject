@@ -15,9 +15,10 @@ import { dbService, FBCollection, storageService } from "@/lib";
 
 import { useRouter } from "next/navigation";
 import { AUTH } from "@/contextapi/context";
-import Loaiding from "../Loading/page";
+
 import { getDownloadURL, uploadBytes } from "firebase/storage";
 import JusoComponents from "./UpoladPostJusoComponents";
+import Loaiding from "../Loading";
 
 interface UploadPostProps extends Post {
   imgs: string[];

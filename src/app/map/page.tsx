@@ -114,12 +114,14 @@ const MapPage = () => {
     setKeyword(inputValue.trim());
   };
 
+  //! 불필요한 코드 줄이기
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") handleSearch();
   };
 
   return (
     <div className="flex flex-col relative dark:text-black h-190 overflow-hidden ">
+      {/* //! form 바꾸고 onSubmit */}
       <div className="p-2.5 flex bg-white absolute z-50 left-10 top-10 rounded-full shadow-md">
         <input
           value={inputValue}
@@ -132,7 +134,6 @@ const MapPage = () => {
           <IoSearch />
         </button>
       </div>
-
       {/* 상세정보 */}
       <div className="flex flex-1">
         {selectedPlace && (
