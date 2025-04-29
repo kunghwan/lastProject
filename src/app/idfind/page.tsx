@@ -365,38 +365,37 @@ const IdFind = () => {
               확인
             </button>
 
-            <div className="text-center mt-2 text-sm flex flex-col items-center justify-center w-100 rounded xl:w-143">
-              <div className="grid grid-cols-2 gap-x-8  ">
-                {foundEmail.split(", ").map((email, idx) => (
-                  <div key={idx} className="flex items-center gap-x-2.5">
-                    <input
-                      type="radio"
-                      id={`email-${idx}`}
-                      name="selected-email"
-                      value={email}
-                      checked={selectedEmail === email}
-                      onChange={() => setSelectedEmail(email)}
-                    />
-                    <label
-                      htmlFor={`email-${idx}`}
-                      className="whitespace-nowrap z-50"
-                    >
-                      {email}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <div className="text-center mt-2 text-sm flex flex-col items-center justify-center w-100 rounded xl:w-143"></div>
           </div>
         </div>
       </div>
 
       {/* 이메일 결과 */}
-      {foundEmail && (
+      {foundEmail.trim() !== "" && (
         <>
           <p className="text-center text-amber-600 font-bold mt-1 text-sm">
             내 아이디는 <span className="underline">{foundEmail}</span> 입니다.
           </p>
+          <div className="grid grid-cols-2 gap-x-8  ">
+            {foundEmail.split(", ").map((email, idx) => (
+              <div key={idx} className="flex items-center gap-x-2.5">
+                <input
+                  type="radio"
+                  id={`email-${idx}`}
+                  name="selected-email"
+                  value={email}
+                  checked={selectedEmail === email}
+                  onChange={() => setSelectedEmail(email)}
+                />
+                <label
+                  htmlFor={`email-${idx}`}
+                  className="whitespace-nowrap z-50"
+                >
+                  {email}
+                </label>
+              </div>
+            ))}
+          </div>
         </>
       )}
     </form>
