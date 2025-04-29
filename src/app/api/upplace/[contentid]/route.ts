@@ -1,11 +1,9 @@
 import { NextRequest } from "next/server";
 import axios from "axios";
 
-export async function GET(
-  req: NextRequest,
-  context: { params: { [key: string]: string } }
-) {
-  const { contentid } = context.params;
+export async function GET(req: NextRequest) {
+  // ✅ searchParams에서 가져오기
+  const contentid = req.nextUrl.searchParams.get("contentid");
 
   if (!contentid) {
     return new Response(JSON.stringify({ message: "contentid가 없습니다" }), {

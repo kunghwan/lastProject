@@ -73,7 +73,7 @@ const QnaPage = () => {
 
 export default QnaPage;
 
-export const qna: QnA[] = [
+const qna: QnA[] = [
   {
     question: "알림을 한번에 읽는 방법은 없나요?",
     answer: [
