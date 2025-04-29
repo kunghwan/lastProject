@@ -181,7 +181,7 @@ const MapPage = () => {
         {/* 검색 결과 리스트 */}
         {keyword.length !== 0 && (
           <div className="md:w-72 w-full h-[80vh] p-4 bg-gray-100 border-l border-gray-300 flex flex-col gap-y-2 ">
-            <div className="p-2.5 flex bg-white rounded-full shadow-md w-full max-w-full overflow-hidden">
+            <form className="p-2.5 flex bg-white rounded-full shadow-md w-full max-w-full overflow-hidden">
               <input
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
@@ -194,7 +194,7 @@ const MapPage = () => {
               >
                 <IoSearch />
               </button>
-            </div>
+            </form>
 
             <ul className="space-y-4 overflow-y-auto h-[calc(100%-2rem)] pr-2">
               {places.map((place) => (
