@@ -3,6 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchPosts } from "@/lib/post"; // fetchPosts 함수
 import { Post as PostType } from "@/types/post"; // Post 타입 정의
+import LikeButton from "./LikeButton";
+import ShareButton from "./ShareButton";
 
 const PostComponent = () => {
   // React Query를 사용하여 Firestore에서 posts 데이터를 가져옴
@@ -25,7 +27,7 @@ const PostComponent = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ml-2.5 mr-2.5">
+    <div className="grid grid-cols-1 gap-y-3 md:grid-cols-2 lg:grid-cols-3 ml-2.5 mr-2.5">
       {posts.map((post) => {
         const {
           id,
@@ -33,48 +35,57 @@ const PostComponent = () => {
           content,
           likes,
           shares,
-          title,
-          bookmarked,
           createdAt,
-          isLiked,
           lo,
           uid,
           userNickname,
           userProfileImage,
         } = post;
+        if (userProfileImage === null) {
+          return ``;
+        }
         return (
-          <div key={id} className="rounded-lg p-4 border">
-            <button className="flex gap-2.5">
-              <img
-                className="w-12 h-12 rounded-full"
-                src={userProfileImage}
-                alt="user profile image"
-              />
-              <div>{userNickname}</div>
+          <div key={id} className="rounded-lg p-1">
+            <button className="flex gap-2.5 items-center text-center mb-1.5 ml-1">
+              {userProfileImage ? (
+                <img
+                  className="w-10 h-10 rounded-full border border-gray-200"
+                  src={userProfileImage}
+                  alt="user profile image"
+                />
+              ) : (
+                <img
+                  src={defaultImgUrl}
+                  alt="defaultImgUrl"
+                  className="w-10 h-10 rounded-full border border-gray-200"
+                />
+              )}
+
+              <div className="font-black">{userNickname}</div>
             </button>
             {imageUrl ? (
               <img
                 src={imageUrl}
                 alt="Post image"
-                className="w-full h- object-cover rounded-lg mb-2"
+                className="w-full h-76 object-cover rounded-lg mb-2"
               />
             ) : (
-              <div className="w-full h-68 bg-gray-200 flex items-center justify-center rounded-lg mb-2">
+              <div className="w-full h-76 bg-gray-200 flex items-center justify-center rounded-lg mb-2">
                 이미지 없음
               </div>
             )}
-            <p>{title}</p>
-            <p>{bookmarked}</p>
-
-            <p>{createdAt}</p>
-            <p>{isLiked}</p>
-            <p>{userNickname}</p>
-            <p>{userProfileImage}</p>
-            <p>{uid}</p>
-            <h3 className="text-lg font-semibold">{content}</h3>
-            <div className="flex gap-4">
-              <p className="text-sm text-gray-600">좋아요: {likes?.length}</p>
-              <p className="text-sm text-gray-600">공유: {shares?.length}</p>
+            <div className="flex gap-4 ml-1">
+              <p className="text-sm text-gray-600">
+                <LikeButton /> {likes?.length}
+              </p>
+              <p className="text-sm text-gray-600">
+                <ShareButton /> {shares?.length}
+              </p>
+            </div>
+            {/* <div>{uid}</div> */}
+            <p className="text-lg font-semibold">{content}</p>
+            <div className="items-baseline text-end text-gray-500 text-sm">
+              {createdAt}
             </div>
           </div>
         );
@@ -84,3 +95,6 @@ const PostComponent = () => {
 };
 
 export default PostComponent;
+
+const defaultImgUrl =
+  "https://i.pinimg.com/1200x/3e/c0/d4/3ec0d48e3332288604e8d48096296f3e.jpg";
