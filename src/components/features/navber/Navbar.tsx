@@ -18,7 +18,6 @@ const navStyle =
   "hidden [@media(min-width:1425px)]:flex absolute w-20 -left-[130%] bg-gray-200 z-30 rounded-full transition-all duration-300";
 
 const Navbar = () => {
-  const [isShowingModal, setIsShowingModal] = useState(false);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   const router = useRouter();
@@ -36,9 +35,7 @@ const Navbar = () => {
         return;
       }
 
-      if (btn.modal) {
-        setIsShowingModal(true);
-      } else if (btn.path) {
+      if (btn.path) {
         router.push(btn.path);
       }
     },
@@ -125,21 +122,6 @@ const Navbar = () => {
             </ul>
           </nav>
         )}
-
-        {/* 피드 모달 */}
-        {isShowingModal && (
-          <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
-            <div className="p-6 rounded-xl shadow-lg w-80 relative bg-white text-black">
-              <button
-                onClick={() => setIsShowingModal(false)}
-                className="absolute top-2 right-4 text-gray-500 hover:text-gray-800 text-xl"
-              >
-                <IoCloseOutline />
-              </button>
-              <p>feed</p>
-            </div>
-          </div>
-        )}
       </div>
     </>
   );
@@ -150,7 +132,7 @@ export default Navbar;
 const NavBtns = [
   { name: "Q&A", icon: <FaRegQuestionCircle />, path: "/customer" },
   { name: "추천", icon: <IoStarOutline />, path: "/upplace" },
-  { name: "피드", icon: <FaRegMessage />, modal: true },
+  { name: "피드", icon: <FaRegMessage />, path: "/feed" },
   { name: "글쓰기", icon: <FaPencil />, path: "/profile/create" },
   { name: "MY", icon: <IoPersonSharp />, path: "/profile" },
 ];

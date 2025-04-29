@@ -6,6 +6,7 @@ import BodyLayout from "../components/BodyLayout";
 
 import { AuthProvider } from "@/contextapi/provider";
 import ReactQueryProvider from "@/contextapi/ReactQueryClientProvider";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
