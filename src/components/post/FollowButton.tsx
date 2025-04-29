@@ -135,6 +135,7 @@ const FollowButton = ({ followingId, followNickname }: FollowButtonProps) => {
       checkFollowing();
     };
   }, [user, followingId]);
+
   return (
     <div>
       {isPending && <Loaiding />}

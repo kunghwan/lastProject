@@ -143,7 +143,7 @@ const NotificationListPage = () => {
       if (
         !lastPage ||
         lastPage.notifications.length === 0 ||
-        lastPage.notifications.length < 20
+        lastPage.notifications.length < limit
       ) {
         return undefined; //다음페이지가 없으면 undefined임
       }
@@ -219,7 +219,8 @@ const NotificationListPage = () => {
 
     await batch.commit(); //! 배치 실행(배치를 실행시킬려면 commit함수를 꼭 붙여야함)
     console.log("모든 알림을 읽음 처리했습니다.");
-    return await refetch(); //!  데이터 새로고침 //서버에 요청 → 최신 데이터로 갱신
+    await refetch(); //!  데이터 새로고침 //서버에 요청 → 최신 데이터로 갱신
+    return alert("알림을 모두 읽었습니다.");
   }, [data, uid, refetch]);
 
   // const isNotifications = data?.pages.map((page) => page.notifications);
@@ -228,7 +229,9 @@ const NotificationListPage = () => {
   //! 안읽은 알림이 없느가를 처음 페이지가 렌더링될때 확인용
   useEffect(() => {
     checkUnreadNotifications();
-    return;
+    return () => {
+      checkUnreadNotifications();
+    };
   }, [checkUnreadNotifications]);
 
   if (isPending) {
@@ -251,7 +254,7 @@ const NotificationListPage = () => {
             <div className="flex justify-end">
               {/* isRead가 다 true라면 버튼을 비활성화함 */}
               <button
-                onClick={() => handleAllRead()}
+                onClick={handleAllRead}
                 disabled={!isUnRead}
                 className="cursor-pointer mr-2.5 bg-[rgba(232,255,241)] disabled:text-gray-400  disabled:bg-gray-200 dark:bg-[rgba(232,255,241,0.5)] p-2 rounded"
               >
