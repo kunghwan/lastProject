@@ -174,7 +174,19 @@ const UploadPostPage = () => {
         }
       });
     },
-    [title, titleMessage, post, content, descMessage, juso, jusoMessage, user]
+    [
+      title,
+      titleMessage,
+      post,
+      content,
+      descMessage,
+      juso,
+      jusoMessage,
+      user,
+      files,
+      tagsMessage,
+      navi,
+    ]
   );
 
   return (

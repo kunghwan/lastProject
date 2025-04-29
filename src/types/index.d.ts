@@ -23,6 +23,7 @@ interface PromiseResult {
   message?: string;
   success?: boolean;
   code?: string;
+  reason?: "user-not-found" | "wrong-password" | "unknown-error"; // 아이디 비번 틀린거
 }
 //  로딩 상태
 interface LoadingState {

@@ -8,16 +8,16 @@ import Loaiding from "../Loading";
 
 interface FollowButtonProps {
   followingId: string; // 팔로잉할 유저의 uid
-  followNickname: string; // 팔로잉할 유저의 닉네임
+
+  followNickName: string; // 팔로잉할 유저의 닉네임
 }
 
-const FollowButton = ({ followingId, followNickname }: FollowButtonProps) => {
+const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
   const { user } = AUTH.use();
   const navi = useRouter();
-  // user가 팔로우를 한 사람인가를 확인하는 용도
   const [isFollowing, setIsFollowing] = useState(false);
-
-  const [isPending, startTransition] = useTransition();
+  const handleFollow = () => setIsFollowing((prev) => !prev);
+  const [isPening, startTransition] = useTransition();
 
   const onFollow = useCallback(() => {
     if (!user) {
@@ -70,6 +70,7 @@ const FollowButton = ({ followingId, followNickname }: FollowButtonProps) => {
         return console.log(error.message);
       }
     });
+    return alert(`${followNickName}님을 팔로우 했습니다`);
   }, [user, followingId, navi]);
   //언팔로우 처리
   const onUnFollow = useCallback(() => {
@@ -78,64 +79,73 @@ const FollowButton = ({ followingId, followNickname }: FollowButtonProps) => {
       return navi.push("/signin");
     }
     startTransition(async () => {
-      try {
-        //! 내 followings에서 제거
-        const ref = dbService
-          .collection(FBCollection.USERS)
-          .doc(user.uid)
-          .collection(FBCollection.FOLLOWINGS)
-          .doc(followingId);
+      //내 followings에서 제거
+      const ref = await dbService
+        .collection(FBCollection.USERS)
+        .doc(user.uid)
+        .collection("followings")
+        .doc(followingId);
 
-        //delete() 메서드는 문서를 삭제하는 메서드
+      //delete() 메서드는 문서를 삭제하는 메서드
 
-        await ref.delete();
+      //delete() 메서드는 문서를 삭제하는 메서드
 
-        //! 상대방 followers에서 나 제거
-        const followerRef = dbService
-          .collection(FBCollection.USERS)
-          .doc(followingId)
-          .collection(FBCollection.FOLLOWERS)
-          .doc(user.uid);
+      await ref.delete();
 
-        //delete() 메서드는 문서를 삭제하는 메서드
+      // 상대방 followers에서 나 제거
+      const followerRef = await dbService
+        .collection(FBCollection.USERS)
+        .doc(followingId)
+        .collection("followers")
+        .doc(user.uid);
 
-        await followerRef.delete();
+      //delete() 메서드는 문서를 삭제하는 메서드
 
-        setIsFollowing(false);
-      } catch (error: any) {
-        return console.log(error.message);
-      }
+      //delete() 메서드는 문서를 삭제하는 메서드
+
+      await followerRef.delete();
+
+      setIsFollowing(false);
     });
   }, [user, navi, followingId]);
-
-  //! 현재 유저를 팔로우하고 있는지 확인용도
+  //현재 유저를 팔로우하고 있는지 확인용도
   useEffect(() => {
     const checkFollowing = async () => {
       if (!user?.uid || !followingId) {
-        return console.log("no user");
+        return console.log("no");
       }
 
       try {
         const ref = dbService
           .collection(FBCollection.USERS)
           .doc(user.uid)
-          .collection(FBCollection.FOLLOWINGS)
+          .collection("followings")
           .doc(followingId);
         const snap = await ref.get();
         //extsts는 문서가 존재하는지 확인하는 메서드(불리언타입임)
-        //snap.exists를 통해 그 문서가 존재하는지 확인// 문서가 존재하면 setIsFollowing(true),문서가 존재하지 않으면 setIsFollowing(false)
         setIsFollowing(snap.exists);
       } catch (error: any) {
-        return console.error(error.message);
+
+        console.error(error.message);
+
+        return console.log(error.message);
+
       }
+
+      checkFollowing();
     };
+
     checkFollowing();
     //리턴으로 청소 작업필요
-    return;
+    return () => {
+      checkFollowing();
+    };
+
   }, [user, followingId]);
+
   return (
     <div>
-      {isPending && <Loaiding />}
+      {isPening && <Loaiding />}
       {isFollowing ? (
         <button onClick={() => onUnFollow()} className="followButton">
           UnFollow
