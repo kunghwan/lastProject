@@ -3,10 +3,9 @@ import axios from "axios";
 
 export async function GET(
   req: NextRequest,
-  context: { params: { contentid: string } }
+  context: { params: { [key: string]: string } }
 ) {
-  const { params } = context;
-  const contentid = params?.contentid;
+  const { contentid } = context.params;
 
   if (!contentid) {
     return new Response(JSON.stringify({ message: "contentid가 없습니다" }), {
@@ -23,16 +22,14 @@ export async function GET(
           MobileOS: "ETC",
           MobileApp: "AppTest",
           contentId: contentid,
-          defaultYN: "Y", // ✅ 기본정보
-          overviewYN: "Y", // ✅ 설명
-          firstImageYN: "Y", // ✅ 이미지
-          addrinfoYN: "Y", // ✅ 주소
+          defaultYN: "Y",
+          overviewYN: "Y",
+          firstImageYN: "Y",
+          addrinfoYN: "Y",
           _type: "json",
         },
       }
     );
-
-    console.log("✅ 공공데이터 응답 데이터:", response.data);
 
     const items = response.data.response.body.items.item;
     const item = Array.isArray(items) ? items[0] : items;
@@ -40,13 +37,20 @@ export async function GET(
     return Response.json({
       title: item?.title ?? "제목 없음",
       addr1: item?.addr1 ?? "주소 없음",
+      addr2: item?.addr2 ?? "",
       overview: item?.overview ?? "설명 없음",
       firstimage: item?.firstimage ?? "/image/logoc.PNG",
-      tel: item?.tel ? item.tel : "전화번호 없음",
-      zipcode: item?.zipcode ? item.zipcode : "우편번호 없음",
-
-      mapx: item?.mapx ?? null, // 🔥 지도 X좌표
-      mapy: item?.mapy ?? null, // 🔥 지도 Y좌표
+      tel: item?.tel && item.tel.trim() !== "" ? item.tel : "전화번호 없음",
+      zipcode:
+        item?.zipcode && item.zipcode.trim() !== ""
+          ? item.zipcode
+          : "우편번호 없음",
+      mapx: item?.mapx ?? null,
+      mapy: item?.mapy ?? null,
+      homepage: item?.homepage ?? "",
+      cat1: item?.cat1 ?? "",
+      cat2: item?.cat2 ?? "",
+      cat3: item?.cat3 ?? "",
     });
   } catch (error) {
     console.error("상세 장소 정보 불러오기 실패", error);
