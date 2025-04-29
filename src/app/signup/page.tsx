@@ -36,7 +36,7 @@ const SignupForm = () => {
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof User, string>>>({});
-  const { signup } = AUTH.use();
+  const { signup, signout } = AUTH.use();
   const router = useRouter();
 
   const inputRefs = useRef<HTMLInputElement[]>([]);
@@ -163,8 +163,9 @@ const SignupForm = () => {
       uid: fbUser.uid, // uid 추가!
     };
 
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(fullUser));
+    await authService.signOut();
 
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(fullUser));
     router.push("/signup/settingprofile");
   }, [errors, InfoAccount, router, signup, user, validateField, setErrors]);
 
