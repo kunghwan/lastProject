@@ -72,7 +72,7 @@ const QnaPage = () => {
 
 export default QnaPage;
 
-export const qna: QnA[] = [
+const qna: QnA[] = [
   {
     question: "이페이지는 뭐임?",
     answer:
