@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FaRegMessage, FaPencil } from "react-icons/fa6";
 import {
   IoPersonSharp,
@@ -13,6 +13,9 @@ import { IoMdArrowDropup } from "react-icons/io";
 import { twMerge } from "tailwind-merge";
 import { AUTH } from "@/contextapi/context";
 import { FaRegQuestionCircle } from "react-icons/fa";
+
+const navStyle =
+  "hidden [@media(min-width:1425px)]:flex absolute w-20 -left-[130%] bg-gray-200 z-30 rounded-full transition-opacity duration-300";
 
 const Navbar = () => {
   const [isShowingModal, setIsShowingModal] = useState(false);
@@ -29,7 +32,7 @@ const Navbar = () => {
     if (
       !user &&
       [2, 3, 4].includes(userfuncIndex) &&
-      window.confirm("유저만 이용 가능한 기능입니다. 로그인 하시겠습니까?")
+      confirm("유저만 이용 가능한 기능입니다. 로그인 하시겠습니까?")
     ) {
       router.push("/signin");
       return;
@@ -46,9 +49,6 @@ const Navbar = () => {
       setNavDelay(false);
     }
   };
-
-  const navStyle =
-    "hidden [@media(min-width:1425px)]:flex absolute w-20 -left-[130%] bg-gray-200 z-30 rounded-full transition-opacity duration-300";
 
   return (
     <>
@@ -127,6 +127,7 @@ const Navbar = () => {
             ))}
           </ul>
         </nav>
+
         {isShowingModal && (
           <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
             <div className="p-6 rounded-xl shadow-lg w-80 relative bg-white text-black dark:text-black dark:bg-white">
