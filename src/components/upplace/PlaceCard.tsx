@@ -54,7 +54,7 @@ const PlaceCard: React.FC<{ place?: UpPlace }> = ({ place }) => {
       <p className="text-sm text-gray-600">{place.addr1}</p>
 
       <div className="mt-2 flex items-center justify-between">
-        <p className="text-sm text-gray-500">❤️ 좋아요: {likeCount}</p>
+        <p className="text-sm text-gray-500">❤️ {likeCount}</p>
         <UpPlaceLikeButton contentId={place.contentid} onLiked={handleLiked} />
       </div>
     </div>
