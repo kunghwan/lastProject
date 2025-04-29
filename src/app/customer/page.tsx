@@ -21,7 +21,7 @@ const QnaPage = () => {
 
   return (
     <div className="mt-5 relative h-screen  hsecol gap-y-2.5 ">
-      <div className="z-50">
+      <div className="z-10">
         <ul className="px-2">
           {qna.map((item) => (
             <li key={item.question} className=" hsecol mb-2 w-full">
@@ -54,9 +54,9 @@ const QnaPage = () => {
         </ul>
       </div>
 
-      <div className=" md:text-xl font-bold hsecol justify-end items-center  ">
+      <div className=" md:text-xl font-bold hsecol justify-end items-center pb-20  xl:pb-0">
         <p>추가로 질문사항이 있으시면 </p>
-        <p className="z-50">
+        <p className="z-10">
           <a
             href="mailto:test@test.com"
             className="text-green-800 font-bold hover:underline dark:text-green-200 "
@@ -66,7 +66,7 @@ const QnaPage = () => {
           으로 메일을 보내주시면 감사하겠습니다.
         </p>
       </div>
-      {/* 빈화면을 눌러도 닫히게 코드 추가 z를 0주고 나머지 요소들은 위로 보이게 z를 50을 줌 */}
+      {/* 빈화면을 눌러도 닫히게 코드 추가 z를 0주고 나머지 요소들은 위로 보이게 z를 10을 줌 */}
       <span
         className=" w-full absolute size-full top-0 left-0 z-0"
         onClick={() => setIsanswerShowing(null)}
