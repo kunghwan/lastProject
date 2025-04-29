@@ -258,7 +258,7 @@ const NotificationListPage = () => {
                 disabled={!isUnRead}
                 className="cursor-pointer mr-2.5 bg-[rgba(232,255,241)] disabled:text-gray-400  disabled:bg-gray-200 dark:bg-[rgba(232,255,241,0.5)] p-2 rounded"
               >
-                모두 읽음
+                모두 읽기
               </button>
             </div>
           )}
