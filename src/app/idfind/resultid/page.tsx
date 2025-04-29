@@ -7,21 +7,21 @@ import { TbPassword } from "react-icons/tb";
 const IdFindResult = () => {
   const [email, setEmail] = useState("");
   const [isChecked, setIsChecked] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // ✅ 로딩 상태 추가
+  const [isLoading, setIsLoading] = useState(true); // ✅ 로딩 상태
 
   useEffect(() => {
     if (email) {
-      sessionStorage.setItem("realEmail", email);
-      sessionStorage.setItem("isChecked", JSON.stringify(isChecked)); // ✅ 체크상태도 저장
+      sessionStorage.setItem("selectedRealEmail", email); // ✅ 선택된 이메일 저장
+      sessionStorage.setItem("isChecked", JSON.stringify(isChecked));
     }
   }, [email, isChecked]);
 
   useEffect(() => {
-    const storedEmail = sessionStorage.getItem("realEmail");
+    const storedEmail = sessionStorage.getItem("selectedRealEmail"); // ✅ 수정: selectedRealEmail 가져오기
     const storedCheck = sessionStorage.getItem("isChecked");
 
     if (storedEmail) setEmail(storedEmail);
-    if (storedCheck) setIsChecked(JSON.parse(storedCheck)); // ✅ 복원
+    if (storedCheck) setIsChecked(JSON.parse(storedCheck));
     setIsLoading(false);
   }, []);
 
@@ -76,7 +76,7 @@ const IdFindResult = () => {
 
         <div className="flex mt-4 gap-x-2.5 justify-start ml-10 lg:ml-100 md:ml-60">
           <button
-            onClick={() => handleClick("/signup")}
+            onClick={() => handleClick("/signin")}
             className={loginButton}
           >
             로그인하기
@@ -92,7 +92,7 @@ const IdFindResult = () => {
 
 export default IdFindResult;
 
-// ✅ 버튼 스타일
+// ✅ 버튼 스타일 (기존 그대로 유지)
 const pwButton =
   "bg-gray-300 text-black font-bold px-6 py-3 rounded-2xl hover:bg-blue-600 w-40 lg:h-20 lg:flex lg:items-center lg:justify-center";
 const loginButton =

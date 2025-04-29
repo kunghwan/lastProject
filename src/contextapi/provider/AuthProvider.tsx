@@ -33,6 +33,17 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     async (email: string, password: string): Promise<PromiseResult> => {
       try {
         console.log(email, password);
+
+        // 1️⃣ Firestore users 컬렉션에서 이메일 먼저 찾기
+        const snapshot = await ref.where("email", "==", email).limit(1).get();
+
+        if (snapshot.empty) {
+          // 이메일이 없음 = 아이디 틀림
+          console.log("❌ 이메일이 존재하지 않음");
+          return { success: false, message: "아이디가 틀렸습니다." };
+        }
+
+        // 2️⃣ 이메일이 존재하면 로그인 시도
         const userCredential = await authService.signInWithEmailAndPassword(
           email,
           password
@@ -54,7 +65,15 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         return { success: true };
       } catch (error: any) {
         console.error("❌ 로그인 실패:", error.message);
-        return { success: false, message: error.message };
+
+        if (error.code === "auth/wrong-password") {
+          // 비밀번호 틀림
+          const passwordWrong = await ref.where("password", "==", "password");
+          console.log(password);
+          return { success: false, message: "비밀번호가 틀렸습니다." };
+        }
+
+        return { success: false, message: "로그인 실패" };
       }
     },
     [ref]
