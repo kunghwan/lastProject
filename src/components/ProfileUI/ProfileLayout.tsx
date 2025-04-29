@@ -4,7 +4,7 @@ import { Post, Tag } from "@/types/post";
 import { useCallback, useEffect, useState } from "react";
 import { IoSettingsOutline } from "react-icons/io5";
 import ProfileFeed from "./ProfileFeed";
-import { getUserNickname } from "@/app/profile/page";
+import { useGetUserNickname } from "@/app/profile/page";
 import FollowButton from "../post/FollowButton";
 
 const ProfileLayout = ({
@@ -20,8 +20,8 @@ const ProfileLayout = ({
 
   useEffect(() => {
     const fetchNickname = async () => {
-      const userNickname = await getUserNickname();
-      setNickname(userNickname);
+      const userNickname = useGetUserNickname();
+      setNickname(userNickname.name);
     };
 
     fetchNickname();
@@ -39,16 +39,12 @@ const ProfileLayout = ({
   }, []);
   const actualPostCount = posts.filter((post) => post.id !== "default").length;
 
-  const sdf = useCallback(() => {}, []);
-
   const getRandomColor = useCallback(() => {
-    const getRandomColor = () => {
-      let red = Math.floor(Math.random() * 256);
-      let green = Math.floor(Math.random() * 256);
-      let blue = Math.floor(Math.random() * 256);
-      return `rgb(${red}, ${green}, ${blue})`;
-    };
-  }, [posts]);
+    let red = Math.floor(Math.random() * 256);
+    let green = Math.floor(Math.random() * 256);
+    let blue = Math.floor(Math.random() * 256);
+    return `rgb(${red}, ${green}, ${blue})`;
+  }, []);
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -68,49 +64,31 @@ const ProfileLayout = ({
               )}
             </div>
             <div className="ml-10 w-120 flex-col flex flex-1 ">
-              <p className="flex justify-between">
+              <div className="flex justify-between">
                 <h1 className="font-medium text-4xl p-1 hover:scale-103 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
                   {nickname || `${posts[0]?.userNickname || `MyProfile`}`}
                 </h1>
                 {isMyPage ? (
-                  <button className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
+                  <button className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400 dark:active:text-gray-100">
                     <IoSettingsOutline />
                   </button>
                 ) : (
                   <button>
-                    <FollowButton
+                    {/* <FollowButton
                       followingId={posts[0].uid}
-                      follwingNickname={posts[0].userNickname}
-                    />
+                      followNickName={posts[0].userNickname}
+                    /> */}
+                    sdf
                   </button>
                 )}
-                {/*
-
-                {isMyPage ? (
-
-                  <button className="text-2xl hover:animate-spin hover:scale-105  cursor-pointer p-2.5 active:text-gray-800  hover:text-gray-400">
-                    <IoSettingsOutline />
-                  </button>
-                ) : (
-                  <button className="text-2xl cursor-pointer  ">
-                    <FollowButton followingId={posts[0]?.uid} />
-                  </button>
-                )} */}
-                =======
-                <button type="button">
-                  <FollowButton
-                    followingId={posts[0].uid}
-                    follwingNickname={posts[0].userNickname}
-                  />
-                </button>
-              </p>
+              </div>
               <div className="flex ml-2.5 gap-5 ">
-                <p className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
+                <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
                   게시물 <span>{actualPostCount}</span>
-                </p>
-                <p className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
+                </div>
+                <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
                   구독수 <span>{posts[0]?.shares?.length || 0}</span>
-                </p>
+                </div>
               </div>
             </div>
           </div>
@@ -145,15 +123,16 @@ const ProfileLayout = ({
               )}
             </div>
             {isMyPage ? (
-              <button className="text-2xl absolute right-30 sm:right-50 hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
+              <button className="text-2xl absolute right-30 sm:right-50 hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400  dark:active:text-gray-100">
                 <IoSettingsOutline />
               </button>
             ) : (
-              <button className="absolute right-20 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
-                <FollowButton
+              <button className="absolute right-15 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
+                {/* <FollowButton
                   followingId={posts[0].uid}
-                  follwingNickname={posts[0].userNickname}
-                />
+                  followNickName={posts[0].userNickname}
+                /> */}
+                sdf
               </button>
             )}
           </div>
@@ -163,12 +142,12 @@ const ProfileLayout = ({
             </h1>
             <div className="flex flex-1 justify-center mx-auto">
               <div className="flex gap-5 ">
-                <p className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
+                <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
                   게시물 <span>{actualPostCount}</span>
-                </p>
-                <p className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
+                </div>
+                <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
                   구독수 <span>{posts[0]?.shares?.length || 0}</span>
-                </p>
+                </div>
               </div>
             </div>
             <div>
@@ -195,7 +174,7 @@ const ProfileLayout = ({
           <ProfileFeed posts={posts} isMyPage={isMyPage} />
         ) : (
           <div className="flex border-t pt-10 border-blue-200 w-full justify-center">
-            <div className="text-gray-800 text-xl mt-30 animate-bounce">
+            <div className="text-gray-800 text-xl mt-30 animate-bounce dark:text-gray-200">
               게시물이 없습니다
             </div>
           </div>
