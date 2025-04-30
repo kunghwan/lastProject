@@ -200,38 +200,65 @@ const UploadPostPage = () => {
         <h1 className="text-3xl font-bold text-black dark:text-white">
           새글작성
         </h1>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) =>
-            setPost((prev) => ({
-              ...prev,
-              title: e.target.value,
-            }))
-          }
-          className={twMerge("upPostInput")}
-          ref={titleRef}
-          placeholder="제목을 입력하세요."
-        />
-        <textarea
-          name=""
-          id=""
-          placeholder="관광지의 소개글이나 리뷰를 작성해주세요."
-          className={twMerge("h-50 resize-none upPostInput")}
-          value={content}
-          ref={descRef}
-          // 변경은 post는 객체라서 전개연산자 사용후 content만 변경
-          onChange={(e) =>
-            setPost((prev) => ({
-              ...prev,
-              content: e.target.value,
-            }))
-          }
-        />
+        <div className="hsecol gap-y-3 ">
+          <div className="hsecol gap-y-1">
+            <label
+              htmlFor="title"
+              className=" w-fit  font-bold text-md text-gray-500 dark:text-white"
+            >
+              제목
+            </label>
+
+            <input
+              type="text"
+              id="title"
+              value={title}
+              onChange={(e) =>
+                setPost((prev) => ({
+                  ...prev,
+                  title: e.target.value,
+                }))
+              }
+              className={twMerge("upPostInput")}
+              ref={titleRef}
+              placeholder="제목을 입력하세요."
+            />
+          </div>
+
+          <div className="hsecol gap-y-1">
+            <label
+              htmlFor="content"
+              className=" inline-block w-fit font-bold text-md text-gray-500 dark:text-white"
+            >
+              소개글 or 리뷰
+            </label>
+            <textarea
+              name=""
+              id="content"
+              placeholder="관광지의 소개글이나 리뷰를 작성해주세요."
+              className={twMerge("h-50 resize-none upPostInput")}
+              value={content}
+              ref={descRef}
+              // 변경은 post는 객체라서 전개연산자 사용후 content만 변경
+              onChange={(e) =>
+                setPost((prev) => ({
+                  ...prev,
+                  content: e.target.value,
+                }))
+              }
+            />
+          </div>
+        </div>
         <div>
-          <ul className="flex items-center gap-2.5">
-            {files.map((file) => (
-              <li key={file.name}>
+          <ul className="flex items-center gap-2.5 flex-wrap">
+            <li className="hsecol items-center">
+              <p className="font-bold text-lg text-gray-500  dark:text-white">
+                사진추가
+              </p>
+              <FileItem onChangeFiles={onChangeFiles} />
+            </li>
+            {files.map((file, index) => (
+              <li key={index} className="mt-6">
                 <FileItem
                   file={file}
                   // 파일을 삭제하기 위해 onDeleteFiles를 사용
@@ -243,14 +270,11 @@ const UploadPostPage = () => {
                 />
               </li>
             ))}
-            <li>
-              <FileItem onChangeFiles={onChangeFiles} />
-            </li>
           </ul>
         </div>
       </div>
 
-      <div className="hsecol gap-2 md:mt-11">
+      <div className="hsecol gap-y-1 md:mt-12">
         <UploadTag
           post={post}
           setPost={setPost}
