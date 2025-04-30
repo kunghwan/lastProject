@@ -68,7 +68,7 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
                   return alert("취소되었습니다.");
                 }
               }}
-              className="border border-gray-400 p-2.5 rounded bg-gray-100 flex-1 min-w-20 cursor-pointer"
+              className="border border-gray-400  p-2.5 rounded bg-lime-100 dark:bg-lime-100/80 dark:text-gray-600 flex-1 min-w-20 cursor-pointer"
             >
               다시검색
             </button>
@@ -102,7 +102,7 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
         </div>
       )}
       {isJusoUlShowing && (
-        <ul className="mt-2 hsecol gap-y-2 bg-gray-50 border border-gray-400  rounded p-2.5 max-h-50 overflow-y-auto">
+        <ul className="mt-2 hsecol gap-y-2 bg-green-50 dark:bg-green-50/80 border border-gray-400  rounded p-2.5 max-h-50 overflow-y-auto">
           {searchResults.map((item) => (
             <li
               key={item.id}

@@ -11,8 +11,7 @@ import {
   validateLocation,
 } from "@/lib/validations";
 import { AUTH } from "@/contextapi/context";
-import { fetchSignInMethodsForEmail } from "firebase/auth";
-import { authService } from "@/lib/firebase";
+import { dbService, FBCollection, authService } from "@/lib/firebase";
 
 const STORAGE_KEY = "signupUser";
 
@@ -36,7 +35,7 @@ const SignupForm = () => {
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof User, string>>>({});
-  const [isLoaded, setIsLoaded] = useState(false); // ✅ 복구 완료 여부
+  const [isLoaded, setIsLoaded] = useState(false);
   const { signup, signout } = AUTH.use();
   const router = useRouter();
 
@@ -49,10 +48,16 @@ const SignupForm = () => {
     []
   );
 
-  const checkEmailDuplicate = async (email: string): Promise<boolean> => {
-    const methods = await fetchSignInMethodsForEmail(authService, email);
-    return methods.length > 0;
-  };
+  const checkEmailDuplicateByFirestore = useCallback(
+    async (email: string): Promise<boolean> => {
+      const snap = await dbService
+        .collection(FBCollection.USERS)
+        .where("email", "==", email)
+        .get();
+      return !snap.empty;
+    },
+    []
+  );
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -68,7 +73,7 @@ const SignupForm = () => {
           console.error("세션 복구 실패", e);
         }
       }
-      setIsLoaded(true); // ✅ 복구 끝났다고 표시
+      setIsLoaded(true);
     }
   }, []);
 
@@ -86,7 +91,12 @@ const SignupForm = () => {
           message = validateName(value);
           break;
         case "email":
-          message = await validateEmail(value, checkEmailDuplicate);
+          if (!value) {
+            message = "이메일을 입력해주세요.";
+          } else {
+            const isDuplicate = await checkEmailDuplicateByFirestore(value);
+            message = isDuplicate ? "이미 사용 중인 이메일입니다." : "";
+          }
           break;
         case "password":
           message = validatePassword(value);
@@ -104,7 +114,7 @@ const SignupForm = () => {
       setErrors((prev) => ({ ...prev, [name]: message ?? "" }));
       return message;
     },
-    [checkEmailDuplicate]
+    [checkEmailDuplicateByFirestore]
   );
 
   useEffect(() => {
@@ -123,7 +133,7 @@ const SignupForm = () => {
     validateAllFieldsOnMount();
 
     inputRefs.current[0]?.focus();
-  }, [isLoaded]);
+  }, [isLoaded, validateField]);
 
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,7 +195,6 @@ const SignupForm = () => {
     router.push("/signup/settingprofile");
   }, [signup, user, errors, validateField, router]);
 
-  // ✅ 복구가 안끝났으면 렌더링 안함
   if (!isLoaded) {
     return null;
   }
