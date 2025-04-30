@@ -299,7 +299,7 @@ const IdFind = () => {
       {/* 입력폼 */}
       {IdFinds.map((idf, index) => (
         <div key={index}>
-          <div className="flex gap-2 p-3 lg:flex lg:items-center lg:justify-center">
+          <div className="flex gap-x-2 p-3 ">
             <input
               ref={(el) => {
                 if (el) inputRefs.current[index] = el;
@@ -346,7 +346,7 @@ const IdFind = () => {
             </p>
           )}
           {index === 2 && showCode && (
-            <p className="text-center text-sm text-green-600  w-100 lg:w-250">
+            <p className="text-center text-sm text-green-600 lg:text-start lg:ml-2 md:text-start md:ml-3 ">
               인증번호: {generatedCode}
             </p>
           )}
