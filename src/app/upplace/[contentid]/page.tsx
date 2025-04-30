@@ -44,22 +44,42 @@ const PlaceDetailPage = () => {
     return <div>로딩중...</div>;
   }
 
+  const isLongText = place.overview.length > 500; // 설명 길이 기준
+
   return (
-    <div className="p-6">
+    <div className="mx-auto  px-4 pb-10  dark:text-white">
       <img
         src={place.firstimage || "/image/logoc.PNG"}
         alt={place.title}
-        className="w-full h-64 object-cover rounded mb-6"
+        className="w-full h-64 object-cover rounded mb-4 md:object-cover lg:object-cover"
       />
-      <h1 className="text-2xl font-bold mb-4">{place.title}</h1>
-      <Link href="/upplace">추천장소 홈으로 돌아가기</Link>
+      <h1 className="text-xl font-bold mb-2 mt-1 dark:text-white">
+        {place.title}
+      </h1>
+      <p className="text-gray-600 mb-2 dark:text-white">{place.addr1}</p>
 
-      <p className="text-gray-600 mb-2">{place.addr1}</p>
+      <div className="flex gap-x-2.5 mb-2 flex-wrap dark:text-white">
+        <p className="text-gray-600 dark:text-white">전화번호: {place.tel}</p>
+        <p className="text-gray-600 dark:text-white">
+          우편번호: {place.zipcode}
+        </p>
+      </div>
 
-      <p className="text-gray-600 mb-2">전화번호: {place.tel}</p>
-      <p className="text-gray-600 mb-2">우편번호: {place.zipcode}</p>
+      {/* ✅ 설명이 길 경우에만 스크롤되도록 처리 */}
+      <div
+        className={`text-gray-800 text-sm leading-relaxed whitespace-pre-line dark:text-white ${
+          isLongText ? "max-h-60 overflow-y-auto pr-2" : ""
+        }`}
+      >
+        {place.overview}
+      </div>
 
-      <p className="text-gray-800 whitespace-pre-line">{place.overview}</p>
+      <Link
+        href="/upplace"
+        className="block mt-4 rounded bg-emerald-300 text-center py-2 font-bold lg:w-80 md:w-150"
+      >
+        추천장소 홈으로 돌아가기
+      </Link>
     </div>
   );
 };
