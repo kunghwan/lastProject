@@ -53,9 +53,13 @@ const PwFindResult = () => {
   });
   const [validation, setValidation] = useState<FindPasswordValidation>({});
 
-  // 🔥 페이지 진입 시 sessionStorage 복구 + 유효성검사
+  // ✅ 페이지 진입 시 selectedRealEmail 복구
   useEffect(() => {
-    const initValidation = async () => {
+    const realEmail = sessionStorage.getItem("selectedRealEmail");
+    if (realEmail) {
+      setEmail(realEmail);
+    } else {
+      // 없으면 기존 저장된 이름/폰/이메일 복구
       const savedName = sessionStorage.getItem(STORAGE_KEYS.NAME) || "";
       const savedPhone = sessionStorage.getItem(STORAGE_KEYS.PHONE) || "";
       const savedEmail = sessionStorage.getItem(STORAGE_KEYS.EMAIL) || "";
@@ -67,10 +71,17 @@ const PwFindResult = () => {
       setInputErrors({
         name: validateName(savedName) || "",
         phone: validatePhone(savedPhone) || "",
-        email: (await validateEmail(savedEmail)) || "",
+        email: "",
       });
-    };
-    initValidation();
+
+      if (savedEmail) {
+        validateEmail(savedEmail).then((error) => {
+          if (error) {
+            setInputErrors((prev) => ({ ...prev, email: error }));
+          }
+        });
+      }
+    }
   }, []);
 
   const validateForm = useCallback((): boolean => {
@@ -114,7 +125,7 @@ const PwFindResult = () => {
     if (!validateForm()) return;
 
     alert("비밀번호가 성공적으로 변경되었습니다.");
-    sessionStorage.removeItem("selectedRealEmail");
+    sessionStorage.removeItem("selectedRealEmail"); // ✅ selectedRealEmail 삭제
     router.push("/");
   }, [router, validateForm]);
 
@@ -125,19 +136,19 @@ const PwFindResult = () => {
         const error = validateName(value);
         setInputErrors((prev) => ({ ...prev, name: error || "" }));
         setInputName(value);
-        sessionStorage.setItem(STORAGE_KEYS.NAME, value); // ✅ 저장
+        sessionStorage.setItem(STORAGE_KEYS.NAME, value);
       }
       if (name === "phone") {
         const error = validatePhone(value);
         setInputErrors((prev) => ({ ...prev, phone: error || "" }));
         setInputPhone(value);
-        sessionStorage.setItem(STORAGE_KEYS.PHONE, value); // ✅ 저장
+        sessionStorage.setItem(STORAGE_KEYS.PHONE, value);
       }
       if (name === "email") {
         const error = await validateEmail(value);
         setInputErrors((prev) => ({ ...prev, email: error || "" }));
         setInputEmail(value);
-        sessionStorage.setItem(STORAGE_KEYS.EMAIL, value); // ✅ 저장
+        sessionStorage.setItem(STORAGE_KEYS.EMAIL, value);
       }
     },
     []
@@ -179,6 +190,7 @@ const PwFindResult = () => {
     <div className="p-2">
       <h2 className="text-2xl font-bold mb-4">비밀번호 재설정</h2>
 
+      {/* ✅ 이름/폰/이메일 입력 폼 */}
       {!user && !email && (
         <div className="flex flex-col gap-2 mb-4">
           <input
@@ -218,6 +230,7 @@ const PwFindResult = () => {
           )}
 
           <button
+            type="button"
             className="bg-gray-300 rounded-2xl p-3 mt-2 flex justify-center w-50 items-center lg:w-80"
             onClick={handleFindPassword}
           >
@@ -226,12 +239,13 @@ const PwFindResult = () => {
         </div>
       )}
 
+      {/* ✅ 새 비밀번호/비밀번호 확인 폼 */}
       {(user || email) && (
         <>
           <div className="border h-80 justify-center flex items-center">
             <div>
               <p className="text-xl text-black">
-                이메일 :{" "}
+                이메일:{" "}
                 <span className="font-bold text-blue-600">
                   {user ? user.email : email}
                 </span>

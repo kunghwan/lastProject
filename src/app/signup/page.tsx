@@ -36,6 +36,7 @@ const SignupForm = () => {
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof User, string>>>({});
+  const [isLoaded, setIsLoaded] = useState(false); // ✅ 복구 완료 여부
   const { signup, signout } = AUTH.use();
   const router = useRouter();
 
@@ -54,13 +55,28 @@ const SignupForm = () => {
   };
 
   useEffect(() => {
-    const stored = sessionStorage.getItem(STORAGE_KEY);
-    if (stored) setUser(JSON.parse(stored));
+    if (typeof window !== "undefined") {
+      const stored = sessionStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          setUser({
+            ...parsed,
+            agreeLocation: Boolean(parsed.agreeLocation),
+          });
+        } catch (e) {
+          console.error("세션 복구 실패", e);
+        }
+      }
+      setIsLoaded(true); // ✅ 복구 끝났다고 표시
+    }
   }, []);
 
   useEffect(() => {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-  }, [user]);
+    if (isLoaded) {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+    }
+  }, [user, isLoaded]);
 
   const validateField = useCallback(
     async (name: keyof User, value: any): Promise<string | null> => {
@@ -92,6 +108,8 @@ const SignupForm = () => {
   );
 
   useEffect(() => {
+    if (!isLoaded) return;
+
     const validateAllFieldsOnMount = async () => {
       const initialErrors: typeof errors = {};
       for (const info of InfoAccount) {
@@ -104,9 +122,8 @@ const SignupForm = () => {
     };
     validateAllFieldsOnMount();
 
-    // 첫 번째 input 자동 포커스
     inputRefs.current[0]?.focus();
-  }, []);
+  }, [isLoaded]);
 
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,8 +134,9 @@ const SignupForm = () => {
       setUser((prev) => ({ ...prev, [fieldName]: fieldValue }));
       await validateField(fieldName, fieldValue);
     },
-    [setUser, validateField, user] // ✅ 의존성 배열
+    [validateField]
   );
+
   const handleKeyDown = useCallback(
     (index: number) => (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
@@ -127,7 +145,7 @@ const SignupForm = () => {
         nextInput?.focus();
       }
     },
-    [inputRefs] // ✅ 의존성 배열
+    []
   );
 
   const handleSubmit = useCallback(async () => {
@@ -144,14 +162,12 @@ const SignupForm = () => {
       return;
     }
 
-    // ✅ 여기서 회원가입을 먼저 진행해!
     const result = await signup(user as User, user.password!);
     if (!result.success) {
       alert("회원가입 실패: " + result.message);
       return;
     }
 
-    // ❗ 이 시점에 firebase에 등록 완료 → uid가 존재
     const fbUser = authService.currentUser;
     if (!fbUser) {
       alert("회원 정보가 없습니다. 다시 시도해주세요.");
@@ -160,14 +176,19 @@ const SignupForm = () => {
 
     const fullUser = {
       ...user,
-      uid: fbUser.uid, // uid 추가!
+      uid: fbUser.uid,
+      agreeLocation: Boolean(user.agreeLocation),
     };
 
     await authService.signOut();
-
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(fullUser));
     router.push("/signup/settingprofile");
-  }, [errors, InfoAccount, router, signup, user, validateField, setErrors]);
+  }, [signup, user, errors, validateField, router]);
+
+  // ✅ 복구가 안끝났으면 렌더링 안함
+  if (!isLoaded) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen px-4">

@@ -10,4 +10,7 @@
   .followButton {
     @apply border-2 border-gray-300 rounded-full px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100;
   }
+  .hsecol {
+    @apply flex flex-col;
+  }
 }

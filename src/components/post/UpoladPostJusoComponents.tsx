@@ -38,7 +38,7 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
   );
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="hsecol gap-2">
       <div className="flex gap-x-2 items-center">
         {juso.address.length > 0 && (
           <label className=" flex w-full border bg-emerald-100 p-2.5 rounded items-center  border-gray-400 dark:text-gray-900">
@@ -102,7 +102,7 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
         </div>
       )}
       {isJusoUlShowing && (
-        <ul className="mt-2 flex flex-col gap-y-2 bg-gray-50 border border-gray-400  rounded p-2.5 max-h-50 overflow-y-auto">
+        <ul className="mt-2 hsecol gap-y-2 bg-gray-50 border border-gray-400  rounded p-2.5 max-h-50 overflow-y-auto">
           {searchResults.map((item) => (
             <li
               key={item.id}

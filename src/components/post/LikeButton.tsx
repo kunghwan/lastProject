@@ -1,6 +1,6 @@
 import { GoHeart } from "react-icons/go";
 
-const LikeButton = () => {
+const ShareButton = () => {
   return (
     <button
       type="button"
@@ -11,4 +11,4 @@ const LikeButton = () => {
   );
 };
 
-export default LikeButton;
+export default ShareButton;
