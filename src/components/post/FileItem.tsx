@@ -15,6 +15,7 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
         {!file ? (
           <input
             id="imgs"
+            accept="image/*,.gif" // 이미지 파일과 움짤만 허용
             type="file"
             onChange={(e) => {
               if (onChangeFiles && e.target.files) {
