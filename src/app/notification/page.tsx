@@ -193,6 +193,17 @@ const NotificationListPage = () => {
 
   return (
     <div className="hsecol  gap-y-2.5">
+      {data?.pages.every((page) => page.notifications.length === 0) && (
+        <div className="hsecol justify-center items-center  h-100 gap-y-2.5">
+          <p className="dark:text-white font-bold text-xl">알림이 없습니다.</p>
+          <button
+            onClick={() => navi.back()}
+            className="font-bold p-2.5 rounded w-40 bg-[rgba(62,188,154)] dark:bg-[rgba(116,212,186,0.5)] text-white hover:shadow-md"
+          >
+            돌아가기
+          </button>
+        </div>
+      )}
       {/* <div className="flex flex-col gap-y-2.5 h-[calc(100vh-80px)] overflow-y-auto"> */}
       <div>
         {/* isUnRead는 읽지 않은 알림이 하나라도 있으면 true 없다면 false임 */}
