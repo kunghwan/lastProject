@@ -7,7 +7,6 @@ import {
   validateName,
   validateEmail,
   validatePassword,
-  validateBirth,
   validatePhone,
   validateLocation,
 } from "@/lib/validations";
@@ -57,16 +56,13 @@ const SignupForm = () => {
     []
   );
 
-  const checkEmailDuplicateByFirestore = useCallback(
-    async (email: string): Promise<boolean> => {
-      const snap = await dbService
-        .collection(FBCollection.USERS)
-        .where("email", "==", email)
-        .get();
-      return !snap.empty;
-    },
-    []
-  );
+  const checkEmailDuplicateByFirestore = useCallback(async (email: string) => {
+    const snap = await dbService
+      .collection(FBCollection.USERS)
+      .where("email", "==", email)
+      .get();
+    return !snap.empty;
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -106,25 +102,21 @@ const SignupForm = () => {
   }, [birthYear, birthMonth, birthDay]);
 
   const validateField = useCallback(
-    async (name: keyof User, value: any): Promise<string | null> => {
+    async (name: keyof User, value: any) => {
       let message: string | null = null;
       switch (name) {
         case "name":
           message = validateName(value);
           break;
         case "email":
-          if (!value) {
-            message = "이메일을 입력해주세요.";
-          } else {
+          if (!value) message = "이메일을 입력해주세요.";
+          else {
             const isDuplicate = await checkEmailDuplicateByFirestore(value);
             message = isDuplicate ? "이미 사용 중인 이메일입니다." : "";
           }
           break;
         case "password":
           message = validatePassword(value);
-          break;
-        case "birth":
-          message = validateBirth(value);
           break;
         case "tel":
           message = validatePhone(value);
@@ -167,30 +159,16 @@ const SignupForm = () => {
   );
 
   const handleKeyDown = useCallback(
-    (index: number) =>
-      (e: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          const nextInput = inputRefs.current[index + 1];
-          if (nextInput) {
-            nextInput.focus();
-            if (nextInput instanceof HTMLSelectElement) {
-              nextInput.click();
-            }
-          }
-
-          // 비밀번호 입력 후 → 연도 select 열기
-          if (index === 2 && yearSelectRef.current) {
-            yearSelectRef.current.focus();
-            yearSelectRef.current.onMenuOpen?.();
-          }
-
-          // 전화번호 → 위치정보 동의로 이동
-          if (InfoAccount[index]?.name === "tel") {
-            locationAgreeRef.current?.focus();
-          }
-        }
-      },
+    (index: number) => (e: React.KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const nextInput = inputRefs.current[index + 1];
+        if (nextInput) nextInput.focus();
+        if (index === 2) yearSelectRef.current?.onMenuOpen?.();
+        if (InfoAccount[index]?.name === "tel")
+          locationAgreeRef.current?.focus();
+      }
+    },
     []
   );
 
@@ -202,30 +180,21 @@ const SignupForm = () => {
       if (message) newErrors[key] = message;
     }
     setErrors(newErrors);
-
     if (Object.values(newErrors).some((msg) => msg)) {
       alert("입력값을 다시 확인해주세요.");
       return;
     }
-
     const result = await signup(user as User, user.password!);
     if (!result.success) {
       alert("회원가입 실패: " + result.message);
       return;
     }
-
     const fbUser = authService.currentUser;
     if (!fbUser) {
       alert("회원 정보가 없습니다. 다시 시도해주세요.");
       return;
     }
-
-    const fullUser = {
-      ...user,
-      uid: fbUser.uid,
-      agreeLocation: Boolean(user.agreeLocation),
-    };
-
+    const fullUser = { ...user, uid: fbUser.uid };
     await authService.signOut();
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(fullUser));
     router.push("/signup/settingprofile");
@@ -234,15 +203,8 @@ const SignupForm = () => {
   if (!isLoaded) return null;
 
   const selectStyle = {
-    control: (base: any) => ({
-      ...base,
-      minHeight: "42px",
-      fontSize: "14px",
-    }),
-    menu: (base: any) => ({
-      ...base,
-      fontSize: "14px",
-    }),
+    control: (base: any) => ({ ...base, minHeight: "42px", fontSize: "14px" }),
+    menu: (base: any) => ({ ...base, fontSize: "14px" }),
   };
 
   return (
@@ -257,89 +219,80 @@ const SignupForm = () => {
             return (
               <div key={index} className="relative">
                 {info.type === "custom" ? (
-                  <>
-                    <div className="flex space-x-2 items-center">
-                      <div className="w-1/3">
-                        <Select
-                          ref={yearSelectRef}
-                          options={Array.from({ length: 100 }, (_, i) => {
-                            const y = `${new Date().getFullYear() - i}`;
-                            return { value: y, label: y };
-                          })}
-                          value={
-                            birthYear
-                              ? { value: birthYear, label: birthYear }
-                              : null
+                  <div className="flex space-x-2 items-center">
+                    <div className="w-1/3">
+                      <Select
+                        ref={yearSelectRef}
+                        options={Array.from({ length: 100 }, (_, i) => {
+                          const y = `${new Date().getFullYear() - i}`;
+                          return { value: y, label: y };
+                        })}
+                        value={
+                          birthYear
+                            ? { value: birthYear, label: birthYear }
+                            : null
+                        }
+                        onChange={(opt) => setBirthYear(opt?.value ?? "")}
+                        placeholder="년도"
+                        styles={selectStyle}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            monthSelectRef.current?.focus();
+                            monthSelectRef.current?.onMenuOpen?.();
                           }
-                          onChange={(opt) => setBirthYear(opt?.value ?? "")}
-                          placeholder="년도"
-                          styles={selectStyle}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              monthSelectRef.current?.focus();
-                              monthSelectRef.current?.onMenuOpen?.();
-                            }
-                          }}
-                        />
-                      </div>
-                      <div className="w-1/3">
-                        <Select
-                          ref={monthSelectRef}
-                          options={Array.from({ length: 12 }, (_, i) => {
-                            const m = `${i + 1}`.padStart(2, "0");
-                            return { value: m, label: m };
-                          })}
-                          value={
-                            birthMonth
-                              ? { value: birthMonth, label: birthMonth }
-                              : null
-                          }
-                          onChange={(opt) => setBirthMonth(opt?.value ?? "")}
-                          placeholder="월"
-                          styles={selectStyle}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              daySelectRef.current?.focus();
-                              daySelectRef.current?.onMenuOpen?.();
-                            }
-                          }}
-                        />
-                      </div>
-                      <div className="w-1/3">
-                        <Select
-                          ref={daySelectRef}
-                          options={Array.from({ length: 31 }, (_, i) => {
-                            const d = `${i + 1}`.padStart(2, "0");
-                            return { value: d, label: d };
-                          })}
-                          value={
-                            birthDay
-                              ? { value: birthDay, label: birthDay }
-                              : null
-                          }
-                          onChange={(opt) => setBirthDay(opt?.value ?? "")}
-                          placeholder="일"
-                          styles={selectStyle}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              const telInput = inputRefs.current.find(
-                                (el) => el?.getAttribute("name") === "tel"
-                              );
-                              telInput?.focus();
-                            }
-                          }}
-                        />
-                      </div>
+                        }}
+                      />
                     </div>
-                    {errors.birth && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.birth}
-                      </p>
-                    )}
-                  </>
+                    <div className="w-1/3">
+                      <Select
+                        ref={monthSelectRef}
+                        options={Array.from({ length: 12 }, (_, i) => {
+                          const m = `${i + 1}`.padStart(2, "0");
+                          return { value: m, label: m };
+                        })}
+                        value={
+                          birthMonth
+                            ? { value: birthMonth, label: birthMonth }
+                            : null
+                        }
+                        onChange={(opt) => setBirthMonth(opt?.value ?? "")}
+                        placeholder="월"
+                        styles={selectStyle}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            daySelectRef.current?.focus();
+                            daySelectRef.current?.onMenuOpen?.();
+                          }
+                        }}
+                      />
+                    </div>
+                    <div className="w-1/3">
+                      <Select
+                        ref={daySelectRef}
+                        options={Array.from({ length: 31 }, (_, i) => {
+                          const d = `${i + 1}`.padStart(2, "0");
+                          return { value: d, label: d };
+                        })}
+                        value={
+                          birthDay ? { value: birthDay, label: birthDay } : null
+                        }
+                        onChange={(opt) => setBirthDay(opt?.value ?? "")}
+                        placeholder="일"
+                        styles={selectStyle}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const telInput = inputRefs.current.find(
+                              (el) => el?.getAttribute("name") === "tel"
+                            );
+                            telInput?.focus();
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
                 ) : info.type !== "checkbox" ? (
                   <>
                     <input
@@ -378,6 +331,14 @@ const SignupForm = () => {
                       type="checkbox"
                       checked={value as boolean}
                       onChange={handleChange}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          const button =
+                            document.getElementById("signup-next-button");
+                          button?.click();
+                        }
+                      }}
                       className="w-4 h-4 mr-2"
                     />
                     <label
@@ -392,8 +353,8 @@ const SignupForm = () => {
             );
           })}
         </form>
-
         <button
+          id="signup-next-button"
           type="button"
           onClick={handleSubmit}
           className="mt-8 w-full bg-green-500 text-white font-bold py-4 rounded-lg hover:bg-green-600 transition"
