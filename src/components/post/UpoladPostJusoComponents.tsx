@@ -77,9 +77,16 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
       </div>
       {!isJusoShowing && (
         <div>
+          <label
+            htmlFor="jusos"
+            className="font-bold text-md text-gray-500 dark:text-white"
+          >
+            주소
+          </label>
           <div className="flex gap-x-2">
             <input
               type="text"
+              id="jusos"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               className={twMerge("w-full upPostInput ")}

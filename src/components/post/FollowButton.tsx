@@ -89,18 +89,14 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
 
       //delete() 메서드는 문서를 삭제하는 메서드
 
-      //delete() 메서드는 문서를 삭제하는 메서드
-
       await ref.delete();
 
       // 상대방 followers에서 나 제거
-      const followerRef = await dbService
+      const followerRef = dbService
         .collection(FBCollection.USERS)
         .doc(followingId)
         .collection("followers")
         .doc(user.uid);
-
-      //delete() 메서드는 문서를 삭제하는 메서드
 
       //delete() 메서드는 문서를 삭제하는 메서드
 
