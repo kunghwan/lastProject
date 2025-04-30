@@ -298,7 +298,7 @@ const IdFind = () => {
 
       {/* 입력폼 */}
       {IdFinds.map((idf, index) => (
-        <div key={index} className="ml-3 lg:ml-20 ">
+        <div key={index}>
           <div className="flex gap-2 p-3 lg:flex lg:items-center lg:justify-center">
             <input
               ref={(el) => {
@@ -341,7 +341,7 @@ const IdFind = () => {
             )}
           </div>
           {idf.error && (
-            <p className="text-red-500  text-sm mt-0.5 ml-5 lg:ml-50 ">
+            <p className="text-red-500 text-sm mt-0.5  w-150 ml-5  ">
               {idf.error}
             </p>
           )}
@@ -354,12 +354,12 @@ const IdFind = () => {
       ))}
 
       {/* 확인 버튼 */}
-      <div className="w-full px-5   lg:w-210">
+      <div className=" px-5 flex">
         <div className="flex flex-col lg:flex-row lg:justify-center">
-          <div className="w-[240px] md:w-[400px] xl:w-[570px]">
+          <div className="flex justify-center w-full mt-5">
             <button
               type="button"
-              className="w-50 h-[80px] bg-emerald-300 rounded font-bold lg:text-lg hover:bg-emerald-400 ml-1 mt-5 lg:ml-33 lg:w-50 "
+              className="w-full max-w-[300px] h-[80px] bg-emerald-300 rounded font-bold text-base lg:text-lg hover:bg-emerald-400 "
               onClick={handleSubmit}
             >
               확인
