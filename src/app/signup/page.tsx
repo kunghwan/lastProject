@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import Select, { SelectInstance } from "react-select";
 import { useRouter } from "next/navigation";
 import {
   validateName,
@@ -19,7 +20,7 @@ const InfoAccount = [
   { label: "이름", name: "name", type: "text" },
   { label: "이메일", name: "email", type: "email" },
   { label: "비밀번호", name: "password", type: "password" },
-  { label: "생년월일", name: "birth", type: "text" },
+  { label: "생년월일", name: "birth", type: "custom" },
   { label: "전화번호", name: "tel", type: "text" },
   { label: "위치정보 동의", name: "agreeLocation", type: "checkbox" },
 ];
@@ -34,15 +35,23 @@ const SignupForm = () => {
     agreeLocation: false,
   });
 
+  const [birthYear, setBirthYear] = useState("");
+  const [birthMonth, setBirthMonth] = useState("");
+  const [birthDay, setBirthDay] = useState("");
+
   const [errors, setErrors] = useState<Partial<Record<keyof User, string>>>({});
   const [isLoaded, setIsLoaded] = useState(false);
-  const { signup, signout } = AUTH.use();
+  const { signup } = AUTH.use();
   const router = useRouter();
 
-  const inputRefs = useRef<HTMLInputElement[]>([]);
+  const inputRefs = useRef<(HTMLInputElement | HTMLSelectElement)[]>([]);
+  const yearSelectRef = useRef<SelectInstance<any> | null>(null);
+  const monthSelectRef = useRef<SelectInstance<any> | null>(null);
+  const daySelectRef = useRef<SelectInstance<any> | null>(null);
+  const locationAgreeRef = useRef<HTMLInputElement | null>(null);
 
   const setInputRef = useCallback(
-    (el: HTMLInputElement | null, index: number) => {
+    (el: HTMLInputElement | HTMLSelectElement | null, index: number) => {
       if (el) inputRefs.current[index] = el;
     },
     []
@@ -69,6 +78,10 @@ const SignupForm = () => {
             ...parsed,
             agreeLocation: Boolean(parsed.agreeLocation),
           });
+          const [y, m, d] = (parsed.birth || "").split("-");
+          setBirthYear(y ?? "");
+          setBirthMonth(m ?? "");
+          setBirthDay(d ?? "");
         } catch (e) {
           console.error("세션 복구 실패", e);
         }
@@ -82,6 +95,15 @@ const SignupForm = () => {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     }
   }, [user, isLoaded]);
+
+  useEffect(() => {
+    if (birthYear && birthMonth && birthDay) {
+      setUser((prev) => ({
+        ...prev,
+        birth: `${birthYear}-${birthMonth}-${birthDay}`,
+      }));
+    }
+  }, [birthYear, birthMonth, birthDay]);
 
   const validateField = useCallback(
     async (name: keyof User, value: any): Promise<string | null> => {
@@ -119,7 +141,6 @@ const SignupForm = () => {
 
   useEffect(() => {
     if (!isLoaded) return;
-
     const validateAllFieldsOnMount = async () => {
       const initialErrors: typeof errors = {};
       for (const info of InfoAccount) {
@@ -131,7 +152,6 @@ const SignupForm = () => {
       setErrors(initialErrors);
     };
     validateAllFieldsOnMount();
-
     inputRefs.current[0]?.focus();
   }, [isLoaded, validateField]);
 
@@ -140,7 +160,6 @@ const SignupForm = () => {
       const { name, type, value, checked } = e.target;
       const fieldName = name as keyof typeof user;
       const fieldValue = type === "checkbox" ? checked : value;
-
       setUser((prev) => ({ ...prev, [fieldName]: fieldValue }));
       await validateField(fieldName, fieldValue);
     },
@@ -148,13 +167,30 @@ const SignupForm = () => {
   );
 
   const handleKeyDown = useCallback(
-    (index: number) => (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        const nextInput = inputRefs.current[index + 1];
-        nextInput?.focus();
-      }
-    },
+    (index: number) =>
+      (e: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const nextInput = inputRefs.current[index + 1];
+          if (nextInput) {
+            nextInput.focus();
+            if (nextInput instanceof HTMLSelectElement) {
+              nextInput.click();
+            }
+          }
+
+          // 비밀번호 입력 후 → 연도 select 열기
+          if (index === 2 && yearSelectRef.current) {
+            yearSelectRef.current.focus();
+            yearSelectRef.current.onMenuOpen?.();
+          }
+
+          // 전화번호 → 위치정보 동의로 이동
+          if (InfoAccount[index]?.name === "tel") {
+            locationAgreeRef.current?.focus();
+          }
+        }
+      },
     []
   );
 
@@ -195,9 +231,19 @@ const SignupForm = () => {
     router.push("/signup/settingprofile");
   }, [signup, user, errors, validateField, router]);
 
-  if (!isLoaded) {
-    return null;
-  }
+  if (!isLoaded) return null;
+
+  const selectStyle = {
+    control: (base: any) => ({
+      ...base,
+      minHeight: "42px",
+      fontSize: "14px",
+    }),
+    menu: (base: any) => ({
+      ...base,
+      fontSize: "14px",
+    }),
+  };
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen px-4">
@@ -210,7 +256,91 @@ const SignupForm = () => {
 
             return (
               <div key={index} className="relative">
-                {info.type !== "checkbox" ? (
+                {info.type === "custom" ? (
+                  <>
+                    <div className="flex space-x-2 items-center">
+                      <div className="w-1/3">
+                        <Select
+                          ref={yearSelectRef}
+                          options={Array.from({ length: 100 }, (_, i) => {
+                            const y = `${new Date().getFullYear() - i}`;
+                            return { value: y, label: y };
+                          })}
+                          value={
+                            birthYear
+                              ? { value: birthYear, label: birthYear }
+                              : null
+                          }
+                          onChange={(opt) => setBirthYear(opt?.value ?? "")}
+                          placeholder="년도"
+                          styles={selectStyle}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              monthSelectRef.current?.focus();
+                              monthSelectRef.current?.onMenuOpen?.();
+                            }
+                          }}
+                        />
+                      </div>
+                      <div className="w-1/3">
+                        <Select
+                          ref={monthSelectRef}
+                          options={Array.from({ length: 12 }, (_, i) => {
+                            const m = `${i + 1}`.padStart(2, "0");
+                            return { value: m, label: m };
+                          })}
+                          value={
+                            birthMonth
+                              ? { value: birthMonth, label: birthMonth }
+                              : null
+                          }
+                          onChange={(opt) => setBirthMonth(opt?.value ?? "")}
+                          placeholder="월"
+                          styles={selectStyle}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              daySelectRef.current?.focus();
+                              daySelectRef.current?.onMenuOpen?.();
+                            }
+                          }}
+                        />
+                      </div>
+                      <div className="w-1/3">
+                        <Select
+                          ref={daySelectRef}
+                          options={Array.from({ length: 31 }, (_, i) => {
+                            const d = `${i + 1}`.padStart(2, "0");
+                            return { value: d, label: d };
+                          })}
+                          value={
+                            birthDay
+                              ? { value: birthDay, label: birthDay }
+                              : null
+                          }
+                          onChange={(opt) => setBirthDay(opt?.value ?? "")}
+                          placeholder="일"
+                          styles={selectStyle}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              const telInput = inputRefs.current.find(
+                                (el) => el?.getAttribute("name") === "tel"
+                              );
+                              telInput?.focus();
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+                    {errors.birth && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.birth}
+                      </p>
+                    )}
+                  </>
+                ) : info.type !== "checkbox" ? (
                   <>
                     <input
                       id={inputId}
@@ -221,29 +351,20 @@ const SignupForm = () => {
                       onChange={handleChange}
                       onKeyDown={handleKeyDown(index)}
                       placeholder={info.label}
-                      className={`w-full border rounded-md px-2 pt-5 pb-2 text-base outline-none
-                        placeholder-transparent
-                        ${errors[key] ? "border-red-500" : "border-gray-300"}
-                        focus:border-teal-400
-                        transition-all
-                        h-16
-                        dark:text-white dark:bg-gray-800
-                      `}
+                      className={`w-full border rounded-md px-2 pt-5 pb-2 text-base outline-none placeholder-transparent ${
+                        errors[key] ? "border-red-500" : "border-gray-300"
+                      } focus:border-teal-400 transition-all h-16 dark:text-white dark:bg-gray-800`}
                     />
                     <label
                       htmlFor={inputId}
-                      className={`absolute left-2 top-5 text-gray-400 text-base transition-all
-                        ${
-                          value
-                            ? "text-xs top-[3px] text-teal-600"
-                            : "text-base top-2"
-                        }
-                        pointer-events-none
-                      `}
+                      className={`absolute left-2 top-5 text-gray-400 text-base transition-all ${
+                        value
+                          ? "text-xs top-[3px] text-teal-600"
+                          : "text-base top-2"
+                      } pointer-events-none`}
                     >
                       {info.label}
                     </label>
-
                     {errors[key] && (
                       <p className="text-red-500 text-xs mt-1">{errors[key]}</p>
                     )}
@@ -252,6 +373,7 @@ const SignupForm = () => {
                   <div className="flex items-center mt-2">
                     <input
                       id={inputId}
+                      ref={locationAgreeRef}
                       name={info.name}
                       type="checkbox"
                       checked={value as boolean}

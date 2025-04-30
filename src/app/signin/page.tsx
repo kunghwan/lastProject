@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AUTH } from "@/contextapi/context";
 
@@ -11,9 +11,13 @@ const LoginForm = () => {
   const router = useRouter();
   const { signin } = AUTH.use();
 
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const savedEmail = sessionStorage.getItem("login_email");
     if (savedEmail) setEmail(savedEmail);
+    emailRef.current?.focus(); // 최초 포커스
   }, []);
 
   const handleLogin = useCallback(async () => {
@@ -53,6 +57,7 @@ const LoginForm = () => {
         <div className="flex flex-col gap-y-2.5">
           <input
             type="text"
+            ref={emailRef}
             className="ykhInputButton"
             placeholder="아이디"
             value={email}
@@ -60,13 +65,26 @@ const LoginForm = () => {
               setEmail(e.target.value);
               sessionStorage.setItem("login_email", e.target.value);
             }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                passwordRef.current?.focus();
+              }
+            }}
           />
           <input
             type="password"
+            ref={passwordRef}
             className="ykhInputButton"
             placeholder="비밀번호"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleLogin();
+              }
+            }}
           />
         </div>
         <div className="flex gap-x-20 justify-start w-100 lg:w-120">
