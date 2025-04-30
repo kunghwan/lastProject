@@ -5,28 +5,29 @@ import { useCallback, useEffect, useState } from "react";
 import { IoSettingsOutline } from "react-icons/io5";
 // import ProfileFeed from "./ProfileFeed";
 import { useGetUserNickname } from "@/app/profile/page";
+import { getPostsByUserUid } from "@/lib/fbdata";
 import FollowButton from "../post/FollowButton";
 import ProfileFeedComponent from "./ProfileFeedLayout";
 
 const ProfileLayout = ({
-  posts,
   isMyPage,
   tags = [],
 }: {
-  posts: Post[];
   isMyPage: boolean;
   tags?: Tag[];
 }) => {
   const [nickname, setNickname] = useState<string | null>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [uid, setUid] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchNickname = async () => {
-      const userNickname = useGetUserNickname();
-      setNickname(userNickname.name);
+    const fetch = async () => {
+      if (!uid) return;
+      const data = await getPostsByUserUid(uid);
+      setPosts(data);
     };
-
-    fetchNickname();
-  }, []);
+    fetch();
+  }, [uid]);
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
@@ -47,6 +48,8 @@ const ProfileLayout = ({
     return `rgb(${red}, ${green}, ${blue})`;
   }, []);
 
+  const firstPost = posts[0] ?? null;
+
   return (
     <div className="flex flex-col w-full h-screen">
       {!isSmallScreen ? (
@@ -54,7 +57,7 @@ const ProfileLayout = ({
           <div className="flex m-5 mb-0 pr-20 pl-20 gap-2.5 justify-center ">
             <div className="relative w-40 h-40">
               <img
-                src={posts[0]?.userProfileImage || defaultImgUrl}
+                src={firstPost?.userProfileImage || defaultImgUrl}
                 alt={`${nickname || "유저"}'s profile`}
                 className="w-full h-full rounded-full border border-gray-300 sm:x-auto hover:scale-103 transition-all cursor-pointer"
               />
@@ -67,21 +70,14 @@ const ProfileLayout = ({
             <div className="ml-10 w-120 flex-col flex flex-1 ">
               <div className="flex justify-between">
                 <h1 className="font-medium text-4xl p-1 hover:scale-103 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
-                  {nickname ||
-                    `${posts[0]?.userNickname || `없는 유저입니다.`}`}
+                  {nickname || firstPost?.userNickname || `없는 유저입니다.`}
                 </h1>
                 {isMyPage ? (
                   <button className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400 dark:active:text-gray-100">
                     <IoSettingsOutline />
                   </button>
                 ) : (
-                  <button>
-                    {/* <FollowButton
-                    followingId={posts[0].uid}
-                    followNickName={posts[0].userNickname}
-                  /> */}
-                    sdf
-                  </button>
+                  <button>sdf</button>
                 )}
               </div>
               <div className="flex ml-2.5 gap-5 ">
@@ -89,7 +85,7 @@ const ProfileLayout = ({
                   게시물 <span>{actualPostCount}</span>
                 </div>
                 <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
-                  구독수 <span>{posts[0]?.shares?.length || 0}</span>
+                  구독수 <span>{firstPost?.shares?.length || 0}</span>
                 </div>
               </div>
             </div>
@@ -111,10 +107,10 @@ const ProfileLayout = ({
         </div>
       ) : (
         <div className="w-full max-w-screen mx-auto overflow-hidden">
-          <div className="flex  justify-center mt-5">
+          <div className="flex justify-center mt-5">
             <div className="relative w-32 h-32 ">
               <img
-                src={posts[0]?.userProfileImage || defaultImgUrl}
+                src={firstPost?.userProfileImage || defaultImgUrl}
                 alt={`${nickname || "유저"}'s profile`}
                 className="w-full h-full rounded-full border border-gray-300 sm:x-auto hover:scale-103 transition-all cursor-pointer"
               />
@@ -130,17 +126,13 @@ const ProfileLayout = ({
               </button>
             ) : (
               <button className="absolute right-15 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
-                {/* <FollowButton
-                  followingId={posts[0].uid}
-                  followNickName={posts[0].userNickname}
-                /> */}
                 sdf
               </button>
             )}
           </div>
           <div className="flex flex-col justify-center items-center">
             <h1 className="font-medium text-2xl p-1 hover:scale-103 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
-              {nickname || `${posts[0]?.userNickname || `없는 유저입니다.`}`}
+              {nickname || firstPost?.userNickname || `없는 유저입니다.`}
             </h1>
             <div className="flex flex-1 justify-center mx-auto">
               <div className="flex gap-5 ">
@@ -148,7 +140,7 @@ const ProfileLayout = ({
                   게시물 <span>{actualPostCount}</span>
                 </div>
                 <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
-                  구독수 <span>{posts[0]?.shares?.length || 0}</span>
+                  구독수 <span>{firstPost?.shares?.length || 0}</span>
                 </div>
               </div>
             </div>
@@ -157,9 +149,7 @@ const ProfileLayout = ({
                 {tags.map((tag) => (
                   <li key={tag.id}>
                     <button
-                      style={{
-                        color: getRandomColor(),
-                      }}
+                      style={{ color: getRandomColor() }}
                       className="p-2.5 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full"
                     >
                       #{tag.name}
@@ -172,7 +162,7 @@ const ProfileLayout = ({
         </div>
       )}
       <div className="flex flex-col items-center justify-center">
-        {posts?.length > 1 ? (
+        {posts?.filter((post) => post.id !== "default").length > 0 ? (
           <ProfileFeedComponent posts={posts} isMyPage={isMyPage} />
         ) : (
           <div className="flex border-t pt-10 border-blue-200 w-full justify-center">
