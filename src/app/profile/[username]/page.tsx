@@ -1,11 +1,8 @@
 "use client";
-import { useRouter } from "next/navigation"; // Next.js의 useRouter 훅
-import { useQuery } from "@tanstack/react-query";
-import { fetchUsers } from "@/lib/user"; // fetchUsers 함수
-import { fetchPostsAndUserId } from "@/lib/user"; // fetchPostsAndUserId 함수
-import { Post, Tag } from "@/types/post";
+
 import ProfileLayout from "@/components/ProfileUI/ProfileLayout";
-import { dbService, FBCollection } from "@/lib";
+import { useUsersByNickname } from "@/hooks/useUser";
+import { usePostsByNickname } from "@/hooks/useAuth";
 
 interface Props {
   params: { username: string };
@@ -13,99 +10,33 @@ interface Props {
 
 const UserPage = ({ params }: Props) => {
   const { username } = params;
-  const router = useRouter(); // useRouter 훅 초기화
 
-  const currentUserId = `${dbService
-    .collection(FBCollection.USERS)
-    .doc("uid")}`; // 현재 로그인한 사용자의 UID를 가져오는 방법 (예시)
-  // "my-uid"; // 실제 로그인한 사용자의 UID를 가져와야 함
+  const { data: users, isLoading: userLoading } = useUsersByNickname(username);
+  const { data: posts, isLoading: postLoading } = usePostsByNickname(username);
 
-  // React Query를 사용하여 Firestore에서 posts 데이터를 가져옴
-  const {
-    data: postData,
-    isLoading: isPostsLoading,
-    isError: isPostsError,
-  } = useQuery({
-    queryKey: ["posts", username],
-    queryFn: () => fetchPostsAndUserId(username),
-    staleTime: 1000 * 60 * 5, // 데이터 캐싱 시간: 5분
-  });
+  const userData = users?.[0];
 
-  // React Query를 사용하여 Firestore에서 users 데이터를 가져옴
-  const {
-    data: userData,
-    isLoading: isUsersLoading,
-    isError: isUsersError,
-  } = useQuery({
-    queryKey: ["users", username],
-    queryFn: () => fetchUsers(username),
-    staleTime: 1000 * 60 * 5, // 데이터 캐싱 시간: 5분
-  });
+  if (userLoading || postLoading) return <h1>로딩 중...</h1>;
+  if (!userData) return <h1>해당 유저 없음</h1>;
 
-  if (isPostsLoading || isUsersLoading) {
-    return <h1>로딩 중...</h1>;
-  }
-
-  if (isPostsError || isUsersError) {
-    return <h1>데이터를 불러오는 중 오류가 발생했습니다.</h1>;
-  }
-
-  const posts = postData?.posts || [];
-  const userId = postData?.userId || null;
-  const user = userData?.[0]; // username으로 가져온 첫 번째 사용자
-
-  // 로그인한 유저와 현재 페이지 유저 비교
-  const isMyPage = userId === currentUserId;
-
-  // 로그인한 유저가 자신의 프로필 페이지로 접근하면 /profile/me로 리다이렉트
-  if (isMyPage && username !== "me") {
-    router.replace("/profile/me"); // /profile/me로 리다이렉트
-    return null; // 리다이렉트 후 컴포넌트 렌더링 방지
-  }
-
-  // 변수 처리
-  const userNickname = user?.nickname || username;
-  const userProfileImage =
-    user?.profileImageUrl || "/images/default-profile.png";
-
-  // 팔로우 버튼 클릭 핸들러
-  const handleFollow = () => {
-    if (userId) {
-      console.log(`팔로우할 유저의 UID: ${userId}`);
-    } else {
-      console.log("유저 UID를 가져올 수 없습니다.");
-    }
-  };
-
-  const tags: Tag[] = [
-    {
-      id: "1",
-      name: "",
-      onTag: () => console.log("태그1 클릭됨"),
-    },
-    {
-      id: "2",
-      name: "20대",
-      onTag: () => console.log("태그2 클릭됨"),
-    },
-  ];
+  const filteredPosts = (posts || []).filter(
+    (post) =>
+      post.uid === userData.uid &&
+      post.userNickname === userData.nickname &&
+      post.id !== "default"
+  );
 
   return (
     <ProfileLayout
-      key={posts[0]?.id || "default-key"} // 기본값 추가
-      tags={tags}
-      posts={posts}
-      isMyPage={isMyPage}
-      userId={userId || ""}
-      userNickname={userNickname}
-      userProfileImage={userProfileImage}
-    >
-      {/* {!isMyPage && (
-        <button onClick={handleFollow} style={{ marginTop: "20px" }}>
-          팔로우
-        </button>
-      )} */}
-    </ProfileLayout>
+      posts={posts || []}
+      userData={{
+        uid: userData.uid,
+        nickname: userData.nickname,
+        profileImageUrl: userData.profileImageUrl,
+        bio: userData.bio,
+      }}
+      isMyPage={false}
+    />
   );
 };
 

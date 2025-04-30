@@ -4,7 +4,7 @@ interface ValidationResult {
   message?: string; // 오류메세지
 }
 
-interface User {
+export interface User {
   uid: string; // 유저 ID (Firebase UID 등)
   email: string; // 이메일
   password: string; // 비밀번호
