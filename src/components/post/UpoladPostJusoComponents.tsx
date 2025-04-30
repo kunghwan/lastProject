@@ -41,7 +41,7 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
     <div className="hsecol gap-2">
       <div className="flex gap-x-2 items-center">
         {juso.address.length > 0 && (
-          <label className=" flex w-full border bg-emerald-100 p-2.5 rounded items-center  border-gray-400 dark:text-gray-900">
+          <label className="mt-8 border-gray-200 flex w-full border bg-emerald-100 p-2.5 rounded items-center  dark:text-gray-900">
             <span>
               <IoLocationSharp className="text-2xl" />
             </span>
@@ -68,7 +68,10 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
                   return alert("취소되었습니다.");
                 }
               }}
-              className="  p-2.5 rounded bg-[#a4d9cb] dark:bg-[#6d9288]  hover:shadow-md dark:text-white w-auto min-w-20 cursor-pointer whitespace-nowrap"
+              className={twMerge(
+                "  p-2.5 rounded bg-[#a4d9cb] dark:bg-[#6d9288]  hover:shadow-md dark:text-white w-auto min-w-20 cursor-pointer whitespace-nowrap",
+                juso.address.length > 0 && "mt-8"
+              )}
             >
               다시검색
             </button>
