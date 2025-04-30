@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, ComponentProps } from "react";
 import { twMerge } from "tailwind-merge";
+import { FaArrowUp } from "react-icons/fa6";
 
 interface Props extends ComponentProps<"button"> {
   buttonClassName?: string;
@@ -34,7 +35,7 @@ const TopButton = ({ buttonClassName, ...props }: Props) => {
         props?.className
       )}
     >
-      Top
+      <FaArrowUp />
     </button>
   );
 };
