@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { dbService, FBCollection } from "@/lib/firebase";
+import { authService } from "@/lib/firebase";
 
 import ProfileLayout from "@/components/ProfileUI/ProfileLayout";
 
@@ -32,7 +33,14 @@ const MePage = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const currentUserUID = "tes1"; // 현재 로그인한 사용자의 UID (예제)
+      const user = authService.currentUser;
+      if (!user) {
+        setError("로그인이 필요합니다.");
+        setLoading(false);
+        return;
+      }
+
+      const currentUserUID = user.uid;
 
       try {
         const postsRef = collection(dbService, FBCollection.POSTS);
@@ -44,11 +52,26 @@ const MePage = () => {
           fetchedPosts.push({ id: doc.id, ...doc.data() } as Post);
         });
 
-        setPosts(fetchedPosts);
-
+        // posts가 비었을 경우 기본값 하나 넣기
         if (fetchedPosts.length === 0) {
-          console.log("게시물이 없습니다.");
+          fetchedPosts.push({
+            id: "default",
+            title: "기본 게시물",
+            content: "",
+            uid: currentUserUID,
+            userNickname: user.displayName || "닉네임 없음",
+            userProfileImage: user.photoURL || "",
+            imageUrl: "",
+            lo: { latitude: 0, longitude: 0, address: "" },
+            likes: [],
+            shares: [],
+            bookmarked: [],
+            isLiked: false,
+            createdAt: new Date().toISOString(),
+          });
         }
+
+        setPosts(fetchedPosts);
       } catch (error) {
         console.error("Firestore 데이터 가져오기 오류:", error);
         setError("데이터를 불러오는 중 오류가 발생했습니다.");
@@ -59,7 +82,6 @@ const MePage = () => {
 
     fetchPosts();
   }, []);
-
   if (loading) {
     return <h1>로딩 중...</h1>;
   }

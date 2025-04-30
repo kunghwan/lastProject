@@ -1,20 +1,22 @@
-import { collection, getDocs } from "firebase/firestore";
-import { dbService, FBCollection } from "@/lib/firebase";
-import { Post } from "@/types/post"; // Post 타입 정의
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { dbService } from "@/lib/firebase";
+import { Post } from "@/types/post";
 
-export const fetchPosts = async (): Promise<Post[]> => {
+// 특정 uid를 가진 유저의 posts 전체를 가져오는 함수
+export const fetchPosts = async (uid: string): Promise<Post[]> => {
   try {
-    const postsRef = collection(dbService, FBCollection.POSTS); // "posts" 컬렉션 참조
-    const querySnapshot = await getDocs(postsRef);
+    const postsRef = collection(dbService, "posts");
+    const q = query(postsRef, where("uid", "==", uid));
+    const querySnapshot = await getDocs(q);
 
     const posts: Post[] = [];
     querySnapshot.forEach((doc) => {
-      posts.push({ id: doc.id, ...doc.data() } as Post); // 데이터와 문서 ID를 병합
+      posts.push({ id: doc.id, ...doc.data() } as Post);
     });
 
-    return posts; // Post 배열 반환
+    return posts;
   } catch (error) {
-    console.error("Error fetching posts:", error);
-    return []; // 에러 발생 시 빈 배열 반환
+    console.error("포스트 불러오기 실패:", error);
+    return [];
   }
 };
