@@ -68,7 +68,7 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
                   return alert("취소되었습니다.");
                 }
               }}
-              className="  p-2.5 rounded bg-[#a4d9cb] dark:bg-[#6d9288]  hover:shadow-md dark:text-white w-auto min-w-20 cursor-pointer"
+              className="  p-2.5 rounded bg-[#a4d9cb] dark:bg-[#6d9288]  hover:shadow-md dark:text-white w-auto min-w-20 cursor-pointer whitespace-nowrap"
             >
               다시검색
             </button>

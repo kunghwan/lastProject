@@ -193,7 +193,7 @@ const UploadPostPage = () => {
     <form
       action=""
       onSubmit={onSubmit}
-      className="h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  lg:grid-cols-2 lg:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border rounded border-gray-400  relative"
+      className="h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  md:grid-cols-2 md:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border rounded border-gray-400  relative"
     >
       {isPending && <Loaiding />}
       <div className="hsecol gap-2">
@@ -216,7 +216,7 @@ const UploadPostPage = () => {
         <textarea
           name=""
           id=""
-          placeholder="소개하고 싶은 관광지의 소개글이나 리뷰를 작성해주세요."
+          placeholder="관광지의 소개글이나 리뷰를 작성해주세요."
           className={twMerge("h-50 resize-none upPostInput")}
           value={content}
           ref={descRef}
@@ -250,7 +250,7 @@ const UploadPostPage = () => {
         </div>
       </div>
 
-      <div className="hsecol gap-2 lg:mt-11">
+      <div className="hsecol gap-2 md:mt-11">
         <UploadTag
           post={post}
           setPost={setPost}
@@ -262,7 +262,7 @@ const UploadPostPage = () => {
         <JusoComponents juso={juso} setJuso={setJuso} jusoRef={jusoRef} />
       </div>
 
-      <div className="flex justify-end gap-x-2.5 mt-4 lg:col-span-2">
+      <div className="flex justify-end gap-x-2.5 mt-4 md:col-span-2">
         <button
           type="button"
           onClick={() => {
