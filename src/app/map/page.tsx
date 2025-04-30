@@ -26,7 +26,7 @@ const MapPage = () => {
   const detailRef = useRef<HTMLDivElement>(null); // 상세 정보창 ref
 
   const detailInfoCss =
-    "absolute z-10 shadow-md sm:top-20 sm:right-75 sm:block top-[27%] left-1/2 -translate-x-1/2 -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 sm:w-60 w-[65vw] max-w-xs bg-white border border-gray-300 rounded-xl sm:rounded-2xl p-4";
+    "absolute z-10 shadow-md sm:top-20 sm:right-75 sm:block top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 sm:w-60 w-[65vw] max-w-xs bg-white border border-gray-300 rounded-xl sm:rounded-2xl p-4";
 
   useEffect(() => {
     const initMap = () => {
@@ -189,6 +189,7 @@ const MapPage = () => {
           >
             <IoCloseSharp />
           </button>
+
           <h2 className="text-sm sm:text-md mb-2 font-semibold">상세 정보</h2>
           <p className="font-bold sm:font-extrabold text-base sm:text-lg text-green-600 truncate">
             {selectedPlace.place_name}
@@ -199,6 +200,7 @@ const MapPage = () => {
           <p className="text-xs sm:text-sm text-gray-600 mt-1 truncate">
             {selectedPlace.phone || "전화번호 없음"}
           </p>
+
           <ul className="mt-2 flex gap-x-2 text-lg sm:text-xl">
             {jusoClip(selectedPlace).map(({ icon, text, msg }, i) => (
               <button

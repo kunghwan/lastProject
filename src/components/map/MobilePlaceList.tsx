@@ -33,11 +33,11 @@ const MobilePlaceList = ({
       {/* 슬라이딩 패널 */}
       <div
         className={twMerge(
-          "fixed inset-x-0 bottom-0  bg-white max-h-[80vh] rounded-t-2xl z-10 transform transition-transform duration-300 ease-in-out flex flex-col md:hidden",
+          " fixed inset-x-0 bottom-0  bg-white max-h-[80vh] rounded-t-2xl z-10 transform transition-transform duration-300 ease-in-out md:hidden",
           isOpen ? "translate-y-0" : "translate-y-full "
         )}
       >
-        <div onClick={() => setIsOpen(false)}>
+        <div className="mt-5" onClick={() => setIsOpen(false)}>
           <button className="flex items-center justify-center p-3 rounded-2xl mx-auto w-[40vw] bg-gray-200 hover:opacity-80" />
         </div>
 
