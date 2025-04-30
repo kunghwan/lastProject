@@ -34,11 +34,13 @@ const ProfileFeedComponent = ({
                 </p>
               </div>
 
+              {/* 좋아요 및 공유수 등 */}
               <div className="flex justify-between text-xs text-gray-500 mt-1">
                 <span>♥ {post.likes?.length || 0}</span>
                 <span>🔄 {post.shares?.length || 0}</span>
               </div>
 
+              {/* 내 페이지면 수정 버튼 표시 */}
               {isMyPage && (
                 <button className="mt-1 text-xs text-blue-500 hover:underline">
                   수정하기

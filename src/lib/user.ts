@@ -4,20 +4,32 @@ import { Post } from "@/types/post";
 
 export const fetchUsers = async (username: string): Promise<User[]> => {
   try {
-    const usersRef = collection(dbService, FBCollection.USERS); // "users" 컬렉션 참조
-    const q = query(usersRef, where("nickname", "==", username)); // username으로 필터링
+    const usersRef = collection(dbService, FBCollection.USERS);
+    const q = query(usersRef, where("nickname", "==", username));
     const querySnapshot = await getDocs(q);
 
     const users: User[] = [];
     querySnapshot.forEach((doc) => {
-      users.push({ id: doc.id, ...doc.data() } as User); // 데이터와 문서 ID를 병합
+      users.push(doc.data() as User);
     });
 
-    return users; // User 배열 반환
+    return users;
   } catch (error) {
     console.error("Error fetching users:", error);
-    return []; // 에러 발생 시 빈 배열 반환
+    return [];
   }
+};
+export const getUserByUid = async (uid: string): Promise<User | null> => {
+  const userRef = collection(dbService, FBCollection.USERS);
+  const q = query(userRef, where("uid", "==", uid));
+  const snapshot = await getDocs(q);
+
+  if (snapshot.empty) {
+    return null;
+  }
+
+  const userDoc = snapshot.docs[0];
+  return userDoc.data() as User;
 };
 
 export const fetchPostsAndUserId = async (
