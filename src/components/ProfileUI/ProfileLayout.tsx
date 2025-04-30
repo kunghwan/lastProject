@@ -12,9 +12,18 @@ import ProfileFeedComponent from "./ProfileFeedLayout";
 const ProfileLayout = ({
   isMyPage,
   tags = [],
+  userData,
 }: {
   isMyPage: boolean;
   tags?: Tag[];
+  userData: {
+    uid: string;
+    nickname?: string;
+    profileImageUrl?: string;
+    bio?: string;
+    likes?: number;
+    shares?: number;
+  };
 }) => {
   const [nickname, setNickname] = useState<string | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -58,7 +67,7 @@ const ProfileLayout = ({
             <div className="relative w-40 h-40">
               <img
                 src={firstPost?.userProfileImage || defaultImgUrl}
-                alt={`${nickname || "유저"}'s profile`}
+                alt={`${userData.nickname}'s profile`}
                 className="w-full h-full rounded-full border border-gray-300 sm:x-auto hover:scale-103 transition-all cursor-pointer"
               />
               {isMyPage && (
@@ -70,14 +79,19 @@ const ProfileLayout = ({
             <div className="ml-10 w-120 flex-col flex flex-1 ">
               <div className="flex justify-between">
                 <h1 className="font-medium text-4xl p-1 hover:scale-103 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
-                  {nickname || firstPost?.userNickname || `없는 유저입니다.`}
+                  {userData.nickname || `없는 유저asd입니다.`}
                 </h1>
                 {isMyPage ? (
                   <button className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400 dark:active:text-gray-100">
                     <IoSettingsOutline />
                   </button>
                 ) : (
-                  <button>sdf</button>
+                  <button>
+                    <FollowButton
+                      followNickName={userData.nickname ?? "unknown"}
+                      followingId={userData.uid}
+                    />
+                  </button>
                 )}
               </div>
               <div className="flex ml-2.5 gap-5 ">
@@ -111,7 +125,7 @@ const ProfileLayout = ({
             <div className="relative w-32 h-32 ">
               <img
                 src={firstPost?.userProfileImage || defaultImgUrl}
-                alt={`${nickname || "유저"}'s profile`}
+                alt={`${userData.nickname || "유저"}'s profile`}
                 className="w-full h-full rounded-full border border-gray-300 sm:x-auto hover:scale-103 transition-all cursor-pointer"
               />
               {isMyPage && (
@@ -126,13 +140,16 @@ const ProfileLayout = ({
               </button>
             ) : (
               <button className="absolute right-15 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
-                sdf
+                <FollowButton
+                  followNickName={userData.nickname ?? "unknown"}
+                  followingId={userData.uid}
+                />
               </button>
             )}
           </div>
           <div className="flex flex-col justify-center items-center">
             <h1 className="font-medium text-2xl p-1 hover:scale-103 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
-              {nickname || firstPost?.userNickname || `없는 유저입니다.`}
+              {userData.nickname || `없는 유123저입니다.`}
             </h1>
             <div className="flex flex-1 justify-center mx-auto">
               <div className="flex gap-5 ">

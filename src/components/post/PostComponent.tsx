@@ -1,133 +1,119 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { fetchPosts } from "@/lib/post"; // fetchPosts 함수
-import { Post as PostType } from "@/types/post"; // Post 타입 정의
+import { useEffect, useRef, useState } from "react";
+import { getAllPostsPaginated } from "@/lib/fbdata";
+import { Post as PostType } from "@/types/post";
 import LikeButton from "./LikeButton";
 import ShareButton from "./ShareButton";
 import LocationButton from "./LocationButton";
-import { useRouter } from "next/navigation"; // Next.js의 useRouter 훅
-import { dbService, FBCollection } from "@/lib";
+import { useRouter } from "next/navigation";
 import { fetchUsers } from "@/lib/user";
 
 const PostComponent = () => {
-  const router = useRouter(); // useRouter 훅 사용
+  const router = useRouter();
+  const [posts, setPosts] = useState<PostType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const lastDocRef = useRef<any>(null);
+  const observerRef = useRef<HTMLDivElement | null>(null);
 
-  // React Query를 사용하여 Firestore에서 posts 데이터를 가져옴
-  const {
-    data: posts = [],
-    isLoading,
-    isError,
-  } = useQuery<PostType[]>({
-    queryKey: ["posts"], // queryKey를 객체로 전달
-    queryFn: fetchPosts, // queryFn을 객체로 전달
-    staleTime: 1000 * 60 * 5, // 데이터 캐싱 시간: 5분
-  });
+  useEffect(() => {
+    loadMorePosts();
+  }, []);
 
-  if (isLoading) {
-    return <h1>로딩 중...</h1>;
-  }
+  const loadMorePosts = async () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
+    const { posts: newPosts, lastDoc } = await getAllPostsPaginated(
+      lastDocRef.current
+    );
 
-  if (isError) {
-    return <h1>데이터를 불러오는 중 오류가 발생했습니다.</h1>;
-  }
+    setPosts((prev) => {
+      const ids = new Set(prev.map((p) => p.id));
+      const filteredNewPosts = newPosts.filter((p) => !ids.has(p.id));
+      return [...prev, ...filteredNewPosts];
+    });
 
-  const handleClick = async () => {
-    const userNickname = posts[0].userNickname; // 클릭한 사용자의 닉네임 가져오기 (예시)
+    lastDocRef.current = lastDoc;
+    setHasMore(newPosts.length > 0);
+    setLoading(false);
+  };
 
-    if (!userNickname) {
-      console.error("userNickname이 없습니다.");
-      return;
-    }
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        loadMorePosts();
+      }
+    });
+    if (observerRef.current) observer.observe(observerRef.current);
+    return () => {
+      if (observerRef.current) observer.unobserve(observerRef.current);
+    };
+  }, [observerRef.current]);
 
-    const currentNickname = `${dbService
-      .collection(FBCollection.USERS)
-      .doc("uid")}`; // 현재 로그인한 사용자의 UID를 가져오는 방법 (예시)
+  // ✨ 변경된 부분 (handleClick 수정)
+  const handleClick = async (nickname: string) => {
+    if (!nickname) return;
 
-    if (!currentNickname) {
-      alert("로그인 정보가 없습니다.");
-      return;
-    }
+    const loggedInUsername =
+      typeof window !== "undefined" ? localStorage.getItem("username") : null;
 
-    if (userNickname === currentNickname) {
+    if (nickname === loggedInUsername) {
       router.push("/profile/me");
     } else {
-      const matchedUsers = await fetchUsers(userNickname);
-
-      if (matchedUsers.length > 0) {
-        router.push(`/profile/${encodeURIComponent(userNickname)}`);
-      } else {
-        alert("해당 유저가 존재하지 않습니다.");
-      }
+      router.push(`/profile/${encodeURIComponent(nickname)}`);
     }
   };
 
   return (
     <div className="grid grid-cols-1 gap-y-3 mb-20 md:grid-cols-2 lg:grid-cols-3 ml-2.5 mr-2.5">
-      {posts.map((post) => {
-        const {
-          id,
-          imageUrl,
-          content,
-          likes,
-          shares,
-          createdAt,
-          lo,
-          uid,
-          userNickname,
-          userProfileImage,
-        } = post;
-
-        if (userProfileImage === null) {
-          return null;
-        }
-
-        return (
-          <div key={id} className="rounded-lg p-1">
-            <button
-              className="flex gap-2.5 items-center text-center mb-1.5 ml-1"
-              onClick={handleClick}
-            >
+      {posts.map((post) => (
+        <div key={post.id} className="rounded-lg p-1">
+          <button
+            className="flex gap-2.5 items-center text-center mb-1.5 ml-1"
+            onClick={() => handleClick(post.userNickname, post.uid)} // ✨ uid 전달 추가
+          >
+            <img
+              className="w-10 h-10 rounded-full border border-gray-200"
+              src={post.userProfileImage || defaultImgUrl}
+              alt="user profile image"
+            />
+            <div className="font-black">{post.userNickname}</div>
+          </button>
+          {post.imageUrl ? (
+            <img
+              src={post.imageUrl}
+              alt="Post image"
+              className="w-full h-128 object-cover rounded-lg mb-2"
+            />
+          ) : (
+            <div className="w-full h-128 border bg-gray-200 flex items-center justify-center rounded-lg mb-2">
               <img
-                className="w-10 h-10 rounded-full border border-gray-200"
-                src={userProfileImage || defaultImgUrl}
-                alt="user profile image"
+                src="/image/whitelogo1.png"
+                alt="No image available"
+                className="w-40 h-40 object-contain"
               />
-              <div className="font-black">{userNickname}</div>
-            </button>
-            {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt="Post image"
-                className="w-full h-128 object-cover rounded-lg mb-2"
-              />
-            ) : (
-              <div className="w-full h-128 bg-gray-200 flex items-center justify-center rounded-lg mb-2">
-                <img
-                  src="/image/whitelogo1.png" // public 폴더의 이미지 경로
-                  alt="No image available"
-                  className="w-40 h-40 object-contain"
-                />
-              </div>
-            )}
-            <div className="flex gap-4 ml-1">
-              <p className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
-                <LikeButton /> {likes?.length}
-              </p>
-              <p className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
-                <ShareButton /> {shares?.length}
-              </p>
-              <p className="flex-1/2 text-sm text-gray-500 dark:text-gray-300">
-                <LocationButton /> {lo?.latitude} {lo?.longitude}
-              </p>
             </div>
-            <p className="text-lg font-semibold">{content}</p>
-            <div className="items-baseline text-end text-gray500 text-sm">
-              {createdAt}
-            </div>
+          )}
+          <div className="flex gap-4 ml-1">
+            <p className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
+              <LikeButton /> {post.likes?.length}
+            </p>
+            <p className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
+              <ShareButton /> {post.shares?.length}
+            </p>
+            <p className="flex-1/2 text-sm text-gray-500 dark:text-gray-300">
+              <LocationButton /> {post.lo?.latitude} {post.lo?.longitude}
+            </p>
           </div>
-        );
-      })}
+          <p className="text-lg font-semibold">{post.content}</p>
+          <div className="items-baseline text-end text-gray500 text-sm">
+            {post.createdAt}
+          </div>
+        </div>
+      ))}
+      <div ref={observerRef} className="col-span-full h-10"></div>
+      {loading && <div className="text-center col-span-full">로딩 중...</div>}
     </div>
   );
 };

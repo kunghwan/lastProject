@@ -7,9 +7,9 @@ import React, { useCallback, useEffect, useState, useTransition } from "react";
 import Loaiding from "../Loading";
 
 interface FollowButtonProps {
-  followingId: string; // 팔로잉할 유저의 uid
+  followingId?: string; // 팔로잉할 유저의 uid
 
-  followNickName: string; // 팔로잉할 유저의 닉네임
+  followNickName?: string; // 팔로잉할 유저의 닉네임
 }
 
 const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
