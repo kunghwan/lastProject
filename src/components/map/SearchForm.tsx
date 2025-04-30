@@ -23,26 +23,28 @@ const SearchForm = ({
   placeholder = "원하는 장소를 입력하세요.",
 }: SearchFormProps) => {
   return (
-    <form
-      className={`flex bg-white rounded-full shadow-md p-2 border border-gray-300 ${className}`}
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSearch();
-      }}
-    >
-      <input
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        placeholder={placeholder}
-        className={`p-1 text-sm focus:outline-none placeholder:text-gray-500 ${inputClassName}`}
-      />
-      <button
-        type="submit"
-        className={`text-xl px-2 cursor-pointer ${buttonClassName}`}
+    <>
+      <form
+        className={`flex bg-white rounded-full shadow-md p-2 border border-gray-300 ${className}`}
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSearch();
+        }}
       >
-        <IoSearch />
-      </button>
-    </form>
+        <input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder={placeholder}
+          className={`p-1 text-sm focus:outline-none placeholder:text-gray-500 ${inputClassName}`}
+        />
+        <button
+          type="submit"
+          className={`text-xl px-2 cursor-pointer ${buttonClassName}`}
+        >
+          <IoSearch />
+        </button>
+      </form>
+    </>
   );
 };
 
