@@ -3,16 +3,16 @@
 import { Post, Tag } from "@/types/post";
 import { useCallback, useEffect, useState } from "react";
 import { IoSettingsOutline } from "react-icons/io5";
-// import ProfileFeed from "./ProfileFeed";
-import { useGetUserNickname } from "@/app/profile/page";
 import { getPostsByUserUid } from "@/lib/fbdata";
 import FollowButton from "../post/FollowButton";
 import ProfileFeedComponent from "./ProfileFeedLayout";
+import { Post } from "@/types/post";
 
 const ProfileLayout = ({
   isMyPage,
   tags = [],
   userData,
+  posts,
 }: {
   isMyPage: boolean;
   tags?: Tag[];
@@ -24,20 +24,11 @@ const ProfileLayout = ({
     likes?: number;
     shares?: number;
   };
+  posts: Post[];
 }) => {
-  const [nickname, setNickname] = useState<string | null>(null);
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [uid, setUid] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetch = async () => {
-      if (!uid) return;
-      const data = await getPostsByUserUid(uid);
-      setPosts(data);
-    };
-    fetch();
-  }, [uid]);
-
+  console.log("🔥 posts 확인:", posts);
+  console.log("📦 posts props:", posts);
+  console.log("📦 userData:", userData);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
@@ -48,16 +39,25 @@ const ProfileLayout = ({
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   const actualPostCount = posts.filter((post) => post.id !== "default").length;
 
   const getRandomColor = useCallback(() => {
-    let red = Math.floor(Math.random() * 256);
-    let green = Math.floor(Math.random() * 256);
-    let blue = Math.floor(Math.random() * 256);
-    return `rgb(${red}, ${green}, ${blue})`;
+    const r = Math.floor(Math.random() * 256);
+    const g = Math.floor(Math.random() * 256);
+    const b = Math.floor(Math.random() * 256);
+    return `rgb(${r}, ${g}, ${b})`;
   }, []);
 
   const firstPost = posts[0] ?? null;
+
+  // ✅ 예시: username.uid를 어떻게 가져오는가?
+  const username = userData.nickname; // 예: 'skyblue123'
+  const userUid = userData.uid; // 예: 'ABC123XYZ'
+
+  // FollowButton 등에 이렇게 넘기면 됨
+  // followNickName={username}
+  // followingId={userUid}
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -86,12 +86,12 @@ const ProfileLayout = ({
                     <IoSettingsOutline />
                   </button>
                 ) : (
-                  <button>
+                  <div>
                     <FollowButton
                       followNickName={userData.nickname ?? "unknown"}
                       followingId={userData.uid}
                     />
-                  </button>
+                  </div>
                 )}
               </div>
               <div className="flex ml-2.5 gap-5 ">
@@ -139,12 +139,12 @@ const ProfileLayout = ({
                 <IoSettingsOutline />
               </button>
             ) : (
-              <button className="absolute right-15 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
+              <div className="absolute right-15 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
                 <FollowButton
                   followNickName={userData.nickname ?? "unknown"}
                   followingId={userData.uid}
                 />
-              </button>
+              </div>
             )}
           </div>
           <div className="flex flex-col justify-center items-center">

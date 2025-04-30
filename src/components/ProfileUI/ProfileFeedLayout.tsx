@@ -13,6 +13,7 @@ const ProfileFeedComponent = ({
         {posts.map((post) => (
           <li key={post.id} className="border p-2">
             <div className="flex flex-col gap-2">
+              {/* 게시물 이미지 */}
               {post.imageUrl ? (
                 <img
                   src={post.imageUrl}
@@ -25,6 +26,7 @@ const ProfileFeedComponent = ({
                 </div>
               )}
 
+              {/* 게시물 텍스트 정보 */}
               <div className="text-sm">
                 <p className="font-semibold truncate">
                   {post.title || "제목 없음"}
