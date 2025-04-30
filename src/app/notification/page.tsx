@@ -207,7 +207,7 @@ const NotificationListPage = () => {
           <p className="dark:text-white font-bold text-xl">알림이 없습니다.</p>
           <button
             onClick={() => navi.back()}
-            className="font-bold p-2.5 rounded w-40 bg-[rgba(62,188,154)] dark:bg-[rgba(116,212,186,0.5)] text-white hover:shadow-md"
+            className="hover:animate-pulse font-bold p-2.5 rounded w-40 bg-[rgba(62,188,154)] dark:bg-[rgba(116,212,186,0.5)] text-white hover:shadow-md"
           >
             돌아가기
           </button>

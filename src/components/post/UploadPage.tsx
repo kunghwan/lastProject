@@ -2,6 +2,7 @@
 import { Location, Post, Tag } from "@/types/post";
 import React, {
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -73,6 +74,7 @@ const UploadPostPage = () => {
   const descRef = useRef<HTMLTextAreaElement>(null);
   const jusoRef = useRef<HTMLInputElement>(null);
   const tagRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const titleMessage = useMemo(() => {
     if (title.length === 0 || title.trim() === "") {
@@ -192,6 +194,26 @@ const UploadPostPage = () => {
       navi,
     ]
   );
+  //! 마우스 휠 가로로 변경
+  useEffect(() => {
+    const el = scrollRef.current; //ref로 지정한 DOM 요소(예: <div ref={scrollRef}>)를 가져옴
+    if (!el) return; //만약 DOM이 아직 준비 안 되었으면 아무 것도 안 하고 종료
+    //! wheelevent가 발생했을 경우
+    const handleWheel = (e: WheelEvent) => {
+      if (e.deltaY === 0) {
+        return;
+      } //수직 방향 휠 스크롤이 0일 때는 아무 일도 하지 않음(즉, 스크롤이 실제로 움직였을 때만 처리)
+      e.preventDefault(); //브라우저 기본 동작(세로 스크롤)을 막음
+      el.scrollLeft += e.deltaY; //수직 스크롤 값(deltaY)을 가로 스크롤로 바꿔서 실행
+    };
+    //passive: false는 preventDefault()가 작동할 수 있도록 허용하는 설정
+    el.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      //휠 이벤트를 제거해서 메모리 누수 방지
+      el.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
 
   return (
     <form
@@ -207,7 +229,7 @@ const UploadPostPage = () => {
         />
       )}
       <div className="hsecol gap-2">
-        <h1 className="text-3xl font-bold text-black dark:text-white">
+        <h1 className=" w-fit  text-3xl font-bold text-black dark:text-white">
           새글작성
         </h1>
         <div className="hsecol gap-y-3 ">
@@ -259,8 +281,11 @@ const UploadPostPage = () => {
             />
           </div>
         </div>
-        <div>
-          <ul className="flex items-center gap-2.5 flex-wrap">
+        <div ref={scrollRef} className="w-full overflow-x-auto hide-scrollbar">
+          <ul
+            className=" flex items-center gap-2.5 flex-nowrap scroll-smooth "
+            style={{ WebkitOverflowScrolling: "touch" }} // 모바일 터치 스와이프 부드럽게
+          >
             <li className="hsecol items-center">
               <p className="font-bold text-lg text-gray-500  dark:text-white">
                 사진추가
@@ -268,7 +293,7 @@ const UploadPostPage = () => {
               <FileItem onChangeFiles={onChangeFiles} />
             </li>
             {files.map((file, index) => (
-              <li key={index} className="mt-6">
+              <li key={index} className="mt-6 shrink-0 w-24 h-24">
                 <FileItem
                   file={file}
                   // 파일을 삭제하기 위해 onDeleteFiles를 사용
