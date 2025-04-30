@@ -1,25 +1,17 @@
 "use client";
 
 import SearchForm from "@/components/map/SearchForm";
+import MobilePlaceList from "@/components/map/MobilePlaceList";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { IoCloseSharp, IoMenu, IoPhonePortraitSharp } from "react-icons/io5";
+import { IoCloseSharp, IoPhonePortraitSharp } from "react-icons/io5";
 import { TbMapPinDown } from "react-icons/tb";
+import { PlaceProps } from "@/types";
 
 declare global {
   interface Window {
     kakao: any;
   }
 }
-
-type PlaceProps = {
-  id: string;
-  place_name: string;
-  address_name: string;
-  road_address_name: string;
-  phone: string;
-  x: string;
-  y: string;
-};
 
 const MapPage = () => {
   const [map, setMap] = useState<any>(null);
@@ -31,6 +23,10 @@ const MapPage = () => {
 
   const markers = useRef<any[]>([]);
   const mapRef = useRef<HTMLDivElement>(null);
+  const detailRef = useRef<HTMLDivElement>(null); // 상세 정보창 ref
+
+  const detailInfoCss =
+    "absolute z-10 shadow-md sm:top-20 sm:right-75 sm:block top-[27%] left-1/2 -translate-x-1/2 -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 sm:w-60 w-[65vw] max-w-xs bg-white border border-gray-300 rounded-xl sm:rounded-2xl p-4";
 
   useEffect(() => {
     const initMap = () => {
@@ -149,65 +145,92 @@ const MapPage = () => {
     setKeyword(inputValue.trim());
   };
 
+  // ✅ 상세 정보창 외부 클릭 시 닫기
+  const handleOutsideClick = useCallback(
+    (event: MouseEvent) => {
+      if (
+        selectedPlace &&
+        detailRef.current &&
+        !detailRef.current.contains(event.target as Node)
+      ) {
+        setSelectedPlace(null);
+      }
+    },
+    [selectedPlace]
+  );
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [handleOutsideClick]);
+
   return (
-    <div className="relative flex h-[80vh] dark:text-gray-600">
+    <div className="relative flex h-[76vh] dark:text-gray-600">
       {/* 지도 */}
       <div ref={mapRef} className="flex-1 bg-gray-200 relative" />
 
       {/* 검색창 */}
-      {!isSidebarOpen && (
-        <SearchForm
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          handleSearch={handleSearch}
-          className="absolute z-50 top-5 left-1/2 transform -translate-x-1/2 md:left-50 md:my-2.5 md:transform-none"
-          inputClassName="mx-2 w-48"
-        />
+      <SearchForm
+        inputValue={inputValue}
+        setInputValue={setInputValue}
+        handleSearch={handleSearch}
+        className="absolute z-10 top-5 left-[50%] translate-x-[-50%] md:left-50 md:my-2.5 md:transform-none"
+        inputClassName="mx-2 w-48"
+      />
+
+      {/* 상세정보창 */}
+      {selectedPlace && !isSidebarOpen && (
+        <div ref={detailRef} className={detailInfoCss}>
+          <button
+            onClick={() => setSelectedPlace(null)}
+            className="absolute top-2 right-2 text-lg sm:text-xl font-bold"
+          >
+            <IoCloseSharp />
+          </button>
+          <h2 className="text-sm sm:text-md mb-2 font-semibold">상세 정보</h2>
+          <p className="font-bold sm:font-extrabold text-base sm:text-lg text-green-600 truncate">
+            {selectedPlace.place_name}
+          </p>
+          <p className="text-sm truncate">
+            {selectedPlace.road_address_name || selectedPlace.address_name}
+          </p>
+          <p className="text-xs sm:text-sm text-gray-600 mt-1 truncate">
+            {selectedPlace.phone || "전화번호 없음"}
+          </p>
+          <ul className="mt-2 flex gap-x-2 text-lg sm:text-xl">
+            {jusoClip(selectedPlace).map(({ icon, text, msg }, i) => (
+              <button
+                key={i}
+                onClick={() => {
+                  if (text === "전화번호 없음") {
+                    alert("해당 장소의 전화번호가 등록되지 않았습니다.");
+                  } else {
+                    navigator.clipboard.writeText(text);
+                    alert(msg);
+                  }
+                }}
+              >
+                {icon}
+              </button>
+            ))}
+          </ul>
+        </div>
       )}
 
-      {/* 모바일용 장소 목록 버튼 */}
-      <button
-        className="md:hidden fixed bottom-[10vh] my-2 left-[50%] translate-x-[-50%] z-50 bg-white text-gray-500 px-4 py-2 rounded-full shadow"
-        onClick={() => setIsSidebarOpen(true)}
-      >
-        <div className="flex items-center gap-x-1">
-          <IoMenu className="text-green-500" />
-          목록보기
-        </div>
-      </button>
-
-      {/* 모바일용 슬라이딩 패널 */}
-      <div
-        className={`fixed inset-x-0 bottom-0 bg-white max-h-[80vh] rounded-t-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col
-          ${isSidebarOpen ? "translate-y-0" : "translate-y-full"} md:hidden`}
-      >
-        <button
-          className="mt-2.5 flex items-center justify-center text-gray-600"
-          onClick={() => setIsSidebarOpen(false)}
-        >
-          닫기
-        </button>
-
-        <div className="p-4 overflow-y-auto h-full">
-          <SearchForm
-            inputValue={inputValue}
-            setInputValue={setInputValue}
-            handleSearch={handleSearch}
-            className="w-full my-2"
-          />
-
-          <ul className="space-y-4 max-h-[60vh] overflow-y-auto mt-4">
+      {/* 검색 결과 리스트 */}
+      {keyword.length !== 0 && (
+        <div className="hidden md:flex md:w-72 p-4 bg-gray-100 border-l border-gray-300 flex-col">
+          <ul className="space-y-4 overflow-y-auto h-[90%)] pr-2 ">
             {places.map((place) => (
               <li
                 key={place.id}
-                className="bg-white rounded-lg border border-gray-300 cursor-pointer "
+                className="bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50"
               >
                 <button
-                  className="flex flex-col items-start w-full p-3 gap-y-1"
-                  onClick={() => {
-                    handlePlaceClick(place);
-                    setIsSidebarOpen(false);
-                  }}
+                  className="flex flex-col items-center w-full p-3 gap-y-1"
+                  onClick={() => handlePlaceClick(place)}
                 >
                   <p className="font-bold">{place.place_name}</p>
                   <p className="text-sm">
@@ -221,82 +244,17 @@ const MapPage = () => {
             ))}
           </ul>
         </div>
-      </div>
-
-      {/* 상세정보창 */}
-      {selectedPlace && !isSidebarOpen && (
-        <div className="absolute top-10 right-75 z-50 shadow-md">
-          <div className="w-60 p-4 bg-white border border-gray-300 relative h-50 rounded-2xl">
-            <button
-              onClick={() => setSelectedPlace(null)}
-              className="absolute top-2 right-2 text-xl font-bold"
-            >
-              <IoCloseSharp />
-            </button>
-            <h2 className="text-md mb-2">상세 정보</h2>
-            <p className="font-extrabold text-lg text-green-600">
-              {selectedPlace.place_name}
-            </p>
-            <p>
-              {selectedPlace.road_address_name || selectedPlace.address_name}
-            </p>
-            <p className="text-sm text-gray-600 mt-1">
-              {selectedPlace.phone || "전화번호 없음"}
-            </p>
-            <ul className="mt-2.5 flex gap-x-2.5 text-xl">
-              {jusoClip(selectedPlace).map(({ icon, text, msg }, i) => (
-                <button
-                  key={i}
-                  onClick={() => {
-                    if (text === "전화번호 없음") {
-                      alert("해당 장소의 전화번호가 등록되지 않았습니다.");
-                    } else {
-                      navigator.clipboard.writeText(text);
-                      alert(msg);
-                    }
-                  }}
-                >
-                  {icon}
-                </button>
-              ))}
-            </ul>
-          </div>
-        </div>
       )}
 
-      {/* 검색 결과 리스트 */}
-      <div className="hidden md:flex md:w-72 p-4 bg-gray-100 border-l border-gray-300 flex-col">
-        <SearchForm
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          handleSearch={handleSearch}
-          className="w-full max-w-full my-2.5 overflow-hidden"
-          inputClassName="flex-grow min-w-0"
-          buttonClassName="flex-shrink-0"
+      {/* 모바일용 슬라이딩 패널 */}
+      {places.length !== 0 && (
+        <MobilePlaceList
+          isOpen={isSidebarOpen}
+          setIsOpen={setIsSidebarOpen}
+          places={places}
+          handlePlaceClick={handlePlaceClick}
         />
-
-        <ul className="space-y-4 overflow-y-auto h-[calc(100%-2rem)] pr-2">
-          {places.map((place) => (
-            <li
-              key={place.id}
-              className="bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50"
-            >
-              <button
-                className="flex flex-col items-center w-full p-3 gap-y-1"
-                onClick={() => handlePlaceClick(place)}
-              >
-                <p className="font-bold">{place.place_name}</p>
-                <p className="text-sm">
-                  {place.road_address_name || place.address_name}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {place.phone || "전화번호 없음"}
-                </p>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+      )}
     </div>
   );
 };

@@ -110,3 +110,13 @@ interface HomeMenu {
   href: string; // 경로
   Icon: IconType;
 }
+
+type PlaceProps = {
+  id: string; // 장소 id
+  place_name: string; // 장소 이름
+  address_name: string; // 주소
+  road_address_name: string; // 도로명 주소
+  phone: string; // 전화번호
+  x: string; //x좌표
+  y: string; //y좌표
+};
