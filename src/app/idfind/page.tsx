@@ -12,6 +12,7 @@ import { FaIdCard } from "react-icons/fa";
 import { TbPassword } from "react-icons/tb";
 import { validateName, validatePhone } from "@/lib/validations";
 import { dbService, FBCollection } from "@/lib/firebase";
+import AlertModal from "@/components/AlertModal";
 
 const STORAGE_KEY = "idFindForm";
 
@@ -35,6 +36,7 @@ const IdFind = () => {
   const [selectedEmail, setSelectedEmail] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   const maskEmail = (email: string) => {
     const [id, domain] = email.split("@");
@@ -281,6 +283,13 @@ const IdFind = () => {
   return (
     <form onSubmit={(e: FormEvent) => e.preventDefault()}>
       {/* 헤더 */}
+      {alertMessage && (
+        <AlertModal
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
+
       <div className="w-full bg-emerald-100 p-4">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
