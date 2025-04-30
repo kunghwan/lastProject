@@ -20,6 +20,7 @@ import { getDownloadURL, uploadBytes } from "firebase/storage";
 import JusoComponents from "./UpoladPostJusoComponents";
 import Loaiding from "../Loading";
 import UploadTag from "./UploadTag";
+import AlertModal from "../AlertModal";
 
 export interface UploadPostProps extends Post {
   imgs: string[];
@@ -51,20 +52,23 @@ const initialState: UploadPostProps = {
 
 const UploadPostPage = () => {
   const { user } = AUTH.use();
+
   const [post, setPost] = useState<UploadPostProps>(initialState);
   const { content, title, tags } = post;
   const [files, setFiles] = useState<File[]>([]);
-
   const [tag, setTag] = useState("");
-
   const [juso, setJuso] = useState<Location>({
     latitude: 0,
     longitude: 0,
     address: "",
   });
 
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
   const navi = useRouter();
+
   const [isPending, startTransition] = useTransition();
+
   const titleRef = useRef<HTMLInputElement>(null);
   const descRef = useRef<HTMLTextAreaElement>(null);
   const jusoRef = useRef<HTMLInputElement>(null);
@@ -106,19 +110,19 @@ const UploadPostPage = () => {
     (e: React.FormEvent) => {
       e.preventDefault();
       if (titleMessage) {
-        alert(titleMessage);
+        setAlertMessage(titleMessage);
         return titleRef.current?.focus();
       }
       if (descMessage) {
-        alert(descMessage);
+        setAlertMessage(descMessage);
         return descRef.current?.focus();
       }
       if (jusoMessage) {
-        alert(jusoMessage);
+        setAlertMessage(jusoMessage);
         return jusoRef.current?.focus();
       }
       if (tagsMessage) {
-        alert(tagsMessage);
+        setAlertMessage(tagsMessage);
         return tagRef.current?.focus();
       }
 
@@ -158,7 +162,7 @@ const UploadPostPage = () => {
             userProfileImage: user.profileImageUrl,
           } as UploadPostProps);
 
-          alert("게시물이 성공적으로 등록되었습니다!");
+          setAlertMessage("게시물이 성공적으로 등록되었습니다!");
           //게시된후 초기화
           setTag("");
           setPost(initialState);
@@ -170,7 +174,7 @@ const UploadPostPage = () => {
           setFiles([]);
           return navi.back(); // 게시 후  이동
         } catch (error: any) {
-          return alert(`에러:${error.message}`);
+          return setAlertMessage(`에러:${error.message}`);
         }
       });
     },
@@ -196,6 +200,12 @@ const UploadPostPage = () => {
       className="h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  md:grid-cols-2 md:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border rounded border-gray-400  relative"
     >
       {isPending && <Loaiding />}
+      {alertMessage && (
+        <AlertModal
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
       <div className="hsecol gap-2">
         <h1 className="text-3xl font-bold text-black dark:text-white">
           새글작성
