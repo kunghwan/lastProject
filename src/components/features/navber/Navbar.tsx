@@ -3,12 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 import { FaRegMessage, FaPencil } from "react-icons/fa6";
-import {
-  IoPersonSharp,
-  IoCloseOutline,
-  IoStarOutline,
-  IoGridOutline,
-} from "react-icons/io5";
+import { IoPersonSharp, IoStarOutline, IoGridOutline } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
 import { AUTH } from "@/contextapi/context";
 import { FaRegQuestionCircle } from "react-icons/fa";
@@ -106,12 +101,15 @@ const Navbar = () => {
 
         {/* 모바일 하단 네비게이션 */}
         {!["/signin", "/signup"].includes(pathname!) && (
-          <nav className="fixed bottom-0 left-0 h-[7vh] right-0 bg-gray-200 z-30 flex justify-around [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto">
+          <nav className="fixed bottom-0 left-0 h-[10vh] right-0 bg-gray-200 z-30 flex justify-around [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto">
             <ul className="flex justify-around w-full">
               {NavBtns.map((btn, index) => (
                 <li key={index}>
                   <button
-                    className="grayButton text-2xl flex flex-col gap-y-1.5 items-center"
+                    className={twMerge(
+                      "grayButton text-2xl flex flex-col gap-y-1.5 items-center",
+                      pathname === btn.path && "text-blue-500"
+                    )}
                     onClick={() => navBtnClick(btn, index)}
                   >
                     {btn.icon}

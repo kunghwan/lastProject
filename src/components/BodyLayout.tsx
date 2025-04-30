@@ -7,7 +7,7 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
   return (
     <>
       <Header />
-      <main>{children}</main>
+      <main className="pb-[10vh] overflow-hidden">{children}</main>
     </>
   );
 };
