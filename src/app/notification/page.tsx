@@ -9,6 +9,7 @@ import { twMerge } from "tailwind-merge";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Notifications } from "@/types/notification";
 import Loaiding from "@/components/Loading";
+import TopButton from "@/components/upplace/TopButton";
 
 //! limit변수처리하기
 const limit = 20;
@@ -204,7 +205,7 @@ const NotificationListPage = () => {
               <button
                 onClick={handleAllRead}
                 disabled={!isUnRead}
-                className="border-2 border-lime-800 hover:text-lime-800 cursor-pointer mr-2.5 bg-[#d7eadf] disabled:text-gray-400  disabled:bg-gray-200 dark:bg-[rgba(232,255,241,0.5)] p-2 rounded"
+                className=" hover:shadow-md border-2 border-lime-800 hover:text-lime-800 cursor-pointer mr-2.5 bg-[#d7eadf] disabled:text-gray-400  disabled:bg-gray-200 dark:bg-[rgba(232,255,241,0.5)] p-2 rounded"
               >
                 모두 읽기
               </button>
@@ -221,10 +222,10 @@ const NotificationListPage = () => {
                   return navi.push(`/profile/${noti.follwerId}`);
                 }}
                 className={twMerge(
-                  " hsecol  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer ",
+                  "hover:shadow-sm hsecol  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer ",
                   noti.isRead
                     ? "text-gray-500 border dark:border-gray-700 border-gray-200 bg-gray-100 dark:bg-gray-500 dark:text-gray-300"
-                    : "text-black font-semibold border border-gray-200 hover:text-lime-800 bg-[rgba(232,255,241)] dark:bg-[rgba(232,255,241,0.4)] dark:text-white"
+                    : "text-black font-semibold border border-gray-200 hover:text-lime-700 dark:hover:text-lime-200  bg-[rgba(232,255,241)] dark:bg-[rgba(232,255,241,0.4)] dark:text-white"
                 )}
               >
                 <p className="font-bold text-md">
@@ -250,6 +251,7 @@ const NotificationListPage = () => {
           </button>
         )}
       </div>
+      <TopButton className="bg-emerald-600 hover:bg-emerald-500" />
     </div>
   );
 };

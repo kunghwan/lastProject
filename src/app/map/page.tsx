@@ -2,7 +2,7 @@
 
 import SearchForm from "@/components/map/SearchForm";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { IoCloseSharp, IoPhonePortraitSharp } from "react-icons/io5";
+import { IoCloseSharp, IoMenu, IoPhonePortraitSharp } from "react-icons/io5";
 import { TbMapPinDown } from "react-icons/tb";
 
 declare global {
@@ -25,8 +25,9 @@ const MapPage = () => {
   const [map, setMap] = useState<any>(null);
   const [places, setPlaces] = useState<PlaceProps[]>([]);
   const [selectedPlace, setSelectedPlace] = useState<PlaceProps | null>(null);
-  const [keyword, setKeyword] = useState("맛집");
-  const [inputValue, setInputValue] = useState("맛집");
+  const [keyword, setKeyword] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const markers = useRef<any[]>([]);
   const mapRef = useRef<HTMLDivElement>(null);
@@ -75,12 +76,10 @@ const MapPage = () => {
         Number(place.y),
         Number(place.x)
       );
-      const projection = map.getProjection();
-      const point = projection.pointFromCoords(latlng);
-      const adjustedPoint = new window.kakao.maps.Point(point.x + 150, point.y);
-      const newCenter = projection.coordsFromPoint(adjustedPoint);
 
-      map.panTo(newCenter);
+      // ✅ 클릭된 마커를 지도 중앙으로 부드럽게 이동
+      map.panTo(latlng);
+
       if (showDetail) setSelectedPlace(place);
     },
     [map]
@@ -119,7 +118,7 @@ const MapPage = () => {
             // ✅ Tailwind 적용된 오버레이
             const label = document.createElement("div");
             label.className =
-              "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 whitespace-nowrap hover:z-50";
+              "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-20 ";
             label.innerText = place.place_name;
 
             const overlay = new maps.CustomOverlay({
@@ -152,17 +151,80 @@ const MapPage = () => {
 
   return (
     <div className="relative flex h-[80vh] dark:text-gray-600">
+      {/* 지도 */}
       <div ref={mapRef} className="flex-1 bg-gray-200 relative" />
 
-      <SearchForm
-        inputValue={inputValue}
-        setInputValue={setInputValue}
-        handleSearch={handleSearch}
-        className="absolute top-5 left-4 z-50 "
-        inputClassName="mx-2 w-48"
-      />
+      {/* 검색창 */}
+      {!isSidebarOpen && (
+        <SearchForm
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          handleSearch={handleSearch}
+          className="absolute z-50 top-5 left-1/2 transform -translate-x-1/2 md:left-50 md:my-2.5 md:transform-none"
+          inputClassName="mx-2 w-48"
+        />
+      )}
 
-      {selectedPlace && (
+      {/* 모바일용 장소 목록 버튼 */}
+      <button
+        className="md:hidden fixed bottom-[10vh] my-2 left-[50%] translate-x-[-50%] z-50 bg-white text-gray-500 px-4 py-2 rounded-full shadow"
+        onClick={() => setIsSidebarOpen(true)}
+      >
+        <div className="flex items-center gap-x-1">
+          <IoMenu className="text-green-500" />
+          목록보기
+        </div>
+      </button>
+
+      {/* 모바일용 슬라이딩 패널 */}
+      <div
+        className={`fixed inset-x-0 bottom-0 bg-white max-h-[80vh] rounded-t-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col
+          ${isSidebarOpen ? "translate-y-0" : "translate-y-full"} md:hidden`}
+      >
+        <button
+          className="mt-2.5 flex items-center justify-center text-gray-600"
+          onClick={() => setIsSidebarOpen(false)}
+        >
+          닫기
+        </button>
+
+        <div className="p-4 overflow-y-auto h-full">
+          <SearchForm
+            inputValue={inputValue}
+            setInputValue={setInputValue}
+            handleSearch={handleSearch}
+            className="w-full my-2"
+          />
+
+          <ul className="space-y-4 max-h-[60vh] overflow-y-auto mt-4">
+            {places.map((place) => (
+              <li
+                key={place.id}
+                className="bg-white rounded-lg border border-gray-300 cursor-pointer "
+              >
+                <button
+                  className="flex flex-col items-start w-full p-3 gap-y-1"
+                  onClick={() => {
+                    handlePlaceClick(place);
+                    setIsSidebarOpen(false);
+                  }}
+                >
+                  <p className="font-bold">{place.place_name}</p>
+                  <p className="text-sm">
+                    {place.road_address_name || place.address_name}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {place.phone || "전화번호 없음"}
+                  </p>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* 상세정보창 */}
+      {selectedPlace && !isSidebarOpen && (
         <div className="absolute top-10 right-75 z-50 shadow-md">
           <div className="w-60 p-4 bg-white border border-gray-300 relative h-50 rounded-2xl">
             <button
@@ -202,7 +264,8 @@ const MapPage = () => {
         </div>
       )}
 
-      <div className="md:w-72 w-full  p-4 bg-gray-100 border-l border-gray-300 flex flex-col ">
+      {/* 검색 결과 리스트 */}
+      <div className="hidden md:flex md:w-72 p-4 bg-gray-100 border-l border-gray-300 flex-col">
         <SearchForm
           inputValue={inputValue}
           setInputValue={setInputValue}

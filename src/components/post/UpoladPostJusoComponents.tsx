@@ -68,7 +68,7 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
                   return alert("취소되었습니다.");
                 }
               }}
-              className="border border-gray-400  p-2.5 rounded bg-lime-100 dark:bg-lime-100/80 dark:text-gray-600 flex-1 min-w-20 cursor-pointer"
+              className="  p-2.5 rounded bg-[#a4d9cb] dark:bg-[#6d9288]  hover:shadow-md dark:text-white w-auto min-w-20 cursor-pointer whitespace-nowrap"
             >
               다시검색
             </button>
@@ -94,7 +94,7 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
                 setIsJusoUlShowing(true);
                 return setIsJusoShowing(true);
               }}
-              className="flex justify-center items-center flex-1 rounded bg-[rgba(116,212,186)] min-w-20 dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
+              className="  hover:shadow-md flex justify-center items-center flex-1 rounded bg-[rgba(116,212,186)] min-w-20 dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
             >
               <IoIosSearch className="text-3xl font-bold" />
             </button>

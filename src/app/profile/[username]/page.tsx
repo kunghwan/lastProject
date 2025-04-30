@@ -1,9 +1,11 @@
 "use client";
+import { useRouter } from "next/navigation"; // Next.js의 useRouter 훅
 import { useQuery } from "@tanstack/react-query";
 import { fetchUsers } from "@/lib/user"; // fetchUsers 함수
 import { fetchPostsAndUserId } from "@/lib/user"; // fetchPostsAndUserId 함수
 import { Post, Tag } from "@/types/post";
 import ProfileLayout from "@/components/ProfileUI/ProfileLayout";
+import { dbService, FBCollection } from "@/lib";
 
 interface Props {
   params: { username: string };
@@ -11,6 +13,12 @@ interface Props {
 
 const UserPage = ({ params }: Props) => {
   const { username } = params;
+  const router = useRouter(); // useRouter 훅 초기화
+
+  const currentUserId = `${dbService
+    .collection(FBCollection.USERS)
+    .doc("uid")}`; // 현재 로그인한 사용자의 UID를 가져오는 방법 (예시)
+  // "my-uid"; // 실제 로그인한 사용자의 UID를 가져와야 함
 
   // React Query를 사용하여 Firestore에서 posts 데이터를 가져옴
   const {
@@ -47,8 +55,13 @@ const UserPage = ({ params }: Props) => {
   const user = userData?.[0]; // username으로 가져온 첫 번째 사용자
 
   // 로그인한 유저와 현재 페이지 유저 비교
-  const currentUserId = "my-uid"; // 실제 로그인한 사용자의 UID를 가져와야 함
   const isMyPage = userId === currentUserId;
+
+  // 로그인한 유저가 자신의 프로필 페이지로 접근하면 /profile/me로 리다이렉트
+  if (isMyPage && username !== "me") {
+    router.replace("/profile/me"); // /profile/me로 리다이렉트
+    return null; // 리다이렉트 후 컴포넌트 렌더링 방지
+  }
 
   // 변수 처리
   const userNickname = user?.nickname || username;
@@ -67,7 +80,7 @@ const UserPage = ({ params }: Props) => {
   const tags: Tag[] = [
     {
       id: "1",
-      name: "대전시",
+      name: "",
       onTag: () => console.log("태그1 클릭됨"),
     },
     {
@@ -87,11 +100,11 @@ const UserPage = ({ params }: Props) => {
       userNickname={userNickname}
       userProfileImage={userProfileImage}
     >
-      {!isMyPage && (
+      {/* {!isMyPage && (
         <button onClick={handleFollow} style={{ marginTop: "20px" }}>
           팔로우
         </button>
-      )}
+      )} */}
     </ProfileLayout>
   );
 };
