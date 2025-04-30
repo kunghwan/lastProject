@@ -22,17 +22,41 @@ const SettingProfile = () => {
   const [loading, setLoading] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const nicknameRef = useRef<HTMLInputElement>(null);
+  const imageButtonRef = useRef<HTMLButtonElement>(null);
+  const bioRef = useRef<HTMLTextAreaElement>(null);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
   const router = useRouter();
   const { signin } = AUTH.use();
 
-  // ✅ validateNickname 수정 (firebase 중복검사 추가)
+  useEffect(() => {
+    nicknameRef.current?.focus();
+  }, []);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (document.activeElement === nicknameRef.current) {
+        imageButtonRef.current?.focus();
+      } else if (document.activeElement === imageButtonRef.current) {
+        const proceed = confirm("프로필 이미지를 추가하시겠습니까?");
+        if (proceed) {
+          fileInputRef.current?.click();
+        } else {
+          bioRef.current?.focus();
+        }
+      } else if (document.activeElement === bioRef.current) {
+        submitButtonRef.current?.click();
+      }
+    }
+  };
   const validateNickname = async (nickname: string) => {
     if (!nickname) return "닉네임을 입력해주세요";
     if (!/^[a-zA-Z0-9]+$/.test(nickname)) return "한글은 입력 안됩니다";
     if (nickname.length >= 18)
       return "닉네임은 18글자 미만으로만 입력가능합니다";
 
-    // ✅ 닉네임 중복 체크
     const snapshot = await dbService
       .collection(FBCollection.USERS)
       .where("nickname", "==", nickname)
@@ -60,7 +84,6 @@ const SettingProfile = () => {
     }
   }, [router]);
 
-  // ✅ handleChange 수정 (닉네임은 await)
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
@@ -102,7 +125,6 @@ const SettingProfile = () => {
     fileInputRef.current?.click();
   }, []);
 
-  // ✅ handleSubmit 수정 (최종 닉네임 중복 검사 추가)
   const handleSubmit = useCallback(async () => {
     if (!profile.nickname?.trim()) {
       alert("닉네임을 입력하세요");
@@ -179,13 +201,14 @@ const SettingProfile = () => {
     <>
       {loading && <LoadingPage />}
       <div className="flex flex-col gap-y-4 p-4 lg:mx-auto lg:w-130 md:w-130 md:mx-auto sm:w-130 sm:mx-auto ">
-        {/* 닉네임 입력 */}
         <div className="relative">
           <input
+            ref={nicknameRef}
             type="text"
             name="nickname"
             value={profile.nickname}
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
             placeholder="유저이름"
             className={`${settingProfile} ${
               nicknameError ? "border-red-500" : ""
@@ -198,12 +221,13 @@ const SettingProfile = () => {
           )}
         </div>
 
-        {/* 프로필 추가 */}
         <div className="flex flex-col gap-y-5 ">
           <input type="text" placeholder="프로필추가" disabled />
           <button
+            ref={imageButtonRef}
             type="button"
             onClick={triggerFileSelect}
+            onKeyDown={handleKeyDown}
             className="border w-24 h-24 flex justify-center items-center text-5xl rounded cursor-pointer"
           >
             <IoAdd />
@@ -224,12 +248,13 @@ const SettingProfile = () => {
           )}
         </div>
 
-        {/* 소개글 입력 */}
         <div className="relative">
           <textarea
+            ref={bioRef}
             name="bio"
             value={profile.bio}
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
             placeholder="자기소개를 작성해주세요"
             className="border w-full h-20 p-3 resize-none mt-5"
           />
@@ -238,8 +263,8 @@ const SettingProfile = () => {
           )}
         </div>
 
-        {/* 가입 완료 버튼 */}
         <button
+          ref={submitButtonRef}
           onClick={handleSubmit}
           className="p-4 bg-emerald-300 rounded font-bold mt-5"
         >

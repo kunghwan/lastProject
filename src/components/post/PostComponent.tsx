@@ -7,6 +7,8 @@ import LikeButton from "./LikeButton";
 import ShareButton from "./ShareButton";
 import LocationButton from "./LocationButton";
 import { useRouter } from "next/navigation"; // Next.js의 useRouter 훅
+import { dbService, FBCollection } from "@/lib";
+import { fetchUsers } from "@/lib/user";
 
 const PostComponent = () => {
   const router = useRouter(); // useRouter 훅 사용
@@ -29,6 +31,36 @@ const PostComponent = () => {
   if (isError) {
     return <h1>데이터를 불러오는 중 오류가 발생했습니다.</h1>;
   }
+
+  const handleClick = async () => {
+    const userNickname = posts[0].userNickname; // 클릭한 사용자의 닉네임 가져오기 (예시)
+
+    if (!userNickname) {
+      console.error("userNickname이 없습니다.");
+      return;
+    }
+
+    const currentNickname = `${dbService
+      .collection(FBCollection.USERS)
+      .doc("uid")}`; // 현재 로그인한 사용자의 UID를 가져오는 방법 (예시)
+
+    if (!currentNickname) {
+      alert("로그인 정보가 없습니다.");
+      return;
+    }
+
+    if (userNickname === currentNickname) {
+      router.push("/profile/me");
+    } else {
+      const matchedUsers = await fetchUsers(userNickname);
+
+      if (matchedUsers.length > 0) {
+        router.push(`/profile/${encodeURIComponent(userNickname)}`);
+      } else {
+        alert("해당 유저가 존재하지 않습니다.");
+      }
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 gap-y-3 mb-20 md:grid-cols-2 lg:grid-cols-3 ml-2.5 mr-2.5">
@@ -54,22 +86,13 @@ const PostComponent = () => {
           <div key={id} className="rounded-lg p-1">
             <button
               className="flex gap-2.5 items-center text-center mb-1.5 ml-1"
-              onClick={() => router.push(`/profile/${userNickname}`)} // 클릭 시 이동
+              onClick={handleClick}
             >
-              {userProfileImage ? (
-                <img
-                  className="w-10 h-10 rounded-full border border-gray-200"
-                  src={userProfileImage}
-                  alt="user profile image"
-                />
-              ) : (
-                <img
-                  src={defaultImgUrl}
-                  alt="defaultImgUrl"
-                  className="w-10 h-10 rounded-full border border-gray-200"
-                />
-              )}
-
+              <img
+                className="w-10 h-10 rounded-full border border-gray-200"
+                src={userProfileImage || defaultImgUrl}
+                alt="user profile image"
+              />
               <div className="font-black">{userNickname}</div>
             </button>
             {imageUrl ? (
