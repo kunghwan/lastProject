@@ -101,6 +101,13 @@ const UploadPostPage = () => {
 
   const onChangeFiles = useCallback(
     (items: FileList) => {
+      //! 사진은 최대 10개까지만 가능하게
+      //Todo: files.length만 비교하거나 items.length만 본다면, 합쳐서 10개 초과하는 걸 막지 못하게 됨
+      if (files.length + items.length > 10) {
+        setAlertMessage("이미지 최대 개수는 10개 입니다.");
+        return;
+      }
+
       for (const file of items) {
         setFiles((prev) => [...prev, file]);
       }
@@ -287,11 +294,23 @@ const UploadPostPage = () => {
             style={{ WebkitOverflowScrolling: "touch" }} // 모바일 터치 스와이프 부드럽게
           >
             <li className="hsecol items-center">
-              <p className="font-bold text-lg text-gray-500  dark:text-white">
-                사진추가
-              </p>
+              <div className="flex  w-30">
+                <p className="font-bold text-md text-gray-500  dark:text-white">
+                  사진추가 (
+                  <span
+                    className={twMerge(
+                      "text-[rgba(62,188,154)]",
+                      files.length === 10 && "text-red-500"
+                    )}
+                  >
+                    {files.length}
+                  </span>
+                  /10)
+                </p>
+              </div>
               <FileItem onChangeFiles={onChangeFiles} />
             </li>
+
             {files.map((file, index) => (
               <li key={index} className="mt-6 shrink-0 w-24 h-24">
                 <FileItem
