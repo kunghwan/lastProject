@@ -1,10 +1,11 @@
 "use client";
 
 import { Tag } from "@/types/post";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { UploadPostProps } from "./UploadPage";
 import { v4 } from "uuid";
+import AlertModal from "../AlertModal";
 
 interface Props {
   tag: string;
@@ -16,6 +17,8 @@ interface Props {
 }
 
 const UploadTag = ({ post, setPost, setTag, tag, tagRef, tags }: Props) => {
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
   const tagMessage = useMemo(() => {
     const validateText = /^[\p{L}\p{N}\s]+$/u;
     if (!validateText.test(tag)) {
@@ -31,7 +34,7 @@ const UploadTag = ({ post, setPost, setTag, tag, tagRef, tags }: Props) => {
 
   const onClickTag = useCallback(() => {
     if (tagMessage) {
-      alert(tagMessage);
+      setAlertMessage(tagMessage);
       tagRef.current?.focus();
       return;
     }
@@ -42,7 +45,7 @@ const UploadTag = ({ post, setPost, setTag, tag, tagRef, tags }: Props) => {
     };
 
     if (tags.find((t) => t.name === newTag.name)) {
-      return alert("이미 존재하는 태그입니다.");
+      return setAlertMessage("이미 존재하는 태그입니다.");
     }
     setPost((prev) => ({
       ...prev,
@@ -54,6 +57,12 @@ const UploadTag = ({ post, setPost, setTag, tag, tagRef, tags }: Props) => {
   return (
     <>
       <div>
+        {alertMessage && (
+          <AlertModal
+            message={alertMessage}
+            onClose={() => setAlertMessage(null)}
+          />
+        )}
         <label
           htmlFor="tags"
           className=" font-bold text-md text-gray-500 dark:text-white"

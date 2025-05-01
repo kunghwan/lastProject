@@ -2,6 +2,7 @@
 import { Location, Post, Tag } from "@/types/post";
 import React, {
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -20,6 +21,7 @@ import { getDownloadURL, uploadBytes } from "firebase/storage";
 import JusoComponents from "./UpoladPostJusoComponents";
 import Loaiding from "../Loading";
 import UploadTag from "./UploadTag";
+import AlertModal from "../AlertModal";
 
 export interface UploadPostProps extends Post {
   imgs: string[];
@@ -51,24 +53,28 @@ const initialState: UploadPostProps = {
 
 const UploadPostPage = () => {
   const { user } = AUTH.use();
+
   const [post, setPost] = useState<UploadPostProps>(initialState);
   const { content, title, tags } = post;
   const [files, setFiles] = useState<File[]>([]);
-
   const [tag, setTag] = useState("");
-
   const [juso, setJuso] = useState<Location>({
     latitude: 0,
     longitude: 0,
     address: "",
   });
 
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
   const navi = useRouter();
+
   const [isPending, startTransition] = useTransition();
+
   const titleRef = useRef<HTMLInputElement>(null);
   const descRef = useRef<HTMLTextAreaElement>(null);
   const jusoRef = useRef<HTMLInputElement>(null);
   const tagRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const titleMessage = useMemo(() => {
     if (title.length === 0 || title.trim() === "") {
@@ -95,6 +101,13 @@ const UploadPostPage = () => {
 
   const onChangeFiles = useCallback(
     (items: FileList) => {
+      //! 사진은 최대 10개까지만 가능하게
+      //Todo: files.length만 비교하거나 items.length만 본다면, 합쳐서 10개 초과하는 걸 막지 못하게 됨
+      if (files.length + items.length > 10) {
+        setAlertMessage("이미지 최대 개수는 10개 입니다.");
+        return;
+      }
+
       for (const file of items) {
         setFiles((prev) => [...prev, file]);
       }
@@ -106,19 +119,19 @@ const UploadPostPage = () => {
     (e: React.FormEvent) => {
       e.preventDefault();
       if (titleMessage) {
-        alert(titleMessage);
+        setAlertMessage(titleMessage);
         return titleRef.current?.focus();
       }
       if (descMessage) {
-        alert(descMessage);
+        setAlertMessage(descMessage);
         return descRef.current?.focus();
       }
       if (jusoMessage) {
-        alert(jusoMessage);
+        setAlertMessage(jusoMessage);
         return jusoRef.current?.focus();
       }
       if (tagsMessage) {
-        alert(tagsMessage);
+        setAlertMessage(tagsMessage);
         return tagRef.current?.focus();
       }
 
@@ -158,7 +171,7 @@ const UploadPostPage = () => {
             userProfileImage: user.profileImageUrl,
           } as UploadPostProps);
 
-          alert("게시물이 성공적으로 등록되었습니다!");
+          setAlertMessage("게시물이 성공적으로 등록되었습니다!");
           //게시된후 초기화
           setTag("");
           setPost(initialState);
@@ -170,7 +183,7 @@ const UploadPostPage = () => {
           setFiles([]);
           return navi.back(); // 게시 후  이동
         } catch (error: any) {
-          return alert(`에러:${error.message}`);
+          return setAlertMessage(`에러:${error.message}`);
         }
       });
     },
@@ -188,6 +201,26 @@ const UploadPostPage = () => {
       navi,
     ]
   );
+  //! 마우스 휠 가로로 변경
+  useEffect(() => {
+    const el = scrollRef.current; //ref로 지정한 DOM 요소(예: <div ref={scrollRef}>)를 가져옴
+    if (!el) return; //만약 DOM이 아직 준비 안 되었으면 아무 것도 안 하고 종료
+    //! wheelevent가 발생했을 경우
+    const handleWheel = (e: WheelEvent) => {
+      if (e.deltaY === 0) {
+        return;
+      } //수직 방향 휠 스크롤이 0일 때는 아무 일도 하지 않음(즉, 스크롤이 실제로 움직였을 때만 처리)
+      e.preventDefault(); //브라우저 기본 동작(세로 스크롤)을 막음
+      el.scrollLeft += e.deltaY; //수직 스크롤 값(deltaY)을 가로 스크롤로 바꿔서 실행
+    };
+    //passive: false는 preventDefault()가 작동할 수 있도록 허용하는 설정
+    el.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      //휠 이벤트를 제거해서 메모리 누수 방지
+      el.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
 
   return (
     <form
@@ -196,8 +229,14 @@ const UploadPostPage = () => {
       className="h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  md:grid-cols-2 md:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border rounded border-gray-400  relative"
     >
       {isPending && <Loaiding />}
+      {alertMessage && (
+        <AlertModal
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
       <div className="hsecol gap-2">
-        <h1 className="text-3xl font-bold text-black dark:text-white">
+        <h1 className=" w-fit  text-3xl font-bold text-black dark:text-white">
           새글작성
         </h1>
         <div className="hsecol gap-y-3 ">
@@ -249,16 +288,31 @@ const UploadPostPage = () => {
             />
           </div>
         </div>
-        <div>
-          <ul className="flex items-center gap-2.5 flex-wrap">
+        <div ref={scrollRef} className="w-full overflow-x-auto hide-scrollbar">
+          <ul
+            className=" flex items-center gap-2.5 flex-nowrap scroll-smooth "
+            style={{ WebkitOverflowScrolling: "touch" }} // 모바일 터치 스와이프 부드럽게
+          >
             <li className="hsecol items-center">
-              <p className="font-bold text-lg text-gray-500  dark:text-white">
-                사진추가
-              </p>
+              <div className="flex  w-30">
+                <p className="font-bold text-md text-gray-500  dark:text-white">
+                  사진추가 (
+                  <span
+                    className={twMerge(
+                      "text-[rgba(62,188,154)]",
+                      files.length === 10 && "text-red-500"
+                    )}
+                  >
+                    {files.length}
+                  </span>
+                  /10)
+                </p>
+              </div>
               <FileItem onChangeFiles={onChangeFiles} />
             </li>
+
             {files.map((file, index) => (
-              <li key={index} className="mt-6">
+              <li key={index} className="mt-6 shrink-0 w-24 h-24">
                 <FileItem
                   file={file}
                   // 파일을 삭제하기 위해 onDeleteFiles를 사용

@@ -11,7 +11,7 @@ interface FileItemProps {
 const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
   return (
     <div className="hsecol gap-y-1 hover:text-gray-400 cursor-pointer">
-      <div className=" relative  w-25 h-25">
+      <div className=" relative  w-24 h-24">
         {!file ? (
           <input
             id="imgs"
@@ -23,7 +23,7 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
               }
             }}
             multiple
-            className=" border max-w-25 min-h-25 border-gray-500  relative  opacity-0 cursor-pointer z-10"
+            className=" border max-w-24 min-h-24 border-gray-500  relative  opacity-0 cursor-pointer z-10"
           />
         ) : (
           <button
@@ -34,7 +34,7 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
               }
               alert("취소했습니다.");
             }}
-            className=" absolute border rounded-2xl text-xl bg-white z-20 w-25 h-25 opacity-0 hover:opacity-80 flex justify-center items-center cursor-pointer"
+            className=" absolute border rounded-2xl text-xl bg-white z-20 w-24 h-24 opacity-0 hover:opacity-80 flex justify-center items-center cursor-pointer"
           >
             <RiDeleteBin5Fill />
           </button>
@@ -42,11 +42,11 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
 
         <div className="absolute top-0 left-0  w-full h-full border border-gray-400 rounded-2xl bg-white cursor-pointer  flex justify-center items-center overflow-hidden ">
           {file ? (
-            <div className="border max-w-25 min-h-25">
+            <div className="border max-w-24 min-h-24">
               <img
                 src={URL.createObjectURL(file)}
                 alt={file.name}
-                className="w-25 h-25 object-cover"
+                className="w-24 h-24 object-cover"
               />
             </div>
           ) : (
