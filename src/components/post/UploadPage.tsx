@@ -22,6 +22,7 @@ import JusoComponents from "./UpoladPostJusoComponents";
 import Loaiding from "../Loading";
 import UploadTag from "./UploadTag";
 import AlertModal from "../AlertModal";
+import { TypeAnimation } from "react-type-animation";
 
 export interface UploadPostProps extends Post {
   imgs: string[];
@@ -201,6 +202,7 @@ const UploadPostPage = () => {
       navi,
     ]
   );
+
   //! 마우스 휠 가로로 변경
   useEffect(() => {
     const el = scrollRef.current; //ref로 지정한 DOM 요소(예: <div ref={scrollRef}>)를 가져옴
@@ -226,7 +228,7 @@ const UploadPostPage = () => {
     <form
       action=""
       onSubmit={onSubmit}
-      className="h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  md:grid-cols-2 md:gap-5 mt-5 max-w-300 mx-auto bg-[rgba(250,255,254)] dark:bg-gray-500 p-5  border rounded border-gray-400  relative"
+      className=" bg-[rgba(250,255,254)] dark:bg-gray-500 relative   h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  md:grid-cols-2 md:gap-5 mt-5 max-w-300 mx-auto  p-5  border rounded border-gray-400 "
     >
       {isPending && <Loaiding />}
       {alertMessage && (
@@ -236,9 +238,23 @@ const UploadPostPage = () => {
         />
       )}
       <div className="hsecol gap-2">
-        <h1 className=" w-fit  text-3xl font-bold text-black dark:text-white">
-          새글작성
-        </h1>
+        {/* <h1 className=" w-fit  text-3xl font-bold text-black dark:text-white">새글작성</h1> */}
+        <TypeAnimation
+          sequence={[
+            "새",
+            500,
+            "새글",
+            500,
+            "새글작",
+            500,
+            "새글작성",
+            5000, //! 5초 유지
+          ]}
+          speed={95} //! 글자 하나씩 타이핑하는 속도 (ms). 숫자가 클수록 느림
+          repeat={2} //! 애니메이션 반복 횟수 (처음 포함 총 3번 실행됨)
+          className="w-fit  text-3xl font-bold text-black dark:text-white"
+        />
+
         <div className="hsecol gap-y-3 ">
           <div className="hsecol gap-y-1">
             <label
