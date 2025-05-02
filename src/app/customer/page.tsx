@@ -55,7 +55,7 @@ const QnaPage = () => {
             <li key={item.question} className=" hsecol mb-2 w-full">
               <button
                 onClick={() => toggleQuestion(item.question)}
-                className="text-sm text-left font-bold  flex justify-between items-center p-2.5 rounded bg-[rgba(151,218,200)] dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer"
+                className="hover:underline text-sm text-left font-bold  flex justify-between items-center p-2.5 rounded bg-[rgba(151,218,200)] dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer"
               >
                 <p> Q. {item.question}</p>
                 <span>
