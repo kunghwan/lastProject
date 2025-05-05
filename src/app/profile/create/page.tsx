@@ -4,7 +4,7 @@ import React from "react";
 
 const PostCreatePage = () => {
   return (
-    <div className="p-5 mb-15">
+    <div className="p-5 mb-15 ">
       <UploadPostPage />
     </div>
   );
