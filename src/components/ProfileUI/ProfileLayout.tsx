@@ -102,6 +102,7 @@ const ProfileLayout = ({
                   구독수 <span>{firstPost?.shares?.length || 0}</span>
                 </div>
               </div>
+              <div>{userData.bio}</div>
             </div>
           </div>
           <div className="flex text-2xl p-2.5 ml-30 mr-30">
