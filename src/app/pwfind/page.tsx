@@ -233,7 +233,7 @@ const PwFindResult = () => {
 
       {/* 이름/폰/이메일 입력 폼 */}
       {!user && !email && (
-        <div className="flex flex-col gap-2 mb-4">
+        <div className="flex flex-col gap-2 mb-4 ">
           <input
             type="text"
             name="name"
@@ -242,7 +242,7 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="이름 입력"
-            className="border p-2 border-emerald-300 placeholder:text-emerald-300"
+            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150"
           />
           {inputErrors.name && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.name}</p>
@@ -256,7 +256,7 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="전화번호 입력"
-            className="border p-2 border-emerald-300 placeholder:text-emerald-300"
+            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150 "
           />
           {inputErrors.phone && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.phone}</p>
@@ -270,7 +270,7 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="이메일 입력"
-            className="border p-2 border-emerald-300 placeholder:text-emerald-300"
+            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150"
           />
           {inputErrors.email && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.email}</p>

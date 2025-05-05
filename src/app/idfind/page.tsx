@@ -12,6 +12,7 @@ import { FaIdCard } from "react-icons/fa";
 import { TbPassword } from "react-icons/tb";
 import { validateName, validatePhone } from "@/lib/validations";
 import { dbService, FBCollection } from "@/lib/firebase";
+import AlertModal from "@/components/AlertModal";
 
 const STORAGE_KEY = "idFindForm";
 
@@ -35,6 +36,7 @@ const IdFind = () => {
   const [selectedEmail, setSelectedEmail] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   const maskEmail = (email: string) => {
     const [id, domain] = email.split("@");
@@ -281,6 +283,13 @@ const IdFind = () => {
   return (
     <form onSubmit={(e: FormEvent) => e.preventDefault()}>
       {/* 헤더 */}
+      {alertMessage && (
+        <AlertModal
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
+
       <div className="w-full bg-emerald-100 p-4">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
@@ -298,8 +307,8 @@ const IdFind = () => {
 
       {/* 입력폼 */}
       {IdFinds.map((idf, index) => (
-        <div key={index} className="ml-3 lg:ml-20 ">
-          <div className="flex gap-2 p-3 lg:flex lg:items-center lg:justify-center">
+        <div key={index}>
+          <div className="flex gap-x-2 p-3 ">
             <input
               ref={(el) => {
                 if (el) inputRefs.current[index] = el;
@@ -341,12 +350,12 @@ const IdFind = () => {
             )}
           </div>
           {idf.error && (
-            <p className="text-red-500  text-sm mt-0.5 ml-5 lg:ml-50 ">
+            <p className="text-red-500 text-sm mt-0.5  w-150 ml-5  ">
               {idf.error}
             </p>
           )}
           {index === 2 && showCode && (
-            <p className="text-center text-sm text-green-600  w-100 lg:w-250">
+            <p className="text-center text-sm text-green-600 lg:text-start lg:ml-2 md:text-start md:ml-3 ">
               인증번호: {generatedCode}
             </p>
           )}
@@ -354,12 +363,12 @@ const IdFind = () => {
       ))}
 
       {/* 확인 버튼 */}
-      <div className="w-full px-5   lg:w-210">
+      <div className=" px-5 flex">
         <div className="flex flex-col lg:flex-row lg:justify-center">
-          <div className="w-[240px] md:w-[400px] xl:w-[570px]">
+          <div className="flex justify-center w-full mt-5">
             <button
               type="button"
-              className="w-50 h-[80px] bg-emerald-300 rounded font-bold lg:text-lg hover:bg-emerald-400 ml-1 mt-5 lg:ml-33 lg:w-50 "
+              className="w-full max-w-[300px] h-[80px] bg-emerald-300 rounded font-bold text-base lg:text-lg hover:bg-emerald-400 "
               onClick={handleSubmit}
             >
               확인

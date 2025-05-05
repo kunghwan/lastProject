@@ -14,10 +14,10 @@ const NotFound = () => {
       </p>
       <button
         onClick={() => navi.push("/")}
-        className="flex gap-x-2.5 items-center font-bold p-2.5 rounded w-40 bg-[rgba(62,188,154)] dark:bg-[rgba(116,212,186,0.5)] text-white hover:shadow-md"
+        className=" hover:animate-pulse flex gap-x-2.5 items-center font-bold p-2.5 rounded w-40 bg-[rgba(62,188,154)] dark:bg-[rgba(116,212,186,0.5)] text-white hover:shadow-md"
       >
         <span>
-          <FaArrowLeft />
+          <FaArrowLeft className="" />
         </span>
         홈으로 돌아가기
       </button>

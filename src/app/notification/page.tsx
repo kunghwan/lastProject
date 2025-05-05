@@ -10,6 +10,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { Notifications } from "@/types/notification";
 import Loaiding from "@/components/Loading";
 import TopButton from "@/components/upplace/TopButton";
+import AlertModal from "@/components/AlertModal";
 
 //! limit변수처리하기
 const limit = 20;
@@ -21,6 +22,8 @@ const NotificationListPage = () => {
   const navi = useRouter();
 
   const uid = user?.uid;
+
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   const ref = dbService
     .collection(FBCollection.USERS)
@@ -169,7 +172,7 @@ const NotificationListPage = () => {
     await batch.commit(); //! 배치 실행(배치를 실행시킬려면 commit함수를 꼭 붙여야함)
     console.log("모든 알림을 읽음 처리했습니다.");
     await refetch(); //!  데이터 새로고침 //서버에 요청 → 최신 데이터로 갱신
-    return alert("알림을 모두 읽었습니다.");
+    return setAlertMessage("알림을 모두 읽었습니다.");
   }, [data, uid, refetch]);
 
   // const isNotifications = data?.pages.map((page) => page.notifications);
@@ -193,12 +196,18 @@ const NotificationListPage = () => {
 
   return (
     <div className="hsecol  gap-y-2.5">
+      {alertMessage && (
+        <AlertModal
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
       {data?.pages.every((page) => page.notifications.length === 0) && (
         <div className="hsecol justify-center items-center  h-100 gap-y-2.5">
           <p className="dark:text-white font-bold text-xl">알림이 없습니다.</p>
           <button
             onClick={() => navi.back()}
-            className="font-bold p-2.5 rounded w-40 bg-[rgba(62,188,154)] dark:bg-[rgba(116,212,186,0.5)] text-white hover:shadow-md"
+            className="hover:animate-pulse font-bold p-2.5 rounded w-40 bg-[rgba(62,188,154)] dark:bg-[rgba(116,212,186,0.5)] text-white hover:shadow-md"
           >
             돌아가기
           </button>
