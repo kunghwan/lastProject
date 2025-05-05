@@ -6,6 +6,7 @@ import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { dbService } from "@/lib/firebase";
 import { Post } from "@/types/post";
 import BookmarkCard from "@/components/BookmarkCard";
+import UpPlaceBookMark from "@/components/upplace/UpPlaceBookMark";
 
 const BookmarkPage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -19,7 +20,7 @@ const BookmarkPage = () => {
     const fetchLikedPosts = async () => {
       const allDocs = await getDocs(collection(dbService, "posts"));
       const liked = allDocs.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() } as Post))
+        .map((doc) => ({ id: doc.id, ...doc.data() }) as Post)
         .filter((post) => post.likes.includes(user?.uid || ""));
 
       setPosts(
@@ -51,7 +52,7 @@ const BookmarkPage = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 ">
       <div className="flex gap-2 mb-4">
         <button onClick={() => setSort("recent")}>최신순</button>
         <button onClick={() => setSort("likes")}>좋아요순</button>
@@ -80,6 +81,10 @@ const BookmarkPage = () => {
           />
         ))}
       </div>
+      {/* 추천장소 좋아요 모음 */}
+      <div>
+        <UpPlaceBookMark />
+      </div>
     </div>
   );
 };
@@ -95,3 +100,9 @@ export default BookmarkPage;
 
 // 원한다면 삭제 후 스낵바 알림이나 애니메이션도 추가할 수 있어요.
 // 지금 구조를 기준으로 실제 코드 파일화 원하시나요?
+
+//! 애니매이션 추가 괜찮은거같고 실제코드 파일화 괜찮은거 같아요
+
+//! 그리고 지금 feed에서 좋아요한거랑 upplace에서 좋아요한걸 따로 컴포넌트해서 하는게 좋을거같아요
+//! feed에서 좋아요한거 컴포넌트
+//! upplace에서 좋아요한거 컴포넌트
