@@ -53,18 +53,10 @@ const SettingProfile = () => {
   };
   const validateNickname = async (nickname: string) => {
     if (!nickname) return "닉네임을 입력해주세요";
-
-    // 한글이 포함되어 있으면 에러 반환
-    if (/[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(nickname)) {
-      return "한글은 입력할 수 없습니다.";
-    }
-
-    // 글자 수 제한 (18자 미만)
-    if (nickname.length >= 18) {
+    if (!/^[a-zA-Z0-9]+$/.test(nickname)) return "한글은 입력 안됩니다";
+    if (nickname.length >= 18)
       return "닉네임은 18글자 미만으로만 입력가능합니다";
-    }
 
-    // 닉네임 중복 확인
     const snapshot = await dbService
       .collection(FBCollection.USERS)
       .where("nickname", "==", nickname)
