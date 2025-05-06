@@ -3,10 +3,9 @@ import axios from "axios";
 
 export async function GET(
   req: NextRequest,
-  context: { params: { contentid: string } }
+  { params }: { params: { contentid: string } }
 ) {
-  // ✅ searchParams에서 가져오기
-  const contentid = context.params.contentid;
+  const contentid = params.contentid;
 
   if (!contentid) {
     return new Response(JSON.stringify({ message: "contentid가 없습니다" }), {
