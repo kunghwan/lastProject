@@ -1,3 +1,11 @@
+# 0506
+
+added bookmark/page.tsx
+
+updated PostComponent.tsx, ProfileLayout.tsx, ProfileFeedLayout.tsx
+
+아이콘, 게시물 이미지 스타일변경
+
 # 0430
 
 연휴때 할것 list
