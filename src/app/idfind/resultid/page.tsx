@@ -3,21 +3,23 @@
 import { useCallback, useEffect, useState } from "react";
 import { FaIdCard } from "react-icons/fa6";
 import { TbPassword } from "react-icons/tb";
+import AlertModal from "@/components/AlertModal";
 
 const IdFindResult = () => {
   const [email, setEmail] = useState("");
   const [isChecked, setIsChecked] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // ✅ 로딩 상태
+  const [isLoading, setIsLoading] = useState(true);
+  const [alertMsg, setAlertMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (email) {
-      sessionStorage.setItem("selectedRealEmail", email); // ✅ 선택된 이메일 저장
+      sessionStorage.setItem("selectedRealEmail", email);
       sessionStorage.setItem("isChecked", JSON.stringify(isChecked));
     }
   }, [email, isChecked]);
 
   useEffect(() => {
-    const storedEmail = sessionStorage.getItem("selectedRealEmail"); // ✅ 수정: selectedRealEmail 가져오기
+    const storedEmail = sessionStorage.getItem("selectedRealEmail");
     const storedCheck = sessionStorage.getItem("isChecked");
 
     if (storedEmail) setEmail(storedEmail);
@@ -28,7 +30,7 @@ const IdFindResult = () => {
   const handleClick = useCallback(
     (url: string) => {
       if (!isChecked) {
-        alert("체크박스를 체크해주세요.");
+        setAlertMsg("체크박스를 체크해주세요.");
         return;
       }
       window.location.href = url;
@@ -38,6 +40,10 @@ const IdFindResult = () => {
 
   return (
     <>
+      {alertMsg && (
+        <AlertModal message={alertMsg} onClose={() => setAlertMsg(null)} />
+      )}
+
       <div className="w-full bg-emerald-100 p-4">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
@@ -92,7 +98,6 @@ const IdFindResult = () => {
 
 export default IdFindResult;
 
-// ✅ 버튼 스타일 (기존 그대로 유지)
 const pwButton =
   "bg-gray-300 text-black font-bold px-6 py-3 rounded-2xl hover:bg-blue-600 w-40 lg:h-20 lg:flex lg:items-center lg:justify-center";
 const loginButton =
