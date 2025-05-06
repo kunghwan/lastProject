@@ -40,11 +40,8 @@ export async function GET(
       addr2: item?.addr2 ?? "",
       overview: item?.overview ?? "설명 없음",
       firstimage: item?.firstimage ?? "/image/logoc.PNG",
-      tel: item?.tel && item.tel.trim() !== "" ? item.tel : "전화번호 없음",
-      zipcode:
-        item?.zipcode && item.zipcode.trim() !== ""
-          ? item.zipcode
-          : "우편번호 없음",
+      tel: item?.tel?.trim() ? item.tel : "전화번호 없음",
+      zipcode: item?.zipcode?.trim() ? item.zipcode : "우편번호 없음",
       mapx: item?.mapx ?? null,
       mapy: item?.mapy ?? null,
       homepage: item?.homepage ?? "",
