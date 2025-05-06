@@ -12,6 +12,7 @@ import {
 } from "@/lib/validations";
 import { AUTH } from "@/contextapi/context";
 import { dbService, FBCollection, authService } from "@/lib/firebase";
+import AlertModal from "@/components/AlertModal"; // 모달 import
 
 const STORAGE_KEY = "signupUser";
 
@@ -48,6 +49,9 @@ const SignupForm = () => {
   const monthSelectRef = useRef<SelectInstance<any> | null>(null);
   const daySelectRef = useRef<SelectInstance<any> | null>(null);
   const locationAgreeRef = useRef<HTMLInputElement | null>(null);
+
+  const [alertMsg, setAlertMsg] = useState(""); // 모달 메시지 상태
+  const closeAlert = () => setAlertMsg("");
 
   const setInputRef = useCallback(
     (el: HTMLInputElement | HTMLSelectElement | null, index: number) => {
@@ -181,17 +185,17 @@ const SignupForm = () => {
     }
     setErrors(newErrors);
     if (Object.values(newErrors).some((msg) => msg)) {
-      alert("입력값을 다시 확인해주세요.");
+      setAlertMsg("입력값을 다시 확인해주세요.");
       return;
     }
     const result = await signup(user as User, user.password!);
     if (!result.success) {
-      alert("회원가입 실패: " + result.message);
+      setAlertMsg("회원가입 실패: " + result.message);
       return;
     }
     const fbUser = authService.currentUser;
     if (!fbUser) {
-      alert("회원 정보가 없습니다. 다시 시도해주세요.");
+      setAlertMsg("회원 정보가 없습니다. 다시 시도해주세요.");
       return;
     }
     const fullUser = { ...user, uid: fbUser.uid };
@@ -208,8 +212,8 @@ const SignupForm = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen px-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-teal-300 rounded-lg p-6">
+    <div className="flex flex-col justify-start items-center min-h-screen px-4">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-teal-300 rounded-lg p-6  ">
         <form className="space-y-8">
           {InfoAccount.map((info, index) => {
             const key = info.name as keyof typeof user;
@@ -362,6 +366,7 @@ const SignupForm = () => {
           다음
         </button>
       </div>
+      {alertMsg && <AlertModal message={alertMsg} onClose={closeAlert} />}
     </div>
   );
 };

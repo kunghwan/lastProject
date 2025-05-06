@@ -62,9 +62,10 @@ export function validateLocation(agree: boolean): string | null {
 export function validateNickname(nickname: string): string | null {
   if (!nickname) return "닉네임을 입력해주세요";
 
-  const onlyEnglishNumber = /^[A-Za-z0-9]+$/;
+  // ❌ 한글 포함 여부 체크
+  const hasKorean = /[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(nickname);
+  if (hasKorean) return "한글은 사용할 수 없습니다";
 
-  if (!onlyEnglishNumber.test(nickname)) return "한글은 입력 안됩니다";
   if (nickname.length >= 18) return "닉네임은 18글자 미만으로만 입력가능합니다";
 
   return null;

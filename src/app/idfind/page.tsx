@@ -38,6 +38,8 @@ const IdFind = () => {
   const [isVerified, setIsVerified] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
+  const showAlert = (message: string) => setAlertMessage(message);
+
   const maskEmail = (email: string) => {
     const [id, domain] = email.split("@");
     const maskedId =
@@ -77,9 +79,7 @@ const IdFind = () => {
   }, []);
 
   useEffect(() => {
-    if (pathname !== "/idfind") {
-      sessionStorage.removeItem(STORAGE_KEY);
-    }
+    if (pathname !== "/idfind") sessionStorage.removeItem(STORAGE_KEY);
   }, [pathname]);
 
   useEffect(() => {
@@ -112,13 +112,8 @@ const IdFind = () => {
     isLoaded,
   ]);
 
-  useEffect(() => {
-    validateField("name", name);
-  }, [name, validateField]);
-
-  useEffect(() => {
-    validateField("phone", phone);
-  }, [phone, validateField]);
+  useEffect(() => validateField("name", name), [name, validateField]);
+  useEffect(() => validateField("phone", phone), [phone, validateField]);
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
@@ -126,8 +121,7 @@ const IdFind = () => {
   ) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      const nextInput = inputRefs.current[index + 1];
-      nextInput?.focus();
+      inputRefs.current[index + 1]?.focus();
     }
   };
 
@@ -164,7 +158,7 @@ const IdFind = () => {
     setErrors({ name: nameErr || "", phone: phoneErr || "" });
 
     if (nameErr || phoneErr || !codeValid) {
-      alert("이름, 전화번호, 인증번호를 모두 정확히 입력해주세요.");
+      showAlert("이름, 전화번호, 인증번호를 모두 정확히 입력해주세요.");
       return;
     }
 
@@ -176,30 +170,26 @@ const IdFind = () => {
         .get();
 
       if (snap.empty) {
-        alert("일치하는 계정이 없습니다.");
+        showAlert("일치하는 계정이 없습니다.");
         return;
       }
 
       const emails = snap.docs.map((doc) => doc.data().email);
       sessionStorage.setItem("realEmail", emails.join(","));
-      const maskedEmails = emails.map((email) => maskEmail(email)).join(", ");
+      const maskedEmails = emails.map(maskEmail).join(", ");
       setFoundEmail(maskedEmails);
       setIsVerified(true);
     } catch (error) {
       console.error("이메일 조회 실패", error);
-      alert("이메일 조회 중 오류가 발생했습니다.");
+      showAlert("이메일 조회 중 오류가 발생했습니다.");
     }
   }, [name, phone, code, generatedCode]);
 
   const handleSubmit = useCallback(() => {
-    if (!foundEmail || !isVerified) {
-      alert("먼저 인증확인을 완료해주세요.");
-      return;
-    }
-    if (!selectedEmail) {
-      alert("아이디를 선택해주세요.");
-      return;
-    }
+    if (!foundEmail || !isVerified)
+      return showAlert("먼저 인증확인을 완료해주세요.");
+    if (!selectedEmail) return showAlert("아이디를 선택해주세요.");
+
     const maskedEmails = foundEmail.split(", ");
     const realEmails = sessionStorage.getItem("realEmail")?.split(",") || [];
     const selectedIndex = maskedEmails.findIndex(
@@ -211,14 +201,12 @@ const IdFind = () => {
       sessionStorage.setItem("selectedRealEmail", realSelectedEmail);
       sessionStorage.removeItem(STORAGE_KEY);
       sessionStorage.removeItem("realEmail");
-
-      // ✅ 메모리 상에서도 초기화
       setFoundEmail("");
       setSelectedEmail("");
       setIsVerified(false);
       router.push("/idfind/resultid");
     } else {
-      alert("선택한 이메일을 찾을 수 없습니다.");
+      showAlert("선택한 이메일을 찾을 수 없습니다.");
     }
   }, [foundEmail, selectedEmail, router, isVerified]);
 
@@ -226,7 +214,6 @@ const IdFind = () => {
     const nameErr = validateName(name);
     const phoneErr = validatePhone(phone);
     setErrors({ name: nameErr || "", phone: phoneErr || "" });
-
     if (nameErr || phoneErr) return;
 
     const newCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -234,24 +221,19 @@ const IdFind = () => {
     setShowCode(true);
     setCodeRequested(true);
     setCodeSentOnce(true);
-    alert("인증번호가 전송되었습니다: " + newCode);
+    showAlert("인증번호가 전송되었습니다: " + newCode);
   }, [name, phone]);
 
   const handleResend = useCallback(() => {
-    if (!codeSentOnce) {
-      alert("먼저 인증번호찾기를 눌러주세요.");
-      return;
-    }
+    if (!codeSentOnce) return showAlert("먼저 인증번호찾기를 눌러주세요.");
     const newCode = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedCode(newCode);
     setShowCode(true);
-    alert("인증번호가 재전송되었습니다: " + newCode);
+    showAlert("인증번호가 재전송되었습니다: " + newCode);
   }, [codeSentOnce]);
 
   useEffect(() => {
-    if (isLoaded) {
-      inputRefs.current[0]?.focus();
-    }
+    if (isLoaded) inputRefs.current[0]?.focus();
   }, [isLoaded]);
 
   const IdFinds = [
@@ -282,6 +264,12 @@ const IdFind = () => {
 
   return (
     <form onSubmit={(e: FormEvent) => e.preventDefault()}>
+      {alertMessage && (
+        <AlertModal
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
       {/* 헤더 */}
       {alertMessage && (
         <AlertModal
