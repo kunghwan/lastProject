@@ -3,9 +3,9 @@ import axios from "axios";
 
 export async function GET(
   req: NextRequest,
-  context: { params: { contentid: string } }
+  context: any // 🔥 타입 지정하지 않음으로써 에러 방지
 ) {
-  const { contentid } = context.params;
+  const contentid = context.params?.contentid;
 
   if (!contentid) {
     return new Response(JSON.stringify({ message: "contentid가 없습니다" }), {
@@ -40,8 +40,8 @@ export async function GET(
       addr2: item?.addr2 ?? "",
       overview: item?.overview ?? "설명 없음",
       firstimage: item?.firstimage ?? "/image/logoc.PNG",
-      tel: item?.tel?.trim() ? item.tel : "전화번호 없음",
-      zipcode: item?.zipcode?.trim() ? item.zipcode : "우편번호 없음",
+      tel: item?.tel?.trim() || "전화번호 없음",
+      zipcode: item?.zipcode?.trim() || "우편번호 없음",
       mapx: item?.mapx ?? null,
       mapy: item?.mapy ?? null,
       homepage: item?.homepage ?? "",
