@@ -25,8 +25,8 @@ const MapPage = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const detailRef = useRef<HTMLDivElement>(null); // 상세 정보창 ref
 
-  const detailInfoCss =
-    "absolute z-10 shadow-md sm:top-20 sm:right-75 sm:block top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 sm:w-60 w-[65vw] max-w-xs bg-white border border-gray-300 rounded-xl sm:rounded-2xl p-4";
+  // const detailInfoCss =
+  //   "absolute z-10 shadow-md sm:top-20 sm:right-75 sm:block top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 sm:w-60 w-[65vw] max-w-xs bg-white border border-gray-300 rounded-xl sm:rounded-2xl p-4";
 
   useEffect(() => {
     const initMap = () => {
@@ -182,7 +182,10 @@ const MapPage = () => {
 
       {/* 상세정보창 */}
       {selectedPlace && !isSidebarOpen && (
-        <div ref={detailRef} className={detailInfoCss}>
+        <div
+          ref={detailRef}
+          className="absolute z-10 shadow-md sm:top-20 sm:right-75 left-[30%] sm:block top-[30%]  -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 sm:w-60 w-[65vw] max-w-xs bg-white border border-gray-300 rounded-xl sm:rounded-2xl p-4"
+        >
           <button
             onClick={() => setSelectedPlace(null)}
             className="absolute top-2 right-2 text-lg sm:text-xl font-bold"

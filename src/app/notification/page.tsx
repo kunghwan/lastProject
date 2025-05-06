@@ -195,7 +195,7 @@ const NotificationListPage = () => {
   }
 
   return (
-    <div className="hsecol  gap-y-2.5">
+    <div className="hsecol  gap-y-2.5 mt-2 p-3">
       {alertMessage && (
         <AlertModal
           message={alertMessage}
@@ -207,7 +207,7 @@ const NotificationListPage = () => {
           <p className="dark:text-white font-bold text-xl">알림이 없습니다.</p>
           <button
             onClick={() => navi.back()}
-            className="hover:animate-pulse font-bold p-2.5 rounded w-40 bg-[rgba(62,188,154)] dark:bg-[rgba(116,212,186,0.5)] text-white hover:shadow-md"
+            className="hover:scale-105 hover:animate-pulse font-bold p-2.5 rounded w-40 bg-[rgba(62,188,154)] dark:bg-[rgba(116,212,186,0.5)] text-white hover:shadow-md"
           >
             돌아가기
           </button>
@@ -225,7 +225,7 @@ const NotificationListPage = () => {
               <button
                 onClick={handleAllRead}
                 disabled={!isUnRead}
-                className=" hover:shadow-md border-2 border-lime-800 hover:text-lime-800 cursor-pointer mr-2.5 bg-[#d7eadf] disabled:text-gray-400  disabled:bg-gray-200 dark:bg-[rgba(232,255,241,0.5)] p-2 rounded"
+                className="hover:scale-105 hover:shadow-md border  font-stretch-105% border-lime-800 hover:text-lime-800 cursor-pointer mr-2.5 bg-[#d7eadf] disabled:text-gray-400  disabled:bg-gray-200 dark:bg-[rgba(232,255,241,0.5)] p-2 rounded"
               >
                 모두 읽기
               </button>
@@ -242,7 +242,7 @@ const NotificationListPage = () => {
                   return navi.push(`/profile/${noti.follwerId}`);
                 }}
                 className={twMerge(
-                  "hover:shadow-sm hsecol  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer ",
+                  "hover:scale-105 hover:shadow-sm hsecol  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer ",
                   noti.isRead
                     ? "text-gray-500 border dark:border-gray-700 border-gray-200 bg-gray-100 dark:bg-gray-500 dark:text-gray-300"
                     : "text-black font-semibold border border-gray-200 hover:text-lime-700 dark:hover:text-lime-200  bg-[rgba(232,255,241)] dark:bg-[rgba(232,255,241,0.4)] dark:text-white"
