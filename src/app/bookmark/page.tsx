@@ -108,21 +108,13 @@ const BookmarkPage = () => {
   return (
     <div className="grid grid-cols-2 gap-x-2 mb-20 lg:grid-cols-3 ml-2.5 mr-2.5 transition-all">
       {sortedPosts.length === 0 ? (
-        <div className="col-span-2 lg:col-span-3 flex justify-center items-center mt-80 text-gray-500 text-center text-xl animate-bounce">
+        <div className="col-span-2 lg:col-span-3 flex justify-center items-center h-40 text-gray-500 text-center text-sm">
           아직 좋아요한 게시물이 없습니다.
         </div>
       ) : (
         sortedPosts.map((post) => (
           <div key={post.id}>
-            <div className="m-1.5 flex items-center gap-1.5">
-              <img
-                src={post.userProfileImage}
-                alt="userProfileImage"
-                className="rounded w-8 h-8"
-                s
-              />
-              <div className="font-bold">{post.userNickname}</div>
-            </div>
+            {/* 이미지 */}
             {post.imageUrl ? (
               <img
                 src={post.imageUrl}
@@ -131,15 +123,13 @@ const BookmarkPage = () => {
               />
             ) : (
               <div className="w-full h-100 transition-all duration-500 ease-in-out transform hover:scale-[1.02] flex items-center justify-center rounded-lg mb-2">
-                <img
-                  src="/image/logo1.png"
-                  alt="No image available"
-                  className="border border-amber-500"
-                />
+                <img src="/image/logo1.png" alt="No image available" />
               </div>
             )}
+
+            {/* 텍스트 */}
             <p>{post.content}</p>
-            <div className="flex items-center gap-2 mb-2.5">
+            <div className="flex items-center mb-2.5 gap-2">
               <button
                 type="button"
                 onClick={() => toggleLike(post.id!)}
@@ -155,5 +145,4 @@ const BookmarkPage = () => {
     </div>
   );
 };
-
 export default BookmarkPage;

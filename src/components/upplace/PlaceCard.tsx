@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
-import { useRouter } from "next/navigation"; // ✅ 추가
+import React, { useState, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import UpPlaceLikeButton from "@/components/upplace/UpPlaceLikeButton";
 
 const fallbackImages: Record<string, string> = {
@@ -16,8 +16,18 @@ interface UpPlace {
   likeCount: number;
 }
 
-const PlaceCard: React.FC<{ place?: UpPlace }> = ({ place }) => {
-  const router = useRouter(); // ✅ 추가
+interface PlaceCardProps {
+  place?: UpPlace;
+  likedOverride?: boolean;
+  countOverride?: number;
+}
+
+const PlaceCard: React.FC<PlaceCardProps> = ({
+  place,
+  likedOverride,
+  countOverride,
+}) => {
+  const router = useRouter();
   if (!place) return null;
 
   const defaultImage = "/image/logoc.PNG";
@@ -27,7 +37,9 @@ const PlaceCard: React.FC<{ place?: UpPlace }> = ({ place }) => {
       ? place.firstimage.trim()
       : fallbackImages[place.title] || defaultImage;
 
-  const [likeCount, setLikeCount] = useState(place.likeCount);
+  const [likeCount, setLikeCount] = useState(
+    countOverride !== undefined ? countOverride : place.likeCount
+  );
 
   const handleLiked = useCallback((newCount: number) => {
     setLikeCount(newCount);
@@ -38,7 +50,7 @@ const PlaceCard: React.FC<{ place?: UpPlace }> = ({ place }) => {
   }, [router, place.contentid]);
 
   return (
-    <div className=" p-1 rounded-lg shadow ">
+    <div className="p-1 rounded-lg shadow">
       <img
         src={imageUrl}
         onError={(e) => {
@@ -46,16 +58,26 @@ const PlaceCard: React.FC<{ place?: UpPlace }> = ({ place }) => {
           e.currentTarget.src = fallbackImages[place.title] || defaultImage;
         }}
         alt={place.title}
-        className="w-full h-68 object-cover rounded cursor-pointer" // ✅ 커서 모양
+        className="w-full h-68 object-cover rounded cursor-pointer"
         loading="lazy"
-        onClick={handleClickImage} // ✅ 클릭 핸들러 연결
+        onClick={handleClickImage}
       />
       <h2 className="text-lg font-bold mt-2">{place.title}</h2>
       <p className="text-sm text-gray-600 dark:text-white">{place.addr1}</p>
 
       <div className="mt-2 flex items-center justify-between">
         <p className="text-sm text-gray-500">❤️ {likeCount}</p>
-        <UpPlaceLikeButton contentId={place.contentid} onLiked={handleLiked} />
+        <UpPlaceLikeButton
+          contentId={place.contentid}
+          onLiked={handleLiked}
+          placeInfo={{
+            title: place.title,
+            addr1: place.addr1,
+            imageUrl: place.firstimage,
+          }}
+          likedOverride={likedOverride}
+          countOverride={countOverride}
+        />
       </div>
     </div>
   );
