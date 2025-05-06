@@ -71,7 +71,7 @@ const PostComponent = () => {
         <div key={post.id} className="rounded-lg p-1">
           <button
             className="flex gap-2.5 items-center text-center mb-1.5 ml-1"
-            onClick={() => handleClick(post.userNickname, post.uid)} // ✨ uid 전달 추가
+            onClick={() => handleClick(post.userNickname)} // ✨ uid 전달 추가
           >
             <img
               className="w-10 h-10 rounded-full border border-gray-200"
@@ -98,7 +98,11 @@ const PostComponent = () => {
           <div className="flex gap-4 ml-1">
             <p className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
               <LikeButton likedBy={post.likes} postId={post.id} />{" "}
+
+              {/* {post.likes?.length} */}
+
               {post.likes?.length}
+
             </p>
             <p className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
               <ShareButton /> {post.shares?.length}
