@@ -1,11 +1,8 @@
-import MapPage from "./map/page";
-
-const page = () => {
+const Page = () => {
   return (
-    <>
-      <MapPage />
-    </>
+    <div>
+      <h1>Page</h1>
+    </div>
   );
 };
-
-export default page;
+export default Page;
