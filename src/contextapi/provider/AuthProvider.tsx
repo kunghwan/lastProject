@@ -7,7 +7,7 @@ import {
   useState,
   useEffect,
 } from "react";
-import { authService, dbService, FBCollection } from "@/lib";
+import { authService, dbService, FBCollection } from "@/lib/firebase";
 import { PropsWithChildren } from "react";
 import { AUTH } from "../context";
 import Loading from "@/components/Loading";
