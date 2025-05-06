@@ -2,7 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 import { authService, dbService } from "@/lib/firebase";
 import { Post } from "@/types/post";
 import { GoArrowLeft, GoHeart } from "react-icons/go";
@@ -25,12 +32,14 @@ const BookmarkPage = () => {
         setLoading(false);
         return;
       }
+
       try {
         const q = query(
           collection(dbService, "posts"),
           orderBy("createdAt", "desc")
         );
         const querySnapshot = await getDocs(q);
+
         const likedPosts: Post[] = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data() as Post;
@@ -38,6 +47,7 @@ const BookmarkPage = () => {
             likedPosts.push({ ...data, id: doc.id });
           }
         });
+
         setPosts(likedPosts);
       } catch (error) {
         console.error("Error fetching liked posts:", error);
@@ -49,97 +59,99 @@ const BookmarkPage = () => {
     return () => unsubscribe();
   }, []);
 
-  const sortPosts = (posts: Post[], sort: SortOption) => {
-    return [...posts].sort((a, b) => {
-      console.log("비교 중인 게시물:");
-      console.log("a:", a.createdAt, "likes:", a.likes.length);
-      console.log("b:", b.createdAt, "likes:", b.likes.length);
+  const sortedPosts = useMemo(() => {
+    const toTime = (createdAt: any): number => {
+      if (createdAt?.toDate) return createdAt.toDate().getTime();
+      return new Date(createdAt).getTime();
+    };
 
-      switch (sort) {
-        case "recent":
-          return (
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
-        case "oldest":
-          return (
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          );
-        case "likes":
-          return b.likes.length - a.likes.length;
-        default:
-          return 0;
-      }
-    });
+    const copy = [...posts];
+    if (sort === "recent") {
+      return copy.sort((a, b) => toTime(b.createdAt) - toTime(a.createdAt));
+    }
+    if (sort === "oldest") {
+      return [...posts].reverse(); // 최신순을 불러왔으므로 뒤집으면 오래된순
+    } else if (sort === "likes") {
+      return copy.sort((a, b) => b.likes.length - a.likes.length);
+    }
+    return copy;
+  }, [posts, sort]);
+
+  const toggleLike = async (postId: string) => {
+    const user = authService.currentUser;
+    if (!user) return;
+
+    setPosts((prevPosts) =>
+      prevPosts.map((post) => {
+        if (post.id !== postId) return post;
+
+        const alreadyLiked = post.likes.includes(user.uid);
+        const updatedLikes = alreadyLiked
+          ? post.likes.filter((uid) => uid !== user.uid) // 좋아요 취소
+          : [...post.likes, user.uid]; // 좋아요 추가
+
+        // Firestore에 업데이트
+        updateDoc(doc(dbService, "posts", postId), {
+          likes: updatedLikes,
+        });
+
+        return {
+          ...post,
+          likes: updatedLikes,
+        };
+      })
+    );
   };
 
-  const sortedPosts = useMemo(() => sortPosts(posts, sort), [posts, sort]);
   if (loading) return <div>로딩 중...</div>;
 
   return (
-    <div>
-      {/* 헤더 */}
-      <div className="flex ml-5 gap-x-2.5 p-5 items-center">
-        <button type="button" className="text-3xl" onClick={handleBack}>
-          <GoArrowLeft />
-        </button>
-        <div className="text-xl font-bold">좋아요한 게시물입니다.</div>
-      </div>
-
-      {/* 정렬 & 선택 버튼 */}
-      <div className="flex justify-between items-center mx-5 mb-5">
-        <div className="flex gap-3 ml-3">
-          <button
-            onClick={() => setSort("recent")}
-            className={`text-sm ${
-              sort === "recent" ? "font-bold underline" : "text-gray-500"
-            }`}
-          >
-            최신순
-          </button>
-          <button
-            onClick={() => setSort("oldest")}
-            className={`text-sm ${
-              sort === "oldest" ? "font-bold underline" : "text-gray-500"
-            }`}
-          >
-            오래된순
-          </button>
-          <button
-            onClick={() => setSort("likes")}
-            className={`text-sm ${
-              sort === "likes" ? "font-bold underline" : "text-gray-500"
-            }`}
-          >
-            좋아요순
-          </button>
+    <div className="grid grid-cols-2 gap-x-2 mb-20 lg:grid-cols-3 ml-2.5 mr-2.5 transition-all">
+      {sortedPosts.length === 0 ? (
+        <div className="col-span-2 lg:col-span-3 flex justify-center items-center mt-80 text-gray-500 text-center text-xl animate-bounce">
+          아직 좋아요한 게시물이 없습니다.
         </div>
-      </div>
-
-      {/* 게시물 목록 */}
-      <div className="grid grid-cols-2 gap-x-2 mb-20 lg:grid-cols-3 ml-2.5 mr-2.5">
-        {sortedPosts.map((post) => (
+      ) : (
+        sortedPosts.map((post) => (
           <div key={post.id}>
+            <div className="m-1.5 flex items-center gap-1.5">
+              <img
+                src={post.userProfileImage}
+                alt="userProfileImage"
+                className="rounded w-8 h-8"
+                s
+              />
+              <div className="font-bold">{post.userNickname}</div>
+            </div>
             {post.imageUrl ? (
               <img
                 src={post.imageUrl}
                 alt="Post image"
-                className="w-full h-100 object-cover rounded-lg mb-2"
+                className="w-full h-100 object-cover rounded-lg mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.02]"
               />
             ) : (
-              <div className="w-full h-100 border bg-gray-200 flex items-center justify-center rounded-lg mb-2">
-                <img src="/image/logo1.png" alt="No image available" />
+              <div className="w-full h-100 transition-all duration-500 ease-in-out transform hover:scale-[1.02] flex items-center justify-center rounded-lg mb-2">
+                <img
+                  src="/image/logo1.png"
+                  alt="No image available"
+                  className="border border-amber-500"
+                />
               </div>
             )}
             <p>{post.content}</p>
-            <div className="flex items-center gap-1">
-              <p className="hover:scale-105 cursor-pointer p-0.5 text-red-500 items-center">
+            <div className="flex items-center gap-2 mb-2.5">
+              <button
+                type="button"
+                onClick={() => toggleLike(post.id!)}
+                className="text-red-500"
+              >
                 <GoHeart />
-              </p>
+              </button>
               <span>{post.likes.length}개</span>
             </div>
           </div>
-        ))}
-      </div>
+        ))
+      )}
     </div>
   );
 };

@@ -3,10 +3,8 @@
 import { Post, Tag } from "@/types/post";
 import { useCallback, useEffect, useState } from "react";
 import { IoSettingsOutline } from "react-icons/io5";
-import { getPostsByUserUid } from "@/lib/fbdata";
 import FollowButton from "../post/FollowButton";
 import ProfileFeedComponent from "./ProfileFeedLayout";
-import { Post } from "@/types/post";
 
 const ProfileLayout = ({
   isMyPage,
@@ -68,7 +66,7 @@ const ProfileLayout = ({
               <img
                 src={firstPost?.userProfileImage || defaultImgUrl}
                 alt={`${userData.nickname}'s profile`}
-                className="w-full h-full rounded-full border border-gray-300 sm:x-auto hover:scale-103 transition-all cursor-pointer"
+                className="w-full h-full rounded-full  sm:x-auto  transition-all duration-500 ease-in-out transform hover:scale-[1.02] cursor-pointer"
               />
               {isMyPage && (
                 <button className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-medium rounded-full opacity-0 hover:opacity-70 transition-opacity">
@@ -127,7 +125,7 @@ const ProfileLayout = ({
               <img
                 src={firstPost?.userProfileImage || defaultImgUrl}
                 alt={`${userData.nickname || "유저"}'s profile`}
-                className="w-full h-full rounded-full border border-gray-300 sm:x-auto hover:scale-103 transition-all cursor-pointer"
+                className=" transition-all duration-500 ease-in-out transform hover:scale-[1.02] w-full h-full rounded-full sm:x-auto cursor-pointer"
               />
               {isMyPage && (
                 <button className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-medium rounded-full opacity-0 hover:opacity-70 transition-opacity">
@@ -183,7 +181,7 @@ const ProfileLayout = ({
         {posts?.filter((post) => post.id !== "default").length > 0 ? (
           <ProfileFeedComponent posts={posts} isMyPage={isMyPage} />
         ) : (
-          <div className="flex border-t pt-10 border-blue-200 w-full justify-center">
+          <div className="flex pt-10 w-full justify-center">
             <div className="text-gray-800 text-xl mt-30 animate-bounce dark:text-gray-200">
               게시물이 없습니다
             </div>
