@@ -3,9 +3,9 @@ import axios from "axios";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { contentid: string } }
+  context: { params: { contentid: string } }
 ) {
-  const contentid = params.contentid;
+  const { contentid } = context.params;
 
   if (!contentid) {
     return new Response(JSON.stringify({ message: "contentid가 없습니다" }), {
