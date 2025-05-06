@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { getDocs, collection } from "firebase/firestore";
+import { dbService } from "@/lib/firebase";
 import PlaceCard from "@/components/upplace/PlaceCard";
 import TopButton from "@/components/upplace/TopButton";
 
@@ -13,16 +14,6 @@ interface Place {
   likeCount: number;
 }
 
-// 이미지 유효성 체크 함수
-const checkImageExists = (url: string): Promise<boolean> => {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.src = url;
-    img.onload = () => resolve(true);
-    img.onerror = () => resolve(false);
-  });
-};
-
 const UpPlace = () => {
   const [places, setPlaces] = useState<Place[]>([]);
   const [visibleCount, setVisibleCount] = useState(10);
@@ -30,22 +21,16 @@ const UpPlace = () => {
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
-        const res = await axios.get("/api/recommendmerged");
-        const rawPlaces: Place[] = res.data;
+        const snap = await getDocs(collection(dbService, "places"));
+        const rawPlaces = snap.docs.map((doc) => doc.data() as Place);
 
-        const validPlaces = await Promise.all(
-          rawPlaces.map(async (place) => {
-            const valid =
-              place.firstimage &&
-              place.firstimage.trim() !== "" &&
-              (await checkImageExists(place.firstimage.trim()));
-            return valid ? place : null;
-          })
+        setPlaces(
+          rawPlaces.filter(
+            (place) => place.firstimage && place.firstimage.trim() !== ""
+          )
         );
-
-        setPlaces(validPlaces.filter((p): p is Place => p !== null));
       } catch (error) {
-        console.error("🔥 추천 장소 불러오기 실패", error);
+        console.error("🔥 Firestore에서 추천 장소 불러오기 실패", error);
       }
     };
 
@@ -62,10 +47,8 @@ const UpPlace = () => {
       const windowHeight = window.innerHeight;
       const fullHeight = document.documentElement.scrollHeight;
 
-      if (scrollTop + windowHeight >= fullHeight - 100) {
-        if (hasMore) {
-          setVisibleCount((prev) => prev + 10);
-        }
+      if (scrollTop + windowHeight >= fullHeight - 100 && hasMore) {
+        setVisibleCount((prev) => prev + 10);
       }
     };
 
@@ -80,8 +63,6 @@ const UpPlace = () => {
           <PlaceCard key={place.contentid} place={place} />
         ))}
       </div>
-
-      {/* ✅ 무한스크롤로만 추가되니까 더보기 버튼 삭제 */}
       <TopButton />
     </div>
   );
