@@ -1,4 +1,8 @@
 import { Post } from "@/types/post";
+import { doc, deleteDoc } from "firebase/firestore";
+import { dbService } from "@/lib/firebase";
+import { useState } from "react";
+import { ImCancelCircle } from "react-icons/im";
 
 const ProfileFeedComponent = ({
   posts,
@@ -7,26 +11,46 @@ const ProfileFeedComponent = ({
   posts: Post[];
   isMyPage: boolean;
 }) => {
+  const [postList, setPostList] = useState(posts);
+
+  const handleDelete = async (postId: string) => {
+    const ok = window.confirm("정말 이 게시물을 삭제하시겠습니까?");
+    if (!ok) return;
+
+    try {
+      await deleteDoc(doc(dbService, "posts", postId));
+      setPostList((prev) => prev.filter((p) => p.id !== postId));
+    } catch (error) {
+      console.error("삭제 실패:", error);
+      alert("삭제에 실패했습니다.");
+    }
+  };
+
   return (
     <div className="flex border-t pt-10 border-blue-200 lg:w-[1024px] mx-auto">
       <ul className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
-        {posts.map((post) => (
-          <li key={post.id} className="border p-2">
-            <div className="flex flex-col gap-2">
-              {/* 게시물 이미지 */}
+        {postList.map((post) => (
+          <li key={post.id} className="p-1">
+            <div className="flex flex-col gap-2 relative">
               {post.imageUrl ? (
                 <img
                   src={post.imageUrl}
                   alt="post"
-                  className="w-full h-64 object-cover rounded"
+                  className="w-full h-64 transition-all duration-500 ease-in-out transform hover:scale-[1.02] object-cover rounded"
                 />
               ) : (
-                <div className="w-full h-64 bg-gray-100 flex items-center justify-center text-gray-400">
+                <div className="w-full h-64 transition-all duration-500 ease-in-out transform hover:scale-[1.02] bg-gray-100 flex items-center justify-center text-gray-400">
                   이미지 없음
                 </div>
               )}
-
-              {/* 게시물 텍스트 정보 */}
+              {isMyPage && (
+                <button
+                  onClick={() => handleDelete(post.id!)}
+                  className="absolute top-2 right-2 text-s text-pink-700 hover:animate-pulse hover:scale-[1.02] cursor-pointer p-2 hover:text-pink-600 active:text-pink-700  dark:active:text-pink-100"
+                >
+                  <ImCancelCircle />
+                </button>
+              )}
               <div className="text-sm">
                 <p className="font-semibold truncate">
                   {post.title || "제목 없음"}
@@ -35,19 +59,10 @@ const ProfileFeedComponent = ({
                   {post.content?.slice(0, 60) || "내용 없음"}
                 </p>
               </div>
-
-              {/* 좋아요 및 공유수 등 */}
               <div className="flex justify-between text-xs text-gray-500 mt-1">
                 <span>♥ {post.likes?.length || 0}</span>
                 <span>🔄 {post.shares?.length || 0}</span>
               </div>
-
-              {/* 내 페이지면 수정 버튼 표시 */}
-              {isMyPage && (
-                <button className="mt-1 text-xs text-blue-500 hover:underline">
-                  수정하기
-                </button>
-              )}
             </div>
           </li>
         ))}

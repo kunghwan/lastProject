@@ -10,6 +10,7 @@ import {
   validatePassword,
 } from "@/lib/validations";
 import { AUTH } from "@/contextapi/context";
+import AlertModal from "@/components/AlertModal";
 
 interface ValidationResult {
   isValid: boolean;
@@ -36,13 +37,11 @@ const PwFindResult = () => {
   const router = useRouter();
   const { user } = AUTH.use();
 
-  // ✅ 비로그인용 Ref 추가
   const nameRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const findPasswordButtonRef = useRef<HTMLButtonElement>(null);
 
-  // ✅ 비밀번호 변경용 Ref 추가
   const newPasswordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
@@ -64,7 +63,11 @@ const PwFindResult = () => {
   });
   const [validation, setValidation] = useState<FindPasswordValidation>({});
 
-  // ✅ 페이지 진입 시 input focus 처리
+  const [modal, setModal] = useState<{
+    message: string;
+    onConfirm?: () => void;
+  } | null>(null);
+
   useEffect(() => {
     if (user || email) {
       newPasswordRef.current?.focus();
@@ -73,7 +76,6 @@ const PwFindResult = () => {
     }
   }, [user, email]);
 
-  // ✅ 비로그인 input 엔터 핸들러
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -87,7 +89,6 @@ const PwFindResult = () => {
     }
   };
 
-  // ✅ 비밀번호변경 input 엔터 핸들러
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -162,12 +163,16 @@ const PwFindResult = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   }, []);
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(() => {
     if (!validateForm()) return;
 
-    alert("비밀번호가 성공적으로 변경되었습니다.");
-    sessionStorage.removeItem("selectedRealEmail");
-    router.push("/signin");
+    setModal({
+      message: "비밀번호가 성공적으로 변경되었습니다.",
+      onConfirm: () => {
+        sessionStorage.removeItem("selectedRealEmail");
+        router.push("/signin");
+      },
+    });
   }, [router, validateForm]);
 
   const handleInputChange = useCallback(
@@ -197,11 +202,11 @@ const PwFindResult = () => {
 
   const handleFindPassword = async () => {
     if (inputErrors.name || inputErrors.phone || inputErrors.email) {
-      alert("입력한 정보를 다시 확인해주세요.");
+      setModal({ message: "입력한 정보를 다시 확인해주세요." });
       return;
     }
     if (!inputName || !inputPhone || !inputEmail) {
-      alert("모든 항목을 입력해주세요.");
+      setModal({ message: "모든 항목을 입력해주세요." });
       return;
     }
 
@@ -214,16 +219,20 @@ const PwFindResult = () => {
         .get();
 
       if (snap.empty) {
-        alert("입력하신 정보와 일치하는 사용자를 찾을 수 없습니다.");
+        setModal({
+          message: "입력하신 정보와 일치하는 사용자를 찾을 수 없습니다.",
+        });
         return;
       }
 
       sessionStorage.setItem("selectedRealEmail", inputEmail);
       setEmail(inputEmail);
-      alert("본인 인증이 완료되었습니다. 비밀번호를 재설정해주세요.");
+      setModal({
+        message: "본인 인증이 완료되었습니다. 비밀번호를 재설정해주세요.",
+      });
     } catch (error) {
       console.error("비밀번호 찾기 오류", error);
-      alert("비밀번호 찾기 중 오류가 발생했습니다.");
+      setModal({ message: "비밀번호 찾기 중 오류가 발생했습니다." });
     }
   };
 
@@ -231,7 +240,6 @@ const PwFindResult = () => {
     <div className="p-2">
       <h2 className="text-2xl font-bold mb-4">비밀번호 재설정</h2>
 
-      {/* 이름/폰/이메일 입력 폼 */}
       {!user && !email && (
         <div className="flex flex-col gap-2 mb-4 ">
           <input
@@ -287,7 +295,6 @@ const PwFindResult = () => {
         </div>
       )}
 
-      {/* 새 비밀번호/비밀번호 확인 폼 */}
       {(user || email) && (
         <>
           <div className="border h-80 justify-center flex items-center">
@@ -345,6 +352,18 @@ const PwFindResult = () => {
             </button>
           </div>
         </>
+      )}
+
+      {/* ✅ AlertModal 모달 렌더 */}
+      {modal && (
+        <AlertModal
+          message={modal.message}
+          onClose={() => setModal(null)}
+          onConfirm={() => {
+            modal.onConfirm?.();
+            setModal(null);
+          }}
+        />
       )}
     </div>
   );

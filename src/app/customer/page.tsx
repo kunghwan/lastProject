@@ -3,6 +3,9 @@
 import React, { useCallback, useState } from "react";
 import { TiPlus } from "react-icons/ti";
 import { IoClose } from "react-icons/io5";
+import { LuMailPlus } from "react-icons/lu";
+import { IoSearchOutline } from "react-icons/io5";
+
 interface QnA {
   question: string;
   answer: string[];
@@ -10,6 +13,7 @@ interface QnA {
 const QnaPage = () => {
   //useState로 상태 관리(openQuestion 상태를 추가하여 현재 열려 있는 질문을 관리,null이면 아무 질문도 열려 있지 않은 상태)
   const [isanswerShowing, setIsanswerShowing] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   //클릭한 질문이 이미 열려 있으면 닫고, 그렇지 않으면 해당 질문을 엽니다.
   //"isanswerShowing과 item.question이 같은지"를 비교한 결과로 true 또는 false가 나오는 것
   const toggleQuestion = useCallback(
@@ -19,17 +23,41 @@ const QnaPage = () => {
     [isanswerShowing]
   );
 
+  //! 검색어가 포함된 질문만 필터링
+  //Todo: includes() → 문자열 안에 다른 문자열이 들어있는지 확인하는 함수
+  const filteredQna = qna.filter((item) => item.question.includes(searchTerm));
+
   return (
-    <div className="mt-5 relative h-screen  hsecol gap-y-2.5 ">
-      <div className="z-10">
-        <ul className="px-2">
-          {qna.map((item) => (
+    <div className="mt-5 relative h-screen  hsecol gap-y-2.5 px-5  ">
+      <div className="z-3">
+        <ul>
+          <li className="mb-2  flex justify-center ">
+            <div className="relative  max-w-96 max-[700px]:px-2.5">
+              <input
+                type="text"
+                placeholder="어떤 질문을 찾고 계신가요?"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="min-w-96  p-2.5 sm:w-4/5  rounded-full border bg-white border-gray-500 dark:border-white dark:text-black placeholder-gray-400"
+              />
+              <IoSearchOutline className=" absolute right-3 top-1/2 -translate-y-1/2 text-green-950 text-3xl" />
+            </div>
+          </li>
+          <hr className="mb-2 text-gray-300" />
+          {filteredQna.length === 0 && (
+            <li className="text-gray-800 dark:text-white">
+              <p className="flex  justify-center min-h-50 font-bold items-center text-2xl">
+                검색 결과가 없습니다.
+              </p>
+            </li>
+          )}
+          {filteredQna.map((item) => (
             <li key={item.question} className=" hsecol mb-2 w-full">
               <button
                 onClick={() => toggleQuestion(item.question)}
-                className="text-sm text-left font-bold  flex justify-between items-center p-2.5 rounded bg-[rgba(151,218,200)] dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer"
+                className="hover:underline text-sm text-left font-bold  flex justify-between items-center p-2.5 rounded bg-[rgba(151,218,200)] dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer"
               >
-                <p> {item.question}</p>
+                <p> Q. {item.question}</p>
                 <span>
                   {isanswerShowing === item.question ? (
                     <IoClose className="text-2xl font-bold " />
@@ -44,7 +72,7 @@ const QnaPage = () => {
               {isanswerShowing === item.question && (
                 <div className="mt-1 hsecol gap-y-1.5 text-sm text-gray-700 rounded p-2.5 bg-[rgba(240,255,251)] dark:bg-[rgba(240,255,251,0.5)] md:text-xl dark:text-white">
                   {item.answer[0]}
-                  <div className="text-sm md:text-xl text-gray-700">
+                  <div className="text-sm md:text-xl text-gray-700 dark:text-white">
                     {item.answer[1]}
                   </div>
                 </div>
@@ -54,19 +82,22 @@ const QnaPage = () => {
         </ul>
       </div>
 
-      <div className=" md:text-xl font-bold hsecol justify-end items-center pb-20  xl:pb-0">
-        <p>추가로 질문사항이 있으시면 </p>
-        <p className="z-10">
+      <div className="mt-10 font-bold hsecol items-center pb-20 max-[700px]:text-sm md:text-xl w-full xl:pb-0">
+        <p className="text-gray-500 dark:text-white">
+          추가로 질문사항이 있으시면{" "}
+        </p>
+        <p className="z-4 flex text-gray-500 dark:text-white">
           <a
             href="mailto:test@test.com"
-            className="text-green-800 font-bold hover:underline dark:text-green-200 "
+            className=" group flex gap-x-1 items-center  text-green-800 font-bold hover:underline dark:text-green-200 "
           >
+            <LuMailPlus className=" opacity-0 group-hover:opacity-100 transition-opacity " />
             test@test.com
           </a>
           으로 메일을 보내주시면 감사하겠습니다.
         </p>
       </div>
-      {/* 빈화면을 눌러도 닫히게 코드 추가 z를 0주고 나머지 요소들은 위로 보이게 z를 10을 줌 */}
+      {/* 빈화면을 눌러도 닫히게 코드 추가 z를 0주고 나머지 요소들은 위로 보이게 z를 3을 줌 */}
       <span
         className=" w-full absolute size-full top-0 left-0 z-0"
         onClick={() => setIsanswerShowing(null)}
@@ -83,6 +114,13 @@ const qna: QnA[] = [
     answer: [
       "알림페이지에 들어가시면 안읽은 알림이 있다면 맨 위에 모두읽기버튼이 있습니다. ",
       "그 버튼을 클릭하시면 알림이 한번에 다 읽을 수 있습니다.",
+    ],
+  },
+  {
+    question: "동영상은 못 올리나요?",
+    answer: [
+      "지금은 이미지랑 gif만 올릴 수 있습니다.",
+      "동영상은 추후 추가 예정입니다.",
     ],
   },
   {

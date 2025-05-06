@@ -15,13 +15,15 @@ import { usePathname, useRouter } from "next/navigation";
 import { AUTH } from "@/contextapi/context";
 import { twMerge } from "tailwind-merge";
 import Navbar from "./features/navber/Navbar";
+import { dbService } from "@/lib";
 
 const headBtn = "grayButton text-xl sm:text-2xl";
 const darkText = "grayButton w-full dark:bg-[#333333] dark:text-[#F1F5F9]";
 
 const Header = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false); //! 다크모드
+  const [isMenuOpen, setIsMenuOpen] = useState(false); //! 메뉴 오픈
+  const [hasUnread, setHasUnread] = useState(false); //! 알림창 읽음 여부
 
   const router = useRouter();
   const pathname = usePathname();
@@ -62,7 +64,7 @@ const Header = () => {
   const headerButtons = useMemo(() => {
     const buttons = [];
 
-    // 로그인 했을때 보이는 버튼
+    //! 로그인 했을때 보이는 버튼
     if (user) {
       buttons.push(
         {
@@ -70,12 +72,23 @@ const Header = () => {
           onClick: () => router.push("/map"),
         },
         {
-          icon: <IoNotificationsOutline />,
-          onClick: () => router.push("/notification"),
+          icon: (
+            <div className="relative">
+              <IoNotificationsOutline />
+              {hasUnread && pathname !== "/notification" && (
+                <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500" />
+              )}
+            </div>
+          ),
+          onClick: () => {
+            setHasUnread(false);
+            router.push("/notification");
+          },
         }
       );
     }
-    //다크모드 구현 버튼
+
+    // 다크모드 구현 버튼
     buttons.push({
       icon: isDarkMode ? <IoMoon /> : <IoSunny />,
       onClick: handleDarkModeToggle,
@@ -103,6 +116,28 @@ const Header = () => {
     isAuthPage,
     router,
   ]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const checkUnreadNotifications = async () => {
+      const snapshot = await dbService
+        .collection("users")
+        .doc(user.uid)
+        .collection("notification")
+        .where("isRead", "==", false) // 읽지 않은 것만
+        .limit(1) // 하나만 찾아도 있으면 true로 설정
+        .get();
+
+      setHasUnread(!snapshot.empty);
+    };
+
+    checkUnreadNotifications();
+
+    // 선택: 일정 시간마다 새로 체크할 수도 있어요 (ex. 30초마다)
+    // const interval = setInterval(checkUnreadNotifications, 30000);
+    // return () => clearInterval(interval);
+  }, [user]);
 
   return (
     <>
