@@ -73,16 +73,18 @@ const Header = () => {
         },
         {
           icon: (
-            <div className="relative">
+            <div className="relative text-2xl">
               <IoNotificationsOutline />
-              {hasUnread && pathname !== "/notification" && (
-                <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500" />
+              {hasUnread && (
+                <span className="absolute top-0 right-0 h-3 w-3 rounded-full bg-red-600 border border-white" />
               )}
             </div>
           ),
           onClick: () => {
             setHasUnread(false);
-            router.push("/notification");
+            setTimeout(() => {
+              router.push("/notification");
+            }, 100); // 0.1초 후 이동
           },
         }
       );
@@ -115,28 +117,34 @@ const Header = () => {
     handleLogout,
     isAuthPage,
     router,
+    hasUnread,
   ]);
 
   useEffect(() => {
     if (!user) return;
 
     const checkUnreadNotifications = async () => {
-      const snapshot = await dbService
-        .collection("users")
-        .doc(user.uid)
-        .collection("notification")
-        .where("isRead", "==", false) // 읽지 않은 것만
-        .limit(1) // 하나만 찾아도 있으면 true로 설정
-        .get();
+      try {
+        const snapshot = await dbService
+          .collection("users")
+          .doc(user.uid)
+          .collection("notification")
+          .where("isRead", "==", false)
+          .limit(1)
+          .get();
 
-      setHasUnread(!snapshot.empty);
+        console.log("알림 존재 여부:", !snapshot.empty);
+        setHasUnread(!snapshot.empty);
+      } catch (error) {
+        console.error("알림 체크 에러:", error);
+      }
     };
 
     checkUnreadNotifications();
 
-    // 선택: 일정 시간마다 새로 체크할 수도 있어요 (ex. 30초마다)
-    // const interval = setInterval(checkUnreadNotifications, 30000);
-    // return () => clearInterval(interval);
+    // 테스트용: 주기적 확인
+    const interval = setInterval(checkUnreadNotifications, 30000);
+    return () => clearInterval(interval);
   }, [user]);
 
   return (
