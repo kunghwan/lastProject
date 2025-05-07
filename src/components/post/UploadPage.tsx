@@ -172,7 +172,7 @@ const UploadPostPage = () => {
             userProfileImage: user.profileImageUrl,
           } as UploadPostProps);
 
-          setAlertMessage("게시물이 성공적으로 등록되었습니다!");
+          alert("게시물이 성공적으로 등록되었습니다!");
           //게시된후 초기화
           setTag("");
           setPost(initialState);
@@ -182,7 +182,8 @@ const UploadPostPage = () => {
             address: "",
           });
           setFiles([]);
-          return navi.back(); // 게시 후  이동
+          navi.back(); // 게시 후  이동
+          return navi.refresh(); // 페이지 새로고침
         } catch (error: any) {
           return setAlertMessage(`에러:${error.message}`);
         }

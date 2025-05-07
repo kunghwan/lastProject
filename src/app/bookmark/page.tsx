@@ -16,8 +16,6 @@ import { GoHeart } from "react-icons/go";
 import { useRouter } from "next/navigation";
 import UpPlaceBookMark from "@/components/upplace/UpPlaceBookMark";
 
-type SortOption = "recent" | "oldest" | "likes";
-
 const BookmarkPage = () => {
   const router = useRouter();
   const handleBack = () => router.back();
@@ -26,6 +24,7 @@ const BookmarkPage = () => {
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<SortOption>("recent");
 
+  // 유저가 좋아요한 게시물 가져오기
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(authService, async (user) => {
       if (!user) {
@@ -60,6 +59,8 @@ const BookmarkPage = () => {
     return () => unsubscribe();
   }, []);
 
+  type SortOption = "recent" | "oldest" | "likes";
+
   const sortPosts = (posts: Post[], sort: SortOption) => {
     switch (sort) {
       case "recent":
@@ -78,7 +79,6 @@ const BookmarkPage = () => {
         return posts;
     }
   };
-
   const toggleLike = async (postId: string) => {
     const user = authService.currentUser;
     if (!user) return;
@@ -89,9 +89,10 @@ const BookmarkPage = () => {
 
         const alreadyLiked = post.likes.includes(user.uid);
         const updatedLikes = alreadyLiked
-          ? post.likes.filter((uid) => uid !== user.uid)
-          : [...post.likes, user.uid];
+          ? post.likes.filter((uid) => uid !== user.uid) // 좋아요 취소
+          : [...post.likes, user.uid]; // 좋아요 추가
 
+        // Firestore에 업데이트
         setDoc(doc(dbService, "posts", postId), {
           likes: updatedLikes,
         });
@@ -110,7 +111,6 @@ const BookmarkPage = () => {
 
   return (
     <div className="flex flex-col">
-      {/* 좋아요한 게시물 영역 */}
       <div className="grid grid-cols-2 gap-x-2 mb-20 lg:grid-cols-3 p-1.5 m-1 transition-all">
         {sortedPosts.length === 0 ? (
           <div className="col-span-2 lg:col-span-3 flex justify-center items-center mt-80 text-gray-500 text-center text-xl animate-bounce">
@@ -123,7 +123,11 @@ const BookmarkPage = () => {
                 <img
                   src={post.userProfileImage}
                   alt="userProfileImage"
+<<<<<<< HEAD
                   className="w-8 h-8  rounded-2xl"
+=======
+                  className=" w-8 h-8"
+>>>>>>> 4d7b1098c62a0708ea9c85e7ae358f6107720aab
                 />
                 <div className="font-bold">{post.userNickname}</div>
               </div>
@@ -134,8 +138,12 @@ const BookmarkPage = () => {
                   className="w-full h-100 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01]"
                 />
               ) : (
-                <div className="w-full h-100 flex items-center justify-center mb-2">
-                  <img src="/image/logo1.png" alt="No image available" />
+                <div className="w-full h-100 transition-all duration-500 ease-in-out transform hover:scale-[1.01] flex items-center justify-center mb-2">
+                  <img
+                    src="/image/logo1.png"
+                    alt="No image available"
+                    className=""
+                  />
                 </div>
               )}
               <p>{post.content}</p>
@@ -153,9 +161,10 @@ const BookmarkPage = () => {
           ))
         )}
       </div>
+      <div className="mt-10"></div>
 
-      {/* 추천장소 좋아요 목록 */}
-      <div className="px-2 lg:px-4">
+      {/* 수정한 부분 추천장소 좋아요 모은거 */}
+      <div className="col-span-2 lg:col-span-3">
         <UpPlaceBookMark />
       </div>
     </div>

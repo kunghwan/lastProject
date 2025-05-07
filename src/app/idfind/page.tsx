@@ -370,7 +370,7 @@ const IdFind = () => {
       {/* 이메일 결과 */}
       {foundEmail.trim() !== "" && (
         <>
-          <p className="text-center text-amber-600 font-bold mt-1 text-sm">
+          <p className="text-center text-amber-600 font-bold mt-1 text-sm lg:justify-start lg:flex lg:p-2">
             내 아이디는 <span className="underline">{foundEmail}</span> 입니다.
           </p>
           <div className="grid grid-cols-2 gap-x-8  ">

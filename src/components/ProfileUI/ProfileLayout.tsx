@@ -1,11 +1,14 @@
 "use client";
 
 import { Post, Tag } from "@/types/post";
-import { useCallback, useEffect, useState } from "react";
-import { IoSettingsOutline } from "react-icons/io5";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { IoSettingsOutline, IoAdd } from "react-icons/io5";
 import FollowButton from "../post/FollowButton";
 import ProfileFeedComponent from "./ProfileFeedLayout";
-
+import { updateDoc, doc } from "firebase/firestore";
+import { dbService, storageService } from "@/lib/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { validateNickname, validateBio } from "@/lib/validations";
 const ProfileLayout = ({
   isMyPage,
   tags = [],
@@ -24,10 +27,20 @@ const ProfileLayout = ({
   };
   posts: Post[];
 }) => {
-  console.log("🔥 posts 확인:", posts);
-  console.log("📦 posts props:", posts);
-  console.log("📦 userData:", userData);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+
+  const [editNickname, setEditNickname] = useState(userData.nickname ?? "");
+  const [editBio, setEditBio] = useState(userData.bio ?? "");
+  const [previewImage, setPreviewImage] = useState(
+    userData.profileImageUrl ?? ""
+  );
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [nicknameError, setNicknameError] = useState("");
+  const [bioError, setBioError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [editImageOnlyOpen, setEditImageOnlyOpen] = useState(false); // ✅ 프로필 사진 전용
 
   useEffect(() => {
     const handleResize = () => {
@@ -37,6 +50,56 @@ const ProfileLayout = ({
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const triggerFileSelect = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    const nicknameValidation = validateNickname(editNickname);
+    const bioValidation = validateBio(editBio);
+
+    if (nicknameValidation) {
+      setNicknameError(nicknameValidation);
+      return;
+    }
+
+    if (bioValidation) {
+      setBioError(bioValidation);
+      return;
+    }
+
+    let imageUrl = previewImage;
+    if (imageFile) {
+      const storageRef = ref(storageService, `profile/${userData.uid}`);
+      await uploadBytes(storageRef, imageFile);
+      const newUrl = await getDownloadURL(storageRef);
+      imageUrl = newUrl;
+      setPreviewImage(newUrl); // 🔥 업데이트된 URL로 UI 갱신
+    }
+
+    try {
+      await updateDoc(doc(dbService, "users", userData.uid), {
+        nickname: editNickname,
+        bio: editBio,
+        profileImageUrl: imageUrl,
+      });
+      alert("프로필이 수정되었습니다.");
+      setEditOpen(false);
+      location.reload();
+    } catch (err) {
+      alert("수정에 실패했습니다.");
+      console.error(err);
+    }
+  };
 
   const actualPostCount = posts.filter((post) => post.id !== "default").length;
 
@@ -192,6 +255,79 @@ const ProfileLayout = ({
           </div>
         )}
       </div>
+      {editOpen && (
+        <div className="fixed inset-0  bg-opacity-50 z-50 flex justify-center items-center ">
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-xl w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">프로필 수정</h2>
+
+            <label className="block mb-2">닉네임</label>
+            <input
+              value={editNickname}
+              onChange={(e) => {
+                setEditNickname(e.target.value);
+                setNicknameError("");
+              }}
+              className="w-full p-2 border rounded mb-1"
+            />
+            {nicknameError && (
+              <p className="text-red-500 text-sm mb-2">{nicknameError}</p>
+            )}
+
+            <label className="block mb-2">소개글</label>
+            <textarea
+              value={editBio}
+              onChange={(e) => {
+                setEditBio(e.target.value);
+                setBioError("");
+              }}
+              className="w-full p-2 border rounded mb-1"
+            />
+            {bioError && (
+              <p className="text-red-500 text-sm mb-2">{bioError}</p>
+            )}
+
+            <div className="flex flex-col gap-y-7 mb-4">
+              <input type="text" placeholder="프로필추가" disabled />
+              <button
+                type="button"
+                onClick={triggerFileSelect}
+                className="border w-24 h-24 flex justify-center items-center text-5xl rounded cursor-pointer"
+              >
+                <IoAdd />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+              {previewImage && (
+                <img
+                  src={previewImage}
+                  alt="preview"
+                  className="mt-2 w-32 h-32 object-cover border rounded"
+                />
+              )}
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setEditOpen(false)}
+                className="px-4 py-2 bg-gray-300 rounded"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleSaveProfile}
+                className="px-4 py-2 bg-blue-500 text-white rounded"
+              >
+                저장
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

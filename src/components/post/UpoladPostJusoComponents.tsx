@@ -3,6 +3,7 @@ import React, { useCallback, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { IoLocationSharp } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
+import AlertModal from "../AlertModal";
 
 interface JusoProps {
   juso: Location;
@@ -14,6 +15,7 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
   const [isJusoShowing, setIsJusoShowing] = useState(false);
   const [isJusoUlShowing, setIsJusoUlShowing] = useState(false);
   const [address, setAddress] = useState("");
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
   //주소를 검색하기 위해서 주소를 저장하는 state
   const [searchResults, setSearchResults] = useState<any[]>([]);
   //juso를 저장하기 위해 kakao api를 사용함
@@ -39,6 +41,12 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
 
   return (
     <div className="hsecol gap-2">
+      {alertMessage && (
+        <AlertModal
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
       <div className="flex gap-x-2 items-center">
         {juso.address.length > 0 && (
           <label className="mt-8 border-gray-200 flex w-full border bg-emerald-100 p-2.5 rounded items-center  dark:text-gray-900">
@@ -99,6 +107,9 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
             <button
               type="button"
               onClick={() => {
+                if (address.length === 0 || address.trim() === "") {
+                  return setAlertMessage("주소를 입력해 주세요.");
+                }
                 //searchAddress를 호출하여 주소를 검색(address를 인자로 넘겨서 검색 ㄱㄱ)
                 searchAddress(address);
                 setIsJusoUlShowing(true);
