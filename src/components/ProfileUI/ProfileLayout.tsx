@@ -123,13 +123,12 @@ const ProfileLayout = ({
           />
           {isMyPage && (
             <button
-              onClick={() => setEditImageOnlyOpen(true)} // ✅ 프로필 사진만 수정
+              onClick={() => setEditImageOnlyOpen(true)}
               className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-medium rounded-full opacity-0 hover:opacity-70 transition-opacity"
             >
               수정하기
             </button>
           )}
-
           {editImageOnlyOpen && (
             <div className="fixed inset-0  bg-opacity-40 z-50 flex items-center justify-center">
               <div className="mt-[-20%] bg-white dark:bg-gray-900 p-6 rounded-xl shadow-xl w-full max-w-sm ">
@@ -188,49 +187,7 @@ const ProfileLayout = ({
             </div>
           )}
         </div>
-
-      ) : (
-        <div className="w-full max-w-screen mx-auto">
-          <div className="flex justify-center mt-5">
-            <div className="relative w-32 h-32 ">
-              <img
-                src={firstPost?.userProfileImage || defaultImgUrl}
-                alt={`${userData.nickname || "유저"}'s profile`}
-                className=" transition-all duration-500 ease-in-out transform hover:scale-[1.02] w-full h-full rounded-full sm:x-auto cursor-pointer"
-              />
-              {isMyPage && (
-                <button className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-medium rounded-full opacity-0 hover:opacity-70 transition-opacity">
-                  수정하기
-                </button>
-              )}
-            </div>
-            {isMyPage ? (
-              <button className="text-2xl absolute right-30 sm:right-50 hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400  dark:active:text-gray-100">
-                <IoSettingsOutline />
-              </button>
-            ) : (
-              <div className="absolute right-15 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
-                <FollowButton
-                  followNickName={userData.nickname ?? "unknown"}
-                  followingId={userData.uid}
-                />
-              </div>
-            )}
-          </div>
-          <div className="flex flex-col justify-center items-center">
-            <h1 className="font-medium text-2xl p-1 hover:scale-103 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
-              {userData.nickname || `없는 유123저입니다.`}
-            </h1>
-            <div className="flex flex-1 justify-center mx-auto">
-              <div className="flex gap-5 ">
-                <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
-                  게시물 <span>{actualPostCount}</span>
-                </div>
-                <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
-                  구독수 <span>{firstPost?.shares?.length || 0}</span>
-                </div>
-              </div>
-
+        {/* 설정 버튼 또는 팔로우 버튼 */}
         {isMyPage ? (
           <button
             className="text-2xl absolute right-30 sm:right-50 hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400  dark:active:text-gray-100"
@@ -247,25 +204,26 @@ const ProfileLayout = ({
           </div>
         )}
       </div>
+
+      {/* 유저 정보 */}
       <div className="flex flex-col justify-center items-center">
-        <h1 className="font-medium text-2xl p-1">
-          {userData.nickname || `없는 유저입니다.`}
+        <h1 className="font-medium text-2xl p-1 hover:scale-103 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
+          {userData.nickname || `없는 유123저입니다.`}
         </h1>
         <div className="flex flex-1 justify-center mx-auto">
           <div className="flex gap-5 ">
-            <div className="flex gap-2.5 p-2.5">
+            <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
               게시물 <span>{actualPostCount}</span>
-
             </div>
-            <div className="flex gap-2.5 p-2.5">
+            <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
               구독수 <span>{firstPost?.shares?.length || 0}</span>
             </div>
           </div>
         </div>
+      </div>
 
-      )}
-      <div className="flex flex-col -mb-100 items-center justify-center">
-
+      {/* 소개글 및 태그 */}
+      <div className="flex flex-col -mb-100 items-center justify-center ">
         <div className="text-center px-4 text-sm text-gray-600 dark:text-gray-300">
           {userData.bio || "소개글이 없습니다."}
         </div>
@@ -284,16 +242,17 @@ const ProfileLayout = ({
           </ul>
         </div>
       </div>
-      <div className="flex flex-col items-center justify-center">
 
+      {/* 게시물 */}
+      <div className="flex flex-col items-center justify-center ">
         {posts?.filter((post) => post.id !== "default").length > 0 ? (
           <ProfileFeedComponent
             posts={posts}
             isMyPage={isMyPage}
-            uid={userUid}
+            uid={userData.uid}
           />
         ) : (
-          <div className="flex pt-10 w-full justify-center">
+          <div className="flex pt-10 w-full justify-center ">
             <div className="text-gray-800 text-xl mt-30 animate-bounce dark:text-gray-200">
               게시물이 없습니다
             </div>
