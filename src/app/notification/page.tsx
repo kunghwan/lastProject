@@ -220,7 +220,7 @@ const NotificationListPage = () => {
                 key={noti.id}
                 onClick={() => {
                   handleNotificationClick(noti);
-                  return navi.push(`/profile/${noti.follwerId}`);
+                  return navi.push(`/profile/${noti.followerNickname}`);
                 }}
                 className={twMerge(
                   "hover:scale-105 hover:shadow-sm hsecol  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer ",
