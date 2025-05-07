@@ -119,7 +119,7 @@ const ProfileLayout = ({
           </div>
         </div>
       ) : (
-        <div className="w-full max-w-screen mx-auto overflow-hidden">
+        <div className="w-full max-w-screen mx-auto">
           <div className="flex justify-center mt-5">
             <div className="relative w-32 h-32 ">
               <img
@@ -148,7 +148,7 @@ const ProfileLayout = ({
           </div>
           <div className="flex flex-col justify-center items-center">
             <h1 className="font-medium text-2xl p-1 hover:scale-103 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
-              {userData.nickname || `없는 유저입니다.`}
+              {userData.nickname || `없는 유123저입니다.`}
             </h1>
             <div className="flex flex-1 justify-center mx-auto">
               <div className="flex gap-5 ">
@@ -177,9 +177,13 @@ const ProfileLayout = ({
           </div>
         </div>
       )}
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col -mb-100 items-center justify-center">
         {posts?.filter((post) => post.id !== "default").length > 0 ? (
-          <ProfileFeedComponent posts={posts} isMyPage={isMyPage} />
+          <ProfileFeedComponent
+            posts={posts}
+            isMyPage={isMyPage}
+            uid={userUid}
+          />
         ) : (
           <div className="flex pt-10 w-full justify-center">
             <div className="text-gray-800 text-xl mt-30 animate-bounce dark:text-gray-200">

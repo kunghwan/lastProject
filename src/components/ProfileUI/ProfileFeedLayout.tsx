@@ -1,17 +1,26 @@
+"use client";
+
 import { Post } from "@/types/post";
 import { doc, deleteDoc } from "firebase/firestore";
 import { dbService } from "@/lib/firebase";
-import { useState } from "react";
-import { HiOutlinePencilSquare } from "react-icons/hi2";
+import { useEffect, useRef, useState } from "react";
+import { ImCancelCircle } from "react-icons/im";
+import { getUserPostsPaginated } from "@/lib/fbdata"; // 반드시 이 함수 구현되어야 함
 
 const ProfileFeedComponent = ({
   posts,
   isMyPage,
+  uid,
 }: {
   posts: Post[];
   isMyPage: boolean;
+  uid: string;
 }) => {
-  const [postList, setPostList] = useState(posts);
+  const [postList, setPostList] = useState<Post[]>(posts);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const lastDocRef = useRef<any>(null);
+  const observerRef = useRef<HTMLDivElement | null>(null);
 
   const handleDelete = async (postId: string) => {
     const ok = window.confirm("정말 이 게시물을 삭제하시겠습니까?");
@@ -26,8 +35,43 @@ const ProfileFeedComponent = ({
     }
   };
 
+  const loadMorePosts = async () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
+
+    const { posts: newPosts, lastDoc } = await getUserPostsPaginated(
+      uid,
+      lastDocRef.current
+    );
+
+    setPostList((prev) => {
+      const existingIds = new Set(prev.map((p) => p.id));
+      const filteredPosts = newPosts.filter((p) => !existingIds.has(p.id));
+      return [...prev, ...filteredPosts];
+    });
+
+    lastDocRef.current = lastDoc;
+    setHasMore(newPosts.length > 0);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore && !loading) {
+        loadMorePosts();
+      }
+    });
+
+    const current = observerRef.current;
+    if (current) observer.observe(current);
+
+    return () => {
+      if (current) observer.unobserve(current);
+    };
+  }, [hasMore, loading]);
+
   return (
-    <div className="flex border-t pt-10 border-blue-200 lg:w-[1024px] mx-auto">
+    <div className="flex flex-col border-t p-5 border-blue-200 lg:w-[1024px] mx-auto">
       <ul className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
         {postList.map((post) => (
           <li key={post.id} className="p-1">
@@ -39,16 +83,16 @@ const ProfileFeedComponent = ({
                   className="w-full h-64 transition-all duration-500 ease-in-out transform hover:scale-[1.02] object-cover rounded"
                 />
               ) : (
-                <div className="w-full h-64 transition-all duration-500 ease-in-out transform hover:scale-[1.02] bg-gray-100 flex items-center justify-center text-gray-400">
+                <div className="w-full h-64 bg-gray-100 flex items-center justify-center text-gray-400">
                   이미지 없음
                 </div>
               )}
               {isMyPage && (
                 <button
                   onClick={() => handleDelete(post.id!)}
-                  className="absolute bottom-10 right-1 text-s text-pink-700 hover:animate-pulse hover:scale-[1.02] cursor-pointer p-2 hover:text-pink-600 active:text-pink-700  dark:active:text-pink-100"
+                  className="absolute top-2 right-2 text-s text-pink-700 hover:animate-pulse hover:scale-[1.02] cursor-pointer p-2 hover:text-pink-600 active:text-pink-700 dark:active:text-pink-100"
                 >
-                  <HiOutlinePencilSquare />
+                  <ImCancelCircle />
                 </button>
               )}
               <div className="text-sm">
@@ -67,6 +111,8 @@ const ProfileFeedComponent = ({
           </li>
         ))}
       </ul>
+      <div ref={observerRef} className="h-10" />
+      {loading && <div className="text-center py-4">로딩 중...</div>}
     </div>
   );
 };
