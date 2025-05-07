@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AUTH } from "@/contextapi/context";
 import AlertModal from "@/components/AlertModal";
+import { twMerge } from "tailwind-merge";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -65,7 +66,7 @@ const LoginForm = () => {
             <input
               type="text"
               ref={emailRef}
-              className="ykhInputButton"
+              className={twMerge("ykhInputButton", "dark:text-black")}
               placeholder="아이디"
               value={email}
               onChange={(e) => {
@@ -82,7 +83,7 @@ const LoginForm = () => {
             <input
               type="password"
               ref={passwordRef}
-              className="ykhInputButton"
+              className={twMerge("ykhInputButton", "dark:text-black")}
               placeholder="비밀번호"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
