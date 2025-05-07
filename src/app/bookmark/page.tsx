@@ -123,7 +123,7 @@ const BookmarkPage = () => {
                 <img
                   src={post.userProfileImage}
                   alt="userProfileImage"
-                  className="w-8 h-8"
+                  className="w-8 h-8  rounded-2xl"
                 />
                 <div className="font-bold">{post.userNickname}</div>
               </div>
