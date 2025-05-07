@@ -96,14 +96,11 @@ const PostComponent = () => {
             </div>
           )}
           <div className="flex gap-4 ml-1">
-            <p className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
+            <div className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
               <LikeButton likedBy={post.likes} postId={post.id} />{" "}
-
               {/* {post.likes?.length} */}
-
               {post.likes?.length}
-
-            </p>
+            </div>
             <p className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
               <ShareButton /> {post.shares?.length}
             </p>
