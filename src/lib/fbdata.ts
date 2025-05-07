@@ -8,6 +8,7 @@ import {
   where,
   QueryDocumentSnapshot,
   DocumentData,
+  limit,
 } from "firebase/firestore";
 import { dbService } from "./firebase";
 import { Post } from "@/types/post";
@@ -109,4 +110,33 @@ export const getAllPostsPaginated = async (
     console.error("🔥 게시물 페이지네이션 실패:", error);
     return { posts: [], lastDoc: null };
   }
+};
+
+export const getUserPostsPaginated = async (
+  uid: string,
+  lastDoc: any
+): Promise<{ posts: Post[]; lastDoc: any }> => {
+  const q = lastDoc
+    ? query(
+        collection(dbService, "posts"),
+        where("uid", "==", uid),
+        orderBy("createdAt", "desc"),
+        startAfter(lastDoc),
+        limit(6)
+      )
+    : query(
+        collection(dbService, "posts"),
+        where("uid", "==", uid),
+        orderBy("createdAt", "desc"),
+        limit(6)
+      );
+
+  const snapshot = await getDocs(q);
+  const posts = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as Post[];
+
+  const last = snapshot.docs[snapshot.docs.length - 1] ?? null;
+  return { posts, lastDoc: last };
 };

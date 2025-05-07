@@ -7,7 +7,9 @@ import LikeButton from "./LikeButton";
 import ShareButton from "./ShareButton";
 import LocationButton from "./LocationButton";
 import { useRouter } from "next/navigation";
-import { fetchUsers } from "@/lib/user";
+
+const defaultImgUrl =
+  "https://i.pinimg.com/1200x/3e/c0/d4/3ec0d48e3332288604e8d48096296f3e.jpg";
 
 const PostComponent = () => {
   const router = useRouter();
@@ -16,6 +18,9 @@ const PostComponent = () => {
   const [hasMore, setHasMore] = useState(true);
   const lastDocRef = useRef<any>(null);
   const observerRef = useRef<HTMLDivElement | null>(null);
+
+  const [selectedPost, setSelectedPost] = useState<PostType | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0); // 슬라이더 인덱스
 
   useEffect(() => {
     loadMorePosts();
@@ -49,12 +54,9 @@ const PostComponent = () => {
     return () => {
       if (observerRef.current) observer.unobserve(observerRef.current);
     };
-  }, [observerRef.current]);
+  }, []);
 
-  // ✨ 변경된 부분 (handleClick 수정)
-  const handleClick = async (nickname: string) => {
-    if (!nickname) return;
-
+  const handleClick = (nickname: string) => {
     const loggedInUsername =
       typeof window !== "undefined" ? localStorage.getItem("username") : null;
 
@@ -65,62 +67,165 @@ const PostComponent = () => {
     }
   };
 
+  const handleOpenPost = (post: PostType) => {
+    setSelectedPost(post);
+    setCurrentIndex(0);
+  };
+
+  const handlePrev = () => {
+    if (!selectedPost?.imageUrl) return;
+    const images = Array.isArray(selectedPost.imageUrl)
+      ? selectedPost.imageUrl
+      : [selectedPost.imageUrl];
+    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    if (!selectedPost?.imageUrl) return;
+    const images = Array.isArray(selectedPost.imageUrl)
+      ? selectedPost.imageUrl
+      : [selectedPost.imageUrl];
+    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelectedPost(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
     <div className="grid grid-cols-1 gap-y-3 mb-20 md:grid-cols-2 lg:grid-cols-3 ml-2.5 mr-2.5">
-      {posts.map((post) => (
-        <div key={post.id} className="p-1.5 m-1">
-          <button
-            className="flex gap-1.5 items-center text-center m-1.5"
-            onClick={() => handleClick(post.userNickname)} // ✨ uid 전달 추가
-          >
-            <img
-              className="w-8 h-8 border rounded-2xl border-gray-200 "
-              src={post.userProfileImage || defaultImgUrl}
-              alt="user profile image"
-            />
-            <div className="font-bold">{post.userNickname}</div>
-          </button>
-          {post.imageUrl ? (
-            <img
-              src={post.imageUrl}
-              alt="Post image"
-              className="w-full h-128 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01]"
-            />
-          ) : (
-            <div className="w-full h-128 bg-gray-200 flex items-center justify-center mb-2">
+      {posts.map((post) => {
+        const images = Array.isArray(post.imageUrl)
+          ? post.imageUrl
+          : [post.imageUrl];
+
+        return (
+          <div key={post.id} className="p-1.5 m-1">
+            <button
+              className="flex gap-1.5 items-center text-center m-1.5"
+              onClick={() => handleClick(post.userNickname)}
+            >
               <img
-                src="/image/whitelogo1.png"
-                alt="No image available"
-                className="w-40 h-40 object-contain"
+                className="w-8 h-8 border rounded-2xl border-gray-200"
+                src={post.userProfileImage || defaultImgUrl}
+                alt="user profile image"
+              />
+              <div className="font-bold">{post.userNickname}</div>
+            </button>
+
+            <div
+              className="relative cursor-pointer"
+              onClick={() => handleOpenPost(post)}
+            >
+              <img
+                src={images[0] || defaultImgUrl}
+                alt="Post image"
+                className="w-full border border-gray-300 h-128 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01]"
               />
             </div>
-          )}
-          <div className="flex gap-4 ml-1">
-            <div className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
-              <LikeButton likedBy={post.likes} postId={post.id} />{" "}
-              {/* {post.likes?.length} */}
-              {post.likes?.length}
+
+            <div className="flex gap-4 ml-1">
+              <div className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
+                <LikeButton likedBy={post.likes} postId={post.id!} />{" "}
+                {post.likes?.length}
+              </div>
+              <p className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
+                <ShareButton /> {post.shares?.length}
+              </p>
+              <p className="flex-1/2 text-xs text-gray-500 dark:text-gray-300">
+                <LocationButton /> {post.lo?.address || "주소 없음"}
+              </p>
             </div>
-            <p className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
-              <ShareButton /> {post.shares?.length}
-            </p>
-            <p className="flex-1/2 text-sm text-gray-500 dark:text-gray-300">
-              <LocationButton /> {post.lo?.latitude} {post.lo?.longitude}
-            </p>
+            <p className="text-lg font-semibold">{post.content}</p>
+            <div className="items-baseline text-end text-gray500 text-sm">
+              {post.createdAt}
+            </div>
           </div>
-          <p className="text-lg font-semibold">{post.content}</p>
-          <div className="items-baseline text-end text-gray500 text-sm">
-            {post.createdAt}
+        );
+      })}
+
+      <div ref={observerRef} className="col-span-full h-10" />
+      {loading && <div className="text-center col-span-full">로딩 중...</div>}
+
+      {selectedPost && (
+        <div
+          className="fixed inset-0 z-50 bg-black/30 backdrop-blur-xs flex justify-center items-center  transition transform duration-300 ease-in-out"
+          onClick={() => setSelectedPost(null)}
+        >
+          <div
+            className="bg-gray-50 rounded-lg w-5/6 h-2/3 md:w-3/5 lg:w-1/2 overflow-y-auto relative flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-90 md:w-110 mx-auto items-center ">
+              <button
+                onClick={() => setSelectedPost(null)}
+                className="absolute top-2 right-4 text-xl font-bold text-gray-700"
+              >
+                ✕
+              </button>
+
+              {/* 슬라이더 */}
+              <div className="relative w-full h-64 mt-10 flex items-center justify-center">
+                {(() => {
+                  const images = Array.isArray(selectedPost?.imageUrl)
+                    ? selectedPost.imageUrl
+                    : selectedPost?.imageUrl
+                    ? [selectedPost.imageUrl]
+                    : [];
+
+                  return (
+                    <div className="relative w-full flex justify-center items-center">
+                      <img
+                        src={images[currentIndex] || defaultImgUrl}
+                        alt={`img-${currentIndex}`}
+                        className="max-h-64 object-contain rounded"
+                      />
+                      {images.length > 1 && (
+                        <>
+                          <button
+                            onClick={handlePrev}
+                            className="absolute left-3 text-2xl font-bold text-white bg-black/40 rounded-full p-2 hover:bg-black/70"
+                          >
+                            ‹
+                          </button>
+                          <button
+                            onClick={handleNext}
+                            className="absolute right-3 text-2xl font-bold text-white bg-black/40 rounded-full p-2 hover:bg-black/70"
+                          >
+                            ›
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* 상세 정보 */}
+              <div className="p-4">
+                <div className="text-xs text-gray-500 mt-2 flex justify-between mb-5">
+                  <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
+                  <div>{selectedPost.createdAt}</div>
+                </div>
+                <h2 className="text-lg font-bold mb-2">
+                  {selectedPost.title || "제목 없음"}
+                </h2>
+                <p className="text-sm text-gray-700">
+                  {selectedPost.content || "내용 없음"}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      ))}
-      <div ref={observerRef} className="col-span-full h-10"></div>
-      {loading && <div className="text-center col-span-full">로딩 중...</div>}
+      )}
     </div>
   );
 };
 
 export default PostComponent;
-
-const defaultImgUrl =
-  "https://i.pinimg.com/1200x/3e/c0/d4/3ec0d48e3332288604e8d48096296f3e.jpg";
