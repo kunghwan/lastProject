@@ -31,9 +31,20 @@ const SettingProfile = () => {
 
   const router = useRouter();
   const { signin } = AUTH.use();
+
   const closeAlert = () => setAlertMsg("");
 
+  // ✅ 초기값 복원 + 유효성 검사도 동기화
   useEffect(() => {
+    const savedDraft = sessionStorage.getItem("profileDraft");
+    if (savedDraft) {
+      const parsed = JSON.parse(savedDraft);
+      setProfile(parsed);
+
+      if (parsed.nickname)
+        validateNickname(parsed.nickname).then(setNicknameError);
+      if (parsed.bio) setBioError(validateBio(parsed.bio));
+    }
     nicknameRef.current?.focus();
   }, []);
 
@@ -53,6 +64,8 @@ const SettingProfile = () => {
   const validateNickname = async (nickname: string) => {
     if (!nickname) return "닉네임을 입력해주세요";
     if (/[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(nickname)) return "한글은 입력할 수 없습니다";
+    const isValid = /^[a-zA-Z0-9]+$/.test(nickname);
+    if (!isValid) return "닉네임은 영어와 숫자만 사용할 수 있습니다";
     if (nickname.length >= 18)
       return "닉네임은 18글자 미만으로만 입력가능합니다";
 
@@ -82,11 +95,14 @@ const SettingProfile = () => {
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
-      setProfile((prev) => ({ ...prev, [name]: value }));
+      const updated = { ...profile, [name]: value };
+      setProfile(updated);
+      sessionStorage.setItem("profileDraft", JSON.stringify(updated)); // ✅ 타이밍 보장
+
       if (name === "nickname") setNicknameError(await validateNickname(value));
       if (name === "bio") setBioError(validateBio(value));
     },
-    []
+    [profile]
   );
 
   const handleImageSelect = useCallback(
@@ -94,11 +110,13 @@ const SettingProfile = () => {
       const file = e.target.files?.[0];
       if (file) {
         const previewUrl = URL.createObjectURL(file);
-        setProfile((prev) => ({ ...prev, profileImageUrl: previewUrl }));
+        const updated = { ...profile, profileImageUrl: previewUrl };
+        setProfile(updated);
         setImageFile(file);
+        sessionStorage.setItem("profileDraft", JSON.stringify(updated)); // ✅ 미리보기 저장
       }
     },
-    []
+    [profile]
   );
 
   const triggerFileSelect = useCallback(() => {
@@ -152,6 +170,7 @@ const SettingProfile = () => {
         .collection(FBCollection.USERS)
         .doc(fullUser.uid)
         .set(fullUser);
+
       const result = await signin(baseUser.email, baseUser.password);
       if (!result.success) {
         setAlertMsg("로그인에 실패했습니다: " + result.message);
@@ -160,6 +179,7 @@ const SettingProfile = () => {
 
       setAlertMsg("회원가입이 완료되었습니다!");
       sessionStorage.removeItem("signupUser");
+      sessionStorage.removeItem("profileDraft"); // ✅ 초안 제거
       router.push("/");
     } catch (err) {
       console.error("가입 오류:", err);
@@ -182,7 +202,9 @@ const SettingProfile = () => {
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder="유저이름"
-            className={`${settingProfile} ${nicknameError ? "border-red-500" : ""}`}
+            className={`${settingProfile} ${
+              nicknameError ? "border-red-500" : ""
+            }`}
           />
           {nicknameError && (
             <div className="absolute text-red-500 text-xs mt-1">
@@ -264,11 +286,10 @@ const SettingProfile = () => {
             setTimeout(() => bioRef.current?.focus(), 0);
           }}
           onConfirm={() => {
-            // ✅ 모달 먼저 닫고 렌더 완료 후 파일 열기
             setShowConfirmModal(false);
             setTimeout(() => {
               fileInputRef.current?.click();
-              document.body.focus(); // 포커스 해제
+              document.body.focus();
             }, 100);
           }}
         />

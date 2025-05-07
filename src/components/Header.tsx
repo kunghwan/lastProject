@@ -20,39 +20,34 @@ import { dbService } from "@/lib";
 const headBtn = "grayButton text-xl sm:text-2xl";
 const darkText = "grayButton w-full dark:bg-[#333333] dark:text-[#F1F5F9]";
 
-const Header = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false); //! 다크모드
-  const [isMenuOpen, setIsMenuOpen] = useState(false); //! 메뉴 오픈
-  const [hasUnread, setHasUnread] = useState(false); //! 알림창 읽음 여부
+// 초기 로딩 시 다크 모드 적용
+const storedDarkMode =
+  typeof window !== "undefined" ? localStorage.getItem("darkMode") : null;
+if (storedDarkMode === "true") {
+  document.documentElement.classList.add("dark");
+}
 
+const Header = () => {
+  const [isDarkMode, setIsDarkMode] = useState(
+    storedDarkMode === "true" || false
+  ); //  초기 상태 설정
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [hasUnread, setHasUnread] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const { user, signout } = AUTH.use();
-
-  const isAuthPage = useMemo(() => {
-    return ["/signin", "/signup"].includes(pathname!);
-  }, [pathname]);
-
-  useEffect(() => {
-    const storedDarkMode = localStorage.getItem("darkMode");
-    if (storedDarkMode === "true") {
-      setIsDarkMode(true);
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
+  const isAuthPage = useMemo(
+    () => ["/signin", "/signup"].includes(pathname!),
+    [pathname]
+  );
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDarkMode);
     localStorage.setItem("darkMode", isDarkMode.toString());
   }, [isDarkMode]);
 
-  const handleDarkModeToggle = useCallback(() => {
-    setIsDarkMode((prev) => !prev);
-  }, []);
-
-  const handleLogout = useCallback(() => {
+  const toggleDarkMode = useCallback(() => setIsDarkMode((prev) => !prev), []);
+  const logout = useCallback(() => {
     if (confirm("로그아웃 하시겠습니까?")) {
       signout();
       alert("로그아웃 되었습니다.");
@@ -60,16 +55,13 @@ const Header = () => {
     }
   }, [signout, router]);
 
-  // 데스크탑 + 모바일 버튼 목록 정리
   const headerButtons = useMemo(() => {
     const buttons = [];
-
-    //! 로그인 했을때 보이는 버튼
     if (user) {
       buttons.push(
         {
           icon: <IoBookmarkOutline />,
-          onClick: () => router.push("/map"),
+          onClick: () => router.push("/bookmark"),
         },
         {
           icon: (
@@ -80,50 +72,31 @@ const Header = () => {
               )}
             </div>
           ),
-          onClick: () => {
-            setHasUnread(false);
-            setTimeout(() => {
-              router.push("/notification");
-            }, 100); // 0.1초 후 이동
-          },
+          onClick: () => setTimeout(() => router.push("/notification"), 100),
         }
       );
     }
-
-    // 다크모드 구현 버튼
     buttons.push({
       icon: isDarkMode ? <IoMoon /> : <IoSunny />,
-      onClick: handleDarkModeToggle,
+      onClick: toggleDarkMode,
       className: twMerge(
         headBtn,
         isDarkMode ? "text-gray-800" : "text-white bg-black"
       ),
     });
-
-    // 로그인/로그아웃 버튼
     if (!isAuthPage) {
       buttons.push({
         label: user ? "로그아웃" : "로그인",
-        onClick: () => (user ? handleLogout() : router.push("/signin")),
+        onClick: () => (user ? logout() : router.push("/signin")),
         className: "text-2xl font-bold h-14 ",
       });
     }
-
     return buttons;
-  }, [
-    user,
-    isDarkMode,
-    handleDarkModeToggle,
-    handleLogout,
-    isAuthPage,
-    router,
-    hasUnread,
-  ]);
+  }, [user, isDarkMode, toggleDarkMode, logout, isAuthPage, router, hasUnread]);
 
   useEffect(() => {
     if (!user) return;
-
-    const checkUnreadNotifications = async () => {
+    const checkUnread = async () => {
       try {
         const snapshot = await dbService
           .collection("users")
@@ -132,19 +105,13 @@ const Header = () => {
           .where("isRead", "==", false)
           .limit(1)
           .get();
-
-        console.log("알림 존재 여부:", !snapshot.empty);
         setHasUnread(!snapshot.empty);
       } catch (error) {
         console.error("알림 체크 에러:", error);
       }
     };
-
-    checkUnreadNotifications();
-
-    // 테스트용: 주기적 확인
-    const interval = setInterval(checkUnreadNotifications, 30000);
-    return () => clearInterval(interval);
+    window.checkUnreadNotifications = checkUnread;
+    checkUnread();
   }, [user]);
 
   return (
@@ -162,7 +129,6 @@ const Header = () => {
           />
         </Link>
 
-        {/* 데스크탑 메뉴 */}
         <ul className="hidden sm:flex items-center gap-x-4">
           {user && (
             <div className="text-2xl font-bold whitespace-nowrap flex">
@@ -182,11 +148,10 @@ const Header = () => {
           ))}
         </ul>
 
-        {/* 모바일 메뉴 버튼 */}
         <div className="sm:hidden">
           {isAuthPage ? (
             <button
-              onClick={handleDarkModeToggle}
+              onClick={toggleDarkMode}
               className={twMerge(
                 "grayButton text-xl",
                 isDarkMode ? "text-gray-800" : "text-white bg-black"
@@ -205,7 +170,6 @@ const Header = () => {
         </div>
       </header>
 
-      {/* 모바일 팝업 메뉴 */}
       {isMenuOpen && !isAuthPage && (
         <div className="fixed inset-0 bg-gray-500/50 z-50 flex items-center justify-center sm:hidden">
           <div className="bg-white dark:bg-gray-300 p-6 rounded-xl shadow-lg w-[65vw] max-w-sm text-center">
