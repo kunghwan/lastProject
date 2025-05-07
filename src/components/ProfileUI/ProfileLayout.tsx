@@ -337,6 +337,7 @@ const ProfileLayout = ({
     </div>
   );
 };
+};      
 
 export default ProfileLayout;
 
