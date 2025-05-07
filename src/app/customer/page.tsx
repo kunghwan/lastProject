@@ -44,7 +44,7 @@ const QnaPage = () => {
   return (
     <div className="mt-5 relative min-h-screen  hsecol gap-y-2.5 px-5  ">
       <div className="z-3">
-        <ul>
+        <ul className="">
           <li className="mb-2  flex justify-center ">
             <div className="relative  max-w-96 max-[700px]:px-2.5">
               <input
