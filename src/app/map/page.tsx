@@ -21,10 +21,10 @@ const MapPage = () => {
     const initMap = () => {
       if (!mapRef.current) return;
 
-      const center = new window.kakao.maps.LatLng(36.3324, 127.4345);
+      const center = new window.kakao.maps.LatLng(36.3286, 127.4229);
       const mapInstance = new window.kakao.maps.Map(mapRef.current, {
         center, // 처음 시작할때 지도 나오는 위치
-        level: 6, // 지도 확대 범위 레벨
+        level: 5, // 지도 확대 범위 레벨
       });
 
       setMap(mapInstance);
