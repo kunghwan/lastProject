@@ -3,11 +3,12 @@
 import { useCallback } from "react";
 import { IoCloseSharp, IoPhonePortraitSharp } from "react-icons/io5";
 import { TbMapPinDown } from "react-icons/tb";
+import { RefObject } from "react";
 
 interface Props {
   place: PlaceProps;
   onClose: () => void;
-  detailRef: React.RefObject<HTMLDivElement | null>;
+  detailRef: RefObject<HTMLDivElement | null>;
 }
 
 const PlaceDetail: React.FC<Props> = ({ place, onClose, detailRef }) => {
