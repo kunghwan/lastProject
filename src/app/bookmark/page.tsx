@@ -154,13 +154,26 @@ const BookmarkPage = () => {
                 <span>{post.likes.length}</span>
               </div>
             </div>
+
           ))
         )}
       </div>
       <div className="mt-10"></div>
 
+
+
+          ))
+        )}
+      </div>
+      <div className="mt-10">
+
+          </div>
+        ))
+      )}
+
       {/* 수정한 부분 추천장소 좋아요 모은거 */}
       <div className="col-span-2 lg:col-span-3">
+
         <UpPlaceBookMark />
       </div>
     </div>
