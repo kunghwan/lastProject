@@ -146,63 +146,45 @@ const BookmarkPage = () => {
         ))}
       </div>
       <div className="grid grid-cols-2 gap-x-2 mb-20 lg:grid-cols-3 p-1.5 m-1 transition-all">
-        {sortedPosts.length === 0 ? (
-          <div className="col-span-2 lg:col-span-3 flex justify-center items-center mt-80 text-gray-500 text-center text-xl animate-bounce">
-            아직 좋아요한 게시물이 없습니다.
-          </div>
-        ) : (
+        {sortedPosts.map((post) => {
+          const image =
+            Array.isArray(post.imageUrl) && post.imageUrl.length > 0
+              ? post.imageUrl[0]
+              : typeof post.imageUrl === "string"
+              ? post.imageUrl
+              : "/image/logo1.png";
 
-          sortedPosts.map((post) => {
-            const image =
-              Array.isArray(post.imageUrl) && post.imageUrl.length > 0
-                ? post.imageUrl[0]
-                : typeof post.imageUrl === "string"
-                ? post.imageUrl
-                : "/image/logo1.png";
-
-            return (
-              <div key={post.id}>
-                <div className="m-1.5 flex items-center gap-1.5">
-                  <img
-                    src={post.userProfileImage}
-                    alt="userProfileImage"
-                    className="w-8 h-8 rounded"
-                  />
-                  <div className="font-bold">{post.userNickname}</div>
-                </div>
-
-          sortedPosts.map((post) => (
+          return (
             <div key={post.id}>
               <div className="m-1.5 flex items-center gap-1.5">
                 <img
                   src={post.userProfileImage}
                   alt="userProfileImage"
-                  className="w-8 h-8  rounded-2xl"
+                  className="w-8 h-8 rounded-2xl"
                 />
                 <div className="font-bold">{post.userNickname}</div>
               </div>
-              {post.imageUrl ? (
-
+              {post.imageUrl && (
                 <img
                   src={image}
                   alt="Post image"
                   className="w-full h-100 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01]"
                 />
-                <p>{post.content}</p>
-                <div className="flex items-center gap-2 mb-2.5">
-                  <button
-                    type="button"
-                    onClick={() => toggleLike(post.id!)}
-                    className="text-red-500"
-                  >
-                    <GoHeart />
-                  </button>
-                  <span>{post.likes.length}</span>
-                </div>
+              )}
+              <p>{post.content}</p>
+              <div className="flex items-center gap-2 mb-2.5">
+                <button
+                  type="button"
+                  onClick={() => toggleLike(post.id!)}
+                  className="text-red-500"
+                >
+                  <GoHeart />
+                </button>
+                <span>{post.likes.length}</span>
               </div>
-            );
-          })
-        )}
+            </div>
+          );
+        })}
       </div>
 
       {/* 추천 장소 섹션 */}

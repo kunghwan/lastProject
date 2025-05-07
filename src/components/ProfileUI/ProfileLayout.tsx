@@ -147,11 +147,7 @@ const ProfileLayout = ({
                 </h1>
                 {isMyPage ? (
                   <button
-
-                    onClick={() => setEditOpen(true)}
-
                     onClick={() => setEditOpen(true)} // ✅ 추가됨
-
                     className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400 dark:active:text-gray-100"
                   >
                     <IoSettingsOutline />
