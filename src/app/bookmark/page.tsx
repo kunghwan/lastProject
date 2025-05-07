@@ -143,7 +143,8 @@ const BookmarkPage = () => {
           </div>
         ))
       )}
-      <div>
+      {/* 수정한 부분 추천장소 좋아요 모은거 */}
+      <div className="col-span-2 lg:col-span-3">
         <UpPlaceBookMark />
       </div>
     </div>
