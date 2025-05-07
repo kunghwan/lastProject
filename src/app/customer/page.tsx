@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { TiPlus } from "react-icons/ti";
 import { IoClose } from "react-icons/io5";
 import { LuMailPlus } from "react-icons/lu";
@@ -26,6 +26,20 @@ const QnaPage = () => {
   //! 검색어가 포함된 질문만 필터링
   //Todo: includes() → 문자열 안에 다른 문자열이 들어있는지 확인하는 함수
   const filteredQna = qna.filter((item) => item.question.includes(searchTerm));
+
+  //! esc키를 누르면 닫히게하기
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsanswerShowing(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <div className="mt-5 relative h-screen  hsecol gap-y-2.5 px-5  ">
