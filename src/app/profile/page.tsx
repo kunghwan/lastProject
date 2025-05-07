@@ -19,19 +19,6 @@ const MePage = () => {
     return () => unsubscribe();
   }, []);
 
-  //! 새글작성후 유저가 마이페이지로 돌아오면 새글이 안보임 이슈 강제 새로고침 하기
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        location.reload(); // 새로고침
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () =>
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, []);
-
   const { data: userData, isLoading: userLoading } = useUserByUid(uid || "");
   const { data: posts, isLoading: postLoading } = usePostsByUid(uid || "");
 
