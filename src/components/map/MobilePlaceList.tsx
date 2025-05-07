@@ -21,7 +21,7 @@ const MobilePlaceList = ({
     <>
       {/* 목록 보기 버튼 */}
       <button
-        className="md:hidden fixed bottom-[10vh] my-2 left-[50%] translate-x-[-50%] z-10 bg-white text-gray-500 py-2 rounded-full shadow px-10 "
+        className="md:hidden fixed bottom-[10vh] my-2 left-[50%] translate-x-[-50%] z-10 bg-white text-gray-500 py-2 rounded-full shadow px-7 "
         onClick={() => setIsOpen(true)}
       >
         <div className="flex items-center gap-x-2 ">
