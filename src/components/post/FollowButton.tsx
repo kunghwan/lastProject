@@ -132,7 +132,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
     };
 
     checkFollowing();
-    //리턴으로 청소 작업필요
+    //Todo: 리턴으로 청소 작업필요
     return () => {
       checkFollowing();
     };

@@ -35,7 +35,7 @@ const initialState: UploadPostProps = {
   uid: "",
   userNickname: "",
   userProfileImage: "",
-  imageUrl: null,
+  imageUrl: "",
   title: "",
   content: "",
   lo: {
