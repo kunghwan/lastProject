@@ -132,7 +132,10 @@ const ProfileLayout = ({
                 className="w-full h-full rounded-full  sm:x-auto  transition-all duration-500 ease-in-out transform hover:scale-[1.02] cursor-pointer"
               />
               {isMyPage && (
-                <button className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-medium rounded-full opacity-0 hover:opacity-70 transition-opacity">
+                <button
+                  onClick={() => setEditOpen(true)} // ✅ 추가됨
+                  className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-medium rounded-full opacity-0 hover:opacity-70 transition-opacity"
+                >
                   수정하기
                 </button>
               )}
@@ -143,7 +146,10 @@ const ProfileLayout = ({
                   {userData.nickname || `없는 유저asd입니다.`}
                 </h1>
                 {isMyPage ? (
-                  <button className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400 dark:active:text-gray-100">
+                  <button
+                    onClick={() => setEditOpen(true)} // ✅ 추가됨
+                    className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400 dark:active:text-gray-100"
+                  >
                     <IoSettingsOutline />
                   </button>
                 ) : (
