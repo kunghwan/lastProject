@@ -123,5 +123,6 @@ type PlaceProps = {
 
 // 전역적으로 상태관리
 interface Window {
+  kakao: any; // 카카오 불러오기
   checkUnreadNotifications?: () => void; //알림 읽음 여부
 }

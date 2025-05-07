@@ -3,15 +3,9 @@
 import SearchForm from "@/components/map/SearchForm";
 import MobilePlaceList from "@/components/map/MobilePlaceList";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { IoCloseSharp, IoPhonePortraitSharp } from "react-icons/io5";
+import { IoPhonePortraitSharp } from "react-icons/io5";
 import { TbMapPinDown } from "react-icons/tb";
-import { PlaceProps } from "@/types";
-
-declare global {
-  interface Window {
-    kakao: any;
-  }
-}
+import PlaceDetail from "@/components/map/PlaceDetail";
 
 const MapPage = () => {
   const [map, setMap] = useState<any>(null);
@@ -25,22 +19,20 @@ const MapPage = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const detailRef = useRef<HTMLDivElement>(null); // 상세 정보창 ref
 
-  // const detailInfoCss =
-  //   "absolute z-10 shadow-md sm:top-20 sm:right-75 sm:block top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 sm:w-60 w-[65vw] max-w-xs bg-white border border-gray-300 rounded-xl sm:rounded-2xl p-4";
-
   useEffect(() => {
     const initMap = () => {
       if (!mapRef.current) return;
 
       const center = new window.kakao.maps.LatLng(36.3324, 127.4345);
       const mapInstance = new window.kakao.maps.Map(mapRef.current, {
-        center,
-        level: 6,
+        center, // 처음 시작할때 지도 나오는 위치
+        level: 6, // 지도 확대 범위 레벨
       });
 
       setMap(mapInstance);
     };
 
+    // 카카오맵 api 불러오기
     const loadKakaoMapScript = () => {
       const script = document.createElement("script");
       script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_API_KEY}&autoload=false&libraries=services`;
@@ -73,7 +65,6 @@ const MapPage = () => {
         Number(place.x)
       );
 
-      // ✅ 클릭된 마커를 지도 중앙으로 부드럽게 이동
       map.panTo(latlng);
 
       if (showDetail) setSelectedPlace(place);
@@ -99,7 +90,6 @@ const MapPage = () => {
 
           setPlaces(data);
 
-          // 기존 마커 및 오버레이 제거
           markers.current.forEach((m) => m.setMap(null));
           markers.current = [];
 
@@ -108,10 +98,9 @@ const MapPage = () => {
             const marker = new maps.Marker({ position, map });
 
             maps.event.addListener(marker, "click", () => {
-              handlePlaceClick(place);
+              handlePlaceClick(place, true);
             });
 
-            // ✅ Tailwind 적용된 오버레이
             const label = document.createElement("div");
             label.className =
               "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-20 ";
@@ -120,7 +109,7 @@ const MapPage = () => {
             const overlay = new maps.CustomOverlay({
               content: label,
               position,
-              yAnchor: 0.1, //마커 위치 조정
+              yAnchor: 0.1,
             });
 
             overlay.setMap(map);
@@ -145,7 +134,6 @@ const MapPage = () => {
     setKeyword(inputValue.trim());
   };
 
-  // ✅ 상세 정보창 외부 클릭 시 닫기
   const handleOutsideClick = useCallback(
     (event: MouseEvent) => {
       if (
@@ -166,6 +154,10 @@ const MapPage = () => {
     };
   }, [handleOutsideClick]);
 
+  const handleCloseDetail = useCallback(() => {
+    setSelectedPlace(null);
+  }, []);
+
   return (
     <div className="relative flex h-[76vh] dark:text-gray-600">
       {/* 지도 */}
@@ -182,46 +174,11 @@ const MapPage = () => {
 
       {/* 상세정보창 */}
       {selectedPlace && !isSidebarOpen && (
-        <div
-          ref={detailRef}
-          className="absolute z-10 shadow-md sm:top-20 sm:right-75 left-[30%] sm:block top-[30%]  -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 sm:w-60 w-[65vw] max-w-xs bg-white border border-gray-300 rounded-xl sm:rounded-2xl p-4"
-        >
-          <button
-            onClick={() => setSelectedPlace(null)}
-            className="absolute top-2 right-2 text-lg sm:text-xl font-bold"
-          >
-            <IoCloseSharp />
-          </button>
-
-          <h2 className="text-sm sm:text-md mb-2 font-semibold">상세 정보</h2>
-          <p className="font-bold sm:font-extrabold text-base sm:text-lg text-green-600 truncate">
-            {selectedPlace.place_name}
-          </p>
-          <p className="text-sm truncate">
-            {selectedPlace.road_address_name || selectedPlace.address_name}
-          </p>
-          <p className="text-xs sm:text-sm text-gray-600 mt-1 truncate">
-            {selectedPlace.phone || "전화번호 없음"}
-          </p>
-
-          <ul className="mt-2 flex gap-x-2 text-lg sm:text-xl">
-            {jusoClip(selectedPlace).map(({ icon, text, msg }, i) => (
-              <button
-                key={i}
-                onClick={() => {
-                  if (text === "전화번호 없음") {
-                    alert("해당 장소의 전화번호가 등록되지 않았습니다.");
-                  } else {
-                    navigator.clipboard.writeText(text);
-                    alert(msg);
-                  }
-                }}
-              >
-                {icon}
-              </button>
-            ))}
-          </ul>
-        </div>
+        <PlaceDetail
+          place={selectedPlace}
+          onClose={handleCloseDetail}
+          detailRef={detailRef}
+        />
       )}
 
       {/* 검색 결과 리스트 */}
@@ -265,16 +222,3 @@ const MapPage = () => {
 };
 
 export default MapPage;
-
-const jusoClip = (selectedPlace: PlaceProps) => [
-  {
-    icon: <TbMapPinDown />,
-    text: selectedPlace.road_address_name || selectedPlace.address_name,
-    msg: "주소가 복사되었습니다!",
-  },
-  {
-    icon: <IoPhonePortraitSharp />,
-    text: selectedPlace.phone || "전화번호 없음",
-    msg: "전화번호가 복사되었습니다!",
-  },
-];

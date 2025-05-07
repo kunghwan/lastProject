@@ -20,8 +20,17 @@ import { dbService } from "@/lib";
 const headBtn = "grayButton text-xl sm:text-2xl";
 const darkText = "grayButton w-full dark:bg-[#333333] dark:text-[#F1F5F9]";
 
+// 초기 로딩 시 다크 모드 적용
+const storedDarkMode =
+  typeof window !== "undefined" ? localStorage.getItem("darkMode") : null;
+if (storedDarkMode === "true") {
+  document.documentElement.classList.add("dark");
+}
+
 const Header = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(
+    storedDarkMode === "true" || false
+  ); //  초기 상태 설정
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hasUnread, setHasUnread] = useState(false);
   const router = useRouter();
@@ -31,15 +40,6 @@ const Header = () => {
     () => ["/signin", "/signup"].includes(pathname!),
     [pathname]
   );
-
-  useEffect(() => {
-    const storedDarkMode = localStorage.getItem("darkMode");
-    setIsDarkMode(storedDarkMode === "true");
-    document.documentElement.classList.toggle(
-      "dark",
-      storedDarkMode === "true"
-    );
-  }, []);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDarkMode);
