@@ -170,6 +170,23 @@ const MapPage = () => {
         inputClassName="mx-2 w-48"
       />
 
+      {/* {!selectedPlace && (
+        <div className="absolute z-10 top-[14%] left-[50%] translate-x-[-50%] flex gap-2 md:left-50 md:transform-none">
+          {["지하철", "공원", "맛집", "백화점"].map((word) => (
+            <button
+              key={word}
+              className="bg-white border border-gray-300 px-0 py-2 rounded-full shadow-sm hover:bg-gray-100 text-sm w-17"
+              onClick={() => {
+                setInputValue(word);
+                setKeyword(word);
+              }}
+            >
+              {word}
+            </button>
+          ))}
+        </div>
+      )} */}
+
       {/* 상세정보창 */}
       {selectedPlace && !isSidebarOpen && (
         <PlaceDetail
@@ -207,7 +224,7 @@ const MapPage = () => {
       )}
 
       {/* 모바일용 슬라이딩 패널 */}
-      {places.length !== 0 && (
+      {keyword.length !== 0 && (
         <MobilePlaceList
           isOpen={isSidebarOpen}
           setIsOpen={setIsSidebarOpen}

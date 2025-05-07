@@ -151,6 +151,7 @@ const BookmarkPage = () => {
             아직 좋아요한 게시물이 없습니다.
           </div>
         ) : (
+
           sortedPosts.map((post) => {
             const image =
               Array.isArray(post.imageUrl) && post.imageUrl.length > 0
@@ -169,6 +170,19 @@ const BookmarkPage = () => {
                   />
                   <div className="font-bold">{post.userNickname}</div>
                 </div>
+
+          sortedPosts.map((post) => (
+            <div key={post.id}>
+              <div className="m-1.5 flex items-center gap-1.5">
+                <img
+                  src={post.userProfileImage}
+                  alt="userProfileImage"
+                  className="w-8 h-8  rounded-2xl"
+                />
+                <div className="font-bold">{post.userNickname}</div>
+              </div>
+              {post.imageUrl ? (
+
                 <img
                   src={image}
                   alt="Post image"
