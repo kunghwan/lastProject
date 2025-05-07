@@ -20,12 +20,6 @@ import { dbService } from "@/lib";
 const headBtn = "grayButton text-xl sm:text-2xl";
 const darkText = "grayButton w-full dark:bg-[#333333] dark:text-[#F1F5F9]";
 
-declare global {
-  interface Window {
-    checkUnreadNotifications?: () => void;
-  }
-}
-
 const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
