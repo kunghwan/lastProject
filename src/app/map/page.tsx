@@ -3,8 +3,6 @@
 import SearchForm from "@/components/map/SearchForm";
 import MobilePlaceList from "@/components/map/MobilePlaceList";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { IoPhonePortraitSharp } from "react-icons/io5";
-import { TbMapPinDown } from "react-icons/tb";
 import PlaceDetail from "@/components/map/PlaceDetail";
 
 const MapPage = () => {
