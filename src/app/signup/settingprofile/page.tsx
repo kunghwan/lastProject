@@ -34,20 +34,19 @@ const SettingProfile = () => {
 
   const closeAlert = () => setAlertMsg("");
 
-  // 1. sessionStorage에서 초기 데이터 불러오기
+  // ✅ 초기값 복원 + 유효성 검사도 동기화
   useEffect(() => {
-    nicknameRef.current?.focus();
     const savedDraft = sessionStorage.getItem("profileDraft");
     if (savedDraft) {
       const parsed = JSON.parse(savedDraft);
       setProfile(parsed);
-    }
-  }, []);
 
-  // 2. 입력값이 바뀔 때 sessionStorage에 저장
-  useEffect(() => {
-    sessionStorage.setItem("profileDraft", JSON.stringify(profile));
-  }, [profile]);
+      if (parsed.nickname)
+        validateNickname(parsed.nickname).then(setNicknameError);
+      if (parsed.bio) setBioError(validateBio(parsed.bio));
+    }
+    nicknameRef.current?.focus();
+  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -98,7 +97,8 @@ const SettingProfile = () => {
       const { name, value } = e.target;
       const updated = { ...profile, [name]: value };
       setProfile(updated);
-      sessionStorage.setItem("profileDraft", JSON.stringify(updated)); // ✅ 직접 저장
+      sessionStorage.setItem("profileDraft", JSON.stringify(updated)); // ✅ 타이밍 보장
+
       if (name === "nickname") setNicknameError(await validateNickname(value));
       if (name === "bio") setBioError(validateBio(value));
     },
@@ -110,11 +110,13 @@ const SettingProfile = () => {
       const file = e.target.files?.[0];
       if (file) {
         const previewUrl = URL.createObjectURL(file);
-        setProfile((prev) => ({ ...prev, profileImageUrl: previewUrl }));
+        const updated = { ...profile, profileImageUrl: previewUrl };
+        setProfile(updated);
         setImageFile(file);
+        sessionStorage.setItem("profileDraft", JSON.stringify(updated)); // ✅ 미리보기 저장
       }
     },
-    []
+    [profile]
   );
 
   const triggerFileSelect = useCallback(() => {
@@ -177,7 +179,7 @@ const SettingProfile = () => {
 
       setAlertMsg("회원가입이 완료되었습니다!");
       sessionStorage.removeItem("signupUser");
-      sessionStorage.removeItem("profileDraft"); // ✅ 임시 저장 제거
+      sessionStorage.removeItem("profileDraft"); // ✅ 초안 제거
       router.push("/");
     } catch (err) {
       console.error("가입 오류:", err);
