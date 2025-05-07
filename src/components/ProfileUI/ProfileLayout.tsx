@@ -148,7 +148,7 @@ const ProfileLayout = ({
           </div>
           <div className="flex flex-col justify-center items-center">
             <h1 className="font-medium text-2xl p-1 hover:scale-103 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
-              {userData.nickname || `없는 유123저입니다.`}
+              {userData.nickname || `없는 유저입니다.`}
             </h1>
             <div className="flex flex-1 justify-center mx-auto">
               <div className="flex gap-5 ">

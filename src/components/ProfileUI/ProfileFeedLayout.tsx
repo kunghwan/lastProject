@@ -2,7 +2,7 @@ import { Post } from "@/types/post";
 import { doc, deleteDoc } from "firebase/firestore";
 import { dbService } from "@/lib/firebase";
 import { useState } from "react";
-import { ImCancelCircle } from "react-icons/im";
+import { HiOutlinePencilSquare } from "react-icons/hi2";
 
 const ProfileFeedComponent = ({
   posts,
@@ -46,9 +46,9 @@ const ProfileFeedComponent = ({
               {isMyPage && (
                 <button
                   onClick={() => handleDelete(post.id!)}
-                  className="absolute top-2 right-2 text-s text-pink-700 hover:animate-pulse hover:scale-[1.02] cursor-pointer p-2 hover:text-pink-600 active:text-pink-700  dark:active:text-pink-100"
+                  className="absolute bottom-10 right-1 text-s text-pink-700 hover:animate-pulse hover:scale-[1.02] cursor-pointer p-2 hover:text-pink-600 active:text-pink-700  dark:active:text-pink-100"
                 >
-                  <ImCancelCircle />
+                  <HiOutlinePencilSquare />
                 </button>
               )}
               <div className="text-sm">
