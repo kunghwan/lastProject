@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import { dbService } from "./firebase";
 import { Post } from "@/types/post";
-import { User } from "../types"; // 또는 "@/types" 경로 설정에 따라 변경
+//import { User } from"../types"; // 또는 "@/types" 경로 설정에 따라 변경
 
 // 🔹 특정 uid를 가진 유저의 모든 게시물
 export const getPostsByUserUid = async (uid: string): Promise<Post[]> => {
