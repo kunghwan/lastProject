@@ -7,13 +7,12 @@ import {
   getDocs,
   query,
   orderBy,
-  updateDoc,
   doc,
   setDoc,
 } from "firebase/firestore";
 import { authService, dbService } from "@/lib/firebase";
 import { Post } from "@/types/post";
-import { GoArrowLeft, GoHeart } from "react-icons/go";
+import { GoHeart } from "react-icons/go";
 import { useRouter } from "next/navigation";
 import UpPlaceBookMark from "@/components/upplace/UpPlaceBookMark";
 
@@ -112,7 +111,7 @@ const BookmarkPage = () => {
 
   return (
     <div className="flex flex-col">
-      <div className="grid grid-cols-2 gap-x-2 mb-20 lg:grid-cols-3 ml-2.5 mr-2.5 transition-all">
+      <div className="grid grid-cols-2 gap-x-2 mb-20 lg:grid-cols-3 p-1.5 m-1 transition-all">
         {sortedPosts.length === 0 ? (
           <div className="col-span-2 lg:col-span-3 flex justify-center items-center mt-80 text-gray-500 text-center text-xl animate-bounce">
             아직 좋아요한 게시물이 없습니다.
@@ -124,7 +123,7 @@ const BookmarkPage = () => {
                 <img
                   src={post.userProfileImage}
                   alt="userProfileImage"
-                  className="rounded w-8 h-8"
+                  className=" w-8 h-8"
                 />
                 <div className="font-bold">{post.userNickname}</div>
               </div>
@@ -132,10 +131,10 @@ const BookmarkPage = () => {
                 <img
                   src={post.imageUrl}
                   alt="Post image"
-                  className="w-full h-100 object-cover rounded-lg mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.02]"
+                  className="w-full h-100 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01]"
                 />
               ) : (
-                <div className="w-full h-100 transition-all duration-500 ease-in-out transform hover:scale-[1.02] flex items-center justify-center rounded-lg mb-2">
+                <div className="w-full h-100 transition-all duration-500 ease-in-out transform hover:scale-[1.01] flex items-center justify-center mb-2">
                   <img
                     src="/image/logo1.png"
                     alt="No image available"
@@ -152,7 +151,7 @@ const BookmarkPage = () => {
                 >
                   <GoHeart />
                 </button>
-                <span>{post.likes.length}개</span>
+                <span>{post.likes.length}</span>
               </div>
             </div>
           ))

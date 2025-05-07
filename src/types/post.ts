@@ -17,7 +17,7 @@ export interface FeedPageProps {
 }
 // 포스트 하나에 대한 타입
 export interface Post {
-  id: string; // 게시물 고유 ID
+  id?: string; // 게시물 고유 ID
   imageUrl?: string | null; // 게시물 대표 이미지 URL
   uid: string; // 작성자 ID
   content: string; // 게시물 내용 또는 설명

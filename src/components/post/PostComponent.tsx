@@ -68,13 +68,13 @@ const PostComponent = () => {
   return (
     <div className="grid grid-cols-1 gap-y-3 mb-20 md:grid-cols-2 lg:grid-cols-3 ml-2.5 mr-2.5">
       {posts.map((post) => (
-        <div key={post.id} className="rounded-lg p-1 ">
+        <div key={post.id} className="p-1.5 m-1">
           <button
             className="flex gap-1.5 items-center text-center m-1.5"
             onClick={() => handleClick(post.userNickname)} // ✨ uid 전달 추가
           >
             <img
-              className="w-8 h-8 rounded border border-gray-200 "
+              className="w-8 h-8 border rounded-2xl border-gray-200 "
               src={post.userProfileImage || defaultImgUrl}
               alt="user profile image"
             />
@@ -84,10 +84,10 @@ const PostComponent = () => {
             <img
               src={post.imageUrl}
               alt="Post image"
-              className="w-full h-128 object-cover rounded-lg mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.02]"
+              className="w-full h-128 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01]"
             />
           ) : (
-            <div className="w-full h-128 bg-gray-200 flex items-center justify-center rounded-lg mb-2">
+            <div className="w-full h-128 bg-gray-200 flex items-center justify-center mb-2">
               <img
                 src="/image/whitelogo1.png"
                 alt="No image available"
