@@ -42,7 +42,7 @@ const QnaPage = () => {
   }, []);
 
   return (
-    <div className="mt-5 relative h-screen  hsecol gap-y-2.5 px-5  ">
+    <div className="mt-5 relative min-h-screen  hsecol gap-y-2.5 px-5  ">
       <div className="z-3">
         <ul>
           <li className="mb-2  flex justify-center ">
@@ -96,9 +96,9 @@ const QnaPage = () => {
         </ul>
       </div>
 
-      <div className="mt-10 font-bold hsecol items-center pb-20 max-[700px]:text-sm md:text-xl w-full xl:pb-0">
+      <div className="mt-5 font-bold hsecol items-center pb-10  max-[700px]:text-sm md:text-xl w-full xl:pb-0">
         <p className="text-gray-500 dark:text-white">
-          추가로 질문사항이 있으시면{" "}
+          추가로 질문사항이 있으시면
         </p>
         <p className="z-4 flex text-gray-500 dark:text-white">
           <a
