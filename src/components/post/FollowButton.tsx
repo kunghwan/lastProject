@@ -5,6 +5,8 @@ import { dbService, FBCollection } from "@/lib";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState, useTransition } from "react";
 import Loaiding from "../Loading";
+import { serverTimestamp } from "firebase/firestore";
+import AlertModal from "@/components/AlertModal";
 
 interface FollowButtonProps {
   followingId?: string; // 팔로잉할 유저의 uid
@@ -16,6 +18,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
   const { user } = AUTH.use();
   const navi = useRouter();
   const [isFollowing, setIsFollowing] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const handleFollow = () => setIsFollowing((prev) => !prev);
   const [isPening, startTransition] = useTransition();
 
@@ -60,12 +63,12 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
             follwingId: followingId,
             follwerId: user.uid,
             followerNickname: user?.nickname,
-            createdAt: new Date().toLocaleString(),
+            createdAt: serverTimestamp(),
             isRead: false,
           });
         console.log(followingId, followNickName, user.uid, 51);
         setIsFollowing(true);
-        alert(`${followNickName}님을 팔로우 했습니다`);
+        setAlertMessage(`${followNickName}님을 팔로우 했습니다`);
       } catch (error: any) {
         console.log(error.message);
         alert("팔로우 중 오류가 발생했습니다. 다시 시도해주세요.");
@@ -76,7 +79,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
   //언팔로우 처리
   const onUnFollow = useCallback(() => {
     if (!user) {
-      alert("로그인 후 이용해주세요");
+      setAlertMessage("로그인 후 이용해주세요");
       return navi.push("/signin");
     }
     startTransition(async () => {
@@ -126,12 +129,10 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
 
         return console.log(error.message);
       }
-
-      checkFollowing();
     };
 
     checkFollowing();
-    //리턴으로 청소 작업필요
+    //Todo: 리턴으로 청소 작업필요
     return () => {
       checkFollowing();
     };
@@ -140,6 +141,12 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
   return (
     <div>
       {isPening && <Loaiding />}
+      {alertMessage && (
+        <AlertModal
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
       {isFollowing ? (
         <button onClick={() => onUnFollow()} className="followButton">
           UnFollow
