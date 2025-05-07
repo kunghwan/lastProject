@@ -69,16 +69,20 @@ const BookmarkPage = () => {
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
       case "oldest":
-        return [...posts].sort(
-          (a, b) =>
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        );
+        // 최신순으로 정렬한 다음 뒤집기
+        return [...posts]
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+          .reverse();
       case "likes":
         return [...posts].sort((a, b) => b.likes.length - a.likes.length);
       default:
         return posts;
     }
   };
+
   const toggleLike = async (postId: string) => {
     const user = authService.currentUser;
     if (!user) return;
@@ -110,37 +114,62 @@ const BookmarkPage = () => {
   const sortedPosts = sortPosts(posts, sort);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col mx-auto p-2 lg:w-3/4 w-full">
+      {/* 제목 + 뒤로가기 버튼 */}
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-xl font-bold">❤️ 내가 좋아요한 추천 장소</h1>
+        <button
+          onClick={handleBack}
+          className="text-sm text-indigo-600 hover:underline hover:scale-105 transition-transform duration-200"
+        >
+          ← 이전 페이지
+        </button>
+      </div>
+      <div className="flex gap-2 mb-4">
+        {[
+          { label: "최신순", value: "recent" },
+          { label: "오래된순", value: "oldest" },
+          { label: "좋아요순", value: "likes" },
+        ].map(({ label, value }) => (
+          <button
+            key={value}
+            onClick={() => setSort(value as SortOption)}
+            className={`px-4 py-1.5 rounded-full border text-sm font-medium shadow  transition-all duration-200 hover:scale-105 
+        ${
+          sort === value
+            ? "bg-blue-500 text-white border-blue-500"
+            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+        }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
       <div className="grid grid-cols-2 gap-x-2 mb-20 lg:grid-cols-3 p-1.5 m-1 transition-all">
-        {sortedPosts.length === 0 ? (
-          <div className="col-span-2 lg:col-span-3 flex justify-center items-center mt-80 text-gray-500 text-center text-xl animate-bounce">
-            아직 좋아요한 게시물이 없습니다.
-          </div>
-        ) : (
-          sortedPosts.map((post) => (
+        {sortedPosts.map((post) => {
+          const image =
+            Array.isArray(post.imageUrl) && post.imageUrl.length > 0
+              ? post.imageUrl[0]
+              : typeof post.imageUrl === "string"
+              ? post.imageUrl
+              : "/image/logo1.png";
+
+          return (
             <div key={post.id}>
               <div className="m-1.5 flex items-center gap-1.5">
                 <img
                   src={post.userProfileImage}
                   alt="userProfileImage"
-                  className="w-8 h-8  rounded-2xl"
+                  className="w-8 h-8 rounded-2xl"
                 />
                 <div className="font-bold">{post.userNickname}</div>
               </div>
-              {post.imageUrl ? (
+              {post.imageUrl && (
                 <img
-                  src={post.imageUrl}
+                  src={image}
                   alt="Post image"
                   className="w-full h-100 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01]"
                 />
-              ) : (
-                <div className="w-full h-100 transition-all duration-500 ease-in-out transform hover:scale-[1.01] flex items-center justify-center mb-2">
-                  <img
-                    src="/image/logo1.png"
-                    alt="No image available"
-                    className=""
-                  />
-                </div>
               )}
               <p>{post.content}</p>
               <div className="flex items-center gap-2 mb-2.5">
@@ -154,12 +183,11 @@ const BookmarkPage = () => {
                 <span>{post.likes.length}</span>
               </div>
             </div>
-          ))
-        )}
+          );
+        })}
       </div>
-      <div className="mt-10"></div>
 
-      {/* 수정한 부분 추천장소 좋아요 모은거 */}
+      {/* 추천 장소 섹션 */}
       <div className="col-span-2 lg:col-span-3">
         <UpPlaceBookMark />
       </div>

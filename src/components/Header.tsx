@@ -119,7 +119,7 @@ const Header = () => {
       <header className="flex items-center justify-between my-4 px-4 lg:max-w-300 mx-auto border-b-2 border-gray-300 pb-4">
         <Link
           href="/"
-          className="hover:opacity-80 flex justify-center items-center"
+          className="hover:opacity-80 flex flex-row items-center gap-x-2"
         >
           <Image
             src={isDarkMode ? "/image/whitelogo1.PNG" : "/image/logo1.PNG"}
@@ -127,6 +127,9 @@ const Header = () => {
             height={80}
             width={80}
           />
+          <span className="font-bold text-2xl whitespace-pre-line">
+            방방{"\n"}콕콕
+          </span>
         </Link>
 
         <ul className="hidden sm:flex items-center gap-x-4">
