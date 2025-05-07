@@ -52,7 +52,14 @@ const SettingProfile = () => {
 
   const validateNickname = async (nickname: string) => {
     if (!nickname) return "닉네임을 입력해주세요";
+
+    // 한글 포함 여부 검사
     if (/[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(nickname)) return "한글은 입력할 수 없습니다";
+
+    // 영어와 숫자만 허용 (특수문자 제외)
+    const isValid = /^[a-zA-Z0-9]+$/.test(nickname);
+    if (!isValid) return "닉네임은 영어와 숫자만 사용할 수 있습니다";
+
     if (nickname.length >= 18)
       return "닉네임은 18글자 미만으로만 입력가능합니다";
 
@@ -60,6 +67,7 @@ const SettingProfile = () => {
       .collection(FBCollection.USERS)
       .where("nickname", "==", nickname)
       .get();
+
     if (!snapshot.empty) return "닉네임이 중복됩니다";
 
     return null;
@@ -182,7 +190,9 @@ const SettingProfile = () => {
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder="유저이름"
-            className={`${settingProfile} ${nicknameError ? "border-red-500" : ""}`}
+            className={`${settingProfile} ${
+              nicknameError ? "border-red-500" : ""
+            }`}
           />
           {nicknameError && (
             <div className="absolute text-red-500 text-xs mt-1">
