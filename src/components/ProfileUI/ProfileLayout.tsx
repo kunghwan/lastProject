@@ -147,7 +147,11 @@ const ProfileLayout = ({
                 </h1>
                 {isMyPage ? (
                   <button
+
+                    onClick={() => setEditOpen(true)}
+
                     onClick={() => setEditOpen(true)} // ✅ 추가됨
+
                     className="text-2xl hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400 dark:active:text-gray-100"
                   >
                     <IoSettingsOutline />
@@ -197,13 +201,19 @@ const ProfileLayout = ({
                 className=" transition-all duration-500 ease-in-out transform hover:scale-[1.02] w-full h-full rounded-full sm:x-auto cursor-pointer"
               />
               {isMyPage && (
-                <button className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-medium rounded-full opacity-0 hover:opacity-70 transition-opacity">
+                <button
+                  onClick={() => setEditOpen(true)}
+                  className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-medium rounded-full opacity-0 hover:opacity-70 transition-opacity"
+                >
                   수정하기
                 </button>
               )}
             </div>
             {isMyPage ? (
-              <button className="text-2xl absolute right-30 sm:right-50 hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400  dark:active:text-gray-100">
+              <button
+                onClick={() => setEditOpen(true)}
+                className="text-2xl absolute right-30 sm:right-50 hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400  dark:active:text-gray-100"
+              >
                 <IoSettingsOutline />
               </button>
             ) : (
@@ -262,7 +272,7 @@ const ProfileLayout = ({
         )}
       </div>
       {editOpen && (
-        <div className="fixed inset-0  bg-opacity-50 z-50 flex justify-center items-center ">
+        <div className="fixed inset-0  bg-opacity-50 z-60 flex justify-center items-center ">
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-xl w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">프로필 수정</h2>
 
