@@ -14,6 +14,7 @@ import { authService, dbService } from "@/lib/firebase";
 import { Post } from "@/types/post";
 import { GoArrowLeft, GoHeart } from "react-icons/go";
 import { useRouter } from "next/navigation";
+import UpPlaceBookMark from "@/components/upplace/UpPlaceBookMark";
 
 type SortOption = "recent" | "oldest" | "likes";
 
@@ -142,6 +143,9 @@ const BookmarkPage = () => {
           </div>
         ))
       )}
+      <div>
+        <UpPlaceBookMark />
+      </div>
     </div>
   );
 };
