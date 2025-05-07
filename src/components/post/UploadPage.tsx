@@ -23,6 +23,7 @@ import Loaiding from "../Loading";
 import UploadTag from "./UploadTag";
 import AlertModal from "../AlertModal";
 import { TypeAnimation } from "react-type-animation";
+import { serverTimestamp } from "firebase/firestore";
 
 export interface UploadPostProps extends Post {
   imgs: string[];
