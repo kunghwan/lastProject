@@ -59,7 +59,10 @@ const Header = () => {
     const buttons = [];
     if (user) {
       buttons.push(
-        { icon: <IoBookmarkOutline />, onClick: () => router.push("/map") },
+        {
+          icon: <IoBookmarkOutline />,
+          onClick: () => router.push("/bookmark"),
+        },
         {
           icon: (
             <div className="relative text-2xl">
