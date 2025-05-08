@@ -115,7 +115,7 @@ const MapPage = () => {
               //! 마커 아래에 생기는 라벨 생성
               const label = document.createElement("div");
               label.className =
-                "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-20 ";
+                "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-22 text-center ";
               label.innerText = place.place_name;
 
               const overlay = new maps.CustomOverlay({
