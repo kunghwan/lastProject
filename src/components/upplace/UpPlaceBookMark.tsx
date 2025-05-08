@@ -69,7 +69,10 @@ const UpPlaceBookMark = () => {
         // 장소가 있을 때: 그리드 레이아웃으로 PlaceCard 및 삭제 버튼 표시
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {places.map((place) => (
-            <div key={place.contentid} className="relative">
+            <div
+              key={place.contentid}
+              className="relative  hover:bg-gray-100 rounded-2xl p-1.5 transition-all duration-200"
+            >
               {/* 장소 카드에 likedOverride, countOverride로 좋아요 표시 제어 */}
               <PlaceCard
                 place={place}

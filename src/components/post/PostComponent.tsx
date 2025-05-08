@@ -9,9 +9,6 @@ import LocationButton from "./LocationButton";
 import { useRouter } from "next/navigation";
 import { authService } from "@/lib";
 
-const defaultImgUrl =
-  "https://i.pinimg.com/1200x/3e/c0/d4/3ec0d48e3332288604e8d48096296f3e.jpg";
-
 const PostComponent = () => {
   const router = useRouter();
   const [posts, setPosts] = useState<PostType[]>([]);
@@ -114,7 +111,10 @@ const PostComponent = () => {
           : [post.imageUrl];
 
         return (
-          <div key={post.id} className="p-1.5 hover:bg-gray-100 rounded-2xl">
+          <div
+            key={post.id}
+            className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl"
+          >
             <button
               className="flex gap-1.5 items-center text-center m-1.5"
               onClick={() => handleClick(post.uid, post.userNickname)}
@@ -248,3 +248,6 @@ const PostComponent = () => {
 };
 
 export default PostComponent;
+
+const defaultImgUrl =
+  "https://www.namdokorea.com/site/jeonnam/tour/images/noimage.gif"; // 기본 프로필 이미지 URL
