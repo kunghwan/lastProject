@@ -103,7 +103,7 @@ const Header = () => {
       buttons.push({
         label: user ? "로그아웃" : "로그인", // 로그인 상태에 따라 텍스트 변경
         onClick: () => (user ? logout() : router.push("/signin")), // 클릭 시 로그아웃 또는 로그인 페이지로 이동
-        className: "text-2xl font-bold h-14 ",
+        className: "text-2xl font-bold h-14 hover:opacity-80",
       });
     }
     return buttons;
