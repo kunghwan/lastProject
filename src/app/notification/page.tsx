@@ -56,7 +56,7 @@ const NotificationListPage = () => {
         ...doc.data(),
         id: doc.id,
       })) as Notifications[];
-      console.log(notifications, "알림확인용");
+      // console.log(notifications, "알림확인용");
       //! 마지막 문서를 저장해서 다음 페이지 기준점으로 사용할 준비를 함
       //Todo: snap.docs의 마지막 인덱스 이거나 null 임 (만약 마지막 문서가 없으면 → 대신 null을 반환)
       const lastDoc = snap.docs[snap.docs.length - 1] ?? null;

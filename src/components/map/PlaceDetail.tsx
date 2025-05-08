@@ -31,7 +31,7 @@ const PlaceDetail: React.FC<Props> = ({ place, onClose, detailRef }) => {
   return (
     <div
       ref={detailRef}
-      className="absolute z-10 shadow-md sm:top-23 sm:right-75 left-[20%] sm:left-[30%] sm:block top-[30%] -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 w-60 max-w-xs bg-white border border-gray-300 rounded-xl sm:rounded-2xl p-4 h-fit"
+      className="absolute z-10 shadow-md sm:top-[17%] sm:right-75 left-[20%] sm:left-[30%] sm:block top-[28%] -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 w-60 max-w-xs bg-white border border-gray-300 rounded-xl sm:rounded-2xl p-3 h-fit"
     >
       <button
         onClick={onClose}

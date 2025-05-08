@@ -153,7 +153,6 @@ const UploadPostPage = () => {
           }
           //2. Firestore에 새 게시글 추가 (add 사용)
           await dbService.collection(FBCollection.POSTS).add({
-            id: user.name,
             uid: user.uid,
             imageUrl: imgUrls[0] || null, // 대표 이미지
             imgs: imgUrls,
