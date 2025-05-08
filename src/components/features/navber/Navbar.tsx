@@ -78,7 +78,7 @@ const Navbar = () => {
                   <ul className="flex flex-col justify-between items-center w-full h-full">
                     <li className="flex justify-center text-4xl dark:text-gray-600">
                       <button onClick={closeNavMenu}>
-                        <IoMdArrowDropup />
+                        <IoMdArrowDropup className="hover:animate-pulse" />
                       </button>
                     </li>
                     {NavBtns.map((btn, index) => (
