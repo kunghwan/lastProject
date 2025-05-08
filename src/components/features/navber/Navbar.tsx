@@ -2,15 +2,18 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
-import { FaRegMessage, FaPencil } from "react-icons/fa6";
-import { IoPersonSharp, IoStarOutline, IoGridOutline } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
 import { AUTH } from "@/contextapi/context";
-import { FaRegQuestionCircle } from "react-icons/fa";
-import { IoMdArrowDropup } from "react-icons/io";
+import { IoPersonSharp, IoStarOutline, IoGridOutline } from "react-icons/io5";
+import {
+  FaRegMessage,
+  FaPencil,
+  FaCircleQuestion,
+  FaCaretUp,
+} from "react-icons/fa6";
 
 const navStyle =
-  "hidden [@media(min-width:1425px)]:flex absolute w-16 top-10 -left-[125%] bg-gray-200 z-30 rounded-full transition-all duration-300";
+  "hidden [@media(min-width:1425px)]:flex absolute w-17 top-10 -left-[125%] bg-gray-200 z-30 rounded-full transition-all duration-300";
 
 const Navbar = () => {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
@@ -58,7 +61,7 @@ const Navbar = () => {
               {!isNavMenuOpen && (
                 <button
                   className={twMerge(
-                    "h-16 flex items-center justify-center text-3xl outline-none dark:text-gray-600 ",
+                    "h-17 flex items-center justify-center text-3xl outline-none dark:text-gray-600 ",
                     navStyle
                   )}
                   onClick={handleToggleNavMenu}
@@ -78,20 +81,20 @@ const Navbar = () => {
                   <ul className="flex flex-col justify-between items-center w-full h-full">
                     <li className="flex justify-center text-4xl dark:text-gray-600">
                       <button onClick={closeNavMenu}>
-                        <IoMdArrowDropup className="hover:animate-pulse" />
+                        <FaCaretUp className="hover:animate-pulse text-3xl " />
                       </button>
                     </li>
                     {NavBtns.map((btn, index) => (
                       <li key={index}>
                         <button
                           className={twMerge(
-                            "grayButton flex flex-col gap-y-1.5 items-center text-gray-600 transition-opacity duration-300",
+                            "grayButton flex flex-col gap-y-1.5 items-center transition-opacity duration-300",
                             pathname === btn.path && "text-green-500"
                           )}
                           onClick={() => navBtnClick(btn, index)}
                         >
                           {btn.icon}
-                          <p className="text-xs">{btn.name}</p>
+                          <p className="text-sm font-normal">{btn.name}</p>
                         </button>
                       </li>
                     ))}
@@ -131,7 +134,7 @@ const Navbar = () => {
 export default Navbar;
 
 const NavBtns = [
-  { name: "Q&A", icon: <FaRegQuestionCircle />, path: "/customer" },
+  { name: "Q&A", icon: <FaCircleQuestion />, path: "/customer" },
   { name: "추천", icon: <IoStarOutline />, path: "/upplace" },
   { name: "피드", icon: <FaRegMessage />, path: "/feed" },
   { name: "글쓰기", icon: <FaPencil />, path: "/profile/create" },

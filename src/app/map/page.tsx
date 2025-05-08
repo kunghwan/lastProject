@@ -231,7 +231,7 @@ const MapPage = () => {
                 className="bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50"
               >
                 <button
-                  className="flex flex-col items-center w-full p-3 gap-y-1"
+                  className="flex flex-col items-center w-full p-3 gap-y-1 focus:border focus:rounded-lg focus:bg-gray-50"
                   onClick={() => handlePlaceClick(place)}
                 >
                   <p className="font-bold">{place.place_name}</p>
