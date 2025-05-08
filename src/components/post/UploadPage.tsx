@@ -205,6 +205,10 @@ const UploadPostPage = () => {
     ]
   );
 
+  useEffect(() => {
+    titleRef.current?.focus();
+  }, []);
+
   //! 마우스 휠 가로로 변경
   useEffect(() => {
     const el = scrollRef.current; //ref로 지정한 DOM 요소(예: <div ref={scrollRef}>)를 가져옴
