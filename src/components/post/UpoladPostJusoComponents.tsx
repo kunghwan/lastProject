@@ -124,28 +124,36 @@ const JusoComponents = ({ juso, setJuso, jusoRef }: JusoProps) => {
       )}
       {isJusoUlShowing && (
         <ul className="mt-2 hsecol gap-y-2 bg-green-50 dark:bg-green-50/80 border border-gray-400  rounded p-2.5 max-h-50 overflow-y-auto">
-          {searchResults.map((item) => (
-            <li
-              key={item.id}
-              className="cursor-pointer bg-white rounded gap-y-2.5 hover:underline border p-1.5 hover:text-green-800 "
-              onClick={() => {
-                //주소를 클릭시 address를 juso에 저장하고 latitude와 longitude를 number로 변환하여 저장
-                setJuso({
-                  address: item.address_name,
-                  latitude: Number(item.y),
-                  longitude: Number(item.x),
-                });
-                //주소를 클릭시 검색결과를 초기화
-                setSearchResults([]);
-                setIsJusoUlShowing(false);
-                // setAddress를 클릭한 주소로 변경 다시 검색하기 위해 주소를 저장함
-                return setAddress(item.address_name);
-              }}
-            >
-              {item.address_name}
-              {item.place_name}
+          {searchResults.length === 0 ? (
+            <li>
+              <p className="font-bold flex justify-center">
+                검색결과가 없습니다.
+              </p>
             </li>
-          ))}
+          ) : (
+            searchResults.map((item) => (
+              <li
+                key={item.id}
+                className="cursor-pointer bg-white rounded gap-y-2.5 hover:underline border p-1.5 hover:text-green-800 "
+                onClick={() => {
+                  //주소를 클릭시 address를 juso에 저장하고 latitude와 longitude를 number로 변환하여 저장
+                  setJuso({
+                    address: item.address_name,
+                    latitude: Number(item.y),
+                    longitude: Number(item.x),
+                  });
+                  //주소를 클릭시 검색결과를 초기화
+                  setSearchResults([]);
+                  setIsJusoUlShowing(false);
+                  // setAddress를 클릭한 주소로 변경 다시 검색하기 위해 주소를 저장함
+                  return setAddress(item.address_name);
+                }}
+              >
+                {item.address_name}
+                {item.place_name}
+              </li>
+            ))
+          )}
         </ul>
       )}
     </div>
