@@ -285,7 +285,7 @@ const IdFind = () => {
       )}
 
       {/* 상단 아이디/비밀번호 찾기 헤더 */}
-      <div className="w-full bg-emerald-100 p-4">
+      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
             <FaIdCard className="text-amber-500 text-4xl" />
@@ -293,7 +293,7 @@ const IdFind = () => {
           </div>
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
             <TbPassword className="text-blue-500 text-4xl" />
-            <p className="font-bold text-black-500 dark:text-black">
+            <p className="font-bold text-black-500 dark:text-black whitespace-nowrap">
               비밀번호 찾기
             </p>
           </div>
@@ -303,7 +303,7 @@ const IdFind = () => {
       {/* 입력폼 렌더링 */}
       {IdFinds.map((idf, index) => (
         <div key={index}>
-          <div className="flex gap-x-2 p-3 ">
+          <div className="flex gap-x-2 p-3 whitespace-nowrap ">
             <input
               ref={(el) => {
                 if (el) inputRefs.current[index] = el;
@@ -320,14 +320,14 @@ const IdFind = () => {
               <>
                 <button
                   type="button"
-                  className="bg-emerald-300 p-5 font-bold w-19 text-sm whitespace-nowrap lg:w-20 flex justify-center"
+                  className="bg-emerald-300 p-5 font-bold w-15 text-sm whitespace-nowrap lg:w-20 flex justify-center"
                   onClick={idf.btAction}
                 >
                   {idf.bt}
                 </button>
                 <button
                   type="button"
-                  className="bg-emerald-300 p-5 font-bold w-19 whitespace-nowrap text-sm flex justify-center lg:w-20"
+                  className="bg-emerald-300 p-5 font-bold w-15 whitespace-nowrap text-sm flex justify-center lg:w-20"
                   onClick={handleVerifyCode}
                 >
                   {idf.bt1}
@@ -366,7 +366,7 @@ const IdFind = () => {
           <div className="flex justify-center w-full mt-5">
             <button
               type="button"
-              className="w-[250px] h-[80px] bg-emerald-300 rounded font-bold text-base lg:text-lg hover:bg-emerald-400 lg:w-[200px] "
+              className="w-[150px] h-[80px] bg-emerald-300 rounded font-bold text-base lg:text-lg hover:bg-emerald-400 lg:w-[200px] "
               onClick={handleSubmit}
             >
               확인
