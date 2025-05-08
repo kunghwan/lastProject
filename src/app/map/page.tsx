@@ -201,7 +201,7 @@ const MapPage = () => {
 
   return (
     <div className="relative flex h-[76vh] dark:text-gray-600">
-      <div ref={mapRef} className="flex-1 bg-gray-200 relative" />
+      <div ref={mapRef} className="flex-1 bg-gray-200 relative " />
 
       <SearchForm
         inputValue={inputValue}
