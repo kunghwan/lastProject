@@ -5,7 +5,8 @@ import MobilePlaceList from "@/components/map/MobilePlaceList";
 import { useCallback, useEffect, useRef, useState } from "react";
 import PlaceDetail from "@/components/map/PlaceDetail";
 import { IoRestaurantOutline, IoSubway } from "react-icons/io5";
-import { PiBuildingBold, PiParkLight } from "react-icons/pi";
+import { PiBuildingBold } from "react-icons/pi";
+import { MdRecommend } from "react-icons/md";
 
 const MapPage = () => {
   const [map, setMap] = useState<any>(null); // 카카오 지도 객체
@@ -264,7 +265,7 @@ export default MapPage;
 
 const keywordBtn = [
   { name: "맛집", icon: <IoRestaurantOutline /> },
-  { name: "지하철", icon: <IoSubway /> },
-  { name: "공원", icon: <PiParkLight /> },
+  { name: "명소", icon: <MdRecommend /> },
   { name: "백화점", icon: <PiBuildingBold /> },
+  { name: "지하철", icon: <IoSubway /> },
 ];
