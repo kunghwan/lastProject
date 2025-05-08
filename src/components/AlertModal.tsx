@@ -1,5 +1,6 @@
 // components/AlertModal.tsx
 import React, { useEffect } from "react";
+import ReactDOM from "react-dom";
 
 interface AlertModalProps {
   message: string;
@@ -32,8 +33,8 @@ const AlertModal = ({
     return () => window.removeEventListener("keydown", handleKey);
   }, [onClose, onConfirm]);
 
-  return (
-    <div className="fixed inset-0  bg-opacity-40 z-50 flex items-center justify-center">
+  const modalContent = (
+    <div className="fixed inset-0  bg-opacity-40 z-[9999] flex items-center justify-center">
       <div className="bg-white p-6 rounded-lg shadow-lg w-80">
         <p className="text-gray-800 text-center mb-4">{message}</p>
         <div className="flex gap-4">
@@ -55,6 +56,8 @@ const AlertModal = ({
       </div>
     </div>
   );
+  //Portal은 부모 컴포넌트와 상관 없이 "화면 가장 상단 (body 태그 밑)"에 바로 그리는 방법
+  return ReactDOM.createPortal(modalContent, document.body);
 };
 
 export default AlertModal;

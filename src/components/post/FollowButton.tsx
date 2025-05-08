@@ -4,8 +4,6 @@ import { AUTH } from "@/contextapi/context";
 import { dbService, FBCollection } from "@/lib";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState, useTransition } from "react";
-import Loaiding from "../Loading";
-import { serverTimestamp } from "firebase/firestore";
 import AlertModal from "@/components/AlertModal";
 
 interface FollowButtonProps {
@@ -141,7 +139,6 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
 
   return (
     <div>
-      {isPening && <Loaiding />}
       {alertMessage && (
         <AlertModal
           message={alertMessage}
