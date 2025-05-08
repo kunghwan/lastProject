@@ -40,8 +40,6 @@ const ProfileLayout = ({
   const [bioError, setBioError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [editImageOnlyOpen, setEditImageOnlyOpen] = useState(false); // ✅ 프로필 사진 전용
-
   useEffect(() => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth < 1024);
@@ -115,7 +113,7 @@ const ProfileLayout = ({
   // ✅ 예시: username.uid를 어떻게 가져오는가?
   const username = userData.nickname; // 예: 'skyblue123'
   const userUid = userData.uid; // 예: 'ABC123XYZ'
-
+  const userFollowingId = userData.uid; // 예: 'ABC123XYZ'
   // FollowButton 등에 이렇게 넘기면 됨
   // followNickName={username}
   // followingId={userUid}
@@ -166,7 +164,7 @@ const ProfileLayout = ({
                   게시물 <span>{actualPostCount}</span>
                 </div>
                 <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
-                  구독수 <span>{firstPost?.shares?.length || 0}</span>
+                  구독수 <span>{userFollowingId.length ?? 0}</span>
                 </div>
               </div>
               <div>{userData.bio}</div>

@@ -1,4 +1,12 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  arrayUnion,
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { dbService, FBCollection } from "@/lib/firebase";
 import { Post } from "@/types/post";
 
@@ -63,5 +71,27 @@ export const fetchPostsAndUserId = async (
   } catch (error) {
     console.error("Error fetching posts and user ID:", error);
     return { posts: [], userId: null };
+  }
+};
+
+// 예시: 로그인한 유저 A가 유저 B를 팔로우할 때
+const followUser = async (followerUid: string, targetUid: string) => {
+  try {
+    const followerRef = doc(dbService, "users", followerUid);
+    const targetRef = doc(dbService, "users", targetUid);
+
+    // A는 B를 following 리스트에 추가
+    await updateDoc(followerRef, {
+      following: arrayUnion(targetUid),
+    });
+
+    // B는 A를 followers 리스트에 추가
+    await updateDoc(targetRef, {
+      followers: arrayUnion(followerUid),
+    });
+
+    console.log("✅ 구독 성공");
+  } catch (error) {
+    console.error("❌ 구독 실패:", error);
   }
 };
