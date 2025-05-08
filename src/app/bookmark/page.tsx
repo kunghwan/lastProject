@@ -172,7 +172,7 @@ const BookmarkPage = () => {
                   className="w-full h-100 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01]"
                 />
               )}
-              <p>{post.content}</p>
+              <p className="truncate">{post.content}</p>
               <div
                 onClick={() => toggleLike(post.id!)}
                 className="flex items-center mb-2.5"

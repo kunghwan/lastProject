@@ -136,13 +136,13 @@ const PostComponent = () => {
                 <LikeButton likedBy={post.likes} postId={post.id!} />{" "}
               </div>
               <p className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
-                <ShareButton /> {post.shares?.length}
+                <ShareButton />
               </p>
               <p className="flex-1/2 text-xs text-gray-500 dark:text-gray-300">
                 <LocationButton /> {post.lo?.address || "주소 없음"}
               </p>
             </div>
-            <p className="text-lg font-semibold">{post.content}</p>
+            <p className="text-lg font-semibold truncate">{post.content}</p>
             <div className="items-baseline text-end text-gray500 text-sm">
               {post.createdAt}
             </div>
@@ -155,73 +155,86 @@ const PostComponent = () => {
 
       {selectedPost && (
         <div
-          className="fixed inset-0 z-50 bg-black/30 backdrop-blur-xs flex justify-center items-center  transition transform duration-300 ease-in-out"
+          className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex justify-center items-center"
           onClick={() => setSelectedPost(null)}
         >
           <div
-            className="bg-gray-50 rounded-lg w-5/6 h-2/3 md:w-3/5 lg:w-1/2 overflow-y-auto relative flex flex-col"
+            className="bg-white rounded-lg w-11/12 md:w-3/5 lg:w-1/2 max-h-[90vh] overflow-y-auto relative"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-90 md:w-110 mx-auto items-center ">
-              <button
-                onClick={() => setSelectedPost(null)}
-                className="absolute top-2 right-4 text-xl font-bold text-gray-700"
-              >
-                ✕
-              </button>
+            {/* 닫기 버튼 */}
+            <button
+              onClick={() => setSelectedPost(null)}
+              className="absolute top-2 right-4 text-xl font-bold text-gray-700"
+            >
+              ✕
+            </button>
 
-              {/* 슬라이더 */}
-              <div className="relative w-full h-64 mt-10 flex items-center justify-center">
-                {(() => {
-                  const images = (
-                    Array.isArray(selectedPost?.imageUrl)
-                      ? selectedPost.imageUrl
-                      : selectedPost?.imageUrl
-                      ? [selectedPost.imageUrl]
-                      : []
-                  ).filter((img): img is string => typeof img === "string");
+            {/* 이미지 슬라이더 */}
+            <div className="relative w-full h-64 mt-10 flex items-center justify-center">
+              {(() => {
+                const imgs = Array.isArray(selectedPost.imgs)
+                  ? selectedPost.imgs.filter(
+                      (img): img is string => typeof img === "string"
+                    )
+                  : [];
 
-                  return (
-                    <div className="relative w-full flex justify-center items-center">
-                      <img
-                        src={images[currentIndex] || defaultImgUrl}
-                        alt={`img-${currentIndex}`}
-                        className="max-h-64 object-contain rounded"
-                      />
-                      {images.length > 1 && (
-                        <>
-                          <button
-                            onClick={handlePrev}
-                            className="absolute -left-4 sm:left-2 text-2xl font-bold not-last:cursor-pointer text-black/50 rounded-full p-2 hover:text-black/30"
-                          >
-                            <FaChevronLeft />
-                          </button>
-                          <button
-                            onClick={handleNext}
-                            className="absolute -right-4 sm:right-2 text-2xl font-bold cursor-pointer text-black/50 rounded-full p-2 hover:text-black/30"
-                          >
-                            <FaChevronRight />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  );
-                })()}
+                const currentImage =
+                  imgs.length > 0
+                    ? imgs[currentIndex] ?? selectedPost.imageUrl
+                    : selectedPost.imageUrl ?? defaultImgUrl;
+
+                const hasMultipleImages = imgs.length > 1;
+
+                return (
+                  <div className="relative w-full flex justify-center items-center">
+                    <img
+                      src={currentImage}
+                      alt={`image-${currentIndex}`}
+                      className="max-h-64 object-contain rounded"
+                      loading="lazy"
+                    />
+                    {hasMultipleImages && (
+                      <>
+                        <button
+                          onClick={() =>
+                            setCurrentIndex((prev) =>
+                              prev === 0 ? imgs.length - 1 : prev - 1
+                            )
+                          }
+                          className="absolute left-3 text-2xl text-white bg-black/40 rounded-full p-2 hover:bg-black/70"
+                        >
+                          ‹
+                        </button>
+                        <button
+                          onClick={() =>
+                            setCurrentIndex((prev) =>
+                              prev === imgs.length - 1 ? 0 : prev + 1
+                            )
+                          }
+                          className="absolute right-3 text-2xl text-white bg-black/40 rounded-full p-2 hover:bg-black/70"
+                        >
+                          ›
+                        </button>
+                      </>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* 상세 정보 */}
+            <div className="p-4">
+              <div className="text-xs text-gray-500 mt-2 flex justify-between mb-5">
+                <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
+                <div>{selectedPost.createdAt}</div>
               </div>
-
-              {/* 상세 정보 */}
-              <div className="p-4">
-                <div className="text-xs text-gray-500 mt-2 flex justify-between mb-5">
-                  <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
-                  <div>{selectedPost.createdAt}</div>
-                </div>
-                <h2 className="text-lg font-bold mb-2">
-                  {selectedPost.title || "제목 없음"}
-                </h2>
-                <p className="text-sm text-gray-700">
-                  {selectedPost.content || "내용 없음"}
-                </p>
-              </div>
+              <h2 className="text-lg font-bold mb-2 truncate">
+                {selectedPost.title}
+              </h2>
+              <p className="text-sm text-gray-700 break-words">
+                {selectedPost.content}
+              </p>
             </div>
           </div>
         </div>

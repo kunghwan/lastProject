@@ -107,7 +107,7 @@ const ProfileFeedComponent = ({
                 <p className="font-semibold truncate">
                   {post.title || "제목 없음"}
                 </p>
-                <p className="text-gray-600">
+                <p className="text-gray-600 truncate">
                   {post.content?.slice(0, 60) || "내용 없음"}
                 </p>
               </div>
