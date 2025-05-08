@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { getAllPostsPaginated } from "@/lib/fbdata";
-import { Post as PostType } from "@/types/post";
+import { Post as PostType, Tag } from "@/types/post";
 import LikeButton from "./LikeButton";
 import ShareButton from "./ShareButton";
 import LocationButton from "./LocationButton";
@@ -160,18 +160,13 @@ const PostComponent = () => {
               </p>
             </div>
             <p className="text-lg font-semibold truncate">{post.content}</p>
-            {Array.isArray(post.tags) && post.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {post.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="px-2 py-1 text-xs bg-gray-200 rounded text-gray-600"
-                  >
-                    {tag.name}
-                  </span>
-                ))}
-              </div>
-            )}
+            <div className="flex flex-wrap">
+              {post.tags.map((tag: Tag) => (
+                <div key={tag.id} className="px-2 py-1 text-xs text-gray-600">
+                  <p>{tag.name}</p>
+                </div>
+              ))}
+            </div>
 
             <div className="items-baseline text-end text-gray500 text-sm">
               {post.createdAt}
