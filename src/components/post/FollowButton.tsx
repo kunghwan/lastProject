@@ -111,9 +111,13 @@ const FollowButton = ({
 
   useEffect(() => {
     const checkFollowing = async () => {
+
       if (!user?.uid || !followingId) {
         return;
       }
+
+      if (!user?.uid || !followingId) return;
+
 
       if (!user?.uid || !followingId) {
         setIsFollowing(false);
@@ -142,6 +146,10 @@ const FollowButton = ({
 
   return (
     <div>
+
+      {isPending && <Loaiding />}
+
+
       {alertMessage && (
         <AlertModal
           message={alertMessage}
