@@ -114,7 +114,7 @@ const PostComponent = () => {
           : [post.imageUrl];
 
         return (
-          <div key={post.id} className="p-1.5 m-1">
+          <div key={post.id} className="p-1.5 hover:bg-gray-100 rounded-2xl">
             <button
               className="flex gap-1.5 items-center text-center m-1.5"
               onClick={() => handleClick(post.uid, post.userNickname)}
