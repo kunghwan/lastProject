@@ -60,10 +60,11 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
           .doc(followingId)
           .collection(FBCollection.NOTIFICATION)
           .add({
+            type: "follow",
             follwingId: followingId,
             follwerId: user.uid,
             followerNickname: user?.nickname,
-            createdAt: serverTimestamp(),
+            createdAt: new Date().toLocaleString(),
             isRead: false,
           });
         console.log(followingId, followNickName, user.uid, 51);

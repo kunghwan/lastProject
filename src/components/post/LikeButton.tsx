@@ -1,25 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { GoHeart, GoHeartFill } from "react-icons/go";
 import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { dbService } from "@/lib/firebase";
+import { dbService, FBCollection } from "@/lib/firebase";
+import { AUTH } from "@/contextapi/context";
 
 interface LikeButtonProps {
   postId: string;
   likedBy?: string[]; // 옵셔널로 처리
+  postOwnerId: string; // post 작성자의 uid
 }
 
-const LikeButton = ({ postId, likedBy = [] }: LikeButtonProps) => {
+const LikeButton = ({ postId, likedBy = [], postOwnerId }: LikeButtonProps) => {
   const auth = getAuth();
   const user = auth.currentUser;
+  const { user: meUser } = AUTH.use();
 
   const [likes, setLikes] = useState<string[]>(likedBy);
 
   const isLiked = user?.uid ? likes.includes(user.uid) : false;
 
-  const handleLikeToggle = async () => {
+  const handleLikeToggle = useCallback(async () => {
     if (!user || !user.uid) {
       alert("로그인이 필요합니다.");
       return;
@@ -37,8 +40,24 @@ const LikeButton = ({ postId, likedBy = [] }: LikeButtonProps) => {
       await updateDoc(postRef, {
         likes: arrayUnion(user.uid),
       });
+
+      // 게시글 주인에게 알림 전송
+      if (postOwnerId !== meUser?.uid) {
+        await dbService
+          .collection(FBCollection.USERS)
+          .doc(postOwnerId)
+          .collection(FBCollection.NOTIFICATION)
+          .add({
+            type: "like",
+            postId,
+            likerId: meUser?.uid,
+            likerName: meUser?.nickname,
+            createdAt: new Date().toLocaleString(),
+            isRead: false,
+          });
+      }
     }
-  };
+  }, [meUser, user, postOwnerId, isLiked, postId]);
 
   return (
     <div className="flex items-center gap-1">

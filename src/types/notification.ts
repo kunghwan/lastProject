@@ -6,4 +6,7 @@ export interface Notifications {
   follwerId: string; // 팔로우한 사람의 ID
   createdAt: Date;
   isRead: boolean; // 읽음 여부
+  type: "like" | "follow";
+  likerName?: string;
+  postId: string;
 }
