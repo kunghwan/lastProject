@@ -25,7 +25,7 @@ const MapPage = () => {
     const initMap = () => {
       if (!mapRef.current) return;
 
-      // 지도 초기 중심 좌표 설정 (대전)
+      // 지도 초기 중심 좌표 설정
       const center = new window.kakao.maps.LatLng(36.3286, 127.4229);
       const mapInstance = new window.kakao.maps.Map(mapRef.current, {
         center,
@@ -45,7 +45,7 @@ const MapPage = () => {
           initMap(); // 스크립트 로드 완료 시 지도 초기화
         });
       };
-      document.head.appendChild(script); // head에 삽입
+      document.body.appendChild(script);
     };
 
     // 브라우저 환경에서만 실행

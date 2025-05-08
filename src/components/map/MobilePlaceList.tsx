@@ -38,7 +38,7 @@ const MobilePlaceList = ({
         )}
       >
         <div className="mt-5" onClick={() => setIsOpen(false)}>
-          <button className="flex items-center justify-center p-3 rounded-2xl mx-auto w-[40vw] bg-gray-200 hover:opacity-80" />
+          <button className="flex items-center justify-center p-3 rounded-2xl mx-auto w-[40vw] bg-gray-200 hover:bg-gray-300 " />
         </div>
 
         <div className="p-4 overflow-y-auto h-full">
