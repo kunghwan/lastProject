@@ -10,7 +10,7 @@ import { FaRegQuestionCircle } from "react-icons/fa";
 import { IoMdArrowDropup } from "react-icons/io";
 
 const navStyle =
-  "hidden [@media(min-width:1425px)]:flex absolute w-20 -left-[130%] bg-gray-200 z-30 rounded-full transition-all duration-300";
+  "hidden [@media(min-width:1425px)]:flex absolute w-16 top-10 -left-[125%] bg-gray-200 z-30 rounded-full transition-all duration-300";
 
 const Navbar = () => {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
@@ -58,12 +58,12 @@ const Navbar = () => {
               {!isNavMenuOpen && (
                 <button
                   className={twMerge(
-                    "h-20 flex items-center justify-center text-3xl outline-none dark:text-gray-600",
+                    "h-16 flex items-center justify-center text-3xl outline-none dark:text-gray-600 ",
                     navStyle
                   )}
                   onClick={handleToggleNavMenu}
                 >
-                  <IoGridOutline />
+                  <IoGridOutline className="hover:animate-pulse" />
                 </button>
               )}
 
@@ -86,7 +86,7 @@ const Navbar = () => {
                         <button
                           className={twMerge(
                             "grayButton flex flex-col gap-y-1.5 items-center text-gray-600 transition-opacity duration-300",
-                            pathname === btn.path && "text-blue-500"
+                            pathname === btn.path && "text-green-500"
                           )}
                           onClick={() => navBtnClick(btn, index)}
                         >
@@ -111,7 +111,7 @@ const Navbar = () => {
                   <button
                     className={twMerge(
                       "grayButton text-2xl flex flex-col gap-y-1.5 items-center",
-                      pathname === btn.path && "text-blue-500"
+                      pathname === btn.path && "text-green-500"
                     )}
                     onClick={() => navBtnClick(btn, index)}
                   >
