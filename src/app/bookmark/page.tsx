@@ -156,7 +156,7 @@ const BookmarkPage = () => {
               : "/image/logo1.png";
 
           return (
-            <div key={post.id}>
+            <div key={post.id} className=" hover:bg-gray-100 rounded-2xl p-1.5">
               <div className="m-1.5 flex items-center gap-1.5">
                 <img
                   src={post.userProfileImage}

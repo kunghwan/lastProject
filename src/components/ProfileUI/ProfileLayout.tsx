@@ -1,11 +1,17 @@
 "use client";
 
 import { Post, Tag } from "@/types/post";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { IoSettingsOutline, IoAdd } from "react-icons/io5";
 import FollowButton from "../post/FollowButton";
 import ProfileFeedComponent from "./ProfileFeedLayout";
-import { updateDoc, doc } from "firebase/firestore";
+import {
+  updateDoc,
+  doc,
+  getDoc,
+  getDocs,
+  collection,
+} from "firebase/firestore";
 import { dbService, storageService } from "@/lib/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { validateNickname, validateBio } from "@/lib/validations";
@@ -39,29 +45,39 @@ const ProfileLayout = ({
   const [nicknameError, setNicknameError] = useState("");
   const [bioError, setBioError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [followerCount, setFollowerCount] = useState(0);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsSmallScreen(window.innerWidth < 1024);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+  // 창 크기 핸들러를 useCallback으로 메모이제이션
+  const handleResize = useCallback(() => {
+    setIsSmallScreen(window.innerWidth < 1024);
   }, []);
 
-  const triggerFileSelect = () => {
+  // useEffect에 메모이제이션된 handleResize 사용
+  useEffect(() => {
+    handleResize(); // 초기 실행
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [handleResize]);
+
+  // 파일 선택 트리거 최적화
+  const triggerFileSelect = useCallback(() => {
     fileInputRef.current?.click();
-  };
+  }, []);
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      setPreviewImage(URL.createObjectURL(file));
-    }
-  };
+  // 이미지 선택 핸들러 최적화
+  const handleImageSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        setImageFile(file);
+        setPreviewImage(URL.createObjectURL(file));
+      }
+    },
+    []
+  );
 
-  const handleSaveProfile = async () => {
+  // 프로필 저장 핸들러 (useCallback 생략 가능하지만 성능 최적화 시 감싸도 무방)
+  const handleSaveProfile = useCallback(async () => {
     const nicknameValidation = validateNickname(editNickname);
     const bioValidation = validateBio(editBio);
 
@@ -69,7 +85,6 @@ const ProfileLayout = ({
       setNicknameError(nicknameValidation);
       return;
     }
-
     if (bioValidation) {
       setBioError(bioValidation);
       return;
@@ -81,7 +96,7 @@ const ProfileLayout = ({
       await uploadBytes(storageRef, imageFile);
       const newUrl = await getDownloadURL(storageRef);
       imageUrl = newUrl;
-      setPreviewImage(newUrl); // 🔥 업데이트된 URL로 UI 갱신
+      setPreviewImage(newUrl);
     }
 
     try {
@@ -97,10 +112,15 @@ const ProfileLayout = ({
       alert("수정에 실패했습니다.");
       console.error(err);
     }
-  };
+  }, [editNickname, editBio, imageFile, previewImage, userData.uid]);
 
-  const actualPostCount = posts.filter((post) => post.id !== "default").length;
+  // 게시물 수 계산 최적화
+  const actualPostCount = useMemo(
+    () => posts.filter((post) => post.id !== "default").length,
+    [posts]
+  );
 
+  // 랜덤 컬러 생성기 최적화
   const getRandomColor = useCallback(() => {
     const r = Math.floor(Math.random() * 256);
     const g = Math.floor(Math.random() * 256);
@@ -108,20 +128,30 @@ const ProfileLayout = ({
     return `rgb(${r}, ${g}, ${b})`;
   }, []);
 
-  const firstPost = posts[0] ?? null;
+  // 첫 번째 게시물 캐싱
+  const firstPost = useMemo(() => posts[0] ?? null, [posts]);
 
-  // ✅ 예시: username.uid를 어떻게 가져오는가?
-  const username = userData.nickname; // 예: 'skyblue123'
-  const userUid = userData.uid; // 예: 'ABC123XYZ'
-  const userFollowingId = userData.uid; // 예: 'ABC123XYZ'
-  // FollowButton 등에 이렇게 넘기면 됨
-  // followNickName={username}
-  // followingId={userUid}
+  // 팔로워 수 가져오기
+  useEffect(() => {
+    const fetchFollowerCount = async () => {
+      if (!userData.uid) return;
+
+      try {
+        const ref = collection(dbService, "users", userData.uid, "followers");
+        const snapshot = await getDocs(ref);
+        setFollowerCount(snapshot.size);
+      } catch (error) {
+        console.error("🔥 followers 불러오기 실패:", error);
+      }
+    };
+
+    fetchFollowerCount();
+  }, [userData.uid]);
 
   return (
     <div className="flex flex-col w-full h-screen">
       {!isSmallScreen ? (
-        <div className="flex flex-col mx-auto">
+        <div className="flex flex-col mx-auto ">
           <div className="flex m-5 mb-0 pr-20 pl-20 gap-2.5 justify-center ">
             <div className="relative w-40 h-40">
               <img
@@ -164,7 +194,7 @@ const ProfileLayout = ({
                   게시물 <span>{actualPostCount}</span>
                 </div>
                 <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
-                  구독수 <span>{userFollowingId.length ?? 0}</span>
+                  구독수 <span>{followerCount}</span>
                 </div>
               </div>
               <div>{userData.bio}</div>
@@ -229,7 +259,7 @@ const ProfileLayout = ({
                   게시물 <span>{actualPostCount}</span>
                 </div>
                 <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
-                  구독수 <span>{firstPost?.shares?.length || 0}</span>
+                  구독수 <span>{followerCount}</span>
                 </div>
               </div>
             </div>
@@ -255,7 +285,7 @@ const ProfileLayout = ({
           <ProfileFeedComponent
             posts={posts}
             isMyPage={isMyPage}
-            uid={userUid}
+            uid={userData.uid}
           />
         ) : (
           <div className="flex pt-10 w-full justify-center">

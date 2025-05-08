@@ -1,50 +1,48 @@
-'use client";';
+"use client";
 
 import { AUTH } from "@/contextapi/context";
 import { dbService, FBCollection } from "@/lib";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState, useTransition } from "react";
 import Loaiding from "../Loading";
-import { serverTimestamp } from "firebase/firestore";
 import AlertModal from "@/components/AlertModal";
 
 interface FollowButtonProps {
-  followingId?: string; // 팔로잉할 유저의 uid
-
-  followNickName?: string; // 팔로잉할 유저의 닉네임
+  followingId?: string;
+  followNickName?: string;
+  onFollowChange?: (isFollowed: boolean) => void;
 }
 
-const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
+const FollowButton = ({
+  followingId,
+  followNickName,
+  onFollowChange,
+}: FollowButtonProps) => {
   const { user } = AUTH.use();
   const navi = useRouter();
   const [isFollowing, setIsFollowing] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const handleFollow = () => setIsFollowing((prev) => !prev);
-  const [isPening, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const onFollow = useCallback(() => {
     if (!user) {
       alert("로그인 후 이용해주세요");
       return navi.push("/signin");
     }
-    // if (!followingId || followingId === "default") {
-    //   console.log("유효하지 않은 Uid입니다:", followingId);
-    //   return null;
-    // }
+
     startTransition(async () => {
       try {
-        // 1. 내 팔로잉에 추가
         await dbService
           .collection(FBCollection.USERS)
           .doc(user.uid)
           .collection(FBCollection.FOLLOWINGS)
           .doc(followingId)
           .set({
-            followingId: followingId,
+            followingId,
             follwingNickname: followNickName,
             createdAt: new Date().toLocaleString(),
           });
-        // 2. 상대방 팔로워에 나 추가
+
         await dbService
           .collection(FBCollection.USERS)
           .doc(followingId)
@@ -54,7 +52,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
             followerNickname: user?.nickname,
             createdAt: new Date().toLocaleString(),
           });
-        // 3. 상대방에게 알림 전송
+
         await dbService
           .collection(FBCollection.USERS)
           .doc(followingId)
@@ -67,81 +65,71 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
             createdAt: new Date().toLocaleString(),
             isRead: false,
           });
-        console.log(followingId, followNickName, user.uid, 51);
+
         setIsFollowing(true);
+        onFollowChange?.(true);
         setAlertMessage(`${followNickName}님을 팔로우 했습니다`);
       } catch (error: any) {
         console.log(error.message);
         alert("팔로우 중 오류가 발생했습니다. 다시 시도해주세요.");
-        return;
       }
     });
-  }, [user, followingId, navi]);
-  //언팔로우 처리
+  }, [user, followingId, followNickName, navi, onFollowChange]);
+
   const onUnFollow = useCallback(() => {
     if (!user) {
       setAlertMessage("로그인 후 이용해주세요");
       return navi.push("/signin");
     }
+
     startTransition(async () => {
-      //내 followings에서 제거
-      const ref = dbService
-        .collection(FBCollection.USERS)
-        .doc(user.uid)
-        .collection("followings")
-        .doc(followingId);
+      try {
+        await dbService
+          .collection(FBCollection.USERS)
+          .doc(user.uid)
+          .collection(FBCollection.FOLLOWINGS)
+          .doc(followingId)
+          .delete();
 
-      //delete() 메서드는 문서를 삭제하는 메서드
+        await dbService
+          .collection(FBCollection.USERS)
+          .doc(followingId)
+          .collection(FBCollection.FOLLOWERS)
+          .doc(user.uid)
+          .delete();
 
-      await ref.delete();
-
-      // 상대방 followers에서 나 제거
-      const followerRef = dbService
-        .collection(FBCollection.USERS)
-        .doc(followingId)
-        .collection("followers")
-        .doc(user.uid);
-
-      //delete() 메서드는 문서를 삭제하는 메서드
-
-      await followerRef.delete();
-
-      setIsFollowing(false);
+        setIsFollowing(false);
+        onFollowChange?.(false);
+      } catch (error: any) {
+        console.error("언팔로우 오류:", error.message);
+        alert("언팔로우 중 오류가 발생했습니다.");
+      }
     });
-  }, [user, navi, followingId]);
-  //현재 유저를 팔로우하고 있는지 확인용도
+  }, [user, followingId, navi, onFollowChange]);
+
   useEffect(() => {
     const checkFollowing = async () => {
-      if (!user?.uid || !followingId) {
-        return console.log("no");
-      }
+      if (!user?.uid || !followingId) return;
 
       try {
         const ref = dbService
           .collection(FBCollection.USERS)
           .doc(user.uid)
-          .collection("followings")
+          .collection(FBCollection.FOLLOWINGS)
           .doc(followingId);
         const snap = await ref.get();
-        //extsts는 문서가 존재하는지 확인하는 메서드(불리언타입임)
         setIsFollowing(snap.exists);
       } catch (error: any) {
-        console.error(error.message);
-
-        return console.log(error.message);
+        console.error("팔로우 상태 확인 오류:", error.message);
       }
     };
 
     checkFollowing();
-    //Todo: 리턴으로 청소 작업필요
-    return () => {
-      checkFollowing();
-    };
   }, [user, followingId]);
 
   return (
     <div>
-      {isPening && <Loaiding />}
+      {isPending && <Loaiding />}
       {alertMessage && (
         <AlertModal
           message={alertMessage}
@@ -149,11 +137,23 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         />
       )}
       {isFollowing ? (
-        <button onClick={() => onUnFollow()} className="followButton">
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // ✅ 버블링 방지
+            onUnFollow();
+          }}
+          className="followButton"
+        >
           UnFollow
         </button>
       ) : (
-        <button onClick={() => onFollow()} className="followButton">
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // ✅ 버블링 방지
+            onFollow();
+          }}
+          className="followButton"
+        >
           Follow
         </button>
       )}

@@ -76,7 +76,7 @@ const ProfileFeedComponent = ({
       <ul className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
         {postList.map((post) => (
           <li key={post.id} className="p-1">
-            <div className="flex flex-col gap-2 relative">
+            <div className="flex flex-col gap-2 relative  hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1.5 transition-all duration-200">
               {post.imageUrl ? (
                 <img
                   src={post.imageUrl}
@@ -96,18 +96,16 @@ const ProfileFeedComponent = ({
                   <ImCancelCircle />
                 </button>
               )}
-              <div className="flex justify-between text-s text-gray-500 mt-1">
+              <div className="flex justify-between text-s text-gray-500 mt-1 dark:text-gray-300">
                 <span>
-                  {" "}
                   <LikeButton postId={post.id} likedBy={post.likes} />{" "}
                 </span>
-                <span> {post.shares?.length || 0}</span>
               </div>
               <div className="text-sm">
                 <p className="font-semibold truncate">
                   {post.title || "제목 없음"}
                 </p>
-                <p className="text-gray-600 truncate">
+                <p className="text-gray-600 truncate dark:text-gray-400">
                   {post.content?.slice(0, 60) || "내용 없음"}
                 </p>
               </div>
