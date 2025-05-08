@@ -1,9 +1,9 @@
-"use client"; // Next.js 클라이언트 컴포넌트 선언
+"use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { FaIdCard } from "react-icons/fa6"; // 아이디 아이콘
-import { TbPassword } from "react-icons/tb"; // 비밀번호 아이콘
-import AlertModal from "@/components/AlertModal"; // 커스텀 알림창
+import { FaIdCard } from "react-icons/fa6";
+import { TbPassword } from "react-icons/tb";
+import AlertModal from "@/components/AlertModal";
 
 const IdFindResult = () => {
   // 상태 정의
@@ -110,7 +110,6 @@ const IdFindResult = () => {
 
 export default IdFindResult;
 
-// ✅ 버튼 클래스 (Tailwind로 스타일 정의)
 const pwButton =
   "bg-gray-300 text-black font-bold px-6 py-3 rounded-2xl hover:bg-blue-600 w-40 lg:h-20 lg:flex lg:items-center lg:justify-center";
 

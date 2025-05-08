@@ -1,11 +1,11 @@
-"use client"; // Next.js 클라이언트 컴포넌트 지정
+"use client";
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation"; // 페이지 이동용
-import { AUTH } from "@/contextapi/context"; // 로그인 context
-import AlertModal from "@/components/AlertModal"; // 커스텀 알림창
-import { twMerge } from "tailwind-merge"; // Tailwind 클래스 병합 라이브러리
+import { useRouter } from "next/navigation";
+import { AUTH } from "@/contextapi/context";
+import AlertModal from "@/components/AlertModal";
+import { twMerge } from "tailwind-merge";
 
 const LoginForm = () => {
   const [email, setEmail] = useState(""); // 입력된 이메일 상태

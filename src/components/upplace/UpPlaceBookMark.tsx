@@ -1,19 +1,10 @@
-"use client"; // Next.js에서 클라이언트 전용 컴포넌트임을 선언
+"use client";
 
-import { useEffect, useState } from "react"; // React 훅 가져오기
-import { getAuth } from "firebase/auth"; // Firebase 인증 기능 가져오기
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore"; // Firestore CRUD 함수들 가져오기
-import { dbService } from "@/lib/firebase"; // 프로젝트에 설정된 Firestore 인스턴스
-import PlaceCard from "@/components/upplace/PlaceCard"; // 장소 정보를 보여주는 카드 컴포넌트
-
-// Firestore에서 다룰 장소 데이터 타입 정의
-interface Place {
-  contentid: string; // Firestore 문서 ID (관광지 ID)
-  title: string; // 관광지 제목
-  addr1: string; // 주소
-  firstimage: string; // 대표 이미지 URL
-  likeCount: number; // 유저가 저장한 좋아요 수
-}
+import { useEffect, useState } from "react";
+import { getAuth } from "firebase/auth";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { dbService } from "@/lib/firebase";
+import PlaceCard from "@/components/upplace/PlaceCard";
 
 const UpPlaceBookMark = () => {
   // places: 북마크된 장소 목록을 상태로 관리

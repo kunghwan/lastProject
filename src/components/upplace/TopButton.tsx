@@ -1,8 +1,8 @@
-"use client"; // 클라이언트 컴포넌트로 명시 (Next.js에서 상호작용 가능)
+"use client";
 
 import { useState, useEffect, useCallback, ComponentProps } from "react";
-import { twMerge } from "tailwind-merge"; // Tailwind 클래스 병합 도구
-import { FaArrowUp } from "react-icons/fa6"; // 위쪽 화살표 아이콘
+import { twMerge } from "tailwind-merge";
+import { FaArrowUp } from "react-icons/fa6";
 
 // ✅ 컴포넌트 prop 타입 정의
 interface Props extends ComponentProps<"button"> {
@@ -33,18 +33,15 @@ const TopButton = ({ buttonClassName, ...props }: Props) => {
 
   return (
     <button
-      {...props} // 나머지 props 전달 (예: aria-label 등)
-      onClick={scrollToTop} // 클릭 이벤트
+      {...props}
+      onClick={scrollToTop}
       className={twMerge(
-
-        // 기본 스타일 + 외부에서 전달받은 클래스 병합
         "fixed z-40 bottom-30 right-1 px-4 py-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition cursor-pointer sm:right-1 h-10",
-
 
         props?.className
       )}
     >
-      <FaArrowUp /> {/* 아이콘 표시 */}
+      <FaArrowUp />
     </button>
   );
 };

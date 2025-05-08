@@ -1,29 +1,13 @@
 "use client";
 
 import React, { useState, useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation"; // 라우팅용 훅
-import UpPlaceLikeButton from "@/components/upplace/UpPlaceLikeButton"; // 좋아요 버튼 컴포넌트
+import { useRouter } from "next/navigation";
+import UpPlaceLikeButton from "@/components/upplace/UpPlaceLikeButton";
 
 // ✅ 특정 장소에 대한 이미지 fallback 설정 (이미지 없을 경우 대체 이미지)
 const fallbackImages: Record<string, string> = {
   테미오래: "/custom/temiora.jpg", // 예시: 테미오래 → 로컬 대체 이미지
 };
-
-// ✅ 장소 타입 정의
-interface UpPlace {
-  contentid: string; // 장소 ID
-  title: string; // 장소명
-  addr1: string; // 주소
-  firstimage: string; // 대표 이미지
-  likeCount: number; // 좋아요 수
-}
-
-// ✅ props 타입 정의
-interface PlaceCardProps {
-  place?: UpPlace; // 렌더링할 장소 객체
-  likedOverride?: boolean; // 외부에서 좋아요 상태 강제 지정
-  countOverride?: number; // 외부에서 좋아요 수 강제 지정
-}
 
 // ✅ 장소 카드 컴포넌트 정의
 const PlaceCard: React.FC<PlaceCardProps> = ({
@@ -100,4 +84,4 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
   );
 };
 
-export default PlaceCard; // 컴포넌트 export
+export default PlaceCard;
