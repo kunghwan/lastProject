@@ -14,7 +14,7 @@
     @apply p-3 rounded-full cursor-pointer hover:opacity-70 justify-center flex items-center dark:text-gray-800 text-3xl bg-gray-200;
   }
   .ykhInputButton {
-    @apply rounded-2xl p-4 bg-pink-50 w-100 placeholder:text-black outline-none lg:w-120  dark:placeholder:text-gray-900 dark:text-lime-300;
+    @apply rounded p-4 bg-pink-50 w-90 placeholder:text-black outline-none lg:w-120  dark:placeholder:text-gray-900 dark:text-lime-300;
   }
 }
 
