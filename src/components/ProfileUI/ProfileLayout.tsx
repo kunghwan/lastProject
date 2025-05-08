@@ -143,19 +143,25 @@ const ProfileLayout = ({
       .doc(userData.uid)
       .collection(FBCollection.FOLLOWERS);
     //! onSnapshot은 리렌더링을 일으키지 않고 데이터만 변경됨
+    //Todo: followers 컬렉션이 변경될 때 (팔로우 or 언팔로우 할 때)
+    //unsubscribe는 이 구독을 해제하는 함수
     const unsubscribe = onSnapshot(followersRef, (snapshot) => {
+      //현재 followers 컬렉션 안에 있는 도큐먼트(팔로워)의 개수를 가져옵니다.
       const followerSize = snapshot.size;
 
       //! 값이 다를때만 setState → 리렌더링 최적화
-      setFollowerCount((prevCount) => {
-        if (prevCount !== followerSize) {
+      setFollowerCount((prev) => {
+        //이전 팔로워 수와 지금 팔로워 수를 비교합니다.
+        if (prev !== followerSize) {
+          //팔로워 수가 변했다면 → 새로 가져온 값으로 업데이트합니다.
           return followerSize;
         }
-        return prevCount;
+        //팔로워 수가 그대로라면 → 이전 값을 그대로 유지합니다.
+        return prev;
       });
     });
 
-    //! 언마운트 시 구독 해제
+    //! 언마운트 시 구독 해제 (리턴으로 청소)
     return () => unsubscribe();
   }, [userData?.uid]);
   console.log("리렌더링");
@@ -257,11 +263,6 @@ const ProfileLayout = ({
                 <FollowButton
                   followNickName={userData.nickname ?? "unknown"}
                   followingId={userData.uid}
-                  // [추가] 팔로우 변경 이벤트 시 팔로워 수 새로고침
-                  onFollowChange={(isFollowed) => {
-                    // 팔로우, 언팔로우 모두 즉시 갱신
-                    fetchFollowerCount();
-                  }}
                 />
               </div>
             )}
