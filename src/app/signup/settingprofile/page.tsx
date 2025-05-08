@@ -1,12 +1,12 @@
-"use client"; // 클라이언트 컴포넌트로 지정
+"use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { IoAdd } from "react-icons/io5"; // + 아이콘
-import { storageService, dbService, FBCollection } from "@/lib/firebase"; // Firebase
-import { AUTH } from "@/contextapi/context"; // 사용자 인증 context
-import LoadingPage from "@/components/Loading"; // 로딩 UI
-import AlertModal from "@/components/AlertModal"; // 모달 알림창
+import { IoAdd } from "react-icons/io5";
+import { storageService, dbService, FBCollection } from "@/lib/firebase";
+import { AUTH } from "@/contextapi/context";
+import LoadingPage from "@/components/Loading";
+import AlertModal from "@/components/AlertModal";
 
 const SettingProfile = () => {
   // 프로필 상태: 닉네임, 이미지 URL, 자기소개

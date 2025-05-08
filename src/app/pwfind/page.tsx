@@ -1,34 +1,16 @@
-"use client"; // Next.js 클라이언트 컴포넌트 명시
+"use client";
 
 import { useEffect, useState, ChangeEvent, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation"; // 페이지 이동용 훅
-import { dbService, FBCollection } from "@/lib/firebase"; // Firestore 연동
+import { useRouter } from "next/navigation";
+import { dbService, FBCollection } from "@/lib/firebase";
 import {
   validateName,
   validatePhone,
   validateEmail,
   validatePassword,
-} from "@/lib/validations"; // 각종 유효성 검사 함수
-import { AUTH } from "@/contextapi/context"; // 로그인 유저 context
-import AlertModal from "@/components/AlertModal"; // 커스텀 알림창
-
-// 유효성 검사 결과 타입 정의
-interface ValidationResult {
-  isValid: boolean;
-  message?: string;
-}
-
-// 새 비밀번호 입력폼 타입
-interface FindPasswordForm {
-  newPassword: string;
-  confirmPassword: string;
-}
-
-// 유효성 검사 메시지 상태 타입
-interface FindPasswordValidation {
-  newPassword?: ValidationResult;
-  confirmPassword?: ValidationResult;
-}
+} from "@/lib/validations";
+import { AUTH } from "@/contextapi/context";
+import AlertModal from "@/components/AlertModal";
 
 // 세션 스토리지 키 상수
 const STORAGE_KEYS = {

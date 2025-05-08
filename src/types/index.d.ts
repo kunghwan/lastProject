@@ -80,30 +80,74 @@ interface MaskedEmailResult {
 
 // 4. 비밀번호 찾기 페이지
 
-// 비밀번호 재설정 시 입력받는 폼 구조
+// 유효성 검사 결과 타입 정의
+interface ValidationResult {
+  isValid: boolean;
+  message?: string;
+}
+
+// 새 비밀번호 입력폼 타입
 interface FindPasswordForm {
-  newPassword: string; // 새 비밀번호
-  confirmPassword: string; // 새 비밀번호 확인
+  newPassword: string;
+  confirmPassword: string;
 }
 
-// 비밀번호 재설정 폼의 유효성 검사 결과
+// 유효성 검사 메시지 상태 타입
 interface FindPasswordValidation {
-  newPassword?: ValidationResult; // 새 비밀번호 유효성 검사 결과
-  confirmPassword?: ValidationResult; // 새 비밀번호 확인 유효성 검사 결과
+  newPassword?: ValidationResult;
+  confirmPassword?: ValidationResult;
 }
-
+// 5. 추천장소
+// 장소 데이터 타입 정의
 interface Place {
-  id: string; // 장소의 고유 ID (예: "place_001")
-  name: string; // 장소 이름 (예: "한밭수목원")
-  location: string; // 장소의 위치 또는 주소 (예: "대전 중구")
-  imageUrl: string; // 장소 이미지를 나타내는 URL
-  description?: string; // 장소 설명 (선택값. 없을 수도 있음)
-  likes: number; // 좋아요 수 (예: 15)
+  contentid: string; // 콘텐츠 ID
+  title: string; // 장소 제목
+  addr1: string; // 주소
+  firstimage: string; // 이미지 URL
+  likeCount: number; // 좋아요 수
+}
+//! context
+// 장소 상세 정보를 나타내는 타입
+interface PlaceDetail {
+  title: string; // 장소 이름
+  addr1: string; // 주소
+  overview: string; // 설명
+  firstimage: string; // 대표 이미지
+  tel: string; // 전화번호
+  zipcode: string; // 우편번호
+}
+//! PlaceCard
+// ✅ 장소 타입 정의
+interface UpPlace {
+  contentid: string; // 장소 ID
+  title: string; // 장소명
+  addr1: string; // 주소
+  firstimage: string; // 대표 이미지
+  likeCount: number; // 좋아요 수
 }
 
-interface PlaceFilterOption {
-  minLikes?: number; // 최소 좋아요 수 필터
+// ✅ props 타입 정의
+interface PlaceCardProps {
+  place?: UpPlace; // 렌더링할 장소 객체
+  likedOverride?: boolean; // 외부에서 좋아요 상태 강제 지정
+  countOverride?: number; // 외부에서 좋아요 수 강제 지정
 }
+
+//! UpPlaceLikeButton.tsx
+// ✅ props 정의
+interface UpPlaceLikeButtonProps {
+  contentId: string; // 장소 ID
+  onLiked?: (newCount: number) => void; // 좋아요 수 변경 시 콜백
+  placeInfo?: {
+    title: string;
+    addr1: string;
+    imageUrl: string;
+  };
+  likedOverride?: boolean; // 외부에서 좋아요 상태 강제 지정
+  countOverride?: number; // 외부에서 좋아요 수 강제 지정
+}
+
+//-----------------------------------------------
 
 interface HomeMenu {
   name: string;

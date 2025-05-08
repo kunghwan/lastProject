@@ -1,18 +1,9 @@
-"use client"; // Next.js 클라이언트 컴포넌트로 명시
+"use client";
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import PlaceCard from "@/components/upplace/PlaceCard"; // 장소를 렌더링하는 카드 컴포넌트
-import TopButton from "@/components/upplace/TopButton"; // 상단 이동 버튼 컴포넌트
-
-// 장소 데이터 타입 정의
-interface Place {
-  contentid: string; // 콘텐츠 ID
-  title: string; // 장소 제목
-  addr1: string; // 주소
-  firstimage: string; // 이미지 URL
-  likeCount: number; // 좋아요 수
-}
+import PlaceCard from "@/components/upplace/PlaceCard";
+import TopButton from "@/components/upplace/TopButton";
 
 // ✅ 이미지 유효성 검사 함수: 이미지가 존재하는지 확인
 const checkImageExists = (url: string): Promise<boolean> => {

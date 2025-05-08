@@ -1,4 +1,4 @@
-"use client"; // Next.js 클라이언트 컴포넌트 지정
+"use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import Select, { SelectInstance } from "react-select"; // 생년월일 선택용
@@ -9,10 +9,10 @@ import {
   validatePassword,
   validatePhone,
   validateLocation,
-} from "@/lib/validations"; // 유효성 검사 함수들
-import { AUTH } from "@/contextapi/context"; // 인증 context
+} from "@/lib/validations";
+import { AUTH } from "@/contextapi/context";
 import { dbService, FBCollection, authService } from "@/lib/firebase"; // Firebase 연동
-import AlertModal from "@/components/AlertModal"; // 알림 모달
+import AlertModal from "@/components/AlertModal";
 
 const STORAGE_KEY = "signupUser"; // 세션 스토리지 키
 

@@ -1,20 +1,10 @@
-"use client"; // 클라이언트 컴포넌트임을 명시 (Next.js에서 상호작용 가능하도록)
+"use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation"; // URL 파라미터 추출
-import axios from "axios"; // HTTP 요청 라이브러리
+import { useParams } from "next/navigation";
+import axios from "axios";
 
-import Link from "next/link"; // 라우팅용 링크 컴포넌트
-
-// 장소 상세 정보를 나타내는 타입
-interface PlaceDetail {
-  title: string; // 장소 이름
-  addr1: string; // 주소
-  overview: string; // 설명
-  firstimage: string; // 대표 이미지
-  tel: string; // 전화번호
-  zipcode: string; // 우편번호
-}
+import Link from "next/link";
 
 const PlaceDetailPage = () => {
   const params = useParams<{ contentid: string }>(); // URL에서 contentid 추출
