@@ -58,16 +58,14 @@ const PostComponent = () => {
     };
   }, []);
 
-  const handleClick = (postNickname: string, postUid: string) => {
-    const currentUser = authService.currentUser;
+  const handleClick = (postUid: string, postNickname: string) => {
+    const loginUid =
+      typeof window !== "undefined"
+        ? localStorage.getItem("uid") || authService.currentUser?.uid
+        : null;
 
-    if (!currentUser) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
-
-    if (currentUser.uid === postUid) {
-      router.push("/profile/me");
+    if (loginUid && loginUid === postUid) {
+      router.push("/profile");
     } else {
       router.push(`/profile/${encodeURIComponent(postNickname)}`);
     }
@@ -119,7 +117,7 @@ const PostComponent = () => {
           <div key={post.id} className="p-1.5 m-1">
             <button
               className="flex gap-1.5 items-center text-center m-1.5"
-              onClick={() => handleClick(post.userNickname, post.uid)}
+              onClick={() => handleClick(post.uid, post.userNickname)}
             >
               <img
                 className="w-8 h-8 border rounded-2xl border-gray-200"
