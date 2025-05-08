@@ -162,8 +162,16 @@ const PostComponent = () => {
             <p className="text-lg font-semibold truncate">{post.content}</p>
             <div className="flex flex-wrap">
               {post.tags.map((tag: Tag) => (
+
+                <div
+                  key={tag.id}
+                  className="px-2 py-1 text-xs text-gray-600 dark:text-gray-300"
+                >
+                  <p>{tag.name}</p>
+
                 <div key={tag.id} className="px-2 py-1 text-xs text-gray-600">
                   <p className="dark:text-white">{tag.name}</p>
+
                 </div>
               ))}
             </div>
@@ -228,7 +236,7 @@ const PostComponent = () => {
                 <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
                 <div>{selectedPost.createdAt}</div>
               </div>
-              <h2 className="text-lg font-bold mb-2 truncate">
+              <h2 className="text-lg font-bold mb-2 dark:text-gray-600 truncate">
                 {selectedPost.title}
               </h2>
               <p className="text-sm text-gray-700 break-words">
