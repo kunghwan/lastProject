@@ -1,7 +1,6 @@
 "use client";
 
 import { IoMenu } from "react-icons/io5";
-import { PlaceProps } from "@/types";
 import { twMerge } from "tailwind-merge";
 
 type Props = {
