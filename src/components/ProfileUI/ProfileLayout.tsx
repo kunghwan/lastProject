@@ -11,8 +11,9 @@ import {
   getDoc,
   getDocs,
   collection,
+  onSnapshot,
 } from "firebase/firestore";
-import { dbService, storageService } from "@/lib/firebase";
+import { dbService, FBCollection, storageService } from "@/lib/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { validateNickname, validateBio } from "@/lib/validations";
 const ProfileLayout = ({
@@ -128,30 +129,36 @@ const ProfileLayout = ({
     return `rgb(${r}, ${g}, ${b})`;
   }, []);
 
-
   // 첫 번째 게시물 캐싱
   const firstPost = useMemo(() => posts[0] ?? null, [posts]);
 
   // 팔로워 수 가져오기
   useEffect(() => {
-    const fetchFollowerCount = async () => {
-      if (!userData.uid) return;
+    if (!userData?.uid) {
+      return;
+    }
 
-      try {
-        const ref = collection(dbService, "users", userData.uid, "followers");
-        const snapshot = await getDocs(ref);
-        setFollowerCount(snapshot.size);
-      } catch (error) {
-        console.error("🔥 followers 불러오기 실패:", error);
-      }
-    };
+    const followersRef = dbService
+      .collection(FBCollection.USERS)
+      .doc(userData.uid)
+      .collection(FBCollection.FOLLOWERS);
+    //! onSnapshot은 리렌더링을 일으키지 않고 데이터만 변경됨
+    const unsubscribe = onSnapshot(followersRef, (snapshot) => {
+      const followerSize = snapshot.size;
 
-  const firstPost = posts[0] ?? null;
-  console.log(firstPost);
+      //! 값이 다를때만 setState → 리렌더링 최적화
+      setFollowerCount((prevCount) => {
+        if (prevCount !== followerSize) {
+          return followerSize;
+        }
+        return prevCount;
+      });
+    });
 
-
-    fetchFollowerCount();
-  }, [userData.uid]);
+    //! 언마운트 시 구독 해제
+    return () => unsubscribe();
+  }, [userData?.uid]);
+  console.log("리렌더링");
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -250,6 +257,11 @@ const ProfileLayout = ({
                 <FollowButton
                   followNickName={userData.nickname ?? "unknown"}
                   followingId={userData.uid}
+                  // [추가] 팔로우 변경 이벤트 시 팔로워 수 새로고침
+                  onFollowChange={(isFollowed) => {
+                    // 팔로우, 언팔로우 모두 즉시 갱신
+                    fetchFollowerCount();
+                  }}
                 />
               </div>
             )}
