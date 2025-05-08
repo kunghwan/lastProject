@@ -128,6 +128,7 @@ const ProfileLayout = ({
     return `rgb(${r}, ${g}, ${b})`;
   }, []);
 
+
   // 첫 번째 게시물 캐싱
   const firstPost = useMemo(() => posts[0] ?? null, [posts]);
 
@@ -144,6 +145,10 @@ const ProfileLayout = ({
         console.error("🔥 followers 불러오기 실패:", error);
       }
     };
+
+  const firstPost = posts[0] ?? null;
+  console.log(firstPost);
+
 
     fetchFollowerCount();
   }, [userData.uid]);
@@ -171,7 +176,7 @@ const ProfileLayout = ({
             <div className="ml-10 w-120 flex-col flex flex-1 ">
               <div className="flex justify-between">
                 <h1 className="font-medium text-4xl p-1 hover:scale-103 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
-                  {userData.nickname || `없는 유저asd입니다.`}
+                  {userData.nickname || `없는 유저입니다.`}
                 </h1>
                 {isMyPage ? (
                   <button
