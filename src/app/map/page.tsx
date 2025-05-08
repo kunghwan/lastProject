@@ -18,6 +18,7 @@ const MapPage = () => {
   const markers = useRef<any[]>([]); // 현재 지도에 그려진 마커 및 오버레이 배열
   const mapRef = useRef<HTMLDivElement>(null); // 지도 렌더링 DOM 참조
   const detailRef = useRef<HTMLDivElement>(null); // 상세 정보창 DOM 참조
+  const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map()); //버튼 참조
 
   // 지도 초기화 및 kakao map API 로드
   useEffect(() => {
@@ -59,7 +60,7 @@ const MapPage = () => {
     }
   }, []);
 
-  // 마커 클릭 시 상세보기 열기 및 지도 이동
+  //! 마커 클릭 시 상세보기 열기 및 지도 이동
   const handlePlaceClick = useCallback(
     (place: PlaceProps, showDetail: boolean = true) => {
       if (!map) return;
@@ -72,6 +73,10 @@ const MapPage = () => {
       map.panTo(latlng); //! 해당 위치로 지도 이동 애니메이션(부드럽게)
 
       if (showDetail) setSelectedPlace(place); //! 상세 정보창 열기
+
+      //해당 리스트 버튼에 focus
+      const button = buttonRefs.current.get(place.id);
+      button?.focus();
     },
     [map]
   );
@@ -231,6 +236,10 @@ const MapPage = () => {
                 className="bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50"
               >
                 <button
+                  ref={(clickFocus) => {
+                    if (clickFocus)
+                      buttonRefs.current.set(place.id, clickFocus);
+                  }}
                   className="flex flex-col items-center w-full p-3 gap-y-1 focus:border focus:rounded-lg focus:bg-gray-50"
                   onClick={() => handlePlaceClick(place)}
                 >
