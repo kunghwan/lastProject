@@ -121,7 +121,7 @@ const BookmarkPage = () => {
         <h1 className="text-xl font-bold">❤️ 내가 좋아요한 추천 장소</h1>
         <button
           onClick={handleBack}
-          className="text-sm text-indigo-600 hover:underline hover:scale-105 transition-transform duration-200"
+          className="text-sm text-indigo-600 dark:text-indigo-200 hover:underline hover:scale-105 transition-transform duration-200"
         >
           ← 이전 페이지
         </button>
@@ -138,8 +138,8 @@ const BookmarkPage = () => {
             className={`px-4 py-1.5 rounded-full border text-sm font-medium shadow  transition-all duration-200 hover:scale-105 
         ${
           sort === value
-            ? "bg-blue-500 text-white border-blue-500"
-            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+            ? "bg-blue-500 text-white border-blue-500 dark:text-gray-200"
+            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-300"
         }`}
           >
             {label}
@@ -156,7 +156,10 @@ const BookmarkPage = () => {
               : "/image/logo1.png";
 
           return (
-            <div key={post.id} className=" hover:bg-gray-100 rounded-2xl p-1.5">
+            <div
+              key={post.id}
+              className=" hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1.5"
+            >
               <div className="m-1.5 flex items-center gap-1.5">
                 <img
                   src={post.userProfileImage}
