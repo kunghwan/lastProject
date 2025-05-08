@@ -19,6 +19,7 @@ const Navbar = () => {
   const pathname = usePathname();
   const { user } = AUTH.use();
 
+  //! 로그인한 유저만 사용가능한 기능 필터
   const navBtnClick = useCallback(
     (btn: (typeof NavBtns)[number], index: number) => {
       const needsAuth = [2, 3, 4].includes(index);
@@ -37,10 +38,12 @@ const Navbar = () => {
     [user, router]
   );
 
+  //! 토글 기능(키고 끄는 스위치)
   const handleToggleNavMenu = useCallback(() => {
     setIsNavMenuOpen((prev) => !prev);
   }, []);
 
+  //! 무조건 닫아야 하는 경우
   const closeNavMenu = useCallback(() => {
     setIsNavMenuOpen(false);
   }, []);
