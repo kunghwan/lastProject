@@ -122,12 +122,16 @@ const SignupForm = () => {
           message = validateName(value);
           break;
         case "email":
-          if (!value) message = "이메일을 입력해주세요.";
-          else {
-            const isDuplicate = await checkEmailDuplicateByFirestore(value);
-            message = isDuplicate ? "이미 사용 중인 이메일입니다." : "";
+          if (!value) {
+            message = "이메일을 입력해주세요.";
+          } else {
+            message = await validateEmail(
+              value,
+              checkEmailDuplicateByFirestore
+            );
           }
           break;
+
         case "password":
           message = validatePassword(value);
           break;
