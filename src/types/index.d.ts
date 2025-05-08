@@ -119,7 +119,6 @@ type PlaceProps = {
   phone: string; // 전화번호
   x: string; //x좌표
   y: string; //y좌표
-  distance?: number; // 거리 정보
 };
 
 // 전역적으로 상태관리

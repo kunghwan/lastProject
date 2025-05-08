@@ -7,6 +7,7 @@ import LikeButton from "./LikeButton";
 import ShareButton from "./ShareButton";
 import LocationButton from "./LocationButton";
 import { useRouter } from "next/navigation";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const defaultImgUrl =
   "https://i.pinimg.com/1200x/3e/c0/d4/3ec0d48e3332288604e8d48096296f3e.jpg";
@@ -68,23 +69,23 @@ const PostComponent = () => {
   };
 
   const handleOpenPost = (post: PostType) => {
-    setSelectedPost(post);
+    const images = (Array.isArray(post.imgs) ? post.imgs : [post.imgs]).filter(
+      (img): img is string => typeof img === "string"
+    );
+
+    setSelectedPost({ ...post, imgs: images }); // 👈 여기!
     setCurrentIndex(0);
   };
 
   const handlePrev = () => {
-    if (!selectedPost?.imageUrl) return;
-    const images = Array.isArray(selectedPost.imageUrl)
-      ? selectedPost.imageUrl
-      : [selectedPost.imageUrl];
+    if (!selectedPost || !Array.isArray(selectedPost.imageUrl)) return;
+    const images = selectedPost.imageUrl;
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
   const handleNext = () => {
-    if (!selectedPost?.imageUrl) return;
-    const images = Array.isArray(selectedPost.imageUrl)
-      ? selectedPost.imageUrl
-      : [selectedPost.imageUrl];
+    if (!selectedPost || !Array.isArray(selectedPost.imageUrl)) return;
+    const images = selectedPost.imageUrl;
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
@@ -172,11 +173,13 @@ const PostComponent = () => {
               {/* 슬라이더 */}
               <div className="relative w-full h-64 mt-10 flex items-center justify-center">
                 {(() => {
-                  const images = Array.isArray(selectedPost?.imageUrl)
-                    ? selectedPost.imageUrl
-                    : selectedPost?.imageUrl
-                    ? [selectedPost.imageUrl]
-                    : [];
+                  const images = (
+                    Array.isArray(selectedPost?.imageUrl)
+                      ? selectedPost.imageUrl
+                      : selectedPost?.imageUrl
+                      ? [selectedPost.imageUrl]
+                      : []
+                  ).filter((img): img is string => typeof img === "string");
 
                   return (
                     <div className="relative w-full flex justify-center items-center">
@@ -189,15 +192,15 @@ const PostComponent = () => {
                         <>
                           <button
                             onClick={handlePrev}
-                            className="absolute left-3 text-2xl font-bold text-white bg-black/40 rounded-full p-2 hover:bg-black/70"
+                            className="absolute -left-4 sm:left-2 text-2xl font-bold not-last:cursor-pointer text-black/50 rounded-full p-2 hover:text-black/30"
                           >
-                            ‹
+                            <FaChevronLeft />
                           </button>
                           <button
                             onClick={handleNext}
-                            className="absolute right-3 text-2xl font-bold text-white bg-black/40 rounded-full p-2 hover:bg-black/70"
+                            className="absolute -right-4 sm:right-2 text-2xl font-bold cursor-pointer text-black/50 rounded-full p-2 hover:text-black/30"
                           >
-                            ›
+                            <FaChevronRight />
                           </button>
                         </>
                       )}

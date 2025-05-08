@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { TiPlus } from "react-icons/ti";
 import { IoClose } from "react-icons/io5";
 import { LuMailPlus } from "react-icons/lu";
@@ -27,10 +27,24 @@ const QnaPage = () => {
   //Todo: includes() → 문자열 안에 다른 문자열이 들어있는지 확인하는 함수
   const filteredQna = qna.filter((item) => item.question.includes(searchTerm));
 
+  //! esc키를 누르면 닫히게하기
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsanswerShowing(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
-    <div className="mt-5 relative h-screen  hsecol gap-y-2.5 px-5  ">
+    <div className="mt-5 relative min-h-screen  hsecol gap-y-2.5 px-5  ">
       <div className="z-3">
-        <ul>
+        <ul className="">
           <li className="mb-2  flex justify-center ">
             <div className="relative  max-w-96 max-[700px]:px-2.5">
               <input
@@ -82,9 +96,9 @@ const QnaPage = () => {
         </ul>
       </div>
 
-      <div className="mt-10 font-bold hsecol items-center pb-20 max-[700px]:text-sm md:text-xl w-full xl:pb-0">
+      <div className="mt-5 font-bold hsecol items-center pb-10  max-[700px]:text-sm md:text-xl w-full xl:pb-0">
         <p className="text-gray-500 dark:text-white">
-          추가로 질문사항이 있으시면{" "}
+          추가로 질문사항이 있으시면
         </p>
         <p className="z-4 flex text-gray-500 dark:text-white">
           <a

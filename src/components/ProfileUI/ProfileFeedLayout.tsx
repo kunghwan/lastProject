@@ -6,6 +6,7 @@ import { dbService } from "@/lib/firebase";
 import { useEffect, useRef, useState } from "react";
 import { ImCancelCircle } from "react-icons/im";
 import { getUserPostsPaginated } from "@/lib/fbdata"; // 반드시 이 함수 구현되어야 함
+import LikeButton from "../post/LikeButton";
 
 const ProfileFeedComponent = ({
   posts,
@@ -95,6 +96,13 @@ const ProfileFeedComponent = ({
                   <ImCancelCircle />
                 </button>
               )}
+              <div className="flex justify-between text-s text-gray-500 mt-1">
+                <span>
+                  {" "}
+                  <LikeButton postId={post.id} likedBy={post.likes} />{" "}
+                </span>
+                <span> {post.shares?.length || 0}</span>
+              </div>
               <div className="text-sm">
                 <p className="font-semibold truncate">
                   {post.title || "제목 없음"}
@@ -103,16 +111,11 @@ const ProfileFeedComponent = ({
                   {post.content?.slice(0, 60) || "내용 없음"}
                 </p>
               </div>
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>♥ {post.likes?.length || 0}</span>
-                <span>🔄 {post.shares?.length || 0}</span>
-              </div>
             </div>
           </li>
         ))}
       </ul>
       <div ref={observerRef} className="h-10" />
-      {loading && <div className="text-center py-4">로딩 중...</div>}
     </div>
   );
 };

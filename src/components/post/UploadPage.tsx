@@ -153,6 +153,7 @@ const UploadPostPage = () => {
           }
           //2. Firestore에 새 게시글 추가 (add 사용)
           await dbService.collection(FBCollection.POSTS).add({
+            id: user.name,
             uid: user.uid,
             imageUrl: imgUrls[0] || null, // 대표 이미지
             imgs: imgUrls,
@@ -308,13 +309,13 @@ const UploadPostPage = () => {
             />
           </div>
         </div>
-        <div ref={scrollRef} className="w-full overflow-x-auto hide-scrollbar">
+        <div ref={scrollRef} className="w-full overflow-x-auto hide-scrollbar ">
           <ul
-            className=" flex items-center gap-2.5 flex-nowrap scroll-smooth "
+            className=" flex  items-center gap-2.5 flex-nowrap scroll-smooth "
             style={{ WebkitOverflowScrolling: "touch" }} // 모바일 터치 스와이프 부드럽게
           >
-            <li className="hsecol items-center">
-              <div className="flex  w-30">
+            <li className="hsecol gap-y-1 items-center">
+              <div className="flex   w-30">
                 <p className="font-bold text-md text-gray-500  dark:text-white">
                   사진추가 (
                   <span
@@ -332,7 +333,7 @@ const UploadPostPage = () => {
             </li>
 
             {files.map((file, index) => (
-              <li key={index} className="mt-6 shrink-0 w-24 h-24">
+              <li key={index} className="mt-7 shrink-0 w-24 h-24">
                 <FileItem
                   file={file}
                   // 파일을 삭제하기 위해 onDeleteFiles를 사용

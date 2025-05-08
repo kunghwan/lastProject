@@ -1,7 +1,9 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { ImFilePicture } from "react-icons/im";
+import AlertModal from "../AlertModal";
 
 interface FileItemProps {
   file?: File;
@@ -9,8 +11,15 @@ interface FileItemProps {
   onDeleteFiles?: () => void;
 }
 const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
   return (
     <div className="hsecol gap-y-1 hover:text-gray-400 cursor-pointer">
+      {alertMessage && (
+        <AlertModal
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
       <div className=" relative  w-24 h-24">
         {!file ? (
           <input
@@ -32,7 +41,7 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
               if (confirm("삭제하시겠습니까?")) {
                 return onDeleteFiles && onDeleteFiles();
               }
-              alert("취소했습니다.");
+              setAlertMessage("취소했습니다.");
             }}
             className=" absolute border rounded-2xl text-xl bg-white z-20 w-24 h-24 opacity-0 hover:opacity-80 flex justify-center items-center cursor-pointer"
           >
