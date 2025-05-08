@@ -118,7 +118,7 @@ const BookmarkPage = () => {
     <div className="flex flex-col mx-auto p-2 lg:w-3/4 w-full">
       {/* 제목 + 뒤로가기 버튼 */}
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold">❤️ 내가 좋아요한 추천 장소</h1>
+        <h1 className="text-xl font-bold">❤️ 내가 좋아요한 게시글</h1>
         <button
           onClick={handleBack}
           className="text-sm text-indigo-600 hover:underline hover:scale-105 transition-transform duration-200"

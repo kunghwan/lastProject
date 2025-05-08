@@ -109,6 +109,7 @@ const ProfileLayout = ({
   }, []);
 
   const firstPost = posts[0] ?? null;
+  console.log(firstPost);
 
   // ✅ 예시: username.uid를 어떻게 가져오는가?
   const username = userData.nickname; // 예: 'skyblue123'
@@ -141,7 +142,7 @@ const ProfileLayout = ({
             <div className="ml-10 w-120 flex-col flex flex-1 ">
               <div className="flex justify-between">
                 <h1 className="font-medium text-4xl p-1 hover:scale-103 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full">
-                  {userData.nickname || `없는 유저asd입니다.`}
+                  {userData.nickname || `없는 유저입니다.`}
                 </h1>
                 {isMyPage ? (
                   <button
