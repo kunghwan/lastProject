@@ -2,11 +2,10 @@
 
 import SearchForm from "@/components/map/SearchForm";
 import MobilePlaceList from "@/components/map/MobilePlaceList";
-import { useCallback, useEffect, useRef, useState } from "react";
 import PlaceDetail from "@/components/map/PlaceDetail";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { IoRestaurantOutline, IoSubway } from "react-icons/io5";
-import { PiBuildingBold } from "react-icons/pi";
-import { MdRecommend } from "react-icons/md";
+import { FaLandmark, FaRegBuilding } from "react-icons/fa6";
 
 const MapPage = () => {
   const [map, setMap] = useState<any>(null); // 카카오 지도 객체
@@ -208,7 +207,7 @@ const MapPage = () => {
                 setKeyword(word.name);
               }}
             >
-              <p className="text-green-500">{word.icon}</p>
+              <p className="text-green-500 text-lg">{word.icon}</p>
               {word.name}
             </button>
           ))}
@@ -265,7 +264,7 @@ export default MapPage;
 
 const keywordBtn = [
   { name: "맛집", icon: <IoRestaurantOutline /> },
-  { name: "명소", icon: <MdRecommend /> },
-  { name: "백화점", icon: <PiBuildingBold /> },
+  { name: "명소", icon: <FaLandmark /> },
+  { name: "백화점", icon: <FaRegBuilding /> },
   { name: "지하철", icon: <IoSubway /> },
 ];
