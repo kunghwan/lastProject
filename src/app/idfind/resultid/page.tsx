@@ -50,13 +50,13 @@ const IdFindResult = () => {
       )}
 
       {/* 상단 헤더 - 아이디/비밀번호 찾기 */}
-      <div className="w-full bg-emerald-100 p-4">
+      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
             <FaIdCard className="text-amber-500 text-4xl" />
             <p className="font-bold text-amber-500">아이디 찾기</p>
           </div>
-          <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
+          <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded whitespace-nowrap">
             <TbPassword className="text-blue-500 text-4xl" />
             <p className="font-bold text-black dark:text-black">
               비밀번호 찾기
@@ -67,7 +67,7 @@ const IdFindResult = () => {
 
       {/* 본문: 이메일 결과 표시 영역 */}
       <div className="w-full flex justify-center flex-col ml-5">
-        <div className="h-50 items-center justify-center flex border border-emerald-300 rounded mt-5 w-100 gap-3 p-4 lg:h-100 lg:w-280 md:w-200">
+        <div className="h-50 items-center justify-center flex border border-emerald-300 rounded mt-5 w-80 gap-3 p-4 lg:h-100 lg:w-280 md:w-200">
           {/* ✅ 체크박스 */}
           <input
             type="checkbox"
@@ -92,7 +92,7 @@ const IdFindResult = () => {
         </div>
 
         {/* 버튼 영역: 로그인 / 비밀번호 찾기 */}
-        <div className="flex mt-4 gap-x-2.5 justify-start ml-10 lg:ml-100 md:ml-60">
+        <div className="flex mt-4 gap-x-2.5 justify-start  lg:ml-100 md:ml-60">
           <button
             onClick={() => handleClick("/signin")}
             className={loginButton}
