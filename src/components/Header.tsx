@@ -33,20 +33,23 @@ const Header = () => {
   ); //  초기 상태 설정
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hasUnread, setHasUnread] = useState(false);
+
   const router = useRouter();
   const pathname = usePathname();
+
   const { user, signout } = AUTH.use();
   const isAuthPage = useMemo(
     () => ["/signin", "/signup"].includes(pathname!),
     [pathname]
   );
 
+  const toggleDarkMode = useCallback(() => setIsDarkMode((prev) => !prev), []);
+
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDarkMode);
     localStorage.setItem("darkMode", isDarkMode.toString());
   }, [isDarkMode]);
 
-  const toggleDarkMode = useCallback(() => setIsDarkMode((prev) => !prev), []);
   const logout = useCallback(() => {
     if (confirm("로그아웃 하시겠습니까?")) {
       signout();
