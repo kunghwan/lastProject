@@ -126,3 +126,5 @@ interface Window {
   kakao: any; // 카카오 불러오기
   checkUnreadNotifications?: () => void; //알림 읽음 여부
 }
+
+///실험
