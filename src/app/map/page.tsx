@@ -125,8 +125,12 @@ const MapPage = () => {
               // 마커 아래 라벨
               const label = document.createElement("div");
               label.className =
-                "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-22 text-center";
+                "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-22 text-center cursor-pointer";
               label.innerText = place.place_name;
+
+              label.onclick = () => {
+                handlePlaceClick(place, true);
+              };
 
               const overlay = new maps.CustomOverlay({
                 content: label,
@@ -197,7 +201,7 @@ const MapPage = () => {
 
   return (
     <div className="relative flex h-[76vh] dark:text-gray-600">
-      <div ref={mapRef} className="flex-1 bg-gray-200 relative" />
+      <div ref={mapRef} className="flex-1 bg-gray-200 relative " />
 
       <SearchForm
         inputValue={inputValue}
