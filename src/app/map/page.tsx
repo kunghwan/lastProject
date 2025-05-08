@@ -25,7 +25,7 @@ const MapPage = () => {
     const initMap = () => {
       if (!mapRef.current) return;
 
-      // 지도 초기 중심 좌표 설정 (대전)
+      // 지도 초기 중심 좌표 설정
       const center = new window.kakao.maps.LatLng(36.3286, 127.4229);
       const mapInstance = new window.kakao.maps.Map(mapRef.current, {
         center,
@@ -45,7 +45,7 @@ const MapPage = () => {
           initMap(); // 스크립트 로드 완료 시 지도 초기화
         });
       };
-      document.head.appendChild(script); // head에 삽입
+      document.body.appendChild(script);
     };
 
     // 브라우저 환경에서만 실행
@@ -84,7 +84,7 @@ const MapPage = () => {
   //! 장소 검색 함수
   const searchPlaces = useCallback(
     (keyword: string) => {
-      if (!map || !window.kakao) return; // window.kakao 추가
+      if (!map || !window.kakao) return;
 
       const { maps } = window.kakao;
       const ps = new maps.services.Places();
@@ -98,7 +98,12 @@ const MapPage = () => {
         keyword,
         (data: PlaceProps[], status: string) => {
           if (status === maps.services.Status.OK) {
-            const limitedData = keyword === "백화점" ? data.slice(0, 5) : data;
+            const DJData = data.filter((place) =>
+              place.address_name?.includes("대전")
+            );
+
+            const limitedData =
+              keyword === "백화점" ? DJData.slice(0, 5) : DJData;
             setPlaces(limitedData);
 
             // 기존 마커 제거
@@ -117,11 +122,15 @@ const MapPage = () => {
                 handlePlaceClick(place, true);
               });
 
-              //! 마커 아래에 생기는 라벨 생성
+              // 마커 아래 라벨
               const label = document.createElement("div");
               label.className =
-                "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-22 text-center ";
+                "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-22 text-center cursor-pointer";
               label.innerText = place.place_name;
+
+              label.onclick = () => {
+                handlePlaceClick(place, true);
+              };
 
               const overlay = new maps.CustomOverlay({
                 content: label,
@@ -133,10 +142,11 @@ const MapPage = () => {
               markers.current.push(marker);
               markers.current.push(overlay);
             });
+            // 검색 결과 없을 경우
           } else if (status === maps.services.Status.ZERO_RESULT) {
             alert("검색 결과가 없습니다.");
             setPlaces([]);
-            markers.current.forEach((m) => m.setMap(null)); // 마커도 초기화
+            markers.current.forEach((m) => m.setMap(null));
             markers.current = [];
           } else if (status === maps.services.Status.ERROR) {
             alert("검색 중 오류가 발생했습니다.");
@@ -191,7 +201,7 @@ const MapPage = () => {
 
   return (
     <div className="relative flex h-[76vh] dark:text-gray-600">
-      <div ref={mapRef} className="flex-1 bg-gray-200 relative" />
+      <div ref={mapRef} className="flex-1 bg-gray-200 relative " />
 
       <SearchForm
         inputValue={inputValue}

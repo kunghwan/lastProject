@@ -103,7 +103,7 @@ const LoginForm = () => {
           </div>
 
           {/* 아이디/비번 찾기 링크 */}
-          <div className="flex gap-x-20 justify-start w-100 lg:w-120">
+          <div className="flex gap-x-20 justify-start w-100 lg:w-120 px-5">
             <Link href="/idfind" className={Find}>
               아이디찾기
             </Link>

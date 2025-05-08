@@ -160,6 +160,19 @@ const PostComponent = () => {
               </p>
             </div>
             <p className="text-lg font-semibold truncate">{post.content}</p>
+            {Array.isArray(post.tags) && post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {post.tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="px-2 py-1 text-xs bg-gray-200 rounded text-gray-600"
+                  >
+                    {tag.name}
+                  </span>
+                ))}
+              </div>
+            )}
+
             <div className="items-baseline text-end text-gray500 text-sm">
               {post.createdAt}
             </div>

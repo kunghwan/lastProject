@@ -4,7 +4,9 @@ import { AUTH } from "@/contextapi/context";
 import { dbService, FBCollection } from "@/lib";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState, useTransition } from "react";
+
 import Loaiding from "../Loading";
+
 import AlertModal from "@/components/AlertModal";
 
 interface FollowButtonProps {
@@ -109,7 +111,14 @@ const FollowButton = ({
 
   useEffect(() => {
     const checkFollowing = async () => {
+
       if (!user?.uid || !followingId) return;
+
+      if (!user?.uid || !followingId) {
+        setIsFollowing(false);
+        return console.log("no");
+      }
+
 
       try {
         const ref = dbService
@@ -120,7 +129,13 @@ const FollowButton = ({
         const snap = await ref.get();
         setIsFollowing(snap.exists);
       } catch (error: any) {
+
         console.error("팔로우 상태 확인 오류:", error.message);
+
+        console.error(error.message);
+        setIsFollowing(false);
+        return;
+
       }
     };
 
@@ -129,7 +144,9 @@ const FollowButton = ({
 
   return (
     <div>
+
       {isPending && <Loaiding />}
+
       {alertMessage && (
         <AlertModal
           message={alertMessage}

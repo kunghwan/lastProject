@@ -1,7 +1,6 @@
 "use client";
 
 import { IoMenu } from "react-icons/io5";
-import { PlaceProps } from "@/types";
 import { twMerge } from "tailwind-merge";
 
 type Props = {
@@ -21,10 +20,10 @@ const MobilePlaceList = ({
     <>
       {/* 목록 보기 버튼 */}
       <button
-        className="md:hidden fixed bottom-[10vh] my-2 left-[50%] translate-x-[-50%] z-10 bg-white text-gray-500 py-2 rounded-full shadow px-7 "
+        className="md:hidden fixed bottom-[11vh] my-2 left-[50%] translate-x-[-50%] z-10 bg-white text-gray-500 py-2 rounded-full shadow px-7 hover:bg-gray-50"
         onClick={() => setIsOpen(true)}
       >
-        <div className="flex items-center gap-x-2 ">
+        <div className="flex items-center gap-x-2">
           <IoMenu className="text-green-500" />
           목록보기
         </div>
@@ -38,7 +37,7 @@ const MobilePlaceList = ({
         )}
       >
         <div className="mt-5" onClick={() => setIsOpen(false)}>
-          <button className="flex items-center justify-center p-3 rounded-2xl mx-auto w-[40vw] bg-gray-200 hover:opacity-80" />
+          <button className="flex items-center justify-center p-3 rounded-2xl mx-auto w-[40vw] bg-gray-200 hover:bg-gray-300 " />
         </div>
 
         <div className="p-4 overflow-y-auto h-full">
