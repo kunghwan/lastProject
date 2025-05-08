@@ -98,10 +98,20 @@ export const getAllPostsPaginated = async (
 
     const snapshot = await getDocs(q);
 
-    const posts: Post[] = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as Post[];
+    const posts: Post[] = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      console.log("📦 게시물 데이터:", {
+        id: doc.id,
+        imageUrl: data.imageUrl,
+        imgs: data.imgs,
+        title: data.title,
+      }); // ✅ 여기서 imgs가 undefined인지 배열인지 확인할 수 있음
+
+      return {
+        id: doc.id,
+        ...data,
+      } as Post;
+    });
 
     const newLastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
 

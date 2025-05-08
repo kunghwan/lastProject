@@ -31,6 +31,7 @@ export interface Post {
   userProfileImage: string; // 작성자 프로필 이미지 URL
   bookmarked: Array<string>;
   isLiked: boolean; // 현재 유저가 좋아요 눌렀는지 여부
+  imgs: string[]; // 게시물에 포함된 이미지 URL 배열
 }
 
 // const post1: Post = {
