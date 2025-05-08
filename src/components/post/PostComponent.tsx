@@ -162,16 +162,11 @@ const PostComponent = () => {
             <p className="text-lg font-semibold truncate">{post.content}</p>
             <div className="flex flex-wrap">
               {post.tags.map((tag: Tag) => (
-
                 <div
                   key={tag.id}
                   className="px-2 py-1 text-xs text-gray-600 dark:text-gray-300"
                 >
                   <p>{tag.name}</p>
-
-                <div key={tag.id} className="px-2 py-1 text-xs text-gray-600">
-                  <p className="dark:text-white">{tag.name}</p>
-
                 </div>
               ))}
             </div>
