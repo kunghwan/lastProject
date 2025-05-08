@@ -111,14 +111,14 @@ const FollowButton = ({
 
   useEffect(() => {
     const checkFollowing = async () => {
-
-      if (!user?.uid || !followingId) return;
+      if (!user?.uid || !followingId) {
+        return;
+      }
 
       if (!user?.uid || !followingId) {
         setIsFollowing(false);
         return console.log("no");
       }
-
 
       try {
         const ref = dbService
@@ -129,13 +129,11 @@ const FollowButton = ({
         const snap = await ref.get();
         setIsFollowing(snap.exists);
       } catch (error: any) {
-
         console.error("팔로우 상태 확인 오류:", error.message);
 
         console.error(error.message);
         setIsFollowing(false);
         return;
-
       }
     };
 
@@ -144,9 +142,6 @@ const FollowButton = ({
 
   return (
     <div>
-
-      {isPending && <Loaiding />}
-
       {alertMessage && (
         <AlertModal
           message={alertMessage}
