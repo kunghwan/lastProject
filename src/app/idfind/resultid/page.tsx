@@ -1,49 +1,55 @@
-"use client";
+"use client"; // Next.js 클라이언트 컴포넌트 선언
 
 import { useCallback, useEffect, useState } from "react";
-import { FaIdCard } from "react-icons/fa6";
-import { TbPassword } from "react-icons/tb";
-import AlertModal from "@/components/AlertModal";
+import { FaIdCard } from "react-icons/fa6"; // 아이디 아이콘
+import { TbPassword } from "react-icons/tb"; // 비밀번호 아이콘
+import AlertModal from "@/components/AlertModal"; // 커스텀 알림창
 
 const IdFindResult = () => {
-  const [email, setEmail] = useState("");
-  const [isChecked, setIsChecked] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [alertMsg, setAlertMsg] = useState<string | null>(null);
+  // 상태 정의
+  const [email, setEmail] = useState(""); // 선택된 이메일 저장
+  const [isChecked, setIsChecked] = useState(false); // 체크박스 상태
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태
+  const [alertMsg, setAlertMsg] = useState<string | null>(null); // 알림 메시지 상태
 
+  // ✅ 이메일/체크 상태가 바뀔 때마다 세션에 저장
   useEffect(() => {
     if (email) {
-      sessionStorage.setItem("selectedRealEmail", email);
-      sessionStorage.setItem("isChecked", JSON.stringify(isChecked));
+      sessionStorage.setItem("selectedRealEmail", email); // 이메일 저장
+      sessionStorage.setItem("isChecked", JSON.stringify(isChecked)); // 체크 상태 저장
     }
   }, [email, isChecked]);
 
+  // ✅ 컴포넌트 마운트 시 세션에서 값 복원
   useEffect(() => {
     const storedEmail = sessionStorage.getItem("selectedRealEmail");
     const storedCheck = sessionStorage.getItem("isChecked");
 
-    if (storedEmail) setEmail(storedEmail);
-    if (storedCheck) setIsChecked(JSON.parse(storedCheck));
-    setIsLoading(false);
+    if (storedEmail) setEmail(storedEmail); // 이메일 복원
+    if (storedCheck) setIsChecked(JSON.parse(storedCheck)); // 체크 여부 복원
+    setIsLoading(false); // 로딩 종료
   }, []);
 
+  // ✅ 버튼 클릭 시 체크 확인 → 이동
   const handleClick = useCallback(
     (url: string) => {
       if (!isChecked) {
-        setAlertMsg("체크박스를 체크해주세요.");
+        setAlertMsg("체크박스를 체크해주세요."); // 체크 안 했을 경우 알림창 표시
         return;
       }
-      window.location.href = url;
+      window.location.href = url; // 체크됐으면 해당 경로로 이동
     },
     [isChecked]
   );
 
   return (
     <>
+      {/* 알림 모달 */}
       {alertMsg && (
         <AlertModal message={alertMsg} onClose={() => setAlertMsg(null)} />
       )}
 
+      {/* 상단 헤더 - 아이디/비밀번호 찾기 */}
       <div className="w-full bg-emerald-100 p-4">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
@@ -59,27 +65,33 @@ const IdFindResult = () => {
         </div>
       </div>
 
+      {/* 본문: 이메일 결과 표시 영역 */}
       <div className="w-full flex justify-center flex-col ml-5">
         <div className="h-50 items-center justify-center flex border border-emerald-300 rounded mt-5 w-100 gap-3 p-4 lg:h-100 lg:w-280 md:w-200">
+          {/* ✅ 체크박스 */}
           <input
             type="checkbox"
             checked={isChecked}
             className="w-5 h-5 appearance-none border border-cyan-300 rounded-sm checked:bg-cyan-200 checked:border-cyan-400"
             onChange={(e) => setIsChecked(e.target.checked)}
           />
+          {/* ✅ 로딩 중일 때 */}
           {isLoading ? (
             <p className="text-lg text-gray-500 dark:text-emerald-300">
               이메일 불러오는 중...
             </p>
           ) : email ? (
+            // ✅ 이메일이 있을 때
             <p className="text-xl text-black">
               <span className="font-bold dark:text-emerald-300">{email}</span>
             </p>
           ) : (
+            // ✅ 이메일이 없을 때
             <p className="text-lg text-gray-500">이메일 정보가 없습니다.</p>
           )}
         </div>
 
+        {/* 버튼 영역: 로그인 / 비밀번호 찾기 */}
         <div className="flex mt-4 gap-x-2.5 justify-start ml-10 lg:ml-100 md:ml-60">
           <button
             onClick={() => handleClick("/signin")}
@@ -98,7 +110,9 @@ const IdFindResult = () => {
 
 export default IdFindResult;
 
+// ✅ 버튼 클래스 (Tailwind로 스타일 정의)
 const pwButton =
   "bg-gray-300 text-black font-bold px-6 py-3 rounded-2xl hover:bg-blue-600 w-40 lg:h-20 lg:flex lg:items-center lg:justify-center";
+
 const loginButton =
   "bg-emerald-300 px-6 py-3 rounded-2xl hover:bg-emerald-600 w-40 text-black font-bold flex justify-center lg:h-20 lg:flex lg:items-center lg:justify-center";

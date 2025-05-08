@@ -362,11 +362,11 @@ const IdFind = () => {
 
       {/* 확인 버튼 */}
       <div className=" px-5 flex">
-        <div className="flex flex-col lg:flex-row lg:justify-center">
+        <div className="flex flex-col lg:flex-row lg:justify-center ">
           <div className="flex justify-center w-full mt-5">
             <button
               type="button"
-              className="  h-[80px] bg-emerald-300 rounded font-bold text-base lg:text-lg hover:bg-emerald-400 "
+              className="w-[250px] h-[80px] bg-emerald-300 rounded font-bold text-base lg:text-lg hover:bg-emerald-400 lg:w-[200px] "
               onClick={handleSubmit}
             >
               확인

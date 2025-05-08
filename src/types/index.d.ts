@@ -119,7 +119,6 @@ type PlaceProps = {
   phone: string; // 전화번호
   x: string; //x좌표
   y: string; //y좌표
-  distance?: number; // 거리 정보
 };
 
 // 전역적으로 상태관리
@@ -127,3 +126,5 @@ interface Window {
   kakao: any; // 카카오 불러오기
   checkUnreadNotifications?: () => void; //알림 읽음 여부
 }
+
+///실험

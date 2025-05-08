@@ -1,7 +1,7 @@
-"use client";
+"use client"; // Next.js 클라이언트 컴포넌트 지정
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import Select, { SelectInstance } from "react-select";
+import Select, { SelectInstance } from "react-select"; // 생년월일 선택용
 import { useRouter } from "next/navigation";
 import {
   validateName,
@@ -9,13 +9,14 @@ import {
   validatePassword,
   validatePhone,
   validateLocation,
-} from "@/lib/validations";
-import { AUTH } from "@/contextapi/context";
-import { dbService, FBCollection, authService } from "@/lib/firebase";
-import AlertModal from "@/components/AlertModal"; // 모달 import
+} from "@/lib/validations"; // 유효성 검사 함수들
+import { AUTH } from "@/contextapi/context"; // 인증 context
+import { dbService, FBCollection, authService } from "@/lib/firebase"; // Firebase 연동
+import AlertModal from "@/components/AlertModal"; // 알림 모달
 
-const STORAGE_KEY = "signupUser";
+const STORAGE_KEY = "signupUser"; // 세션 스토리지 키
 
+// 입력 항목 정의
 const InfoAccount = [
   { label: "이름", name: "name", type: "text" },
   { label: "이메일", name: "email", type: "email" },
@@ -35,24 +36,27 @@ const SignupForm = () => {
     agreeLocation: false,
   });
 
+  // 생년월일 각각 관리
   const [birthYear, setBirthYear] = useState("");
   const [birthMonth, setBirthMonth] = useState("");
   const [birthDay, setBirthDay] = useState("");
 
   const [errors, setErrors] = useState<Partial<Record<keyof User, string>>>({});
-  const [isLoaded, setIsLoaded] = useState(false);
-  const { signup } = AUTH.use();
+  const [isLoaded, setIsLoaded] = useState(false); // 세션 복원 완료 여부
+  const { signup } = AUTH.use(); // 회원가입 함수
   const router = useRouter();
 
+  // 입력창 참조
   const inputRefs = useRef<(HTMLInputElement | HTMLSelectElement)[]>([]);
   const yearSelectRef = useRef<SelectInstance<any> | null>(null);
   const monthSelectRef = useRef<SelectInstance<any> | null>(null);
   const daySelectRef = useRef<SelectInstance<any> | null>(null);
   const locationAgreeRef = useRef<HTMLInputElement | null>(null);
 
-  const [alertMsg, setAlertMsg] = useState(""); // 모달 메시지 상태
-  const closeAlert = () => setAlertMsg("");
+  const [alertMsg, setAlertMsg] = useState(""); // 모달 메시지
+  const closeAlert = () => setAlertMsg(""); // 모달 닫기
 
+  // 입력창 ref 설정 함수
   const setInputRef = useCallback(
     (el: HTMLInputElement | HTMLSelectElement | null, index: number) => {
       if (el) inputRefs.current[index] = el;
@@ -60,6 +64,7 @@ const SignupForm = () => {
     []
   );
 
+  // 이메일 중복 확인
   const checkEmailDuplicateByFirestore = useCallback(async (email: string) => {
     const snap = await dbService
       .collection(FBCollection.USERS)
@@ -68,6 +73,7 @@ const SignupForm = () => {
     return !snap.empty;
   }, []);
 
+  // 세션 저장 정보 불러오기
   useEffect(() => {
     if (typeof window !== "undefined") {
       const stored = sessionStorage.getItem(STORAGE_KEY);
@@ -90,12 +96,14 @@ const SignupForm = () => {
     }
   }, []);
 
+  // user 상태 변경 시 세션 저장
   useEffect(() => {
     if (isLoaded) {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     }
   }, [user, isLoaded]);
 
+  // 생년월일 선택 시 birth 조합
   useEffect(() => {
     if (birthYear && birthMonth && birthDay) {
       setUser((prev) => ({
@@ -105,6 +113,7 @@ const SignupForm = () => {
     }
   }, [birthYear, birthMonth, birthDay]);
 
+  // 각 필드 유효성 검사
   const validateField = useCallback(
     async (name: keyof User, value: any) => {
       let message: string | null = null;
@@ -135,6 +144,7 @@ const SignupForm = () => {
     [checkEmailDuplicateByFirestore]
   );
 
+  // 컴포넌트 마운트 시 모든 필드 유효성 검사 + 첫 번째 포커스
   useEffect(() => {
     if (!isLoaded) return;
     const validateAllFieldsOnMount = async () => {
@@ -151,6 +161,7 @@ const SignupForm = () => {
     inputRefs.current[0]?.focus();
   }, [isLoaded, validateField]);
 
+  // 입력 변경 처리
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, type, value, checked } = e.target;
@@ -162,6 +173,7 @@ const SignupForm = () => {
     [validateField]
   );
 
+  // 엔터 시 다음 입력으로 이동
   const handleKeyDown = useCallback(
     (index: number) => (e: React.KeyboardEvent) => {
       if (e.key === "Enter") {
@@ -176,6 +188,7 @@ const SignupForm = () => {
     []
   );
 
+  // 제출 처리
   const handleSubmit = useCallback(async () => {
     const newErrors: typeof errors = {};
     for (const info of InfoAccount) {
@@ -188,24 +201,31 @@ const SignupForm = () => {
       setAlertMsg("입력값을 다시 확인해주세요.");
       return;
     }
+
+    // Firebase 인증 생성
     const result = await signup(user as User, user.password!);
     if (!result.success) {
       setAlertMsg("회원가입 실패: " + result.message);
       return;
     }
+
+    // 현재 로그인된 Firebase 사용자 가져오기
     const fbUser = authService.currentUser;
     if (!fbUser) {
       setAlertMsg("회원 정보가 없습니다. 다시 시도해주세요.");
       return;
     }
+
+    // uid 포함한 전체 유저 데이터 구성 → 세션 저장 → 다음 페이지 이동
     const fullUser = { ...user, uid: fbUser.uid };
     await authService.signOut();
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(fullUser));
     router.push("/signup/settingprofile");
   }, [signup, user, errors, validateField, router]);
 
-  if (!isLoaded) return null;
+  if (!isLoaded) return null; // 로딩 안 됐으면 렌더 안 함
 
+  // react-select 스타일
   const selectStyle = {
     control: (base: any) => ({ ...base, minHeight: "42px", fontSize: "14px" }),
     menu: (base: any) => ({ ...base, fontSize: "14px" }),
@@ -213,7 +233,7 @@ const SignupForm = () => {
 
   return (
     <div className="flex flex-col justify-start items-center min-h-screen px-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-teal-300 rounded-lg p-6  ">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-teal-300 rounded-lg p-6">
         <form className="space-y-8">
           {InfoAccount.map((info, index) => {
             const key = info.name as keyof typeof user;
@@ -223,6 +243,7 @@ const SignupForm = () => {
             return (
               <div key={index} className="relative">
                 {info.type === "custom" ? (
+                  // 생년월일 3개 Select
                   <div className="flex space-x-2 items-center">
                     <div className="w-1/3">
                       <Select
@@ -298,6 +319,7 @@ const SignupForm = () => {
                     </div>
                   </div>
                 ) : info.type !== "checkbox" ? (
+                  // 일반 input 렌더링
                   <>
                     <input
                       id={inputId}
@@ -327,6 +349,7 @@ const SignupForm = () => {
                     )}
                   </>
                 ) : (
+                  // 체크박스 렌더링
                   <div className="flex items-center mt-2">
                     <input
                       id={inputId}
@@ -357,6 +380,8 @@ const SignupForm = () => {
             );
           })}
         </form>
+
+        {/* 다음 버튼 */}
         <button
           id="signup-next-button"
           type="button"
@@ -366,6 +391,8 @@ const SignupForm = () => {
           다음
         </button>
       </div>
+
+      {/* 알림 모달 */}
       {alertMsg && <AlertModal message={alertMsg} onClose={closeAlert} />}
     </div>
   );

@@ -1,32 +1,36 @@
-"use client";
+"use client"; // Next.js 클라이언트 컴포넌트 명시
 
 import { useEffect, useState, ChangeEvent, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { dbService, FBCollection } from "@/lib/firebase";
+import { useRouter } from "next/navigation"; // 페이지 이동용 훅
+import { dbService, FBCollection } from "@/lib/firebase"; // Firestore 연동
 import {
   validateName,
   validatePhone,
   validateEmail,
   validatePassword,
-} from "@/lib/validations";
-import { AUTH } from "@/contextapi/context";
-import AlertModal from "@/components/AlertModal";
+} from "@/lib/validations"; // 각종 유효성 검사 함수
+import { AUTH } from "@/contextapi/context"; // 로그인 유저 context
+import AlertModal from "@/components/AlertModal"; // 커스텀 알림창
 
+// 유효성 검사 결과 타입 정의
 interface ValidationResult {
   isValid: boolean;
   message?: string;
 }
 
+// 새 비밀번호 입력폼 타입
 interface FindPasswordForm {
   newPassword: string;
   confirmPassword: string;
 }
 
+// 유효성 검사 메시지 상태 타입
 interface FindPasswordValidation {
   newPassword?: ValidationResult;
   confirmPassword?: ValidationResult;
 }
 
+// 세션 스토리지 키 상수
 const STORAGE_KEYS = {
   NAME: "pwfind-name",
   PHONE: "pwfind-phone",
@@ -34,40 +38,49 @@ const STORAGE_KEYS = {
 };
 
 const PwFindResult = () => {
-  const router = useRouter();
-  const { user } = AUTH.use();
+  const router = useRouter(); // 페이지 이동용
+  const { user } = AUTH.use(); // 로그인된 유저 정보
 
+  // 각 input DOM을 제어할 ref
   const nameRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const findPasswordButtonRef = useRef<HTMLButtonElement>(null);
-
   const newPasswordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
 
+  // 사용자 인증 입력값 상태
   const [inputName, setInputName] = useState("");
   const [inputPhone, setInputPhone] = useState("");
   const [inputEmail, setInputEmail] = useState("");
 
+  // 입력 유효성 오류 메시지 상태
   const [inputErrors, setInputErrors] = useState<{
     name?: string;
     phone?: string;
     email?: string;
   }>({});
 
+  // 인증된 이메일
   const [email, setEmail] = useState("");
+
+  // 새 비밀번호 폼 상태
   const [form, setForm] = useState<FindPasswordForm>({
     newPassword: "",
     confirmPassword: "",
   });
+
+  // 비밀번호 유효성 검사 상태
   const [validation, setValidation] = useState<FindPasswordValidation>({});
 
+  // 알림 모달 상태
   const [modal, setModal] = useState<{
     message: string;
     onConfirm?: () => void;
   } | null>(null);
 
+  // 컴포넌트가 로드되었을 때 포커스 처리
   useEffect(() => {
     if (user || email) {
       newPasswordRef.current?.focus();
@@ -76,6 +89,7 @@ const PwFindResult = () => {
     }
   }, [user, email]);
 
+  // Enter 키 입력 시 다음 필드로 이동
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -100,11 +114,13 @@ const PwFindResult = () => {
     }
   };
 
+  // 세션 스토리지에서 인증정보 불러오기
   useEffect(() => {
     const realEmail = sessionStorage.getItem("selectedRealEmail");
     if (realEmail) {
       setEmail(realEmail);
     } else {
+      // 이전 입력값 복원
       const savedName = sessionStorage.getItem(STORAGE_KEYS.NAME) || "";
       const savedPhone = sessionStorage.getItem(STORAGE_KEYS.PHONE) || "";
       const savedEmail = sessionStorage.getItem(STORAGE_KEYS.EMAIL) || "";
@@ -113,12 +129,14 @@ const PwFindResult = () => {
       setInputPhone(savedPhone);
       setInputEmail(savedEmail);
 
+      // 기본 유효성 검사
       setInputErrors({
         name: validateName(savedName) || "",
         phone: validatePhone(savedPhone) || "",
         email: "",
       });
 
+      // 이메일은 비동기 검사
       if (savedEmail) {
         validateEmail(savedEmail).then((error) => {
           if (error) {
@@ -129,6 +147,7 @@ const PwFindResult = () => {
     }
   }, []);
 
+  // 비밀번호 폼 유효성 검사
   const validateForm = useCallback((): boolean => {
     const errors: FindPasswordValidation = {};
     const { newPassword, confirmPassword } = form;
@@ -154,15 +173,18 @@ const PwFindResult = () => {
     return Object.keys(errors).length === 0;
   }, [form]);
 
+  // 비밀번호 폼 상태 변경 시 자동 유효성 검사
   useEffect(() => {
     validateForm();
   }, [form, validateForm]);
 
+  // 비밀번호 입력 변경 핸들러
   const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }, []);
 
+  // 비밀번호 변경 확인 버튼 클릭 핸들러
   const handleSubmit = useCallback(() => {
     if (!validateForm()) return;
 
@@ -170,11 +192,12 @@ const PwFindResult = () => {
       message: "비밀번호가 성공적으로 변경되었습니다.",
       onConfirm: () => {
         sessionStorage.removeItem("selectedRealEmail");
-        router.push("/signin");
+        router.push("/signin"); // 로그인 페이지로 이동
       },
     });
   }, [router, validateForm]);
 
+  // 이름/전화번호/이메일 입력값 변경 시
   const handleInputChange = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
@@ -200,6 +223,7 @@ const PwFindResult = () => {
     []
   );
 
+  // 사용자 인증 확인 처리
   const handleFindPassword = async () => {
     if (inputErrors.name || inputErrors.phone || inputErrors.email) {
       setModal({ message: "입력한 정보를 다시 확인해주세요." });
@@ -211,6 +235,7 @@ const PwFindResult = () => {
     }
 
     try {
+      // Firestore에서 사용자 찾기
       const snap = await dbService
         .collection(FBCollection.USERS)
         .where("name", "==", inputName)
@@ -225,6 +250,7 @@ const PwFindResult = () => {
         return;
       }
 
+      // 인증 성공 처리
       sessionStorage.setItem("selectedRealEmail", inputEmail);
       setEmail(inputEmail);
       setModal({
@@ -240,8 +266,10 @@ const PwFindResult = () => {
     <div className="p-2">
       <h2 className="text-2xl font-bold mb-4">비밀번호 재설정</h2>
 
+      {/* 인증 전 화면 */}
       {!user && !email && (
         <div className="flex flex-col gap-2 mb-4 ">
+          {/* 이름 입력 */}
           <input
             type="text"
             name="name"
@@ -256,6 +284,7 @@ const PwFindResult = () => {
             <p className="text-sm text-red-500 ml-1">{inputErrors.name}</p>
           )}
 
+          {/* 전화번호 입력 */}
           <input
             type="text"
             name="phone"
@@ -264,12 +293,13 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="전화번호 입력"
-            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150 "
+            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150"
           />
           {inputErrors.phone && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.phone}</p>
           )}
 
+          {/* 이메일 입력 */}
           <input
             type="email"
             name="email"
@@ -284,6 +314,7 @@ const PwFindResult = () => {
             <p className="text-sm text-red-500 ml-1">{inputErrors.email}</p>
           )}
 
+          {/* 인증 버튼 */}
           <button
             ref={findPasswordButtonRef}
             type="button"
@@ -295,11 +326,12 @@ const PwFindResult = () => {
         </div>
       )}
 
+      {/* 인증 후 비밀번호 재설정 화면 */}
       {(user || email) && (
         <>
           <div className="border h-80 justify-center flex items-center">
             <div>
-              <p className="text-xl text-black">
+              <p className="text-xl text-black dark:text-white">
                 이메일:{" "}
                 <span className="font-bold text-blue-600">
                   {user ? user.email : email}
@@ -307,6 +339,7 @@ const PwFindResult = () => {
               </p>
 
               <div className="flex flex-col mt-5">
+                {/* 새 비밀번호 입력 */}
                 <input
                   type="password"
                   name="newPassword"
@@ -323,6 +356,7 @@ const PwFindResult = () => {
                   </p>
                 )}
 
+                {/* 비밀번호 확인 입력 */}
                 <input
                   type="password"
                   name="confirmPassword"
@@ -342,6 +376,7 @@ const PwFindResult = () => {
             </div>
           </div>
 
+          {/* 확인 버튼 */}
           <div className="flex justify-center">
             <button
               ref={submitButtonRef}
@@ -354,7 +389,7 @@ const PwFindResult = () => {
         </>
       )}
 
-      {/* ✅ AlertModal 모달 렌더 */}
+      {/* 알림 모달 */}
       {modal && (
         <AlertModal
           message={modal.message}

@@ -5,7 +5,7 @@ import MobilePlaceList from "@/components/map/MobilePlaceList";
 import { useCallback, useEffect, useRef, useState } from "react";
 import PlaceDetail from "@/components/map/PlaceDetail";
 import { IoRestaurantOutline, IoSubway } from "react-icons/io5";
-import { PiBuildingBold, PiParkLight, PiPlantFill } from "react-icons/pi";
+import { PiBuildingBold, PiParkLight } from "react-icons/pi";
 
 const MapPage = () => {
   const [map, setMap] = useState<any>(null); // 카카오 지도 객체
@@ -79,42 +79,29 @@ const MapPage = () => {
   //! 장소 검색 함수
   const searchPlaces = useCallback(
     (keyword: string) => {
-      if (!map) return;
+      if (!map || !window.kakao) return; // window.kakao 추가
 
       const { maps } = window.kakao;
-      const ps = new maps.services.Places(); //! 장소 검색 서비스 객체 생성
+      const ps = new maps.services.Places();
 
-      // 검색 범위 설정 (대전 근처)
       const bounds = new maps.LatLngBounds(
         new maps.LatLng(36.175, 127.29),
         new maps.LatLng(36.48, 127.58)
       );
 
-      let combinedResults: PlaceProps[] = []; // 결과 저장용
-      let pending = 1; //! 콜백 완료 추적
-
-      // 키워드 검색 실행
       ps.keywordSearch(
         keyword,
         (data: PlaceProps[], status: string) => {
           if (status === maps.services.Status.OK) {
-            // "백화점" 키워드인 경우 최대 5개 제한
             const limitedData = keyword === "백화점" ? data.slice(0, 5) : data;
-            combinedResults = [...combinedResults, ...limitedData];
-          }
-
-          pending--; // 콜백 완료 처리
-
-          // 모든 검색 완료 시 마커 및 오버레이 표시
-          if (pending === 0) {
-            setPlaces(combinedResults);
+            setPlaces(limitedData);
 
             // 기존 마커 제거
             markers.current.forEach((m) => m.setMap(null));
             markers.current = [];
 
             // 새 마커 및 커스텀 오버레이 추가
-            combinedResults.forEach((place) => {
+            limitedData.forEach((place) => {
               const position = new maps.LatLng(
                 Number(place.y),
                 Number(place.x)
@@ -122,13 +109,13 @@ const MapPage = () => {
               const marker = new maps.Marker({ position, map });
 
               maps.event.addListener(marker, "click", () => {
-                handlePlaceClick(place, true); // 마커 클릭 시 상세보기
+                handlePlaceClick(place, true);
               });
 
-              // 마커 라벨용 오버레이
+              //! 마커 아래에 생기는 라벨 생성
               const label = document.createElement("div");
               label.className =
-                "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-20 ";
+                "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-22 text-center ";
               label.innerText = place.place_name;
 
               const overlay = new maps.CustomOverlay({
@@ -136,16 +123,24 @@ const MapPage = () => {
                 position,
                 yAnchor: 0.1,
               });
-
               overlay.setMap(map);
 
-              // 마커와 오버레이를 refs에 저장
               markers.current.push(marker);
               markers.current.push(overlay);
             });
+          } else if (status === maps.services.Status.ZERO_RESULT) {
+            alert("검색 결과가 없습니다.");
+            setPlaces([]);
+            markers.current.forEach((m) => m.setMap(null)); // 마커도 초기화
+            markers.current = [];
+          } else if (status === maps.services.Status.ERROR) {
+            alert("검색 중 오류가 발생했습니다.");
+            setPlaces([]);
+            markers.current.forEach((m) => m.setMap(null));
+            markers.current = [];
           }
         },
-        { bounds } // 검색 범위 지정
+        { bounds }
       );
     },
     [map, handlePlaceClick]
@@ -177,7 +172,6 @@ const MapPage = () => {
     [selectedPlace]
   );
 
-  // 마운트 시 클릭 리스너 등록 / 언마운트 시 제거
   useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
     return () => {

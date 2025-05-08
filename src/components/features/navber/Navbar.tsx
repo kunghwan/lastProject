@@ -43,7 +43,7 @@ const Navbar = () => {
     setIsNavMenuOpen((prev) => !prev);
   }, []);
 
-  //! 무조건 닫아야 하는 경우
+  //! 무조건 창을 닫아야 하는 경우
   const closeNavMenu = useCallback(() => {
     setIsNavMenuOpen(false);
   }, []);
