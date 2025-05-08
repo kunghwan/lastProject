@@ -155,7 +155,7 @@ const PostComponent = () => {
               <p className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
                 <ShareButton />
               </p>
-              <p className="flex-1/2 text-xs text-gray-500 dark:text-gray-300">
+              <p className="flex-1/2 text-xs text-gray-500 dark:text-gray-300 truncate">
                 <LocationButton /> {post.lo?.address || "주소 없음"}
               </p>
             </div>
