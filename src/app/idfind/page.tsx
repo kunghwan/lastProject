@@ -13,6 +13,7 @@ import { TbPassword } from "react-icons/tb";
 import { validateName, validatePhone } from "@/lib/validations";
 import { dbService, FBCollection } from "@/lib/firebase";
 import AlertModal from "@/components/AlertModal";
+import Link from "next/link";
 
 // 세션 저장 키 정의
 const STORAGE_KEY = "idFindForm";
@@ -285,7 +286,7 @@ const IdFind = () => {
       )}
 
       {/* 상단 아이디/비밀번호 찾기 헤더 */}
-      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap">
+      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap rounded">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
             <FaIdCard className="text-amber-500 text-4xl" />
@@ -293,9 +294,12 @@ const IdFind = () => {
           </div>
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
             <TbPassword className="text-blue-500 text-4xl" />
-            <p className="font-bold text-black-500 dark:text-black whitespace-nowrap">
+            <Link
+              href="/pwfind"
+              className="font-bold text-black-500 dark:text-black whitespace-nowrap"
+            >
               비밀번호 찾기
-            </p>
+            </Link>
           </div>
         </div>
       </div>
@@ -310,7 +314,7 @@ const IdFind = () => {
               }}
               type={idf.type || "text"}
               placeholder={idf.label}
-              className="bg-lime-300 p-5 placeholder:text-black outline-none lg:w-100 w-70 dark:caret-red-500"
+              className="bg-lime-200 p-5 placeholder:text-black outline-none lg:w-100 w-70 dark:caret-red-500 rounded dark:text-black"
               value={idf.value}
               onChange={idf.onChange}
               onKeyDown={(e) => handleKeyDown(e, index)}
@@ -320,14 +324,14 @@ const IdFind = () => {
               <>
                 <button
                   type="button"
-                  className="bg-emerald-300 p-5 font-bold w-15 text-sm whitespace-nowrap lg:w-20 flex justify-center"
+                  className="bg-emerald-300 p-5 font-bold w-15 text-sm whitespace-nowrap lg:w-20 flex justify-center rounded "
                   onClick={idf.btAction}
                 >
                   {idf.bt}
                 </button>
                 <button
                   type="button"
-                  className="bg-emerald-300 p-5 font-bold w-15 whitespace-nowrap text-sm flex justify-center lg:w-20"
+                  className="bg-emerald-300 p-5 font-bold w-15 whitespace-nowrap text-sm flex justify-center lg:w-20 rounded"
                   onClick={handleVerifyCode}
                 >
                   {idf.bt1}
@@ -336,7 +340,7 @@ const IdFind = () => {
             ) : idf.bt ? (
               <button
                 type="button"
-                className="bg-emerald-300 p-5 font-bold w-40"
+                className="bg-emerald-300 p-5 font-bold w-40 rounded"
                 onClick={idf.btAction}
               >
                 {idf.bt}
@@ -353,7 +357,7 @@ const IdFind = () => {
           )}
           {/* 인증번호 표시  */}
           {index === 2 && showCode && (
-            <p className="text-center text-sm text-green-600 lg:text-start lg:ml-2 md:text-start md:ml-3">
+            <p className="text-center text-sm text-green-600 lg:text-start lg:ml-2 md:text-start md:ml-3 ">
               인증번호: {generatedCode}
             </p>
           )}

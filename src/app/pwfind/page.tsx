@@ -11,6 +11,9 @@ import {
 } from "@/lib/validations";
 import { AUTH } from "@/contextapi/context";
 import AlertModal from "@/components/AlertModal";
+import { FaIdCard } from "react-icons/fa6";
+import { TbPassword } from "react-icons/tb";
+import Link from "next/link";
 
 // 세션 스토리지 키 상수
 const STORAGE_KEYS = {
@@ -245,8 +248,27 @@ const PwFindResult = () => {
   };
 
   return (
-    <div className="p-2">
-      <h2 className="text-2xl font-bold mb-4">비밀번호 재설정</h2>
+    <div className="p-2 ">
+      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap rounded">
+        <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
+          <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
+            <FaIdCard className="text-amber-500 text-4xl " />
+            <Link href="/idfind" className="font-bold text-black">
+              아이디 찾기
+            </Link>
+          </div>
+          <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
+            <TbPassword className="text-blue-500 text-4xl" />
+            <Link
+              href="/pwfind"
+              className="font-bold   whitespace-nowrap text-amber-500 dark:text-amber-500 "
+            >
+              비밀번호 찾기
+            </Link>
+          </div>
+        </div>
+      </div>
+      <h2 className="text-2xl font-bold mb-4 mt-4">비밀번호 재설정</h2>
 
       {/* 인증 전 화면 */}
       {!user && !email && (
