@@ -111,6 +111,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
   useEffect(() => {
     const checkFollowing = async () => {
       if (!user?.uid || !followingId) {
+        setIsFollowing(false);
         return console.log("no");
       }
 
@@ -125,8 +126,8 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         setIsFollowing(snap.exists);
       } catch (error: any) {
         console.error(error.message);
-
-        return console.log(error.message);
+        setIsFollowing(false);
+        return;
       }
     };
 
