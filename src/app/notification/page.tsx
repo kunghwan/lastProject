@@ -220,7 +220,13 @@ const NotificationListPage = () => {
                 key={noti.id}
                 onClick={() => {
                   handleNotificationClick(noti);
-                  return navi.push(`/profile/${noti.followerNickname}`);
+                  if (noti.type === "follow") {
+                    return navi.push(`/profile/${noti.followerNickname}`);
+                  }
+
+                  if (noti.type === "like") {
+                    return navi.push(`/profile/${noti.likerName}`);
+                  }
                 }}
                 className={twMerge(
                   "hover:scale-105 hover:shadow-sm hsecol  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer ",
@@ -230,7 +236,10 @@ const NotificationListPage = () => {
                 )}
               >
                 <p className="font-bold text-md">
-                  {noti.followerNickname}님이 팔로우했습니다.
+                  {noti.type === "follow" &&
+                    `${noti.followerNickname}님이 팔로우했습니다.`}
+                  {noti.type === "like" &&
+                    `${noti.likerName}님이 게시글을 좋아했습니다.`}
                 </p>
                 <p className="text-sm font-light">
                   {noti.createdAt.toString()}
