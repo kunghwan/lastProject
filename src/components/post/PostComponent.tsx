@@ -163,7 +163,7 @@ const PostComponent = () => {
             <div className="flex flex-wrap">
               {post.tags.map((tag: Tag) => (
                 <div key={tag.id} className="px-2 py-1 text-xs text-gray-600">
-                  <p>{tag.name}</p>
+                  <p className="dark:text-white">{tag.name}</p>
                 </div>
               ))}
             </div>
