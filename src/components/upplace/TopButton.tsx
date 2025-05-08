@@ -31,7 +31,7 @@ const TopButton = ({ buttonClassName, ...props }: Props) => {
       {...props}
       onClick={scrollToTop}
       className={twMerge(
-        "fixed z-40 bottom-30 right-1 px-4 py-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition cursor-pointer  sm:right-1 h-10",
+        "fixed z-40 bottom-30 right-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full shadow-lg  transition cursor-pointer  sm:right-1 h-10",
         props?.className
       )}
     >
