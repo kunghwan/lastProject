@@ -36,8 +36,11 @@ const TopButton = ({ buttonClassName, ...props }: Props) => {
       {...props} // 나머지 props 전달 (예: aria-label 등)
       onClick={scrollToTop} // 클릭 이벤트
       className={twMerge(
+
         // 기본 스타일 + 외부에서 전달받은 클래스 병합
         "fixed z-40 bottom-30 right-1 px-4 py-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition cursor-pointer sm:right-1 h-10",
+
+
         props?.className
       )}
     >
