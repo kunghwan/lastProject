@@ -7,6 +7,7 @@ import LikeButton from "./LikeButton";
 import ShareButton from "./ShareButton";
 import LocationButton from "./LocationButton";
 import { useRouter } from "next/navigation";
+import { authService } from "@/lib";
 
 const defaultImgUrl =
   "https://i.pinimg.com/1200x/3e/c0/d4/3ec0d48e3332288604e8d48096296f3e.jpg";
@@ -57,14 +58,18 @@ const PostComponent = () => {
     };
   }, []);
 
-  const handleClick = (nickname: string) => {
-    const loggedInUsername =
-      typeof window !== "undefined" ? localStorage.getItem("username") : null;
+  const handleClick = (postNickname: string, postUid: string) => {
+    const currentUser = authService.currentUser;
 
-    if (nickname === loggedInUsername) {
+    if (!currentUser) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    if (currentUser.uid === postUid) {
       router.push("/profile/me");
     } else {
-      router.push(`/profile/${encodeURIComponent(nickname)}`);
+      router.push(`/profile/${encodeURIComponent(postNickname)}`);
     }
   };
 
@@ -96,6 +101,13 @@ const PostComponent = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  const [currentUid, setCurrentUid] = useState<string | null>(null);
+
+  useEffect(() => {
+    const user = authService.currentUser;
+    setCurrentUid(user?.uid || null);
+  }, []);
+
   return (
     <div className="grid grid-cols-1 gap-y-3 mb-20 md:grid-cols-2 lg:grid-cols-3 ml-2.5 mr-2.5">
       {posts.map((post) => {
@@ -107,7 +119,7 @@ const PostComponent = () => {
           <div key={post.id} className="p-1.5 m-1">
             <button
               className="flex gap-1.5 items-center text-center m-1.5"
-              onClick={() => handleClick(post.userNickname)}
+              onClick={() => handleClick(post.userNickname, post.uid)}
             >
               <img
                 className="w-8 h-8 border rounded-2xl border-gray-200"
