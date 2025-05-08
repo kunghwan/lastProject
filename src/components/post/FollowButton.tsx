@@ -12,14 +12,9 @@ import AlertModal from "@/components/AlertModal";
 interface FollowButtonProps {
   followingId?: string;
   followNickName?: string;
-  onFollowChange?: (isFollowed: boolean) => void;
 }
 
-const FollowButton = ({
-  followingId,
-  followNickName,
-  onFollowChange,
-}: FollowButtonProps) => {
+const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
   const { user } = AUTH.use();
   const navi = useRouter();
   const [isFollowing, setIsFollowing] = useState(false);
@@ -69,14 +64,14 @@ const FollowButton = ({
           });
 
         setIsFollowing(true);
-        onFollowChange?.(true);
+
         setAlertMessage(`${followNickName}님을 팔로우 했습니다`);
       } catch (error: any) {
         console.log(error.message);
         alert("팔로우 중 오류가 발생했습니다. 다시 시도해주세요.");
       }
     });
-  }, [user, followingId, followNickName, navi, onFollowChange]);
+  }, [user, followingId, followNickName, navi]);
 
   const onUnFollow = useCallback(() => {
     if (!user) {
@@ -101,13 +96,12 @@ const FollowButton = ({
           .delete();
 
         setIsFollowing(false);
-        onFollowChange?.(false);
       } catch (error: any) {
         console.error("언팔로우 오류:", error.message);
         alert("언팔로우 중 오류가 발생했습니다.");
       }
     });
-  }, [user, followingId, navi, onFollowChange]);
+  }, [user, followingId, navi]);
 
   useEffect(() => {
     const checkFollowing = async () => {
