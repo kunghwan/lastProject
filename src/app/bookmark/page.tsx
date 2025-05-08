@@ -15,6 +15,7 @@ import { Post } from "@/types/post";
 import { GoHeart } from "react-icons/go";
 import { useRouter } from "next/navigation";
 import UpPlaceBookMark from "@/components/upplace/UpPlaceBookMark";
+import LikeButton from "@/components/post/LikeButton";
 
 const BookmarkPage = () => {
   const router = useRouter();
@@ -172,15 +173,11 @@ const BookmarkPage = () => {
                 />
               )}
               <p>{post.content}</p>
-              <div className="flex items-center gap-2 mb-2.5">
-                <button
-                  type="button"
-                  onClick={() => toggleLike(post.id!)}
-                  className="text-red-500"
-                >
-                  <GoHeart />
-                </button>
-                <span>{post.likes.length}</span>
+              <div
+                onClick={() => toggleLike(post.id!)}
+                className="flex items-center mb-2.5"
+              >
+                <LikeButton postId={post.id} likedBy={post.likes} />{" "}
               </div>
             </div>
           );
