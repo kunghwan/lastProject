@@ -148,11 +148,6 @@ const MapPage = () => {
             setPlaces([]);
             markers.current.forEach((m) => m.setMap(null));
             markers.current = [];
-          } else if (status === maps.services.Status.ERROR) {
-            alert("검색 중 오류가 발생했습니다.");
-            setPlaces([]);
-            markers.current.forEach((m) => m.setMap(null));
-            markers.current = [];
           }
         },
         { bounds }
@@ -169,9 +164,9 @@ const MapPage = () => {
   }, [map, keyword, searchPlaces]);
 
   // 검색 버튼 클릭 시 키워드 설정
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     setKeyword(inputValue.trim());
-  };
+  }, [inputValue, setKeyword]);
 
   // 상세 정보창 외부 클릭 시 닫기 처리
   const handleOutsideClick = useCallback(
@@ -237,7 +232,7 @@ const MapPage = () => {
         />
       )}
 
-      {keyword.length !== 0 && (
+      {keyword.length > 0 && (
         <div className="hidden md:flex md:w-72 p-4 bg-gray-100 border-l border-gray-300 flex-col">
           <ul className="space-y-4 overflow-y-auto h-[90%)] pr-2 ">
             {places.map((place) => (
@@ -267,7 +262,7 @@ const MapPage = () => {
         </div>
       )}
 
-      {keyword.length !== 0 && (
+      {keyword.length > 0 && (
         <MobilePlaceList
           isOpen={isSidebarOpen}
           setIsOpen={setIsSidebarOpen}

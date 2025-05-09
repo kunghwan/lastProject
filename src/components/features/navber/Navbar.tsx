@@ -13,7 +13,7 @@ import {
 } from "react-icons/fa6";
 
 const navStyle =
-  "hidden [@media(min-width:1425px)]:flex absolute w-17 top-10 -left-[125%] bg-gray-200 z-30 rounded-full transition-all duration-300";
+  "hidden [@media(min-width:1425px)]:flex absolute w-17 top-40 -left-[125%] bg-gray-200 z-30 rounded-full transition-all duration-300";
 
 const Navbar = () => {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
