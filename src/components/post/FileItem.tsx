@@ -4,6 +4,7 @@ import { FaPlus } from "react-icons/fa6";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { ImFilePicture } from "react-icons/im";
 import AlertModal from "../AlertModal";
+import Image from "next/image";
 
 interface FileItemProps {
   file?: File;
@@ -52,7 +53,7 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
         <div className="absolute top-0 left-0  w-full h-full border border-gray-400 rounded-2xl bg-white cursor-pointer  flex justify-center items-center overflow-hidden ">
           {file ? (
             <div className="border max-w-24 min-h-24">
-              <img
+              <Image
                 src={URL.createObjectURL(file)}
                 alt={file.name}
                 className="w-24 h-24 object-cover"
