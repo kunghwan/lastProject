@@ -4,24 +4,12 @@ import React, { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import UpPlaceLikeButton from "@/components/upplace/UpPlaceLikeButton";
 import Image from "next/image"; // ✅ next/image로 최적화
+import { useMemo } from "react";
 
 // ✅ 특정 장소에 대한 이미지 fallback 설정 (이미지 없을 경우 대체 이미지)
 const fallbackImages: Record<string, string> = {
   테미오래: "/custom/temiora.jpg", // 예시: 테미오래 → 로컬 대체 이미지
 };
-
-interface PlaceCardProps {
-  place: {
-    contentid: string;
-    title: string;
-    addr1: string;
-    firstimage: string;
-    likeCount: number;
-  };
-  likedOverride?: boolean;
-  countOverride?: number;
-  hideLikeButton?: boolean; // 좋아요 숨기기
-}
 
 // ✅ 장소 카드 컴포넌트 정의
 const PlaceCard: React.FC<PlaceCardProps> = ({
@@ -36,12 +24,13 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
   const defaultImage = "/image/logoc.PNG"; // 기본 이미지 (없을 경우)
 
   // ✅ 이미지 URL 우선순위: 유효한 이미지 → fallback 이미지 → 기본 이미지
-  const getImageUrl = () => {
-    if (place.firstimage && place.firstimage.trim() !== "") {
-      return place.firstimage.trim();
-    }
+
+  // ...
+
+  const imageUrl = useMemo(() => {
+    if (place.firstimage?.trim()) return place.firstimage.trim();
     return fallbackImages[place.title] || defaultImage;
-  };
+  }, [place.firstimage, place.title]);
 
   // ✅ 좋아요 수 상태 (외부 override 있으면 그걸로 초기화)
   const [likeCount, setLikeCount] = useState(
@@ -65,7 +54,7 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
       {/* 대표 이미지 */}
       <div className="relative w-full h-[270px] cursor-pointer rounded overflow-hidden">
         <Image
-          src={getImageUrl()}
+          src={imageUrl}
           alt={place.title}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
@@ -103,3 +92,4 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
 };
 
 export default PlaceCard;
+// 유효성 검사 결과 공통 타입

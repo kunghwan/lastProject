@@ -1,4 +1,3 @@
-// 유효성 검사 결과 공통 타입
 interface ValidationResult {
   isValid: boolean; // 유효한지 여부
   message?: string; // 오류메세지
@@ -117,20 +116,28 @@ interface PlaceDetail {
   zipcode: string; // 우편번호
 }
 //! PlaceCard
-// ✅ 장소 타입 정의
-interface UpPlace {
-  contentid: string; // 장소 ID
-  title: string; // 장소명
-  addr1: string; // 주소
-  firstimage: string; // 대표 이미지
-  likeCount: number; // 좋아요 수
-}
+// // ✅ 장소 타입 정의
+// interface UpPlace {
+//   contentid: string; // 장소 ID
+//   title: string; // 장소명
+//   addr1: string; // 주소
+//   firstimage: string; // 대표 이미지
+//   likeCount: number; // 좋아요 수
+// }
 
 // ✅ props 타입 정의
+
 interface PlaceCardProps {
-  place?: UpPlace; // 렌더링할 장소 객체
-  likedOverride?: boolean; // 외부에서 좋아요 상태 강제 지정
-  countOverride?: number; // 외부에서 좋아요 수 강제 지정
+  place: {
+    contentid: string;
+    title: string;
+    addr1: string;
+    firstimage: string;
+    likeCount: number;
+  };
+  likedOverride?: boolean;
+  countOverride?: number;
+  hideLikeButton?: boolean; // 좋아요 숨기기
 }
 
 //! UpPlaceLikeButton.tsx
