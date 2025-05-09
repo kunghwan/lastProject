@@ -58,7 +58,7 @@ const QnaPage = () => {
                 ref={qnaRef}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="min-w-96  p-2.5 sm:w-4/5  rounded-full border bg-white border-gray-500 dark:border-white dark:text-black placeholder-gray-400"
+                className=" outline-none min-w-96  p-2.5 sm:w-4/5  rounded-full border bg-white border-gray-500 dark:border-white dark:text-black placeholder-gray-400"
               />
               <IoSearchOutline className=" absolute right-3 top-1/2 -translate-y-1/2 text-green-950 text-3xl" />
             </div>
@@ -110,7 +110,7 @@ const QnaPage = () => {
           <a
             href="https://mail.naver.com/write?to=test@test.com"
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noopener noreferrer" //!링크를 클릭할 때 생길 수 있는 보안 문제를 막기 위한 설정 //위험: 새 창이 부모 창을 조작할 수 있음
             className=" group flex gap-x-1 items-center  text-green-800 font-bold hover:underline dark:text-green-200 "
           >
             <LuMailPlus className=" opacity-0 group-hover:opacity-100 transition-opacity " />
