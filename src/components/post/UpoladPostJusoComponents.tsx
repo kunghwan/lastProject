@@ -5,7 +5,6 @@ import { IoLocationSharp } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
 import AlertModal from "../AlertModal";
 import { useQuery } from "@tanstack/react-query";
-import Loaiding from "../Loading";
 
 interface JusoProps {
   juso: Location;
