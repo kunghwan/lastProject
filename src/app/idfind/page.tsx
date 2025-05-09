@@ -7,6 +7,7 @@ import React, {
   useEffect,
   useRef,
   FormEvent,
+  useMemo,
 } from "react";
 import { useTransition } from "react";
 import Loading from "@/components/Loading"; // ✅ 로딩 컴포넌트 불러오기
@@ -48,13 +49,15 @@ const IdFind = () => {
   const [isPending, startTransition] = useTransition();
 
   // 이메일 마스킹 처리 (앞 3글자만 보이고 나머지는 * 처리)
-  const maskEmail = (email: string) => {
+  const maskEmail = useCallback((email: string) => {
     const [id, domain] = email.split("@");
     //! 구조 분해 할당 방식
+    if (!id || !domain) return email;
+
     const maskedId =
       id.length <= 3 ? id : id.slice(0, 3) + "*".repeat(id.length - 3);
     return `${maskedId}@${domain}`;
-  };
+  }, []);
 
   // 이름/전화번호 유효성 검사 후 오류 메시지 저장
   const validateField = useCallback(
@@ -121,8 +124,10 @@ const IdFind = () => {
   ]);
 
   // 이름/전화번호가 바뀌면 자동 유효성 검사
-  useEffect(() => validateField("name", name), [name, validateField]);
-  useEffect(() => validateField("phone", phone), [phone, validateField]);
+  useEffect(() => {
+    validateField("name", name);
+    validateField("phone", phone);
+  }, [name, phone, validateField]);
 
   // Enter 키로 다음 입력창으로 이동
   // Enter 키로 다음 입력창으로 이동 또는 동작 실행
@@ -215,15 +220,18 @@ const IdFind = () => {
     }
   }, [name, phone, code, generatedCode]);
 
+  const maskedEmailList = useMemo(() => {
+    return foundEmail.split(", ");
+  }, [foundEmail]);
+
   // 확인 버튼 클릭 → 선택한 이메일 매핑 후 다음 페이지 이동
   const handleSubmit = useCallback(() => {
     if (!foundEmail || !isVerified)
       return showAlert("먼저 인증확인을 완료해주세요.");
     if (!selectedEmail) return showAlert("아이디를 선택해주세요.");
 
-    const maskedEmails = foundEmail.split(", ");
     const realEmails = sessionStorage.getItem("realEmail")?.split(",") || [];
-    const selectedIndex = maskedEmails.findIndex(
+    const selectedIndex = maskedEmailList.findIndex(
       (email) => email === selectedEmail
     );
 
@@ -243,7 +251,7 @@ const IdFind = () => {
     } else {
       showAlert("선택한 이메일을 찾을 수 없습니다.");
     }
-  }, [foundEmail, selectedEmail, router, isVerified]);
+  }, [foundEmail, selectedEmail, router, isVerified, maskedEmailList]);
 
   // 인증번호 처음 발송
   const handleCodeSend = useCallback(() => {
@@ -275,31 +283,45 @@ const IdFind = () => {
   }, [isLoaded]);
 
   // 입력 폼 구성 (이름, 전화번호, 인증번호)
-  const IdFinds = [
-    {
-      label: "이름",
-      value: name,
-      onChange: handleNameChange,
-      error: errors.name,
-    },
-    {
-      label: "전화번호",
-      value: phone,
-      onChange: handlePhoneChange,
-      bt: "인증번호찾기",
-      btAction: handleCodeSend,
-      error: errors.phone,
-    },
-    {
-      label: "인증번호 6자리 숫자 입력",
-      value: code,
-      onChange: handleCodeChange,
-      bt: "재전송",
-      bt1: "인증확인",
-      btAction: handleResend,
-      type: "password",
-    },
-  ];
+  const IdFinds = useMemo(
+    () => [
+      {
+        label: "이름",
+        value: name,
+        onChange: handleNameChange,
+        error: errors.name,
+      },
+      {
+        label: "전화번호",
+        value: phone,
+        onChange: handlePhoneChange,
+        bt: "인증번호찾기",
+        btAction: handleCodeSend,
+        error: errors.phone,
+      },
+      {
+        label: "인증번호 6자리 숫자 입력",
+        value: code,
+        onChange: handleCodeChange,
+        bt: "재전송",
+        bt1: "인증확인",
+        btAction: handleResend,
+        type: "password",
+      },
+    ],
+    [
+      name,
+      phone,
+      code,
+      errors.name,
+      errors.phone,
+      handleNameChange,
+      handlePhoneChange,
+      handleCodeChange,
+      handleCodeSend,
+      handleResend,
+    ]
+  );
 
   return (
     <form onSubmit={(e: FormEvent) => e.preventDefault()}>
@@ -412,7 +434,7 @@ const IdFind = () => {
             내 아이디는 <span className="underline">{foundEmail}</span> 입니다.
           </p>
           <div className="grid grid-cols-2 gap-x-8">
-            {foundEmail.split(", ").map((email, idx) => (
+            {maskedEmailList.map((email, idx) => (
               <div key={idx} className="flex items-center gap-x-2.5">
                 <input
                   type="radio"
