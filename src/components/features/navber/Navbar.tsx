@@ -107,7 +107,7 @@ const Navbar = () => {
 
         {/* 모바일 하단 네비게이션 */}
         {!["/signin", "/signup"].includes(pathname!) && (
-          <nav className="fixed bottom-0 left-0 h-auto right-0 bg-gray-200 z-[50] flex justify-around items-center [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto">
+          <nav className="fixed bottom-0 left-0 h-auto right-0 bg-gray-200 z-20 flex justify-around items-center [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto">
             <ul className="flex justify-around w-full">
               {NavBtns.map((btn, index) => (
                 <li key={index}>
