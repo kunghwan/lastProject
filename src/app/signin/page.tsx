@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AUTH } from "@/contextapi/context";
 import AlertModal from "@/components/AlertModal";
 import { twMerge } from "tailwind-merge";
+import Loading from "@/components/Loading";
 
 const LoginForm = () => {
   const [email, setEmail] = useState(""); // 입력된 이메일 상태
@@ -24,8 +25,10 @@ const LoginForm = () => {
     emailRef.current?.focus(); // 첫 포커스는 이메일 input
   }, []);
 
+  const [isPending, startTransition] = useTransition();
+
   // 로그인 핸들러
-  const handleLogin = useCallback(async () => {
+  const handleLogin = useCallback(() => {
     // 입력값 검증
     if (!email && !password) {
       setAlertMsg("아이디와 비밀번호를 입력해주세요.");
@@ -41,24 +44,22 @@ const LoginForm = () => {
       return;
     }
 
-    // 로그인 시도
-    const result = await signin(email, password);
-    console.log(result); // 콘솔 확인용
+    startTransition(async () => {
+      const result = await signin(email, password);
 
-    // 실패 시 reason에 따라 분기
-    if (!result.success) {
-      if (result.reason === "wrong-password") {
-        setAlertMsg("비밀번호가 일치하지 않습니다");
-      } else if (result.reason === "user-not-found") {
-        setAlertMsg("아이디가 존재하지 않습니다");
-      } else {
-        setAlertMsg("아이디와 비밀번호가 일치하지 않습니다");
+      if (!result.success) {
+        if (result.reason === "wrong-password") {
+          setAlertMsg("비밀번호가 일치하지 않습니다");
+        } else if (result.reason === "user-not-found") {
+          setAlertMsg("아이디가 존재하지 않습니다");
+        } else {
+          setAlertMsg("아이디와 비밀번호가 일치하지 않습니다");
+        }
+        return;
       }
-      return;
-    }
 
-    // 로그인 성공 시 메인으로 이동
-    router.push("/");
+      router.push("/");
+    });
   }, [email, password, signin, router]);
 
   return (
@@ -113,7 +114,11 @@ const LoginForm = () => {
           </div>
 
           {/* 로그인 버튼 */}
-          <button className={LoginButton} onClick={handleLogin}>
+          <button
+            className={LoginButton}
+            onClick={handleLogin}
+            disabled={isPending}
+          >
             로그인
           </button>
 
@@ -150,6 +155,8 @@ const LoginForm = () => {
           }}
         />
       )}
+      {/* 로딩 중일 때 로딩 컴포넌트 */}
+      {isPending && <Loading message="로그인 중입니다..." />}
     </>
   );
 };
