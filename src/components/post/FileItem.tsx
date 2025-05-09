@@ -18,7 +18,7 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
   } | null>(null);
 
   return (
-    <div className="hsecol gap-y-1 hover:text-gray-400 cursor-pointer">
+    <div className="hsecol gap-y-1 hover:text-gray-400 cursor-pointer  shadow-md ">
       {modal && (
         <AlertModal
           message={modal.message}
@@ -67,7 +67,7 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
 
         <div className="absolute top-0 left-0  w-full h-full border border-gray-400 rounded-2xl bg-white cursor-pointer  flex justify-center items-center overflow-hidden ">
           {file ? (
-            <div className="border max-w-24 min-h-24">
+            <div className="border max-w-24 min-h-24 ">
               <Image
                 src={URL.createObjectURL(file)}
                 alt={file.name}

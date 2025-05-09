@@ -103,8 +103,8 @@ const UploadTag = ({
             value={tag}
             onChange={(e) => setTag(e.target.value)}
             ref={tagRef}
-            className={twMerge("w-full upPostInput")}
-            placeholder="태그를 입력후 추가버튼을 눌러주세요."
+            className={twMerge("w-full upPostInput shadow-sm")}
+            placeholder="입력후 추가버튼 또는 스페이스를 눌러주세요."
             onKeyDown={(e) => {
               const { key } = e;
               if (key === "Enter") {
@@ -123,7 +123,7 @@ const UploadTag = ({
             type="button"
             onClick={onClickTag}
             className={twMerge(
-              "hover:shadow-md min-w-20 flex-1 rounded bg-[rgba(116,212,186)] dark:bg-[rgba(116,212,186,0.5)] dark:text-white "
+              "hover:bg-[rgba(116,212,186,0.7)] hover:shadow-md min-w-20 flex-1 rounded bg-[rgba(116,212,186)] dark:bg-[rgba(116,212,186,0.5)] dark:text-white "
             )}
           >
             추가
