@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { firebase, dbService } from "@/lib/firebase"; // Firebase 관련 객체 가져오기
 import { AUTH } from "@/contextapi/context"; // 사용자 인증 context
 
@@ -15,6 +15,9 @@ const UpPlaceLikeButton = ({
   const [liked, setLiked] = useState<boolean>(likedOverride ?? false); // 좋아요 여부 상태
   const [count, setCount] = useState<number>(countOverride ?? 0); // 좋아요 수 상태
   const [loading, setLoading] = useState(true); // 로딩 여부 상태
+
+  // ✅ placeInfo 안정화 → 불필요한 렌더 방지
+  const stablePlaceInfo = useMemo(() => placeInfo, [placeInfo]);
 
   // ✅ 컴포넌트 마운트 시 초기 데이터 로딩 (override 없을 때만 실행)
   useEffect(() => {
@@ -98,9 +101,9 @@ const UpPlaceLikeButton = ({
         // 좋아요 정보 생성
         batch.set(likeRef, {
           likedAt: firebase.firestore.FieldValue.serverTimestamp(), // 타임스탬프
-          title: placeInfo?.title ?? "제목 없음",
-          addr1: placeInfo?.addr1 ?? "주소 없음",
-          imageUrl: placeInfo?.imageUrl ?? "",
+          title: stablePlaceInfo?.title ?? "제목 없음",
+          addr1: stablePlaceInfo?.addr1 ?? "주소 없음",
+          imageUrl: stablePlaceInfo?.imageUrl ?? "",
           likeCount: count + 1, // 문서 내부 정보 (Firestore용, UI용 아님)
         });
 
@@ -108,9 +111,9 @@ const UpPlaceLikeButton = ({
         if (!placeSnap.exists) {
           batch.set(placeRef, {
             likeCount: 1,
-            title: placeInfo?.title ?? "",
-            addr1: placeInfo?.addr1 ?? "",
-            imageUrl: placeInfo?.imageUrl ?? "",
+            title: stablePlaceInfo?.title ?? "",
+            addr1: stablePlaceInfo?.addr1 ?? "",
+            imageUrl: stablePlaceInfo?.imageUrl ?? "",
           });
         } else {
           batch.update(placeRef, {
@@ -128,7 +131,7 @@ const UpPlaceLikeButton = ({
     } catch (error) {
       console.error("🔥 좋아요 처리 실패", error);
     }
-  }, [user, loading, liked, count, contentId, onLiked, placeInfo]);
+  }, [user, loading, liked, count, contentId, onLiked, stablePlaceInfo]);
 
   // ✅ 로그인 안 한 경우 메시지 출력
   if (!user)
