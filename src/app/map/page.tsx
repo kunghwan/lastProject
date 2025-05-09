@@ -20,12 +20,12 @@ const MapPage = () => {
   const detailRef = useRef<HTMLDivElement>(null); // 상세 정보창 DOM 참조
   const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map()); //버튼 참조
 
-  // 지도 초기화 및 kakao map API 로드
+  //! 지도 초기화 및 kakao map API 로드
   useEffect(() => {
     const initMap = () => {
       if (!mapRef.current) return;
 
-      // 지도 초기 중심 좌표 설정
+      //! 지도 초기 중심 좌표 설정
       const center = new window.kakao.maps.LatLng(36.3286, 127.4229);
       const mapInstance = new window.kakao.maps.Map(mapRef.current, {
         center,
@@ -35,7 +35,7 @@ const MapPage = () => {
       setMap(mapInstance); // 지도 객체 저장
     };
 
-    // Kakao Maps API 스크립트 동적 삽입
+    //! 카카오 맵 스크립트 불러오기
     const loadKakaoMapScript = () => {
       const script = document.createElement("script");
       script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_API_KEY}&autoload=false&libraries=services`;
@@ -48,14 +48,14 @@ const MapPage = () => {
       document.body.appendChild(script);
     };
 
-    // 브라우저 환경에서만 실행
+    //! 브라우저 환경에서만 실행
     if (typeof window !== "undefined") {
       if (window.kakao && window.kakao.maps) {
         window.kakao.maps.load(() => {
-          initMap(); // 이미 로드된 경우 바로 초기화
+          initMap();
         });
       } else {
-        loadKakaoMapScript(); // 그렇지 않으면 스크립트 삽입
+        loadKakaoMapScript();
       }
     }
   }, []);
@@ -69,19 +69,14 @@ const MapPage = () => {
         Number(place.y),
         Number(place.x)
       );
-
       map.panTo(latlng); //! 해당 위치로 지도 이동 애니메이션(부드럽게)
 
       if (showDetail) setSelectedPlace(place); //! 상세 정보창 열기
-
-      //해당 리스트 버튼에 focus
-      const button = buttonRefs.current.get(place.id);
-      button?.focus();
     },
     [map]
   );
 
-  //! 장소 검색 함수
+  //! 키워드 검색 실행
   const searchPlaces = useCallback(
     (keyword: string) => {
       if (!map || !window.kakao) return;
@@ -101,16 +96,15 @@ const MapPage = () => {
             const DJData = data.filter((place) =>
               place.address_name?.includes("대전")
             );
-
             const limitedData =
               keyword === "백화점" ? DJData.slice(0, 5) : DJData;
+
             setPlaces(limitedData);
 
             // 기존 마커 제거
             markers.current.forEach((m) => m.setMap(null));
             markers.current = [];
 
-            // 새 마커 및 커스텀 오버레이 추가
             limitedData.forEach((place) => {
               const position = new maps.LatLng(
                 Number(place.y),
@@ -118,16 +112,18 @@ const MapPage = () => {
               );
               const marker = new maps.Marker({ position, map });
 
+              // 마커 클릭 시 해당 장소 상세 정보 표시
               maps.event.addListener(marker, "click", () => {
                 handlePlaceClick(place, true);
               });
 
-              // 마커 아래 라벨
+              // 사용자 정의 마커(label)
               const label = document.createElement("div");
               label.className =
                 "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-22 text-center cursor-pointer";
               label.innerText = place.place_name;
 
+              // 라벨 클릭 시 상세 보기
               label.onclick = () => {
                 handlePlaceClick(place, true);
               };
@@ -137,12 +133,13 @@ const MapPage = () => {
                 position,
                 yAnchor: 0.1,
               });
+
               overlay.setMap(map);
 
               markers.current.push(marker);
               markers.current.push(overlay);
             });
-            // 검색 결과 없을 경우
+            //! 검색 결과 없을 경우
           } else if (status === maps.services.Status.ZERO_RESULT) {
             alert("검색 결과가 없습니다.");
             setPlaces([]);
@@ -156,19 +153,19 @@ const MapPage = () => {
     [map, handlePlaceClick]
   );
 
-  // 키워드 변경 시 장소 검색 실행
+  //! 키워드 변경 시 검색
   useEffect(() => {
     if (keyword && map) {
       searchPlaces(keyword);
     }
   }, [map, keyword, searchPlaces]);
 
-  // 검색 버튼 클릭 시 키워드 설정
+  //! 검색 버튼 클릭 시 실행
   const handleSearch = useCallback(() => {
     setKeyword(inputValue.trim());
-  }, [inputValue, setKeyword]);
+  }, [inputValue]);
 
-  // 상세 정보창 외부 클릭 시 닫기 처리
+  //! 상세 정보 외 클릭 시 닫기
   const handleOutsideClick = useCallback(
     (event: MouseEvent) => {
       if (
@@ -176,7 +173,7 @@ const MapPage = () => {
         detailRef.current &&
         !detailRef.current.contains(event.target as Node)
       ) {
-        setSelectedPlace(null); // 외부 클릭 시 선택 해제
+        setSelectedPlace(null);
       }
     },
     [selectedPlace]
@@ -189,15 +186,19 @@ const MapPage = () => {
     };
   }, [handleOutsideClick]);
 
-  // 상세 정보 수동 닫기
+  //! 상세 정보 수동 닫기
   const handleCloseDetail = useCallback(() => {
     setSelectedPlace(null);
   }, []);
 
   return (
     <div className="relative flex h-[76vh] dark:text-gray-600">
-      <div ref={mapRef} className="flex-1 bg-gray-200 relative " />
+      <div
+        ref={mapRef}
+        className="flex-1 bg-gray-200 relative rounded-3xl border border-gray-300 overflow-hidden min-h-100"
+      />
 
+      {/* 검색창 */}
       <SearchForm
         inputValue={inputValue}
         setInputValue={setInputValue}
@@ -206,6 +207,7 @@ const MapPage = () => {
         inputClassName="mx-2 w-48"
       />
 
+      {/* 키워드 버튼 */}
       {!selectedPlace && (
         <div className="absolute z-10 top-20 sm:top-25 left-[50%] translate-x-[-50%] flex gap-2 md:left-50 md:transform-none ">
           {keywordBtn.map((word) => (
@@ -224,17 +226,10 @@ const MapPage = () => {
         </div>
       )}
 
-      {selectedPlace && !isSidebarOpen && (
-        <PlaceDetail
-          place={selectedPlace}
-          onClose={handleCloseDetail}
-          detailRef={detailRef}
-        />
-      )}
-
+      {/*검색 장소 리스트*/}
       {keyword.length > 0 && (
-        <div className="hidden md:flex md:w-72 p-4 bg-gray-100 border-l border-gray-300 flex-col">
-          <ul className="space-y-4 overflow-y-auto h-[90%)] pr-2 ">
+        <div className="hidden md:flex absolute top-0 right-0 w-72 max-h-[76vh] h-full p-4 bg-gray-100 border-l border-gray-300 flex-col rounded-3xl z-10 overflow-y-auto">
+          <ul className="space-y-4 pr-2  overflow-y-auto max-h-[76vh]">
             {places.map((place) => (
               <li
                 key={place.id}
@@ -242,8 +237,9 @@ const MapPage = () => {
               >
                 <button
                   ref={(clickFocus) => {
-                    if (clickFocus)
+                    if (clickFocus) {
                       buttonRefs.current.set(place.id, clickFocus);
+                    }
                   }}
                   className="flex flex-col items-center w-full p-3 gap-y-1 focus:border focus:rounded-lg focus:bg-gray-50"
                   onClick={() => handlePlaceClick(place)}
@@ -262,6 +258,16 @@ const MapPage = () => {
         </div>
       )}
 
+      {/* 상세 정보창 */}
+      {selectedPlace && !isSidebarOpen && (
+        <PlaceDetail
+          place={selectedPlace}
+          onClose={handleCloseDetail}
+          detailRef={detailRef}
+        />
+      )}
+
+      {/* 장소 리스트 (Mobile) */}
       {keyword.length > 0 && (
         <MobilePlaceList
           isOpen={isSidebarOpen}
