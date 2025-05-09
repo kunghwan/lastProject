@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { getAllPostsPaginated } from "@/lib/fbdata";
 import { Post as PostType, Tag } from "@/types/post";
 import LikeButton from "./LikeButton";
@@ -25,7 +25,7 @@ const PostComponent = () => {
     loadMorePosts();
   }, []);
 
-  const loadMorePosts = async () => {
+  const loadMorePosts = useCallback(async () => {
     if (loading || !hasMore) return;
     setLoading(true);
     const { posts: newPosts, lastDoc } = await getAllPostsPaginated(
@@ -41,7 +41,7 @@ const PostComponent = () => {
     lastDocRef.current = lastDoc;
     setHasMore(newPosts.length > 0);
     setLoading(false);
-  };
+  }, [loading, hasMore]);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -53,22 +53,25 @@ const PostComponent = () => {
     return () => {
       if (observerRef.current) observer.unobserve(observerRef.current);
     };
-  }, []);
+  }, [loadMorePosts]);
 
-  const handleClick = (postUid: string, postNickname: string) => {
-    const loginUid =
-      typeof window !== "undefined"
-        ? localStorage.getItem("uid") || authService.currentUser?.uid
-        : null;
+  const handleClick = useCallback(
+    (postUid: string, postNickname: string) => {
+      const loginUid =
+        typeof window !== "undefined"
+          ? localStorage.getItem("uid") || authService.currentUser?.uid
+          : null;
 
-    if (loginUid && loginUid === postUid) {
-      router.push("/profile");
-    } else {
-      router.push(`/profile/${encodeURIComponent(postNickname)}`);
-    }
-  };
+      if (loginUid && loginUid === postUid) {
+        router.push("/profile");
+      } else {
+        router.push(`/profile/${encodeURIComponent(postNickname)}`);
+      }
+    },
+    [router]
+  );
 
-  const handleOpenPost = (post: PostType) => {
+  const handleOpenPost = useCallback((post: PostType) => {
     const images = Array.isArray(post.imgs)
       ? post.imgs.filter((img): img is string => typeof img === "string")
       : [];
@@ -76,15 +79,17 @@ const PostComponent = () => {
     setSelectedPost(post);
     setModalImages(images);
     setCurrentIndex(0);
-  };
+  }, []);
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
+    if (modalImages.length === 0) return;
     setCurrentIndex((prev) => (prev === 0 ? modalImages.length - 1 : prev - 1));
-  };
+  }, [modalImages.length]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
+    if (modalImages.length === 0) return;
     setCurrentIndex((prev) => (prev === modalImages.length - 1 ? 0 : prev + 1));
-  };
+  }, [modalImages.length]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -134,7 +139,7 @@ const PostComponent = () => {
               <img
                 src={images[0] || defaultImgUrl}
                 alt="Post image"
-                className="w-full border border-gray-300 h-128 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01]"
+                className="w-full opacity-70 border-gray-300 h-128 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01] border "
               />
 
               {Array.isArray(post.imgs) && post.imgs.length > 1 && (
@@ -144,20 +149,22 @@ const PostComponent = () => {
               )}
             </div>
 
-            <div className="flex gap-4 ml-1 mb-2">
-              <div className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
-                <LikeButton
-                  likedBy={post.likes}
-                  postId={post.id!}
-                  postOwnerId={post.uid}
-                />
+            <div className="flex gap-20 justify-between items-center text-s text-gray-500 mt-1 dark:text-gray-300">
+              <div className="flex gap-5">
+                <div className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
+                  <LikeButton
+                    likedBy={post.likes}
+                    postId={post.id!}
+                    postOwnerId={post.uid}
+                  />
+                </div>
+                <div className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
+                  <ShareButton />s
+                </div>
               </div>
-              <p className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
-                <ShareButton />
-              </p>
-              <p className="flex-1/2 text-xs text-gray-500 dark:text-gray-300 truncate">
+              <div className="flex-1/2 text-xs text-gray-500 dark:text-gray-300 truncate">
                 <LocationButton /> {post.lo?.address || "주소 없음"}
-              </p>
+              </div>
             </div>
             <p className="text-lg font-semibold truncate">{post.content}</p>
             <div className="flex flex-wrap">
@@ -247,5 +254,4 @@ const PostComponent = () => {
 
 export default PostComponent;
 
-const defaultImgUrl =
-  "https://www.namdokorea.com/site/jeonnam/tour/images/noimage.gif"; // 기본 프로필 이미지 URL
+const defaultImgUrl = "/image/logo1.png"; // 기본 프로필 이미지 URL

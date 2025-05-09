@@ -5,17 +5,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { IoSettingsOutline, IoAdd } from "react-icons/io5";
 import FollowButton from "../post/FollowButton";
 import ProfileFeedComponent from "./ProfileFeedLayout";
-import {
-  updateDoc,
-  doc,
-  getDoc,
-  getDocs,
-  collection,
-  onSnapshot,
-} from "firebase/firestore";
+import { updateDoc, doc, onSnapshot, collection } from "firebase/firestore";
 import { dbService, FBCollection, storageService } from "@/lib/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { validateNickname, validateBio } from "@/lib/validations";
+
 const ProfileLayout = ({
   isMyPage,
   tags = [],
@@ -36,7 +30,6 @@ const ProfileLayout = ({
 }) => {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-
   const [editNickname, setEditNickname] = useState(userData.nickname ?? "");
   const [editBio, setEditBio] = useState(userData.bio ?? "");
   const [previewImage, setPreviewImage] = useState(
@@ -48,24 +41,20 @@ const ProfileLayout = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [followerCount, setFollowerCount] = useState(0);
 
-  // 창 크기 핸들러를 useCallback으로 메모이제이션
   const handleResize = useCallback(() => {
     setIsSmallScreen(window.innerWidth < 1024);
   }, []);
 
-  // useEffect에 메모이제이션된 handleResize 사용
   useEffect(() => {
-    handleResize(); // 초기 실행
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [handleResize]);
 
-  // 파일 선택 트리거 최적화
   const triggerFileSelect = useCallback(() => {
     fileInputRef.current?.click();
   }, []);
 
-  // 이미지 선택 핸들러 최적화
   const handleImageSelect = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -77,7 +66,6 @@ const ProfileLayout = ({
     []
   );
 
-  // 프로필 저장 핸들러 (useCallback 생략 가능하지만 성능 최적화 시 감싸도 무방)
   const handleSaveProfile = useCallback(async () => {
     const nicknameValidation = validateNickname(editNickname);
     const bioValidation = validateBio(editBio);
@@ -115,59 +103,41 @@ const ProfileLayout = ({
     }
   }, [editNickname, editBio, imageFile, previewImage, userData.uid]);
 
-  // 게시물 수 계산 최적화
   const actualPostCount = useMemo(
     () => posts.filter((post) => post.id !== "default").length,
     [posts]
   );
 
-  // 랜덤 컬러 생성기 최적화
-  const getRandomColor = useCallback(() => {
-    const r = Math.floor(Math.random() * 256);
-    const g = Math.floor(Math.random() * 256);
-    const b = Math.floor(Math.random() * 256);
-    return `rgb(${r}, ${g}, ${b})`;
-  }, []);
+  const tagColors = useMemo(() => {
+    return tags.reduce((acc, tag) => {
+      acc[tag.id] = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
+        Math.random() * 256
+      )}, ${Math.floor(Math.random() * 256)})`;
+      return acc;
+    }, {} as Record<string, string>);
+  }, [tags]);
 
-  // 첫 번째 게시물 캐싱
   const firstPost = useMemo(() => posts[0] ?? null, [posts]);
 
-  // 팔로워 수 가져오기
   useEffect(() => {
-    if (!userData?.uid) {
-      return;
-    }
+    if (!userData?.uid) return;
+    const followersRef = collection(
+      dbService,
+      FBCollection.USERS,
+      userData.uid,
+      FBCollection.FOLLOWERS
+    );
 
-    const followersRef = dbService
-      .collection(FBCollection.USERS)
-      .doc(userData.uid)
-      .collection(FBCollection.FOLLOWERS);
-    //! onSnapshot은 리렌더링을 일으키지 않고 데이터만 변경됨
-    //Todo: followers 컬렉션이 변경될 때 (팔로우 or 언팔로우 할 때)
-    //unsubscribe는 이 구독을 해제하는 함수
     const unsubscribe = onSnapshot(followersRef, (snapshot) => {
-      //현재 followers 컬렉션 안에 있는 도큐먼트(팔로워)의 개수를 가져옵니다.
       const followerSize = snapshot.size;
-
-      //! 값이 다를때만 setState → 리렌더링 최적화
-      setFollowerCount((prev) => {
-        //이전 팔로워 수와 지금 팔로워 수를 비교합니다.
-        if (prev !== followerSize) {
-          //팔로워 수가 변했다면 → 새로 가져온 값으로 업데이트합니다.
-          return followerSize;
-        }
-        //팔로워 수가 그대로라면 → 이전 값을 그대로 유지합니다.
-        return prev;
-      });
+      setFollowerCount((prev) => (prev !== followerSize ? followerSize : prev));
     });
 
-    //! 언마운트 시 구독 해제 (리턴으로 청소)
     return () => unsubscribe();
   }, [userData?.uid]);
-  console.log("리렌더링");
 
   return (
-    <div className="flex flex-col w-full h-screen">
+    <div className="flex flex-col w-full min-h-screen">
       {!isSmallScreen ? (
         <div className="flex flex-col mx-auto ">
           <div className="flex m-5 mb-0 pr-20 pl-20 gap-2.5 justify-center ">
@@ -223,7 +193,7 @@ const ProfileLayout = ({
               {tags.map((tag) => (
                 <li key={tag.id}>
                   <button
-                    style={{ color: getRandomColor() }}
+                    style={{ color: tagColors[tag.id] }}
                     className="p-2.5 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full"
                   >
                     #{tag.name}
@@ -286,7 +256,7 @@ const ProfileLayout = ({
                 {tags.map((tag) => (
                   <li key={tag.id}>
                     <button
-                      style={{ color: getRandomColor() }}
+                      style={{ color: tagColors[tag.id] }}
                       className="p-2.5 hover:animate-pulse transition-all relative inline-block cursor-pointer after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-current after:transition-width after:duration-300 hover:after:w-full"
                     >
                       #{tag.name}
@@ -298,7 +268,7 @@ const ProfileLayout = ({
           </div>
         </div>
       )}
-      <div className="flex flex-col -mb-100 items-center justify-center">
+      <div className="flex flex-col items-center justify-center">
         {posts?.filter((post) => post.id !== "default").length > 0 ? (
           <ProfileFeedComponent
             posts={posts}

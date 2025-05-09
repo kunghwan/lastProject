@@ -1,11 +1,11 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Post } from "@/types/post";
 import { doc, deleteDoc } from "firebase/firestore";
 import { dbService } from "@/lib/firebase";
-import { useEffect, useRef, useState } from "react";
 import { ImCancelCircle } from "react-icons/im";
-import { getUserPostsPaginated } from "@/lib/fbdata"; // 반드시 이 함수 구현되어야 함
+import { getUserPostsPaginated } from "@/lib/fbdata";
 import LikeButton from "../post/LikeButton";
 
 const ProfileFeedComponent = ({
@@ -23,7 +23,12 @@ const ProfileFeedComponent = ({
   const lastDocRef = useRef<any>(null);
   const observerRef = useRef<HTMLDivElement | null>(null);
 
-  const handleDelete = async (postId: string) => {
+  // posts prop이 바뀌면 postList도 갱신
+  useEffect(() => {
+    setPostList(posts);
+  }, [posts]);
+
+  const handleDelete = useCallback(async (postId: string) => {
     const ok = window.confirm("정말 이 게시물을 삭제하시겠습니까?");
     if (!ok) return;
 
@@ -34,9 +39,9 @@ const ProfileFeedComponent = ({
       console.error("삭제 실패:", error);
       alert("삭제에 실패했습니다.");
     }
-  };
+  }, []);
 
-  const loadMorePosts = async () => {
+  const loadMorePosts = useCallback(async () => {
     if (loading || !hasMore) return;
     setLoading(true);
 
@@ -54,29 +59,29 @@ const ProfileFeedComponent = ({
     lastDocRef.current = lastDoc;
     setHasMore(newPosts.length > 0);
     setLoading(false);
-  };
+  }, [loading, hasMore, uid]);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore && !loading) {
+      if (entries[0].isIntersecting) {
         loadMorePosts();
       }
     });
 
-    const current = observerRef.current;
-    if (current) observer.observe(current);
+    const target = observerRef.current;
+    if (target) observer.observe(target);
 
     return () => {
-      if (current) observer.unobserve(current);
+      if (target) observer.unobserve(target);
     };
-  }, [hasMore, loading]);
+  }, [loadMorePosts]);
 
   return (
     <div className="flex flex-col border-t p-5 border-blue-200 lg:w-[1024px] mx-auto">
       <ul className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
         {postList.map((post) => (
           <li key={post.id} className="p-1">
-            <div className="flex flex-col gap-2 relative  hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1.5 transition-all duration-200">
+            <div className="flex flex-col gap-2 relative hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1.5 transition-all duration-200">
               {post.imageUrl ? (
                 <img
                   src={post.imageUrl}
@@ -84,8 +89,12 @@ const ProfileFeedComponent = ({
                   className="w-full h-64 transition-all duration-500 ease-in-out transform hover:scale-[1.02] object-cover rounded"
                 />
               ) : (
-                <div className="w-full h-64 bg-gray-100 flex items-center justify-center text-gray-400">
-                  이미지 없음
+                <div className="w-full h-64 bg-gray-300 flex items-center justify-center">
+                  <img
+                    src="/image/logo1.png"
+                    alt="기본 이미지"
+                    className="w-20 h-20 opacity-60 object-contain "
+                  />
                 </div>
               )}
               {isMyPage && (
@@ -98,7 +107,11 @@ const ProfileFeedComponent = ({
               )}
               <div className="flex justify-between text-s text-gray-500 mt-1 dark:text-gray-300">
                 <span>
-                  <LikeButton postId={post.id} likedBy={post.likes} />{" "}
+                  <LikeButton
+                    postId={post.id!}
+                    likedBy={post.likes}
+                    postOwnerId={post.uid}
+                  />
                 </span>
               </div>
               <div className="text-sm">
