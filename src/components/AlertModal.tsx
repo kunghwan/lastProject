@@ -34,15 +34,19 @@ const AlertModal = ({
   }, [onClose, onConfirm]);
 
   const modalContent = (
-
     <div
       style={{ zIndex: 9999 }}
       className="fixed inset-0  bg-opacity-40 z-50 flex items-center justify-center"
     >
-
       <div className="bg-white p-6 rounded-lg shadow-lg w-80">
         <p className="text-gray-800 text-center mb-4">{message}</p>
         <div className="flex gap-4">
+          <button
+            onClick={onConfirm || onClose}
+            className="flex-1 bg-emerald-500 text-white py-2 rounded hover:bg-emerald-600"
+          >
+            확인
+          </button>
           {showCancel && (
             <button
               onClick={onClose}
@@ -51,12 +55,6 @@ const AlertModal = ({
               취소
             </button>
           )}
-          <button
-            onClick={onConfirm || onClose}
-            className="flex-1 bg-emerald-500 text-white py-2 rounded hover:bg-emerald-600"
-          >
-            확인
-          </button>
         </div>
       </div>
     </div>
