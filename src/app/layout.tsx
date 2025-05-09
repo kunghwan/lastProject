@@ -2,12 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import Loaiding from "@/components/Loading";
 import BodyLayout from "@/components/BodyLayout";
-
-
-
-
 
 import { AuthProvider } from "@/contextapi/provider";
 import ReactQueryProvider from "@/contextapi/ReactQueryClientProvider";
@@ -39,7 +34,6 @@ export default function RootLayout({
       >
         <ReactQueryProvider>
           <AuthProvider>
-            <Loaiding />
             <BodyLayout>{children}</BodyLayout>
           </AuthProvider>
         </ReactQueryProvider>
