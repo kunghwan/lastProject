@@ -1,16 +1,23 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { GoHeart, GoHeartFill } from "react-icons/go";
-import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  collection,
+  addDoc,
+} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { dbService, FBCollection } from "@/lib/firebase";
 import { AUTH } from "@/contextapi/context";
 
 interface LikeButtonProps {
   postId: string;
-  likedBy?: string[]; // 옵셔널로 처리
-  postOwnerId: string; // post 작성자의 uid
+  likedBy?: string[];
+  postOwnerId: string;
 }
 
 const LikeButton = ({ postId, likedBy = [], postOwnerId }: LikeButtonProps) => {
@@ -20,15 +27,17 @@ const LikeButton = ({ postId, likedBy = [], postOwnerId }: LikeButtonProps) => {
 
   const [likes, setLikes] = useState<string[]>(likedBy);
 
-  const isLiked = user?.uid ? likes.includes(user.uid) : false;
+  const isLiked = useMemo(() => {
+    return user?.uid ? likes.includes(user.uid) : false;
+  }, [likes, user?.uid]);
 
   const handleLikeToggle = useCallback(async () => {
-    if (!user || !user.uid) {
+    if (!user?.uid) {
       alert("로그인이 필요합니다.");
       return;
     }
 
-    const postRef = doc(dbService, "posts", postId);
+    const postRef = doc(dbService, FBCollection.POSTS, postId);
 
     if (isLiked) {
       setLikes((prev) => prev.filter((uid) => uid !== user.uid));
@@ -41,23 +50,25 @@ const LikeButton = ({ postId, likedBy = [], postOwnerId }: LikeButtonProps) => {
         likes: arrayUnion(user.uid),
       });
 
-      // 게시글 주인에게 알림 전송
+      // 알림 전송
       if (postOwnerId !== meUser?.uid) {
-        await dbService
-          .collection(FBCollection.USERS)
-          .doc(postOwnerId)
-          .collection(FBCollection.NOTIFICATION)
-          .add({
-            type: "like",
-            postId,
-            likerId: meUser?.uid,
-            likerName: meUser?.nickname,
-            createdAt: new Date().toLocaleString(),
-            isRead: false,
-          });
+        const notifRef = collection(
+          dbService,
+          FBCollection.USERS,
+          postOwnerId,
+          FBCollection.NOTIFICATION
+        );
+        await addDoc(notifRef, {
+          type: "like",
+          postId,
+          likerId: meUser?.uid,
+          likerName: meUser?.nickname,
+          createdAt: new Date().toLocaleString(),
+          isRead: false,
+        });
       }
     }
-  }, [meUser, user, postOwnerId, isLiked, postId]);
+  }, [isLiked, meUser?.uid, meUser?.nickname, postId, postOwnerId, user?.uid]);
 
   return (
     <div className="flex items-center gap-1">

@@ -1,19 +1,34 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import UpPlaceLikeButton from "@/components/upplace/UpPlaceLikeButton";
+import Image from "next/image"; // ✅ next/image로 최적화
 
 // ✅ 특정 장소에 대한 이미지 fallback 설정 (이미지 없을 경우 대체 이미지)
 const fallbackImages: Record<string, string> = {
   테미오래: "/custom/temiora.jpg", // 예시: 테미오래 → 로컬 대체 이미지
 };
 
+interface PlaceCardProps {
+  place: {
+    contentid: string;
+    title: string;
+    addr1: string;
+    firstimage: string;
+    likeCount: number;
+  };
+  likedOverride?: boolean;
+  countOverride?: number;
+  hideLikeButton?: boolean; // 좋아요 숨기기
+}
+
 // ✅ 장소 카드 컴포넌트 정의
 const PlaceCard: React.FC<PlaceCardProps> = ({
   place,
   likedOverride,
   countOverride,
+  hideLikeButton,
 }) => {
   const router = useRouter(); // 라우터 객체 사용
   if (!place) return null; // 장소 정보 없으면 렌더 안 함
@@ -21,10 +36,12 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
   const defaultImage = "/image/logoc.PNG"; // 기본 이미지 (없을 경우)
 
   // ✅ 이미지 URL 우선순위: 유효한 이미지 → fallback 이미지 → 기본 이미지
-  const imageUrl =
-    place.firstimage && place.firstimage.trim() !== ""
-      ? place.firstimage.trim()
-      : fallbackImages[place.title] || defaultImage;
+  const getImageUrl = () => {
+    if (place.firstimage && place.firstimage.trim() !== "") {
+      return place.firstimage.trim();
+    }
+    return fallbackImages[place.title] || defaultImage;
+  };
 
   // ✅ 좋아요 수 상태 (외부 override 있으면 그걸로 초기화)
   const [likeCount, setLikeCount] = useState(
@@ -46,17 +63,17 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
       {" "}
       {/* 카드 전체 컨테이너 */}
       {/* 대표 이미지 */}
-      <img
-        src={imageUrl}
-        onError={(e) => {
-          e.currentTarget.onerror = null; // 무한 반복 방지
-          e.currentTarget.src = fallbackImages[place.title] || defaultImage;
-        }}
-        alt={place.title}
-        className="w-full h-68 object-cover rounded cursor-pointer"
-        loading="lazy" // 이미지 지연 로딩
-        onClick={handleClickImage} // 클릭 시 상세 페이지로 이동
-      />
+      <div className="relative w-full h-[270px] cursor-pointer rounded overflow-hidden">
+        <Image
+          src={getImageUrl()}
+          alt={place.title}
+          fill
+          sizes="(max-width: 768px) 100vw, 33vw"
+          className="object-cover"
+          onClick={handleClickImage} // 클릭 시 상세 페이지로 이동
+          priority={false} // lazy load (기본)
+        />
+      </div>
       {/* 장소명 */}
       <h2 className="text-lg font-bold mt-2">{place.title}</h2>
       {/* 주소 */}
@@ -67,18 +84,19 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
         <p className="text-sm text-gray-500">❤️ {likeCount}</p>
 
         {/* 좋아요 버튼 컴포넌트 */}
-        <UpPlaceLikeButton
-          contentId={place.contentid} // 장소 ID
-          onLiked={handleLiked} // 좋아요 후 callback
-          placeInfo={{
-            // 장소 정보 전달
-            title: place.title,
-            addr1: place.addr1,
-            imageUrl: place.firstimage,
-          }}
-          likedOverride={likedOverride} // 외부에서 좋아요 상태 제어
-          countOverride={countOverride} // 외부에서 좋아요 수 제어
-        />
+        {!hideLikeButton && (
+          <UpPlaceLikeButton
+            contentId={place.contentid}
+            onLiked={handleLiked}
+            placeInfo={{
+              title: place.title,
+              addr1: place.addr1,
+              imageUrl: place.firstimage,
+            }}
+            likedOverride={likedOverride}
+            countOverride={countOverride}
+          />
+        )}
       </div>
     </div>
   );

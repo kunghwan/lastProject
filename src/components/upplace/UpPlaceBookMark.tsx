@@ -78,6 +78,7 @@ const UpPlaceBookMark = () => {
                 place={place}
                 likedOverride={true}
                 countOverride={place.likeCount}
+                hideLikeButton={true} // ✅ 하트버튼 숨기기
               />
               {/* 우상단에 삭제 버튼 */}
               <button

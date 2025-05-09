@@ -11,12 +11,14 @@ import {
   FaCircleQuestion,
   FaCaretUp,
 } from "react-icons/fa6";
+import AlertModal from "@/components/AlertModal"; // AlertModal 추가
 
 const navStyle =
-  "hidden [@media(min-width:1425px)]:flex absolute w-17 top-10 -left-[125%] bg-gray-200 z-30 rounded-full transition-all duration-300";
+  "hidden [@media(min-width:1425px)]:flex absolute w-17 top-40 -left-[125%] bg-gray-200 z-30 rounded-full transition-all duration-300";
 
 const Navbar = () => {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -28,9 +30,7 @@ const Navbar = () => {
       const needsAuth = [2, 3, 4].includes(index);
 
       if (!user && needsAuth) {
-        if (confirm("유저만 이용 가능한 기능입니다. 로그인 하시겠습니까?")) {
-          router.push("/signin");
-        }
+        setShowLoginModal(true);
         return;
       }
 
@@ -107,7 +107,7 @@ const Navbar = () => {
 
         {/* 모바일 하단 네비게이션 */}
         {!["/signin", "/signup"].includes(pathname!) && (
-          <nav className="fixed bottom-0 left-0 h-auto y-1 right-0 bg-gray-200 z-[5] flex justify-around items-center [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto">
+          <nav className="fixed bottom-0 left-0 h-auto right-0 bg-gray-200 z-[50] flex justify-around items-center [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto">
             <ul className="flex justify-around w-full">
               {NavBtns.map((btn, index) => (
                 <li key={index}>
@@ -127,6 +127,19 @@ const Navbar = () => {
           </nav>
         )}
       </div>
+
+      {/* 로그인 유도 모달 */}
+      {showLoginModal && (
+        <AlertModal
+          message="유저만 이용 가능한 기능입니다. 로그인 하시겠습니까?"
+          onClose={() => setShowLoginModal(false)} // 취소 시 닫기
+          onConfirm={() => {
+            setShowLoginModal(false);
+            router.push("/signin"); // 확인 시 로그인 페이지로 이동
+          }}
+          showCancel
+        />
+      )}
     </>
   );
 };

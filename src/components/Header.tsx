@@ -16,6 +16,7 @@ import { AUTH } from "@/contextapi/context";
 import { twMerge } from "tailwind-merge";
 import Navbar from "./features/navber/Navbar";
 import { dbService } from "@/lib";
+import AlertModal from "@/components/AlertModal"; // AlertModal 추가
 
 const headBtn = "grayButton text-xl sm:text-2xl";
 const darkText = "grayButton w-full dark:bg-[#333333] dark:text-[#F1F5F9]";
@@ -34,6 +35,7 @@ const Header = () => {
   );
   const [isMenuOpen, setIsMenuOpen] = useState(false); // 모바일 메뉴 상태 관리
   const [hasUnread, setHasUnread] = useState(false); // 읽지 않은 알림 존재 여부 상태
+  const [showLogoutModal, setShowLogoutModal] = useState(false); // 로그아웃 모달 상태
 
   const router = useRouter();
   const pathname = usePathname();
@@ -54,13 +56,15 @@ const Header = () => {
     localStorage.setItem("darkMode", isDarkMode.toString()); // localStorage에 다크 모드 상태 저장
   }, [isDarkMode]);
 
-  //! 로그아웃 처리 함수
+  //! 로그아웃 처리 함수 (AlertModal 표시)
   const logout = useCallback(() => {
-    if (confirm("로그아웃 하시겠습니까?")) {
-      signout(); // Context API의 로그아웃 함수 호출
-      alert("로그아웃 되었습니다.");
-      router.push("/"); // 홈페이지로 리디렉션
-    }
+    setShowLogoutModal(true); // AlertModal 열기
+  }, []);
+
+  //! AlertModal에서 로그아웃을 최종 확인한 경우 실행
+  const handleConfirmLogout = useCallback(() => {
+    signout(); // Context API의 로그아웃 함수 호출
+    router.push("/"); // 홈페이지로 리디렉션
   }, [signout, router]);
 
   //! 헤더에 표시될 버튼들을 정의
@@ -135,98 +139,117 @@ const Header = () => {
 
   return (
     <>
-      <header className="flex items-center justify-between my-4 px-4 lg:max-w-300 mx-auto border-b-2 border-gray-300 pb-4">
-        <Link
-          href="/"
-          className="hover:opacity-80 flex flex-row items-center gap-x-2"
-        >
-          <Image
-            src={isDarkMode ? "/image/whitelogo1.PNG" : "/image/logo1.PNG"}
-            alt="logo"
-            height={80}
-            width={80}
-          />
-          <span className="font-bold text-2xl whitespace-pre-line">
-            방방{"\n"}콕콕
-          </span>
-        </Link>
+      <div className="fixed top-0 left-1/2 translate-x-[-50%] w-full z-50 flex justify-center shadow-md ">
+        <header className="bg-white dark:bg-[#333333] w-full flex items-center justify-between px-4 py-4 lg:max-w-300 mx-auto">
+          <Link
+            href="/"
+            className="hover:opacity-80 flex flex-row items-center gap-x-2"
+          >
+            <Image
+              src={isDarkMode ? "/image/whitelogo1.PNG" : "/image/logo1.PNG"}
+              alt="logo"
+              height={80}
+              width={80}
+            />
+            <span className="font-bold text-2xl whitespace-pre-line">
+              방방{"\n"}콕콕
+            </span>
+          </Link>
 
-        <ul className="hidden sm:flex items-center gap-x-4">
-          {user && (
-            <div className="text-2xl font-bold whitespace-nowrap flex">
-              <div className="max-w-40 truncate">{user.nickname}</div>
-              <p>님</p>
-            </div>
-          )}
-          {headerButtons.map((btn, index) => (
-            <li key={index}>
-              <button
-                onClick={btn.onClick}
-                className={btn.className || headBtn}
-              >
-                {btn.icon || btn.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-
-        <div className="sm:hidden">
-          {isAuthPage ? (
-            <button
-              onClick={toggleDarkMode}
-              className={twMerge(
-                "grayButton text-xl",
-                isDarkMode ? "text-gray-800" : "text-white bg-black"
-              )}
-            >
-              {isDarkMode ? <IoMoon /> : <IoSunny />}
-            </button>
-          ) : (
-            <button
-              onClick={() => setIsMenuOpen(true)}
-              className="text-4xl mx-2"
-            >
-              <IoMenu />
-            </button>
-          )}
-        </div>
-      </header>
-
-      {isMenuOpen && !isAuthPage && (
-        <div className="fixed inset-0 bg-gray-500/50 z-50 flex items-center justify-center sm:hidden">
-          <div className="bg-white dark:bg-gray-300 p-6 rounded-xl shadow-lg w-[65vw] max-w-sm text-center">
-            <div className="flex justify-end mb-1">
-              <button onClick={() => setIsMenuOpen(false)} className="text-2xl">
-                <IoCloseSharp className="dark:text-black" />
-              </button>
-            </div>
-
+          <ul className="hidden sm:flex items-center gap-x-4">
             {user && (
-              <div className="text-2xl font-bold whitespace-nowrap flex justify-center mb-3 text-black">
+              <div className="text-2xl font-bold whitespace-nowrap flex">
                 <div className="max-w-40 truncate">{user.nickname}</div>
                 <p>님</p>
               </div>
             )}
-            {headerButtons.map((btn, idx) => (
+            {headerButtons.map((btn, index) => (
+              <li key={index}>
+                <button
+                  onClick={btn.onClick}
+                  className={btn.className || headBtn}
+                >
+                  {btn.icon || btn.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          {/* 모바일 햄버거 메뉴 */}
+          <div className="sm:hidden ">
+            {isAuthPage ? (
               <button
-                key={idx}
-                onClick={() => {
-                  btn.onClick();
-                  setIsMenuOpen(false);
-                }}
+                onClick={toggleDarkMode}
                 className={twMerge(
-                  "w-full mb-2 ",
-                  darkText,
-                  btn.icon ? darkText : "mt-2 text-2xl font-bold sm:hidden"
+                  "grayButton text-xl",
+                  isDarkMode ? "text-gray-800" : "text-white bg-black"
                 )}
               >
-                {btn.icon || btn.label}
+                {isDarkMode ? <IoMoon /> : <IoSunny />}
               </button>
-            ))}
+            ) : (
+              <button
+                onClick={() => setIsMenuOpen(true)}
+                className="text-4xl mx-2"
+              >
+                <IoMenu />
+              </button>
+            )}
           </div>
-        </div>
-      )}
+        </header>
 
+        {/* 모바일 헤더 메뉴창  */}
+        {isMenuOpen && !isAuthPage && (
+          <div className="fixed h-screen w-full bg-gray-500/50 z-50 flex items-center justify-center sm:hidden">
+            <div className="bg-white dark:bg-gray-300 p-6 rounded-xl shadow-lg w-[65vw] max-w-sm text-center">
+              <div className="flex justify-end mb-1 ">
+                <button
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-2xl"
+                >
+                  <IoCloseSharp className="dark:text-black m-1" />
+                </button>
+              </div>
+
+              {user && (
+                <div className="text-2xl font-bold whitespace-nowrap flex justify-center mb-3 text-black">
+                  <div className="max-w-40 truncate">{user.nickname}</div>
+                  <p>님</p>
+                </div>
+              )}
+              {headerButtons.map((btn, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    btn.onClick();
+                    setIsMenuOpen(false);
+                  }}
+                  className={twMerge(
+                    "w-full mb-2",
+                    darkText,
+                    btn.icon ? darkText : "mt-2 text-xl font-bold sm:hidden"
+                  )}
+                >
+                  {btn.icon || btn.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 로그아웃 모달 */}
+        {showLogoutModal && (
+          <AlertModal
+            message="정말로 로그아웃 하시겠습니까?"
+            onClose={() => setShowLogoutModal(false)}
+            onConfirm={() => {
+              setShowLogoutModal(false);
+              handleConfirmLogout();
+            }}
+            showCancel
+          />
+        )}
+      </div>
       <Navbar />
     </>
   );
