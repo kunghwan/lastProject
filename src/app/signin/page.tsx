@@ -1,15 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AUTH } from "@/contextapi/context";
 import AlertModal from "@/components/AlertModal";
-import { twMerge } from "tailwind-merge";
 import Loading from "@/components/Loading";
 
 const LoginForm = () => {
-  const [email, setEmail] = useState(""); // 입력된 이메일 상태
+  // ✅ 최적화: 세션 초기값을 useState에 직접 주입 (렌더링 1회 줄임)
+  const [email, setEmail] = useState(
+    () => sessionStorage.getItem("login_email") || ""
+  ); // 입력된 이메일 상태
   const [password, setPassword] = useState(""); // 입력된 비밀번호 상태
   const [alertMsg, setAlertMsg] = useState(""); // 알림 메시지 상태
   const router = useRouter(); // 페이지 이동 훅
@@ -17,13 +19,6 @@ const LoginForm = () => {
 
   const emailRef = useRef<HTMLInputElement>(null); // 이메일 input 참조
   const passwordRef = useRef<HTMLInputElement>(null); // 비밀번호 input 참조
-
-  // 컴포넌트 첫 렌더링 시 실행
-  useEffect(() => {
-    const savedEmail = sessionStorage.getItem("login_email"); // 세션 저장 이메일 불러오기
-    if (savedEmail) setEmail(savedEmail);
-    emailRef.current?.focus(); // 첫 포커스는 이메일 input
-  }, []);
 
   const [isPending, startTransition] = useTransition();
 
@@ -62,6 +57,27 @@ const LoginForm = () => {
     });
   }, [email, password, signin, router]);
 
+  // ✅ 최적화: onKeyDown 콜백을 useCallback으로 분리
+  const handleEmailKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        passwordRef.current?.focus(); // Enter 누르면 비번으로 포커스 이동
+      }
+    },
+    []
+  );
+
+  const handlePasswordKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleLogin(); // Enter 누르면 로그인 실행
+      }
+    },
+    [handleLogin]
+  );
+
   return (
     <>
       {/* 폼 시작 */}
@@ -72,34 +88,24 @@ const LoginForm = () => {
             <input
               type="text"
               ref={emailRef}
-              className={twMerge("ykhInputButton", "dark:text-black")}
+              className="ykhInputButton dark:text-black" // ✅ twMerge 제거하여 불필요한 런타임 계산 제거
               placeholder="아이디"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
                 sessionStorage.setItem("login_email", e.target.value); // 세션에 이메일 저장
               }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  passwordRef.current?.focus(); // Enter 누르면 비번으로 포커스 이동
-                }
-              }}
+              onKeyDown={handleEmailKeyDown}
             />
             {/* 비밀번호 입력 */}
             <input
               type="password"
               ref={passwordRef}
-              className={twMerge("ykhInputButton", "dark:text-black")}
+              className="ykhInputButton dark:text-black"
               placeholder="비밀번호"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleLogin(); // Enter 누르면 로그인 실행
-                }
-              }}
+              onKeyDown={handlePasswordKeyDown}
             />
           </div>
 
@@ -155,6 +161,7 @@ const LoginForm = () => {
           }}
         />
       )}
+
       {/* 로딩 중일 때 로딩 컴포넌트 */}
       {isPending && <Loading message="로그인 중입니다..." />}
     </>
