@@ -41,7 +41,7 @@ const NotificationListPage = () => {
     }: {
       pageParam?: any;
     }): Promise<{ notifications: Notifications[]; lastDoc: any }> => {
-      //Todo: 처음이면 그냥 20개 가져오고 이어지는 페이지라면 pageParam 이후부터 10개 가져옴
+      //Todo: 처음이면 그냥 20개 가져오고 이어지는 페이지라면 pageParam 이후부터 20개 가져옴
       let query = ref.limit(limit);
       if (pageParam) {
         query = ref.startAfter(pageParam).limit(limit);
