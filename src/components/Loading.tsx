@@ -1,34 +1,11 @@
-"use client";
-
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import { PiBagFill } from "react-icons/pi";
 
 interface LoadingState {
-  isLoading: boolean;
+  isLoading?: boolean;
   message?: string;
 }
 
-const Loaiding = () => {
-  const [loading, setLoading] = useState<LoadingState>({
-    isLoading: false,
-    message: "Loading.....",
-  });
-
-  const pathname = usePathname();
-
-  useEffect(() => {
-    setLoading({ isLoading: true, message: "Loading....." });
-
-    const timeset = setTimeout(() => {
-      setLoading({ isLoading: false });
-    }, 3000);
-
-    return () => clearTimeout(timeset);
-  }, [pathname]);
-
-  if (!loading.isLoading) return null;
-
+const Loaiding = ({ message, isLoading }: LoadingState) => {
   return (
     <div className="fixed inset-0 z-[9998] bg-white/80 flex items-center justify-center flex-col">
       {/* 회전 원형 안에 아이콘 */}
@@ -39,7 +16,7 @@ const Loaiding = () => {
         </div>
       </div>
 
-      <p className="text-xl font-semibold">{loading.message}</p>
+      <p className="text-xl font-semibold">{message}</p>
     </div>
   );
 };

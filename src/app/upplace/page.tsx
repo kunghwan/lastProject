@@ -16,6 +16,7 @@ const checkImageExists = (url: string): Promise<boolean> => {
 };
 
 const UpPlace = () => {
+  //! react-query 하나로 모든작업 단축
   const [places, setPlaces] = useState<Place[]>([]); // 전체 장소 목록 상태
   const [visibleCount, setVisibleCount] = useState(10); // 화면에 보여줄 항목 수 (초기 10개)
 

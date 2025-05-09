@@ -34,7 +34,7 @@ const AlertModal = ({
   }, [onClose, onConfirm]);
 
   const modalContent = (
-    <div className="fixed inset-0  bg-opacity-40 z-[9999] flex items-center justify-center">
+    <div className="fixed inset-0  bg-opacity-40 z-[9999] flex items-center justify-center ">
       <div className="bg-white p-6 rounded-lg shadow-lg w-80">
         <p className="text-gray-800 text-center mb-4">{message}</p>
         <div className="flex gap-4">
