@@ -108,7 +108,9 @@ const QnaPage = () => {
         </p>
         <p className="z-4 flex text-gray-500 dark:text-white">
           <a
-            href="mailto:test@test.com"
+            href="https://mail.naver.com/write?to=test@test.com"
+            target="_blank"
+            rel="noopener noreferrer"
             className=" group flex gap-x-1 items-center  text-green-800 font-bold hover:underline dark:text-green-200 "
           >
             <LuMailPlus className=" opacity-0 group-hover:opacity-100 transition-opacity " />
