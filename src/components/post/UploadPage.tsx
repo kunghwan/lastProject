@@ -71,6 +71,7 @@ const UploadPostPage = () => {
   const navi = useRouter();
 
   const [isPending, startTransition] = useTransition();
+  const [isTypingTag, setIsTypingTag] = useState(false);
 
   const titleRef = useRef<HTMLInputElement>(null);
   const descRef = useRef<HTMLTextAreaElement>(null);
@@ -116,25 +117,32 @@ const UploadPostPage = () => {
     },
     [files]
   );
+  const [focusTarget, setFocusTarget] = useState<
+    "title" | "desc" | "juso" | "tags" | null
+  >(null);
 
   const onSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
+      if (isTypingTag) {
+        return;
+      }
+
       if (titleMessage) {
         setAlertMessage(titleMessage);
-        return titleRef.current?.focus();
+        return setFocusTarget("title");
       }
       if (descMessage) {
         setAlertMessage(descMessage);
-        return descRef.current?.focus();
+        return setFocusTarget("desc");
       }
       if (jusoMessage) {
         setAlertMessage(jusoMessage);
-        return jusoRef.current?.focus();
+        return setFocusTarget("juso");
       }
       if (tagsMessage) {
         setAlertMessage(tagsMessage);
-        return tagRef.current?.focus();
+        return setFocusTarget("tags");
       }
 
       startTransition(async () => {
@@ -183,8 +191,8 @@ const UploadPostPage = () => {
             address: "",
           });
           setFiles([]);
-          navi.back(); // 게시 후  이동
-          return navi.refresh(); // 페이지 새로고침
+
+          return navi.push("/feed");
         } catch (error: any) {
           return setAlertMessage(`에러:${error.message}`);
         }
@@ -202,12 +210,30 @@ const UploadPostPage = () => {
       files,
       tagsMessage,
       navi,
+      isTypingTag,
     ]
   );
 
   useEffect(() => {
     titleRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    if (alertMessage === null && focusTarget !== null) {
+      setTimeout(() => {
+        if (focusTarget === "title") {
+          titleRef.current?.focus();
+        } else if (focusTarget === "desc") {
+          descRef.current?.focus();
+        } else if (focusTarget === "juso") {
+          jusoRef.current?.focus();
+        } else if (focusTarget === "tags") {
+          tagRef.current?.focus();
+        }
+        setFocusTarget(null);
+      }, 300);
+    }
+  }, [alertMessage, focusTarget]);
 
   //! 마우스 휠 가로로 변경
   useEffect(() => {
@@ -259,7 +285,7 @@ const UploadPostPage = () => {
               5000, //! 5초 유지
             ]}
             speed={95} //! 글자 하나씩 타이핑하는 속도 (ms). 숫자가 클수록 느림
-            repeat={5} //! 애니메이션 반복 횟수 (처음 포함 총 3번 실행됨)
+            repeat={5} //! 애니메이션 반복 횟수 (처음 포함 총 6번 실행됨)
             className="w-fit  text-3xl font-bold text-black dark:text-white"
           />
         </div>
@@ -354,6 +380,7 @@ const UploadPostPage = () => {
 
       <div className="hsecol gap-y-1 md:mt-12">
         <UploadTag
+          setIsTypingTag={setIsTypingTag}
           post={post}
           setPost={setPost}
           setTag={setTag}
@@ -361,7 +388,13 @@ const UploadPostPage = () => {
           tagRef={tagRef}
           tags={tags}
         />
-        <JusoComponents juso={juso} setJuso={setJuso} jusoRef={jusoRef} />
+        <JusoComponents
+          setIsTypingTag={setIsTypingTag}
+          juso={juso}
+          setJuso={setJuso}
+          jusoRef={jusoRef}
+          titleRef={titleRef} //! 주소 선택 후 바로 내용인풋에 포컷스를 하기 위해서
+        />
       </div>
 
       <div className="flex justify-end gap-x-2.5 mt-4 md:col-span-2">
@@ -379,6 +412,7 @@ const UploadPostPage = () => {
           취소
         </button>
         <button
+          type="submit"
           className={twMerge(
             "hover:scale-105 bg-[rgba(62,188,154)] upPostButton dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
           )}

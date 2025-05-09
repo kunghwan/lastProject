@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { TiPlus } from "react-icons/ti";
 import { IoClose } from "react-icons/io5";
 import { LuMailPlus } from "react-icons/lu";
@@ -14,6 +14,7 @@ const QnaPage = () => {
   //useState로 상태 관리(openQuestion 상태를 추가하여 현재 열려 있는 질문을 관리,null이면 아무 질문도 열려 있지 않은 상태)
   const [isanswerShowing, setIsanswerShowing] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const qnaRef = useRef<HTMLInputElement>(null);
   //클릭한 질문이 이미 열려 있으면 닫고, 그렇지 않으면 해당 질문을 엽니다.
   //"isanswerShowing과 item.question이 같은지"를 비교한 결과로 true 또는 false가 나오는 것
   const toggleQuestion = useCallback(
@@ -26,6 +27,10 @@ const QnaPage = () => {
   //! 검색어가 포함된 질문만 필터링
   //Todo: includes() → 문자열 안에 다른 문자열이 들어있는지 확인하는 함수
   const filteredQna = qna.filter((item) => item.question.includes(searchTerm));
+
+  useEffect(() => {
+    qnaRef.current?.focus();
+  }, []);
 
   //! esc키를 누르면 닫히게하기
   useEffect(() => {
@@ -50,6 +55,7 @@ const QnaPage = () => {
               <input
                 type="text"
                 placeholder="어떤 질문을 찾고 계신가요?"
+                ref={qnaRef}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="min-w-96  p-2.5 sm:w-4/5  rounded-full border bg-white border-gray-500 dark:border-white dark:text-black placeholder-gray-400"
