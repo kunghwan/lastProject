@@ -8,6 +8,9 @@ import React, {
   useRef,
   FormEvent,
 } from "react";
+import { useTransition } from "react";
+import Loading from "@/components/Loading"; // ✅ 로딩 컴포넌트 불러오기
+
 import { FaIdCard } from "react-icons/fa";
 import { TbPassword } from "react-icons/tb";
 import { validateName, validatePhone } from "@/lib/validations";
@@ -42,6 +45,7 @@ const IdFind = () => {
   const [alertMessage, setAlertMessage] = useState<string | null>(null); // 경고 메시지
 
   const showAlert = (message: string) => setAlertMessage(message); // 알림창 표시 함수
+  const [isPending, startTransition] = useTransition();
 
   // 이메일 마스킹 처리 (앞 3글자만 보이고 나머지는 * 처리)
   const maskEmail = (email: string) => {
@@ -121,13 +125,31 @@ const IdFind = () => {
   useEffect(() => validateField("phone", phone), [phone, validateField]);
 
   // Enter 키로 다음 입력창으로 이동
+  // Enter 키로 다음 입력창으로 이동 또는 동작 실행
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
     index: number
   ) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      inputRefs.current[index + 1]?.focus();
+
+      // 이름 입력 후 Enter → 전화번호 input으로 포커스
+      if (index === 0) {
+        inputRefs.current[1]?.focus();
+      }
+
+      // 전화번호 입력 후 Enter → 인증번호 발송 + 인증번호 input 포커스
+      else if (index === 1) {
+        handleCodeSend(); // 인증번호 발송
+        setTimeout(() => {
+          inputRefs.current[2]?.focus(); // 인증번호 input으로 포커스
+        }, 100); // 인증번호 세팅 후 포커싱 약간 딜레이 줌
+      }
+
+      // 인증번호 입력 후 Enter → 인증번호 확인 실행
+      else if (index === 2) {
+        handleVerifyCode();
+      }
     }
   };
 
@@ -207,13 +229,17 @@ const IdFind = () => {
 
     if (selectedIndex !== -1) {
       const realSelectedEmail = realEmails[selectedIndex];
-      sessionStorage.setItem("selectedRealEmail", realSelectedEmail);
-      sessionStorage.removeItem(STORAGE_KEY);
-      sessionStorage.removeItem("realEmail");
-      setFoundEmail("");
-      setSelectedEmail("");
-      setIsVerified(false);
-      router.push("/idfind/resultid");
+
+      //! 로딩 상태로 전환 후 페이지 이동
+      startTransition(() => {
+        sessionStorage.setItem("selectedRealEmail", realSelectedEmail);
+        sessionStorage.removeItem(STORAGE_KEY);
+        sessionStorage.removeItem("realEmail");
+        setFoundEmail("");
+        setSelectedEmail("");
+        setIsVerified(false);
+        router.push("/idfind/resultid");
+      });
     } else {
       showAlert("선택한 이메일을 찾을 수 없습니다.");
     }
@@ -406,6 +432,11 @@ const IdFind = () => {
             ))}
           </div>
         </>
+      )}
+      {isPending && (
+        <div className="mt-10 flex justify-center">
+          <Loading message="아이디를 불러오는 중입니다..." />
+        </div>
       )}
     </form>
   );
