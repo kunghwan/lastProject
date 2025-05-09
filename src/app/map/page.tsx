@@ -3,6 +3,7 @@
 import SearchForm from "@/components/map/SearchForm";
 import MobilePlaceList from "@/components/map/MobilePlaceList";
 import PlaceDetail from "@/components/map/PlaceDetail";
+import NoResultsModal from "@/components/map/NoResultsModal";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { IoRestaurantOutline, IoSubway } from "react-icons/io5";
 import { FaLandmark, FaRegBuilding } from "react-icons/fa6";
@@ -14,6 +15,7 @@ const MapPage = () => {
   const [keyword, setKeyword] = useState(""); // 검색 키워드
   const [inputValue, setInputValue] = useState(""); // 입력창의 현재 값
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 모바일 사이드바 열림 상태
+  const [showNoResultsModal, setShowNoResultsModal] = useState(false); // 모달 상태
 
   const markers = useRef<any[]>([]); // 현재 지도에 그려진 마커 및 오버레이 배열
   const mapRef = useRef<HTMLDivElement>(null); // 지도 렌더링 DOM 참조
@@ -25,7 +27,7 @@ const MapPage = () => {
     const initMap = () => {
       if (!mapRef.current) return;
 
-      //! 지도 초기 중심 좌표 설정
+      //! 지도 초기 중심 좌표 설정 (대전)
       const center = new window.kakao.maps.LatLng(36.3286, 127.4229);
       const mapInstance = new window.kakao.maps.Map(mapRef.current, {
         center,
@@ -84,6 +86,7 @@ const MapPage = () => {
       const { maps } = window.kakao;
       const ps = new maps.services.Places();
 
+      // 검색 범위 설정 (대전 지역 근처)
       const bounds = new maps.LatLngBounds(
         new maps.LatLng(36.175, 127.29),
         new maps.LatLng(36.48, 127.58)
@@ -93,9 +96,11 @@ const MapPage = () => {
         keyword,
         (data: PlaceProps[], status: string) => {
           if (status === maps.services.Status.OK) {
+            // 대전 지역 결과만 필터링
             const DJData = data.filter((place) =>
               place.address_name?.includes("대전")
             );
+            // 백화점 검색 결과는 최대 5개로 제한
             const limitedData =
               keyword === "백화점" ? DJData.slice(0, 5) : DJData;
 
@@ -141,7 +146,7 @@ const MapPage = () => {
             });
             //! 검색 결과 없을 경우
           } else if (status === maps.services.Status.ZERO_RESULT) {
-            alert("검색 결과가 없습니다.");
+            setShowNoResultsModal(true); // 모달 상태를 true로 변경
             setPlaces([]);
             markers.current.forEach((m) => m.setMap(null));
             markers.current = [];
@@ -191,6 +196,11 @@ const MapPage = () => {
     setSelectedPlace(null);
   }, []);
 
+  //! 모달 닫기 핸들러
+  const handleCloseNoResultsModal = useCallback(() => {
+    setShowNoResultsModal(false);
+  }, []);
+
   return (
     <div className="relative flex h-[76vh] dark:text-gray-600">
       <div
@@ -226,7 +236,7 @@ const MapPage = () => {
         </div>
       )}
 
-      {/*검색 장소 리스트*/}
+      {/*검색 장소 리스트 (Desktop)*/}
       {keyword.length > 0 && (
         <div className="hidden md:flex absolute top-0 right-0 w-72 max-h-[76vh] h-full p-4 bg-gray-100 border-l border-gray-300 flex-col rounded-3xl z-10 overflow-y-auto">
           <ul className="space-y-4 pr-2  overflow-y-auto max-h-[76vh]">
@@ -276,6 +286,12 @@ const MapPage = () => {
           handlePlaceClick={handlePlaceClick}
         />
       )}
+
+      {/* 검색 결과 없음 모달 */}
+      <NoResultsModal
+        isOpen={showNoResultsModal}
+        onClose={handleCloseNoResultsModal}
+      />
     </div>
   );
 };

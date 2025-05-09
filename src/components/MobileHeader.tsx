@@ -1,3 +1,5 @@
+// mobileHeader.tsx
+
 "use client";
 
 import { useCallback } from "react";
@@ -33,7 +35,8 @@ const MobileHeader = ({
   const handleLogout = useCallback(() => {
     signout();
     router.push("/");
-  }, [signout, router]);
+    setIsMenuOpen(false); // 로그아웃 후 메뉴 닫기
+  }, [signout, router, setIsMenuOpen]); // setIsMenuOpen을 의존성 배열에 추가
 
   const handleNavigate = useCallback(
     (path: string) => {
