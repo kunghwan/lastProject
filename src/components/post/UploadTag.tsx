@@ -1,7 +1,7 @@
 "use client";
 
 import { Tag } from "@/types/post";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { UploadPostProps } from "./UploadPage";
 import { v4 } from "uuid";
@@ -14,30 +14,45 @@ interface Props {
   tags: Tag[];
   post: UploadPostProps;
   setPost: React.Dispatch<React.SetStateAction<UploadPostProps>>;
+  setIsTypingTag: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const UploadTag = ({ post, setPost, setTag, tag, tagRef, tags }: Props) => {
+const UploadTag = ({
+  post,
+  setPost,
+  setTag,
+  tag,
+  tagRef,
+  tags,
+  setIsTypingTag,
+}: Props) => {
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [focusTarget, setFocusTarget] = useState<"tag" | null>(null);
 
   const tagMessage = useMemo(() => {
     const validateText = /^[\p{L}\p{N}\s]+$/u;
+
+    if (tag.trim() === "") {
+      return "공백은 입력이 안됩니다";
+    }
     if (!validateText.test(tag)) {
       return "특수기호를 포함하면 안됩니다.";
     }
     if (tag.length === 0) {
       return "태그를 입력해 주세요.";
     }
-    if (tag.trim() === "") {
-      return "공백은 입력이 안됩니다";
-    }
+
+    return null;
   }, [tag]);
 
   const onClickTag = useCallback(() => {
+    console.log("tagMessage value:", tagMessage);
     if (tagMessage) {
       setAlertMessage(tagMessage);
-      tagRef.current?.focus();
+      setFocusTarget("tag");
       return;
     }
+
     const formattedTag = tag.startsWith("#") ? tag : `#${tag}`;
     const newTag: Tag = {
       id: v4(),
@@ -45,19 +60,31 @@ const UploadTag = ({ post, setPost, setTag, tag, tagRef, tags }: Props) => {
     };
 
     if (tags.find((t) => t.name === newTag.name)) {
-      return setAlertMessage("이미 존재하는 태그입니다.");
+      setAlertMessage("이미 존재하는 태그입니다.");
+      setFocusTarget("tag");
+      return;
     }
     setPost((prev) => ({
       ...prev,
       tags: [...prev.tags, newTag],
     }));
+
     return setTag("");
   }, [tagMessage, tags, post, tag]);
+
+  useEffect(() => {
+    if (alertMessage === null && focusTarget === "tag") {
+      setTimeout(() => {
+        tagRef.current?.focus();
+        setFocusTarget(null);
+      }, 0);
+    }
+  }, [alertMessage, focusTarget]);
 
   return (
     <>
       <div>
-        {alertMessage && (
+        {alertMessage != null && (
           <AlertModal
             message={alertMessage}
             onClose={() => setAlertMessage(null)}
@@ -78,6 +105,19 @@ const UploadTag = ({ post, setPost, setTag, tag, tagRef, tags }: Props) => {
             ref={tagRef}
             className={twMerge("w-full upPostInput")}
             placeholder="태그를 입력후 추가버튼을 눌러주세요."
+            onKeyDown={(e) => {
+              const { key } = e;
+              if (key === "Enter") {
+                //React에서 setState는 비동기로 처리되기 때문에, 렌더링이 끝나기 전까지 <AlertModal /> 조건부 렌더링이 반응하지 않을 수 있음 =>setTimeout(() => ...)으로 defer 처리하면 렌더링 큐가 정리된 뒤 실행되어 modal이 보장됨
+                setTimeout(() => onClickTag(), 0);
+              } else if (key === " ") {
+                if (!e.nativeEvent.isComposing) {
+                  onClickTag();
+                }
+              }
+            }}
+            onFocus={() => setIsTypingTag(true)}
+            onBlur={() => setIsTypingTag(false)}
           />
           <button
             type="button"
@@ -97,14 +137,10 @@ const UploadTag = ({ post, setPost, setTag, tag, tagRef, tags }: Props) => {
               <button
                 type="button"
                 onClick={() => {
-                  if (confirm("삭제하시겠습니까?")) {
-                    return setPost((prev) => ({
-                      ...prev,
-                      tags: prev.tags.filter((tag) => tag.id !== t.id),
-                    }));
-                  } else {
-                    return alert("취소되었습니다.");
-                  }
+                  return setPost((prev) => ({
+                    ...prev,
+                    tags: prev.tags.filter((tag) => tag.id !== t.id),
+                  }));
                 }}
                 className="cursor-pointer font-bold hover:text-lime-500 hover:underline"
               >
