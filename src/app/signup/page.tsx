@@ -194,13 +194,25 @@ const SignupForm = () => {
 
   // 제출 처리
   const handleSubmit = useCallback(async () => {
+    // 병렬 유효성 검사 수행
+    const validationResults = await Promise.all(
+      InfoAccount.map((info) => {
+        const key = info.name as keyof typeof user;
+        return validateField(key, user[key]);
+      })
+    );
+
+    // 에러 메시지 객체 구성
     const newErrors: typeof errors = {};
-    for (const info of InfoAccount) {
+    InfoAccount.forEach((info, index) => {
       const key = info.name as keyof typeof user;
-      const message = await validateField(key, user[key]);
+      const message = validationResults[index];
       if (message) newErrors[key] = message;
-    }
+    });
+
     setErrors(newErrors);
+
+    // 유효성 오류가 있으면 중단
     if (Object.values(newErrors).some((msg) => msg)) {
       setAlertMsg("입력값을 다시 확인해주세요.");
       return;
@@ -213,19 +225,17 @@ const SignupForm = () => {
       return;
     }
 
-    // 현재 로그인된 Firebase 사용자 가져오기
     const fbUser = authService.currentUser;
     if (!fbUser) {
       setAlertMsg("회원 정보가 없습니다. 다시 시도해주세요.");
       return;
     }
 
-    // uid 포함한 전체 유저 데이터 구성 → 세션 저장 → 다음 페이지 이동
     const fullUser = { ...user, uid: fbUser.uid };
     await authService.signOut();
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(fullUser));
     router.push("/signup/settingprofile");
-  }, [signup, user, errors, validateField, router]);
+  }, [signup, user, validateField, router]);
 
   if (!isLoaded) return null; // 로딩 안 됐으면 렌더 안 함
 

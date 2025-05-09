@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useState, ChangeEvent, useCallback, useRef } from "react";
+import {
+  useEffect,
+  useState,
+  ChangeEvent,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import { useRouter } from "next/navigation";
 import { dbService, FBCollection } from "@/lib/firebase";
 import {
@@ -39,6 +46,8 @@ const PwFindResult = () => {
   const [inputName, setInputName] = useState("");
   const [inputPhone, setInputPhone] = useState("");
   const [inputEmail, setInputEmail] = useState("");
+  // 비밀번호 유효성 검사 상태
+  const [validation, setValidation] = useState<FindPasswordValidation>({});
 
   // 입력 유효성 오류 메시지 상태
   const [inputErrors, setInputErrors] = useState<{
@@ -55,9 +64,6 @@ const PwFindResult = () => {
     newPassword: "",
     confirmPassword: "",
   });
-
-  // 비밀번호 유효성 검사 상태
-  const [validation, setValidation] = useState<FindPasswordValidation>({});
 
   // 알림 모달 상태
   const [modal, setModal] = useState<{
@@ -133,15 +139,21 @@ const PwFindResult = () => {
   }, []);
 
   // 비밀번호 폼 유효성 검사
-  const validateForm = useCallback((): boolean => {
-    const errors: FindPasswordValidation = {};
-    const { newPassword, confirmPassword } = form;
 
+  // ✅ 1. useMemo로 validationResult 계산
+  // form 상태(newPassword, confirmPassword)가 변경될 때만 유효성 검사 결과를 재계산하고,
+  // 그렇지 않으면 기존 결과를 메모이제이션해서 성능을 최적화한다.
+  const validationResult = useMemo(() => {
+    const errors: FindPasswordValidation = {}; // 유효성 오류 결과를 담을 객체
+    const { newPassword, confirmPassword } = form; // form 상태에서 필드 추출
+
+    // ✅ 새 비밀번호 유효성 검사
     const newPasswordMessage = validatePassword(newPassword);
     if (newPasswordMessage) {
       errors.newPassword = { isValid: false, message: newPasswordMessage };
     }
 
+    // ✅ 비밀번호 확인 유효성 검사
     if (!confirmPassword) {
       errors.confirmPassword = {
         isValid: false,
@@ -154,9 +166,15 @@ const PwFindResult = () => {
       };
     }
 
-    setValidation(errors);
-    return Object.keys(errors).length === 0;
+    return errors;
   }, [form]);
+
+  // ✅ 2. useCallback으로 실제 검증 실행 함수 정의
+  // validateForm을 여러 곳에서 재사용하더라도 불필요하게 다시 생성되지 않도록 최적화
+  const validateForm = useCallback((): boolean => {
+    setValidation(validationResult); // 결과를 상태에 반영 (화면에 표시할 수 있도록)
+    return Object.keys(validationResult).length === 0; // 에러 객체가 비어있으면 true 반환 (검증 통과)
+  }, [validationResult]); // 🚩 validationResult가 바뀔 때만 함수 재생성
 
   // 비밀번호 폼 상태 변경 시 자동 유효성 검사
   useEffect(() => {
@@ -209,7 +227,7 @@ const PwFindResult = () => {
   );
 
   // 사용자 인증 확인 처리
-  const handleFindPassword = async () => {
+  const handleFindPassword = useCallback(async () => {
     if (inputErrors.name || inputErrors.phone || inputErrors.email) {
       setModal({ message: "입력한 정보를 다시 확인해주세요." });
       return;
@@ -245,7 +263,7 @@ const PwFindResult = () => {
       console.error("비밀번호 찾기 오류", error);
       setModal({ message: "비밀번호 찾기 중 오류가 발생했습니다." });
     }
-  };
+  }, [inputName, inputPhone, inputEmail, inputErrors]);
 
   return (
     <div className="p-2 ">
