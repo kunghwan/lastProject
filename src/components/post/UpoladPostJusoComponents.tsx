@@ -4,6 +4,8 @@ import { IoIosSearch } from "react-icons/io";
 import { IoLocationSharp } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
 import AlertModal from "../AlertModal";
+import { useQuery } from "@tanstack/react-query";
+import Loaiding from "../Loading";
 
 interface JusoProps {
   juso: Location;
@@ -26,7 +28,7 @@ const JusoComponents = ({
 
   const [focusTarget, setFocusTarget] = useState<"juso" | null>(null);
   //주소를 검색하기 위해서 주소를 저장하는 state
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  // const [searchResults, setSearchResults] = useState<any[]>([]);
   //juso를 저장하기 위해 kakao api를 사용함
   const searchAddress = useCallback(async (query: string) => {
     const res = await fetch(
@@ -42,9 +44,23 @@ const JusoComponents = ({
     console.log(data, 79);
     // 검색 결과를 state에 저장함
 
-    setSearchResults(data.documents);
+    return data.documents;
   }, []);
 
+  //Todo: refetch가 실행되면 데이터 요청시작
+  const {
+    data: searchResults = [],
+    refetch,
+    error,
+  } = useQuery({
+    queryKey: ["kakaoSearch", address],
+    queryFn: () => searchAddress(address),
+    enabled: false, // 수동으로 실행 //컴포넌트가 처음 렌더링될 때 자동으로 요청하지 않음 => refetch로 실행
+    //! 자동으로 가져오면 address(사용자가 주소를 한글자씩입력시) 값이 바뀔 때마다 자동 재실행(queryFn실행)=>비효율
+    staleTime: 1000 * 60 * 5, //데이터를 신선하다고 판단할 시간 (캐시 유지 시간,같은 주소로 다시 검색하면 5분 동안은 캐시된 데이터 사용)
+  });
+
+  console.log(searchResults, "data 확인");
   // 알림 모달 상태
   const [modal, setModal] = useState<{
     message: string;
@@ -59,6 +75,10 @@ const JusoComponents = ({
       }, 0);
     }
   }, [modal?.message, focusTarget]);
+
+  if (error || !searchResults) {
+    return <h1>Error: {error?.message}</h1>;
+  }
 
   return (
     <div className="hsecol gap-2">
@@ -100,7 +120,6 @@ const JusoComponents = ({
                       longitude: 0,
                       address: "",
                     });
-                    setSearchResults([]);
                     setIsJusoUlShowing(false);
                     setIsJusoShowing(false);
                     return jusoRef.current?.focus();
@@ -120,7 +139,7 @@ const JusoComponents = ({
                 // }
               }}
               className={twMerge(
-                "  p-2.5 rounded bg-[#a4d9cb] dark:bg-[#6d9288]  hover:shadow-md dark:text-white w-auto min-w-20 cursor-pointer whitespace-nowrap",
+                " p-2.5 rounded bg-[#a4d9cb] dark:bg-[#6d9288]  hover:shadow-md dark:text-white w-auto min-w-20 cursor-pointer whitespace-nowrap",
                 juso.address.length > 0 && "mt-8"
               )}
             >
@@ -157,7 +176,8 @@ const JusoComponents = ({
                     }, 0);
                     return;
                   }
-                  searchAddress(address);
+                  refetch();
+
                   setIsJusoUlShowing(true);
                   setIsJusoShowing(true);
                 }
@@ -172,7 +192,8 @@ const JusoComponents = ({
                   return setModal({ message: "주소를 입력해 주세요." });
                 }
                 //searchAddress를 호출하여 주소를 검색(address를 인자로 넘겨서 검색 ㄱㄱ)
-                searchAddress(address);
+                //  searchAddress(address);
+                refetch();
                 setIsJusoUlShowing(true);
                 return setIsJusoShowing(true);
               }}
@@ -192,7 +213,7 @@ const JusoComponents = ({
               </p>
             </li>
           ) : (
-            searchResults.map((item) => (
+            searchResults.map((item: any) => (
               <li
                 key={item.id}
                 className="cursor-pointer bg-white rounded gap-y-2.5 hover:underline border p-1.5 hover:text-green-800 "
@@ -206,7 +227,7 @@ const JusoComponents = ({
                   });
                   setIsTypingTag(false); //추가로 포커싱 해제
                   //주소를 클릭시 검색결과를 초기화
-                  setSearchResults([]);
+                  setIsJusoShowing(true);
                   setIsJusoUlShowing(false);
                   // setAddress를 클릭한 주소로 변경 다시 검색하기 위해 주소를 저장함
                   setAddress(item.address_name);
