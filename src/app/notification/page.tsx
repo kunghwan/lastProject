@@ -14,6 +14,7 @@ import Image from "next/image";
 const limit = 20;
 const NotificationListPage = () => {
   const { user } = AUTH.use();
+  const [isLoadingAllRead, setIsLoadingAllRead] = useState(false);
   //Todo: 모두읽음 알림버튼을 확인용 useState
   const [isUnRead, setIsUnRead] = useState(false);
   const navi = useRouter();
@@ -138,7 +139,10 @@ const NotificationListPage = () => {
   );
   //! 현재 불러온 알림 목록을 forEach 돌면서 모두 isRead: true로 업데이트 해야됨
   const handleAllRead = useCallback(async () => {
-    if (!data || !uid) return;
+    if (!data || !uid) {
+      return;
+    }
+    setIsLoadingAllRead(true);
     const batch = dbService.batch(); //! Firestore batch 사용 (한 번에 여러 문서 처리 최대 500개까지)
     data.pages.forEach((page) => {
       page.notifications.forEach((noti) => {
@@ -160,6 +164,7 @@ const NotificationListPage = () => {
       window.checkUnreadNotifications();
     }
     await refetch(); //!  데이터 새로고침 //서버에 요청 → 최신 데이터로 갱신
+    setIsLoadingAllRead(false);
     return setAlertMessage("알림을 모두 읽었습니다.");
   }, [data, uid, refetch]);
   // const isNotifications = data?.pages.map((page) => page.notifications);
@@ -171,7 +176,7 @@ const NotificationListPage = () => {
       checkUnreadNotifications();
     };
   }, [checkUnreadNotifications]);
-  if (isPending) {
+  if (isPending || isLoadingAllRead) {
     return <Loaiding />;
   }
   if (error || !data) {

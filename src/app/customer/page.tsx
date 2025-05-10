@@ -49,7 +49,7 @@ const QnaPage = () => {
 
   return (
     <div className="mt-5 relative min-h-screen  hsecol gap-y-2.5 px-5  ">
-      <div className="relative   max-w-96 mx-auto max-[700px]:px-2.5">
+      <div className="relative z-[2]   max-w-96 mx-auto max-[700px]:px-2.5">
         <input
           type="text"
           placeholder="어떤 질문을 찾고 계신가요?"
@@ -62,7 +62,7 @@ const QnaPage = () => {
       </div>
 
       <hr className="mb-2 text-gray-300" />
-      <div className="z-3">
+      <div className="z-[4]">
         <ul className="">
           {filteredQna.length === 0 && (
             <li className="text-gray-800 dark:text-white">
@@ -108,7 +108,7 @@ const QnaPage = () => {
         <p className="text-gray-500 dark:text-white">
           추가로 질문사항이 있으시면
         </p>
-        <p className="z-4 flex text-gray-500 dark:text-white">
+        <p className="z-[4] flex text-gray-500 dark:text-white">
           <a
             href="https://mail.naver.com/write?to=test@test.com"
             target="_blank"
