@@ -2,7 +2,7 @@
 
 @layer components {
   .upPostInput {
-    @apply outline-none min-h-14 bg-white border rounded-lg px-2 py-2 border-gray-400 placeholder:text-gray-500;
+    @apply outline-none min-h-14 md:placeholder:text-sm bg-white border rounded-lg px-2 py-2 border-gray-400 placeholder:text-gray-500;
   }
   .upPostButton {
     @apply rounded-sm px-2.5 py-1 cursor-pointer hover:shadow-md md:w-24 md:h-10;

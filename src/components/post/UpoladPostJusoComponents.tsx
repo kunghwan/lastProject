@@ -4,6 +4,7 @@ import { IoIosSearch } from "react-icons/io";
 import { IoLocationSharp } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
 import AlertModal from "../AlertModal";
+import { IoRefreshOutline } from "react-icons/io5";
 import { useQuery } from "@tanstack/react-query";
 
 interface JusoProps {
@@ -13,6 +14,29 @@ interface JusoProps {
   titleRef: React.RefObject<HTMLInputElement | null>;
   setIsTypingTag: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+//juso를 저장하기 위해 kakao api를 사용함
+export const searchAddress = async (query: string) => {
+  try {
+    const res = await fetch(
+      `https://dapi.kakao.com/v2/local/search/keyword.json?query=${query}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `KakaoAK ${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}`,
+        },
+      }
+    );
+    const data = await res.json();
+    console.log(data, 79);
+
+    return data.documents;
+  } catch (error: any) {
+    console.log(error.message, "주소 가져오기 실패");
+    //! React Query에서 catch된 오류를 사용할 수 있도록 throw(현재 함수의 실행을 중단하고, 이 에러를 호출한 쪽으로 전달)
+    throw new Error("주소 검색에 실패했습니다. 다시 시도해주세요.");
+  }
+};
 
 const JusoComponents = ({
   juso,
@@ -26,25 +50,6 @@ const JusoComponents = ({
   const [address, setAddress] = useState("");
 
   const [focusTarget, setFocusTarget] = useState<"juso" | null>(null);
-  //주소를 검색하기 위해서 주소를 저장하는 state
-  // const [searchResults, setSearchResults] = useState<any[]>([]);
-  //juso를 저장하기 위해 kakao api를 사용함
-  const searchAddress = useCallback(async (query: string) => {
-    const res = await fetch(
-      `https://dapi.kakao.com/v2/local/search/keyword.json?query=${query}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `KakaoAK ${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}`,
-        },
-      }
-    );
-    const data = await res.json();
-    console.log(data, 79);
-    // 검색 결과를 state에 저장함
-
-    return data.documents;
-  }, []);
 
   //Todo: refetch가 실행되면 데이터 요청시작
   const {
@@ -138,11 +143,11 @@ const JusoComponents = ({
                 // }
               }}
               className={twMerge(
-                " p-2.5 rounded bg-[#a4d9cb] dark:bg-[#6d9288]  hover:shadow-md dark:text-white w-auto min-w-20 cursor-pointer whitespace-nowrap",
+                " p-2.5 min-h-12 flex justify-center items-center rounded-xl min-w-14 bg-[#a4d9cb] dark:bg-[#6d9288]  hover:shadow-md dark:text-white w-auto  cursor-pointer whitespace-nowrap",
                 juso.address.length > 0 && "mt-8"
               )}
             >
-              다시검색
+              <IoRefreshOutline className="text-2xl font-bold" />
             </button>
           </div>
         )}

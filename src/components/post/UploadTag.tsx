@@ -145,7 +145,7 @@ const UploadTag = ({
                     tags: prev.tags.filter((tag) => tag.id !== t.id),
                   }));
                 }}
-                className="cursor-pointer font-bold hover:text-lime-500 hover:underline"
+                className=" dark:text-gray-200 cursor-pointer font-bold hover:text-lime-500 hover:underline"
               >
                 {t.name}
               </button>

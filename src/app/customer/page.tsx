@@ -5,6 +5,7 @@ import { TiPlus } from "react-icons/ti";
 import { IoClose } from "react-icons/io5";
 import { LuMailPlus } from "react-icons/lu";
 import { IoSearchOutline } from "react-icons/io5";
+import { twMerge } from "tailwind-merge";
 
 interface QnA {
   question: string;
@@ -48,22 +49,21 @@ const QnaPage = () => {
 
   return (
     <div className="mt-5 relative min-h-screen  hsecol gap-y-2.5 px-5  ">
+      <div className="relative   max-w-96 mx-auto max-[700px]:px-2.5">
+        <input
+          type="text"
+          placeholder="어떤 질문을 찾고 계신가요?"
+          ref={qnaRef}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className=" outline-none min-w-96  p-2.5 sm:w-4/5  rounded-full border bg-white border-gray-500 dark:border-white dark:text-black placeholder-gray-400"
+        />
+        <IoSearchOutline className=" absolute right-3 top-1/2 -translate-y-1/2 text-green-950 text-3xl" />
+      </div>
+
+      <hr className="mb-2 text-gray-300" />
       <div className="z-3">
         <ul className="">
-          <li className="mb-2  flex justify-center ">
-            <div className="relative  max-w-96 max-[700px]:px-2.5">
-              <input
-                type="text"
-                placeholder="어떤 질문을 찾고 계신가요?"
-                ref={qnaRef}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className=" outline-none min-w-96  p-2.5 sm:w-4/5  rounded-full border bg-white border-gray-500 dark:border-white dark:text-black placeholder-gray-400"
-              />
-              <IoSearchOutline className=" absolute right-3 top-1/2 -translate-y-1/2 text-green-950 text-3xl" />
-            </div>
-          </li>
-          <hr className="mb-2 text-gray-300" />
           {filteredQna.length === 0 && (
             <li className="text-gray-800 dark:text-white">
               <p className="flex  justify-center min-h-50 font-bold items-center text-2xl">
@@ -72,10 +72,13 @@ const QnaPage = () => {
             </li>
           )}
           {filteredQna.map((item) => (
-            <li key={item.question} className=" hsecol mb-2 w-full">
+            <li key={item.question} className=" hsecol mb-2 w-full ">
               <button
                 onClick={() => toggleQuestion(item.question)}
-                className="hover:underline text-sm text-left font-bold  flex justify-between items-center p-2.5 rounded bg-[rgba(151,218,200)] dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer"
+                className={twMerge(
+                  "hover:underline text-sm text-left font-bold  flex justify-between items-center p-2.5 rounded  bg-[rgba(151,218,200)] dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer",
+                  isanswerShowing === item.question && "rounded-b-none"
+                )}
               >
                 <p> Q. {item.question}</p>
                 <span>
@@ -90,11 +93,10 @@ const QnaPage = () => {
                */}
               {/* isanswerShowing에 저장된 질문이랑 아이템의 질문이랑 같으면 true */}
               {isanswerShowing === item.question && (
-                <div className="mt-1 hsecol gap-y-1.5 text-sm text-gray-700 rounded p-2.5 bg-[rgba(240,255,251)] dark:bg-[rgba(240,255,251,0.5)] md:text-xl dark:text-white">
-                  {item.answer[0]}
-                  <div className="text-sm md:text-xl text-gray-700 dark:text-white">
-                    {item.answer[1]}
-                  </div>
+                <div className="hsecol gap-y-1.5 text-sm text-gray-700 rounded rounded-t-none p-2.5 bg-[#def5ef] dark:bg-[rgba(240,255,251,0.5)] md:text-xl dark:text-white">
+                  {item.answer.map((text, index) => (
+                    <div key={index}>{text}</div>
+                  ))}
                 </div>
               )}
             </li>
