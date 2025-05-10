@@ -65,7 +65,10 @@ const UploadPostPage = () => {
     address: "",
   });
 
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [modal, setModal] = useState<{
+    message: string;
+    onConfirm?: () => void;
+  } | null>(null);
 
   const navi = useRouter();
 
@@ -106,7 +109,7 @@ const UploadPostPage = () => {
       //! 사진은 최대 10개까지만 가능하게
       //Todo: files.length만 비교하거나 items.length만 본다면, 합쳐서 10개 초과하는 걸 막지 못하게 됨
       if (files.length + items.length > 10) {
-        setAlertMessage("이미지 최대 개수는 10개 입니다.");
+        setModal({ message: "이미지 최대 개수는 10개 입니다." });
         return;
       }
 
@@ -128,19 +131,19 @@ const UploadPostPage = () => {
       }
 
       if (titleMessage) {
-        setAlertMessage(titleMessage);
+        setModal({ message: titleMessage });
         return setFocusTarget("title");
       }
       if (descMessage) {
-        setAlertMessage(descMessage);
+        setModal({ message: descMessage });
         return setFocusTarget("desc");
       }
       if (jusoMessage) {
-        setAlertMessage(jusoMessage);
+        setModal({ message: jusoMessage });
         return setFocusTarget("juso");
       }
       if (tagsMessage) {
-        setAlertMessage(tagsMessage);
+        setModal({ message: tagsMessage });
         return setFocusTarget("tags");
       }
 
@@ -193,7 +196,7 @@ const UploadPostPage = () => {
 
           return navi.push("/feed");
         } catch (error: any) {
-          return setAlertMessage(`에러:${error.message}`);
+          return setModal({ message: `에러:${error.message}` });
         }
       });
     },
@@ -218,7 +221,7 @@ const UploadPostPage = () => {
   }, []);
 
   useEffect(() => {
-    if (alertMessage === null && focusTarget !== null) {
+    if (modal?.message === null && focusTarget !== null) {
       setTimeout(() => {
         if (focusTarget === "title") {
           titleRef.current?.focus();
@@ -232,7 +235,7 @@ const UploadPostPage = () => {
         setFocusTarget(null);
       }, 300);
     }
-  }, [alertMessage, focusTarget]);
+  }, [modal?.message, focusTarget]);
 
   //! 마우스 휠 가로로 변경
   useEffect(() => {
@@ -259,19 +262,24 @@ const UploadPostPage = () => {
     <form
       action=""
       onSubmit={onSubmit}
-      className=" bg-[rgba(250,255,254)] dark:bg-gray-500 relative   h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  md:grid-cols-2 md:gap-5 mt-5 max-w-300 mx-auto  p-5  border rounded border-gray-400 "
+      className="bg-gray-50/80  dark:bg-gray-500 relative  h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  md:grid-cols-2 md:gap-5  max-w-300 mx-auto  p-5  border rounded-2xl shadow-sm border-gray-400 "
     >
       {isPending && <Loaiding />}
-      {alertMessage && (
+      {modal && (
         <AlertModal
-          message={alertMessage}
-          onClose={() => setAlertMessage(null)}
+          message={modal.message}
+          onClose={() => setModal(null)}
+          onConfirm={() => {
+            modal.onConfirm?.();
+            setModal(null);
+          }}
+          showCancel={modal.onConfirm && true}
         />
       )}
-      <div className="hsecol gap-2">
+      <div className="hsecol gap-4  ">
         {/* <h1 className=" w-fit  text-3xl font-bold text-black dark:text-white">새글작성</h1> */}
         <div className="flex gap-x-1.5 items-center">
-          <FaPencilAlt className="text-3xl hover:text-green-800" />
+          <FaPencilAlt className="text-3xl hover:text-green-800 dark:text-white" />
           <TypeAnimation
             sequence={[
               "새",
@@ -288,8 +296,8 @@ const UploadPostPage = () => {
             className="w-fit  text-3xl font-bold text-black dark:text-white"
           />
         </div>
-        <div className="hsecol gap-y-3 ">
-          <div className="hsecol gap-y-1">
+        <div className="hsecol gap-y-6 ">
+          <div className="hsecol gap-y-1 ">
             <label
               htmlFor="title"
               className=" w-fit  font-bold text-md text-gray-500 dark:text-white"
@@ -307,7 +315,7 @@ const UploadPostPage = () => {
                   title: e.target.value,
                 }))
               }
-              className={twMerge("upPostInput")}
+              className={twMerge("upPostInput shadow-sm")}
               ref={titleRef}
               placeholder="제목을 입력하세요."
             />
@@ -324,7 +332,7 @@ const UploadPostPage = () => {
               name=""
               id="content"
               placeholder="관광지의 소개글이나 리뷰를 작성해주세요."
-              className={twMerge("h-50 resize-none upPostInput")}
+              className={twMerge("h-50 shadow-sm resize-none upPostInput")}
               value={content}
               ref={descRef}
               // 변경은 post는 객체라서 전개연산자 사용후 content만 변경
@@ -337,7 +345,10 @@ const UploadPostPage = () => {
             />
           </div>
         </div>
-        <div ref={scrollRef} className="w-full overflow-x-auto hide-scrollbar ">
+        <div
+          ref={scrollRef}
+          className=" w-full overflow-x-auto hide-scrollbar "
+        >
           <ul
             className=" flex  items-center gap-2.5 flex-nowrap scroll-smooth "
             style={{ WebkitOverflowScrolling: "touch" }} // 모바일 터치 스와이프 부드럽게
@@ -377,7 +388,7 @@ const UploadPostPage = () => {
         </div>
       </div>
 
-      <div className="hsecol gap-y-1 md:mt-12">
+      <div className="hsecol  gap-y-2.5 md:mt-14">
         <UploadTag
           setIsTypingTag={setIsTypingTag}
           post={post}
@@ -400,20 +411,23 @@ const UploadPostPage = () => {
         <button
           type="button"
           onClick={() => {
-            if (confirm("취소하시겠습니까?")) {
-              navi.back();
-            } else {
-              return alert("취소되었습니다.");
-            }
+            setModal({
+              message: "취소 하시겠습니까?",
+              onConfirm() {
+                return navi.back();
+              },
+            });
           }}
-          className={twMerge("hover:scale-105 bg-gray-300  upPostButton")}
+          className={twMerge(
+            " bg-gray-300 hover:bg-gray-200 transition duration-300  upPostButton"
+          )}
         >
           취소
         </button>
         <button
           type="submit"
           className={twMerge(
-            "hover:scale-105 bg-[rgba(62,188,154)] upPostButton dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
+            "  hover:bg-[rgba(116,212,186,0.7)]  bg-[rgba(62,188,154)] transition duration-300 upPostButton dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
           )}
         >
           게시

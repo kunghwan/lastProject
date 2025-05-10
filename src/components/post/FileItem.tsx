@@ -12,13 +12,22 @@ interface FileItemProps {
   onDeleteFiles?: () => void;
 }
 const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [modal, setModal] = useState<{
+    message: string;
+    onConfirm?: () => void;
+  } | null>(null);
+
   return (
-    <div className="hsecol gap-y-1 hover:text-gray-400 cursor-pointer">
-      {alertMessage && (
+    <div className="hsecol gap-y-1 hover:text-gray-400 cursor-pointer  shadow-md ">
+      {modal && (
         <AlertModal
-          message={alertMessage}
-          onClose={() => setAlertMessage(null)}
+          message={modal.message}
+          onClose={() => setModal(null)}
+          onConfirm={() => {
+            modal.onConfirm?.();
+            setModal(null);
+          }}
+          showCancel={true}
         />
       )}
       <div className=" relative  w-24 h-24">
@@ -39,10 +48,16 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
           <button
             type="button"
             onClick={() => {
-              if (confirm("삭제하시겠습니까?")) {
-                return onDeleteFiles && onDeleteFiles();
-              }
-              setAlertMessage("취소했습니다.");
+              setModal({
+                message: "삭제하시겠습니까?",
+                onConfirm() {
+                  return onDeleteFiles && onDeleteFiles();
+                },
+              });
+              // if (confirm("삭제하시겠습니까?")) {
+              //   return onDeleteFiles && onDeleteFiles();
+              // }
+              // setAlertMessage("취소했습니다.");
             }}
             className=" absolute border rounded-2xl text-xl bg-white z-20 w-24 h-24 opacity-0 hover:opacity-80 flex justify-center items-center cursor-pointer"
           >
@@ -52,11 +67,13 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
 
         <div className="absolute top-0 left-0  w-full h-full border border-gray-400 rounded-2xl bg-white cursor-pointer  flex justify-center items-center overflow-hidden ">
           {file ? (
-            <div className="border max-w-24 min-h-24">
+            <div className="border max-w-24 min-h-24 ">
               <Image
                 src={URL.createObjectURL(file)}
                 alt={file.name}
                 className="w-24 h-24 object-cover"
+                width={96}
+                height={96}
               />
             </div>
           ) : (

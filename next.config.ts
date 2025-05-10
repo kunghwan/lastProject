@@ -6,7 +6,11 @@ const nextConfig: NextConfig = {
       ? "https://github.com/kunghwan/lastProject"
       : "",
   images: {
-    domains: ["tong.visitkorea.or.kr"], // ✅ 이미지 호스트 등록
+    domains: [
+      "tong.visitkorea.or.kr",
+      "firebasestorage.googleapis.com",
+      "i.pinimg.com",
+    ], // ✅ 이미지 호스트 등록
   },
 };
 

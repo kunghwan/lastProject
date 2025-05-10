@@ -4,8 +4,8 @@ import { IoIosSearch } from "react-icons/io";
 import { IoLocationSharp } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
 import AlertModal from "../AlertModal";
+import { IoRefreshOutline } from "react-icons/io5";
 import { useQuery } from "@tanstack/react-query";
-import Loaiding from "../Loading";
 
 interface JusoProps {
   juso: Location;
@@ -14,6 +14,29 @@ interface JusoProps {
   titleRef: React.RefObject<HTMLInputElement | null>;
   setIsTypingTag: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+//juso를 저장하기 위해 kakao api를 사용함
+export const searchAddress = async (query: string) => {
+  try {
+    const res = await fetch(
+      `https://dapi.kakao.com/v2/local/search/keyword.json?query=${query}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `KakaoAK ${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}`,
+        },
+      }
+    );
+    const data = await res.json();
+    console.log(data, 79);
+
+    return data.documents;
+  } catch (error: any) {
+    console.log(error.message, "주소 가져오기 실패");
+    //! React Query에서 catch된 오류를 사용할 수 있도록 throw(현재 함수의 실행을 중단하고, 이 에러를 호출한 쪽으로 전달)
+    throw new Error("주소 검색에 실패했습니다. 다시 시도해주세요.");
+  }
+};
 
 const JusoComponents = ({
   juso,
@@ -27,25 +50,6 @@ const JusoComponents = ({
   const [address, setAddress] = useState("");
 
   const [focusTarget, setFocusTarget] = useState<"juso" | null>(null);
-  //주소를 검색하기 위해서 주소를 저장하는 state
-  // const [searchResults, setSearchResults] = useState<any[]>([]);
-  //juso를 저장하기 위해 kakao api를 사용함
-  const searchAddress = useCallback(async (query: string) => {
-    const res = await fetch(
-      `https://dapi.kakao.com/v2/local/search/keyword.json?query=${query}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `KakaoAK ${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}`,
-        },
-      }
-    );
-    const data = await res.json();
-    console.log(data, 79);
-    // 검색 결과를 state에 저장함
-
-    return data.documents;
-  }, []);
 
   //Todo: refetch가 실행되면 데이터 요청시작
   const {
@@ -93,12 +97,12 @@ const JusoComponents = ({
             modal.onConfirm?.();
             setModal(null);
           }}
-          showCancel={true}
+          showCancel={modal.onConfirm && true}
         />
       )}
       <div className="flex gap-x-2 items-center">
         {juso.address.length > 0 && (
-          <label className="mt-8 border-gray-200 flex w-full border bg-emerald-100 p-2.5 rounded items-center  dark:text-gray-900">
+          <label className="mt-8 bg-white flex w-full border-2 gap-x-2  border-emerald-800 p-2.5 rounded items-center  dark:text-gray-900">
             <span>
               <IoLocationSharp className="text-2xl" />
             </span>
@@ -139,11 +143,11 @@ const JusoComponents = ({
                 // }
               }}
               className={twMerge(
-                " p-2.5 rounded bg-[#a4d9cb] dark:bg-[#6d9288]  hover:shadow-md dark:text-white w-auto min-w-20 cursor-pointer whitespace-nowrap",
+                " p-2.5 min-h-12 flex justify-center items-center rounded-xl min-w-14 bg-[#a4d9cb] dark:bg-[#6d9288]  hover:shadow-md dark:text-white w-auto  cursor-pointer whitespace-nowrap",
                 juso.address.length > 0 && "mt-8"
               )}
             >
-              다시검색
+              <IoRefreshOutline className="text-2xl font-bold" />
             </button>
           </div>
         )}
@@ -156,15 +160,17 @@ const JusoComponents = ({
           >
             주소
           </label>
-          <div className="flex gap-x-2">
+          <div className="flex ">
             <input
               type="text"
               id="jusos"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className={twMerge("w-full upPostInput ")}
+              className={twMerge(
+                "w-full upPostInput shadow-sm border-r-0 rounded-r-none"
+              )}
               ref={jusoRef}
-              placeholder="주소를 입력후 검색버튼을 눌러주세요."
+              placeholder="입력후 검색버튼 또는 엔터를 눌러주세요."
               onKeyDown={(e) => {
                 const { key } = e;
                 if (!e.nativeEvent.isComposing && key === "Enter") {
@@ -197,7 +203,7 @@ const JusoComponents = ({
                 setIsJusoUlShowing(true);
                 return setIsJusoShowing(true);
               }}
-              className="  hover:shadow-md flex justify-center items-center flex-1 rounded bg-[rgba(116,212,186)] min-w-20 dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
+              className="hover:bg-[rgba(116,212,186,0.7)] border border-gray-400  hover:shadow-md flex justify-center items-center flex-1 rounded-l-none rounded-r-md bg-[rgba(116,212,186)] min-w-20 dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
             >
               <IoIosSearch className="text-3xl font-bold" />
             </button>
@@ -205,7 +211,7 @@ const JusoComponents = ({
         </div>
       )}
       {isJusoUlShowing && (
-        <ul className="mt-2 hsecol gap-y-2 bg-green-50 dark:bg-green-50/80 border border-gray-400  rounded p-2.5 max-h-50 overflow-y-auto">
+        <ul className="mt-2 hsecol gap-y-2 bg-gray-200 dark:bg-green-50/80 border border-gray-400  rounded p-2.5 max-h-50 overflow-y-auto">
           {searchResults.length === 0 ? (
             <li>
               <p className="font-bold flex justify-center">
