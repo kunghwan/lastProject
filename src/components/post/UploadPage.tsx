@@ -262,7 +262,7 @@ const UploadPostPage = () => {
     <form
       action=""
       onSubmit={onSubmit}
-      className="bg-gray-50/80   dark:bg-gray-500 relative  h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  md:grid-cols-2 md:gap-5 mt-3 max-w-300 mx-auto  p-5  border rounded-2xl shadow-sm border-gray-400 "
+      className="bg-gray-50/80  dark:bg-gray-500 relative  h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  md:grid-cols-2 md:gap-5  max-w-300 mx-auto  p-5  border rounded-2xl shadow-sm border-gray-400 "
     >
       {isPending && <Loaiding />}
       {modal && (

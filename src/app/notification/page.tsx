@@ -9,6 +9,7 @@ import { Notifications } from "@/types/notification";
 import Loaiding from "@/components/Loading";
 import TopButton from "@/components/upplace/TopButton";
 import AlertModal from "@/components/AlertModal";
+import Image from "next/image";
 //! limit변수처리하기
 const limit = 20;
 const NotificationListPage = () => {
@@ -53,7 +54,7 @@ const NotificationListPage = () => {
       //문서들을 하나씩 돌면서 알림(Notification) 형식으로 변환
       //id까지 합친하나의 객체로 만들어서 하나의 배열에 doc객체들을 담음
       const notifications = snap.docs.map((doc) => ({
-        ...doc.data(),
+        ...(doc.data() as Notifications),
         id: doc.id,
       })) as Notifications[];
       // console.log(notifications, "알림확인용");
@@ -229,20 +230,31 @@ const NotificationListPage = () => {
                   }
                 }}
                 className={twMerge(
-                  "hover:scale-105 hover:shadow-sm hsecol  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer ",
+                  "hover:scale-105 hover:shadow-sm hsecol  gap-x-2.5 justify-center p-2.5 rounded-2xl w-full cursor-pointer ",
                   noti.isRead
-                    ? "text-gray-500 border dark:border-gray-700 border-gray-200 bg-gray-100 dark:bg-gray-500 dark:text-gray-300"
+                    ? "text-gray-500 border dark:border-gray-700 border-gray-200 bg-gray-100 dark:bg-gray-500 dark:text-gray-300 "
                     : "text-black font-semibold border border-gray-200 hover:text-lime-700 dark:hover:text-lime-200  bg-[rgba(232,255,241)] dark:bg-[rgba(232,255,241,0.4)] dark:text-white"
                 )}
               >
-                <p className="font-bold text-md">
-                  {noti.type === "follow" &&
-                    `${noti.followerNickname}님이 팔로우했습니다.`}
-                  {noti.type === "like" &&
-                    `${noti.likerName}님이 게시글을 좋아했습니다.`}
-                </p>
-                <p className="text-sm font-light">
-                  {noti.createdAt.toString()}
+                <div className="flex items-center gap-x-2.5">
+                  <div className="w-10 h-10  overflow-hidden rounded-full">
+                    <Image
+                      src={noti.profileImageUrl || defaultImgUrl}
+                      alt="profile"
+                      width={40}
+                      height={40}
+                      className=" object-cover"
+                    />
+                  </div>
+                  <p className="font-bold text-md">
+                    {noti.type === "follow" &&
+                      `${noti.followerNickname}님이 팔로우했습니다.`}
+                    {noti.type === "like" &&
+                      `${noti.likerName}님이 게시글을 좋아했습니다.`}
+                  </p>
+                </div>
+                <p className="text-sm font-light  flex justify-end">
+                  {noti.createdAt.toDate().toLocaleString()}
                 </p>
               </li>
             ))
@@ -265,3 +277,6 @@ const NotificationListPage = () => {
   );
 };
 export default NotificationListPage;
+
+const defaultImgUrl =
+  "https://i.pinimg.com/1200x/3e/c0/d4/3ec0d48e3332288604e8d48096296f3e.jpg";
