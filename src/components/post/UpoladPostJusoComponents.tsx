@@ -155,13 +155,15 @@ const JusoComponents = ({
           >
             주소
           </label>
-          <div className="flex gap-x-2">
+          <div className="flex ">
             <input
               type="text"
               id="jusos"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className={twMerge("w-full upPostInput shadow-sm")}
+              className={twMerge(
+                "w-full upPostInput shadow-sm border-r-0 rounded-r-none"
+              )}
               ref={jusoRef}
               placeholder="입력후 검색버튼 또는 엔터를 눌러주세요."
               onKeyDown={(e) => {
@@ -196,7 +198,7 @@ const JusoComponents = ({
                 setIsJusoUlShowing(true);
                 return setIsJusoShowing(true);
               }}
-              className="hover:bg-[rgba(116,212,186,0.7)]  hover:shadow-md flex justify-center items-center flex-1 rounded bg-[rgba(116,212,186)] min-w-20 dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
+              className="hover:bg-[rgba(116,212,186,0.7)] border border-gray-400  hover:shadow-md flex justify-center items-center flex-1 rounded-l-none rounded-r-md bg-[rgba(116,212,186)] min-w-20 dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
             >
               <IoIosSearch className="text-3xl font-bold" />
             </button>
