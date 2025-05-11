@@ -1,49 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-
 import Link from "next/link";
 
+const fetchPlaceDetail = async (contentid: string) => {
+  const res = await axios.get(`/api/upplace/${contentid}`);
+  return res.data;
+};
+
 const PlaceDetailPage = () => {
-  const params = useParams<{ contentid: string }>(); // URL에서 contentid 추출
-  const contentid = params?.contentid; // 값 가져오기
+  const params = useParams<{ contentid: string }>();
+  const contentid = params?.contentid;
 
-  // contentid가 없으면 잘못된 접근 안내
-  if (!contentid) {
-    return <div>잘못된 접근입니다.</div>;
-  }
+  const {
+    data: place,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["placeDetail", contentid],
+    queryFn: () => fetchPlaceDetail(contentid!), // ✅ 타입 단언 처리
+    enabled: !!contentid,
+    staleTime: 1000 * 60 * 5,
+  });
 
-  const [place, setPlace] = useState<PlaceDetail | null>(null); // 장소 상세 상태
+  if (!contentid) return <div>잘못된 접근입니다.</div>;
+  if (isLoading) return <div>로딩중...</div>;
+  if (isError) return <div>❌ 상세 정보 로딩 실패</div>;
 
-  // ✅ 컴포넌트 마운트 또는 contentid 변경 시 장소 상세 데이터 가져오기
-  useEffect(() => {
-    const fetchPlaceDetail = async () => {
-      try {
-        // 서버 API를 통해 장소 상세 정보 가져오기
-        const res = await axios.get(`/api/upplace/${contentid}`);
-        setPlace(res.data); // 응답 데이터 저장
-      } catch (error) {
-        console.error("장소 상세 정보 불러오기 실패", error);
-      }
-    };
-
-    if (contentid) {
-      fetchPlaceDetail(); // contentid 있을 때만 요청
-    }
-  }, [contentid]);
-
-  // place가 아직 로드되지 않았으면 로딩 표시
-  if (!place) {
-    return <div>로딩중...</div>;
-  }
-
-  const isLongText = place.overview.length > 500; // 설명이 길면 스크롤 처리
+  const isLongText = place.overview.length > 500;
 
   return (
     <div className="mx-auto px-4 pb-10 dark:text-white">
-      {/* 장소 이미지 표시 (없으면 기본 이미지) */}
       <img
         src={place.firstimage || "/image/logoc.PNG"}
         alt={place.title}
@@ -53,11 +42,8 @@ const PlaceDetailPage = () => {
       <h1 className="text-xl font-bold mb-2 mt-1 dark:text-white">
         {place.title}
       </h1>
-
-      {/* 주소 */}
       <p className="text-gray-600 mb-2 dark:text-white">{place.addr1}</p>
 
-      {/* 전화번호 / 우편번호 */}
       <div className="flex gap-x-2.5 mb-2 flex-wrap dark:text-white">
         <p className="text-gray-600 dark:text-white">전화번호: {place.tel}</p>
         <p className="text-gray-600 dark:text-white">
@@ -65,7 +51,6 @@ const PlaceDetailPage = () => {
         </p>
       </div>
 
-      {/* 장소 설명 (500자 이상이면 스크롤 가능) */}
       <div
         className={`text-gray-800 text-sm leading-relaxed whitespace-pre-line dark:text-white ${
           isLongText ? "max-h-60 overflow-y-auto pr-2" : ""
@@ -74,7 +59,6 @@ const PlaceDetailPage = () => {
         {place.overview}
       </div>
 
-      {/* 추천장소 목록으로 이동 버튼 */}
       <Link
         href="/upplace"
         className="block mt-4 rounded bg-emerald-300 text-center py-2 font-bold lg:w-80 md:w-150"
