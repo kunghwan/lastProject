@@ -139,6 +139,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         <button
           onClick={(e) => {
             e.stopPropagation(); // 버블링 방지
+            //Todo: 이벤트는 자식 요소에서 부모 요소로 순차적으로 전파됨 =>  부모로 이벤트가 전파되지 않아 부모의 이벤트 핸들러는 실행되지 않게 됨
             onUnFollow();
           }}
           className="followButton"
