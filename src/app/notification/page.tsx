@@ -224,6 +224,7 @@ const NotificationListPage = () => {
             </button>
           </div>
         )}
+        <hr className="my-2.5 shadow-sm text-gray-300 px-5" />
         <ul className=" grid md:grid-cols-2 gap-5  items-center  w-full p-2.5 ">
           {data?.pages.map((page) =>
             page.notifications.map((noti) => (
