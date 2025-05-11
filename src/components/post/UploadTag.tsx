@@ -4,6 +4,7 @@ import { Tag } from "@/types/post";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { UploadPostProps } from "./UploadPage";
+import { IoIosAddCircleOutline } from "react-icons/io";
 import { v4 } from "uuid";
 import AlertModal from "../AlertModal";
 
@@ -96,16 +97,18 @@ const UploadTag = ({
         >
           태그
         </label>
-        <div className="flex gap-x-2">
+        <div className="flex ">
           <input
             id="tags"
             type="text"
             value={tag}
             onChange={(e) => setTag(e.target.value)}
             ref={tagRef}
-            className={twMerge("w-full upPostInput")}
-            placeholder="태그를 입력후 추가버튼을 눌러주세요."
-            onKeyDown={(e) => {
+            className={twMerge(
+              "w-full upPostInput rounded-r-none border-r-0 shadow-sm "
+            )}
+            placeholder="입력후 추가버튼 또는 스페이스를 눌러주세요."
+            onKeyUp={(e) => {
               const { key } = e;
               if (key === "Enter") {
                 //React에서 setState는 비동기로 처리되기 때문에, 렌더링이 끝나기 전까지 <AlertModal /> 조건부 렌더링이 반응하지 않을 수 있음 =>setTimeout(() => ...)으로 defer 처리하면 렌더링 큐가 정리된 뒤 실행되어 modal이 보장됨
@@ -123,10 +126,10 @@ const UploadTag = ({
             type="button"
             onClick={onClickTag}
             className={twMerge(
-              "hover:shadow-md min-w-20 flex-1 rounded bg-[rgba(116,212,186)] dark:bg-[rgba(116,212,186,0.5)] dark:text-white "
+              "bg-white border border-l-0 py-2 px-2  flex justify-center items-center rounded-r-md rounded-l-none  border-gray-400   dark:text-white "
             )}
           >
-            추가
+            <IoIosAddCircleOutline className="text-2xl text-gray-500  hover:text-[rgba(116,212,186)]" />
           </button>
         </div>
       </div>
@@ -142,7 +145,7 @@ const UploadTag = ({
                     tags: prev.tags.filter((tag) => tag.id !== t.id),
                   }));
                 }}
-                className="cursor-pointer font-bold hover:text-lime-500 hover:underline"
+                className=" dark:text-gray-200 cursor-pointer font-bold hover:text-lime-500 hover:underline"
               >
                 {t.name}
               </button>

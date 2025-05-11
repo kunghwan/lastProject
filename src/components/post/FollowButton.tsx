@@ -4,9 +4,6 @@ import { AUTH } from "@/contextapi/context";
 import { dbService, FBCollection } from "@/lib";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState, useTransition } from "react";
-
-import Loaiding from "../Loading";
-
 import AlertModal from "@/components/AlertModal";
 
 interface FollowButtonProps {
@@ -29,6 +26,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
 
     startTransition(async () => {
       try {
+        //! 내 팔롣잉 목록에 추가
         await dbService
           .collection(FBCollection.USERS)
           .doc(user.uid)
@@ -37,9 +35,9 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
           .set({
             followingId,
             follwingNickname: followNickName,
-            createdAt: new Date().toLocaleString(),
+            createdAt: new Date(),
           });
-
+        //! 그 사람 팔로잉 목록에 나 추가
         await dbService
           .collection(FBCollection.USERS)
           .doc(followingId)
@@ -47,9 +45,9 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
           .doc(user.uid)
           .set({
             followerNickname: user?.nickname,
-            createdAt: new Date().toLocaleString(),
+            createdAt: new Date(),
           });
-
+        //! 팔로잉한 사람에게 알림 보내기
         await dbService
           .collection(FBCollection.USERS)
           .doc(followingId)
@@ -59,7 +57,8 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
             follwingId: followingId,
             follwerId: user.uid,
             followerNickname: user?.nickname,
-            createdAt: new Date().toLocaleString(),
+            profileImageUrl: user.profileImageUrl,
+            createdAt: new Date(),
             isRead: false,
           });
 
@@ -81,13 +80,14 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
 
     startTransition(async () => {
       try {
+        //! 내 팔로잉 목록에서 그 사람 제거
         await dbService
           .collection(FBCollection.USERS)
           .doc(user.uid)
           .collection(FBCollection.FOLLOWINGS)
           .doc(followingId)
           .delete();
-
+        //! 그 사람 팔로워목록에서 나 제거
         await dbService
           .collection(FBCollection.USERS)
           .doc(followingId)
@@ -98,7 +98,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         setIsFollowing(false);
       } catch (error: any) {
         console.error("언팔로우 오류:", error.message);
-        alert("언팔로우 중 오류가 발생했습니다.");
+        setAlertMessage("언팔로우 중 오류가 발생했습니다.");
       }
     });
   }, [user, followingId, navi]);
@@ -106,14 +106,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
   useEffect(() => {
     const checkFollowing = async () => {
       if (!user?.uid || !followingId) {
-        return;
-      }
-
-      if (!user?.uid || !followingId) return;
-
-      if (!user?.uid || !followingId) {
-        setIsFollowing(false);
-        return console.log("no");
+        return console.log("no user");
       }
 
       try {
@@ -126,8 +119,6 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         setIsFollowing(snap.exists);
       } catch (error: any) {
         console.error("팔로우 상태 확인 오류:", error.message);
-
-        console.error(error.message);
         setIsFollowing(false);
         return;
       }
@@ -147,7 +138,8 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
       {isFollowing ? (
         <button
           onClick={(e) => {
-            e.stopPropagation(); // ✅ 버블링 방지
+            e.stopPropagation(); // 버블링 방지
+            //Todo: 이벤트는 자식 요소에서 부모 요소로 순차적으로 전파됨 =>  부모로 이벤트가 전파되지 않아 부모의 이벤트 핸들러는 실행되지 않게 됨
             onUnFollow();
           }}
           className="followButton"
@@ -157,7 +149,7 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
       ) : (
         <button
           onClick={(e) => {
-            e.stopPropagation(); // ✅ 버블링 방지
+            e.stopPropagation(); //  버블링 방지
             onFollow();
           }}
           className="followButton"

@@ -2,17 +2,21 @@
 import { AUTH } from "@/contextapi/context";
 import { dbService, FBCollection } from "@/lib";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Notifications } from "@/types/notification";
 import Loaiding from "@/components/Loading";
 import TopButton from "@/components/upplace/TopButton";
 import AlertModal from "@/components/AlertModal";
+import Image from "next/image";
+import { BsExclamationCircle } from "react-icons/bs";
+
 //! limit변수처리하기
 const limit = 20;
 const NotificationListPage = () => {
   const { user } = AUTH.use();
+  const [isLoadingAllRead, setIsLoadingAllRead] = useState(false);
   //Todo: 모두읽음 알림버튼을 확인용 useState
   const [isUnRead, setIsUnRead] = useState(false);
   const navi = useRouter();
@@ -41,7 +45,7 @@ const NotificationListPage = () => {
     }: {
       pageParam?: any;
     }): Promise<{ notifications: Notifications[]; lastDoc: any }> => {
-      //Todo: 처음이면 그냥 20개 가져오고 이어지는 페이지라면 pageParam 이후부터 10개 가져옴
+      //Todo: 처음이면 그냥 20개 가져오고 이어지는 페이지라면 pageParam 이후부터 20개 가져옴
       let query = ref.limit(limit);
       if (pageParam) {
         query = ref.startAfter(pageParam).limit(limit);
@@ -53,7 +57,7 @@ const NotificationListPage = () => {
       //문서들을 하나씩 돌면서 알림(Notification) 형식으로 변환
       //id까지 합친하나의 객체로 만들어서 하나의 배열에 doc객체들을 담음
       const notifications = snap.docs.map((doc) => ({
-        ...doc.data(),
+        ...(doc.data() as Notifications),
         id: doc.id,
       })) as Notifications[];
       // console.log(notifications, "알림확인용");
@@ -137,7 +141,10 @@ const NotificationListPage = () => {
   );
   //! 현재 불러온 알림 목록을 forEach 돌면서 모두 isRead: true로 업데이트 해야됨
   const handleAllRead = useCallback(async () => {
-    if (!data || !uid) return;
+    if (!data || !uid) {
+      return;
+    }
+    setIsLoadingAllRead(true);
     const batch = dbService.batch(); //! Firestore batch 사용 (한 번에 여러 문서 처리 최대 500개까지)
     data.pages.forEach((page) => {
       page.notifications.forEach((noti) => {
@@ -159,6 +166,7 @@ const NotificationListPage = () => {
       window.checkUnreadNotifications();
     }
     await refetch(); //!  데이터 새로고침 //서버에 요청 → 최신 데이터로 갱신
+    setIsLoadingAllRead(false);
     return setAlertMessage("알림을 모두 읽었습니다.");
   }, [data, uid, refetch]);
   // const isNotifications = data?.pages.map((page) => page.notifications);
@@ -170,7 +178,7 @@ const NotificationListPage = () => {
       checkUnreadNotifications();
     };
   }, [checkUnreadNotifications]);
-  if (isPending) {
+  if (isPending || isLoadingAllRead) {
     return <Loaiding />;
   }
   if (error || !data) {
@@ -185,8 +193,13 @@ const NotificationListPage = () => {
         />
       )}
       {data?.pages.every((page) => page.notifications.length === 0) && (
-        <div className="hsecol justify-center items-center  h-100 gap-y-2.5">
-          <p className="dark:text-white font-bold text-xl">알림이 없습니다.</p>
+        <div className="hsecol justify-center items-center  h-100 gap-y-5">
+          <div>
+            <BsExclamationCircle className="text-4xl text-gray-500" />
+          </div>
+          <p className="dark:text-white font-bold text-xl text-gray-500">
+            아직 도착한 알림이 없어요.
+          </p>
           <button
             onClick={() => navi.back()}
             className="hover:scale-105 hover:animate-pulse font-bold p-2.5 rounded w-40 bg-[rgba(62,188,154)] dark:bg-[rgba(116,212,186,0.5)] text-white hover:shadow-md"
@@ -199,20 +212,19 @@ const NotificationListPage = () => {
       <div>
         {/* isUnRead는 읽지 않은 알림이 하나라도 있으면 true 없다면 false임 */}
         {/* data 안에 있는 pages 배열을 돌면서,알림(notifications)이 하나라도 있는 페이지가 있는지 확인 */}
-        {/* 읽지 않은 알림이 있고, 실제 알림 데이터도 존재할 때만 버튼을 보여줌 */}
-        {isUnRead &&
-          data?.pages.some((page) => page.notifications.length > 0) && (
-            <div className="flex justify-end">
-              {/* isRead가 다 true라면 버튼을 비활성화함 */}
-              <button
-                onClick={handleAllRead}
-                disabled={!isUnRead}
-                className="hover:scale-105 hover:shadow-md border  font-stretch-105% border-lime-800 hover:text-lime-800 cursor-pointer mr-2.5 bg-[#d7eadf] disabled:text-gray-400  disabled:bg-gray-200 dark:bg-[rgba(232,255,241,0.5)] p-2 rounded"
-              >
-                모두 읽기
-              </button>
-            </div>
-          )}
+        {data?.pages.every((page) => page.notifications.length > 0) && (
+          <div className="flex justify-end">
+            {/* isRead가 다 true라면 버튼을 비활성화함 */}
+            <button
+              onClick={handleAllRead}
+              disabled={!isUnRead}
+              className="hover:scale-105 hover:shadow-md border  font-stretch-105% border-lime-800 hover:text-lime-800 cursor-pointer mr-2.5 bg-[#d7eadf] disabled:text-gray-400  disabled:bg-gray-200 dark:bg-[rgba(232,255,241,0.5)] p-2 rounded"
+            >
+              모두 읽기
+            </button>
+          </div>
+        )}
+        <hr className="my-2.5 shadow-sm text-gray-300 px-5" />
         <ul className=" grid md:grid-cols-2 gap-5  items-center  w-full p-2.5 ">
           {data?.pages.map((page) =>
             page.notifications.map((noti) => (
@@ -229,20 +241,31 @@ const NotificationListPage = () => {
                   }
                 }}
                 className={twMerge(
-                  "hover:scale-105 hover:shadow-sm hsecol  gap-x-2.5  justify-center p-2.5 rounded-xl w-full cursor-pointer ",
+                  "hover:scale-105 hover:shadow-sm hsecol  gap-x-2.5 justify-center p-2.5 rounded-2xl w-full cursor-pointer ",
                   noti.isRead
-                    ? "text-gray-500 border dark:border-gray-700 border-gray-200 bg-gray-100 dark:bg-gray-500 dark:text-gray-300"
+                    ? "text-gray-500 border dark:border-gray-700 border-gray-200 bg-gray-100 dark:bg-gray-500 dark:text-gray-300 "
                     : "text-black font-semibold border border-gray-200 hover:text-lime-700 dark:hover:text-lime-200  bg-[rgba(232,255,241)] dark:bg-[rgba(232,255,241,0.4)] dark:text-white"
                 )}
               >
-                <p className="font-bold text-md">
-                  {noti.type === "follow" &&
-                    `${noti.followerNickname}님이 팔로우했습니다.`}
-                  {noti.type === "like" &&
-                    `${noti.likerName}님이 게시글을 좋아했습니다.`}
-                </p>
-                <p className="text-sm font-light">
-                  {noti.createdAt.toString()}
+                <div className="flex items-center gap-x-2.5">
+                  <div className="w-10 h-10  overflow-hidden rounded-full">
+                    <Image
+                      src={noti.profileImageUrl || defaultImgUrl}
+                      alt="profile"
+                      width={40}
+                      height={40}
+                      className=" object-cover"
+                    />
+                  </div>
+                  <p className="font-bold text-md">
+                    {noti.type === "follow" &&
+                      `${noti.followerNickname}님이 팔로우했습니다.`}
+                    {noti.type === "like" &&
+                      `${noti.likerName}님이 게시글을 좋아했습니다.`}
+                  </p>
+                </div>
+                <p className="text-sm font-light  flex justify-end">
+                  {noti.createdAt.toDate().toLocaleString()}
                 </p>
               </li>
             ))
@@ -265,3 +288,6 @@ const NotificationListPage = () => {
   );
 };
 export default NotificationListPage;
+
+const defaultImgUrl =
+  "https://i.pinimg.com/1200x/3e/c0/d4/3ec0d48e3332288604e8d48096296f3e.jpg";

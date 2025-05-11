@@ -52,18 +52,18 @@ const LikeButton = ({ postId, likedBy = [], postOwnerId }: LikeButtonProps) => {
 
       // 알림 전송
       if (postOwnerId !== meUser?.uid) {
-        const notifRef = collection(
-          dbService,
-          FBCollection.USERS,
-          postOwnerId,
-          FBCollection.NOTIFICATION
-        );
-        await addDoc(notifRef, {
+        const notifRef = dbService
+          .collection(FBCollection.USERS)
+          .doc(postOwnerId)
+          .collection(FBCollection.NOTIFICATION);
+
+        await notifRef.add({
           type: "like",
           postId,
           likerId: meUser?.uid,
           likerName: meUser?.nickname,
-          createdAt: new Date().toLocaleString(),
+          profileImageUrl: meUser?.profileImageUrl,
+          createdAt: new Date(),
           isRead: false,
         });
       }
