@@ -241,7 +241,7 @@ const MapPage = () => {
       )}
 
       {/* 상세 정보창 */}
-      {selectedPlace && !isSidebarOpen && (
+      {selectedPlace && (
         <PlaceDetail
           place={selectedPlace}
           onClose={handleCloseDetail}

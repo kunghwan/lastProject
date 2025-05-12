@@ -20,11 +20,11 @@ import MobileHeader from "./MobileHeader";
 
 const HEAD_BUTTON_CLASS = "grayButton text-xl sm:text-2xl";
 
-//! 초기 로딩 시 다크 모드 설정 (localStorage에서 값을 읽어와 적용)
+//! 초기 로딩 시 다크 모드 설정
 const storedDarkMode =
   typeof window !== "undefined" ? localStorage.getItem("darkMode") : null;
 if (storedDarkMode === "true") {
-  document.documentElement.classList.add("dark"); // HTML 요소에 'dark' 클래스 추가
+  document.documentElement.classList.add("dark");
 }
 
 const Header = () => {
