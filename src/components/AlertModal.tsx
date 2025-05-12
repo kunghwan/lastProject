@@ -1,4 +1,5 @@
-// components/AlertModal.tsx
+"use client";
+
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 

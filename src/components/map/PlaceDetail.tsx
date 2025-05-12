@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { IoCloseSharp, IoPhonePortraitSharp } from "react-icons/io5";
 import { TbMapPinDown } from "react-icons/tb";
 import { RefObject } from "react";
+import AlertModal from "@/components/AlertModal";
 
 interface Props {
   place: PlaceProps;
@@ -12,6 +13,9 @@ interface Props {
 }
 
 const PlaceDetail: React.FC<Props> = ({ place, onClose, detailRef }) => {
+  const [isAlertVisible, setAlertVisible] = useState(false); // 알림 모달 보이기 상태
+  const [alertMessage, setAlertMessage] = useState(""); // 알림 메시지 상태
+
   const jusoClip = useCallback(
     (selectedPlace: PlaceProps) => [
       {
@@ -27,6 +31,23 @@ const PlaceDetail: React.FC<Props> = ({ place, onClose, detailRef }) => {
     ],
     []
   );
+
+  //! 복사 시 모달 표시 함수
+  const handleCopy = (text: string, msg: string) => {
+    if (text === "전화번호 없음") {
+      alert("해당 장소의 전화번호가 등록되지 않았습니다.");
+    } else {
+      navigator.clipboard.writeText(text);
+      setAlertMessage(msg); // 알림 메시지 설정
+      setAlertVisible(true); // 알림 모달 표시
+    }
+  };
+
+  //! 알림 모달 닫기 함수
+  const handleCloseAlert = () => {
+    setAlertVisible(false);
+    setAlertMessage(""); // 메시지 초기화
+  };
 
   return (
     <div
@@ -55,19 +76,17 @@ const PlaceDetail: React.FC<Props> = ({ place, onClose, detailRef }) => {
         {jusoClip(place).map(({ icon, text, msg }, i) => (
           <button
             key={i}
-            onClick={() => {
-              if (text === "전화번호 없음") {
-                alert("해당 장소의 전화번호가 등록되지 않았습니다.");
-              } else {
-                navigator.clipboard.writeText(text);
-                alert(msg);
-              }
-            }}
+            onClick={() => handleCopy(text, msg)} // 복사 시 모달 표시
           >
             {icon}
           </button>
         ))}
       </ul>
+
+      {/* AlertModal이 표시될 때만 렌더링 */}
+      {isAlertVisible && (
+        <AlertModal message={alertMessage} onClose={handleCloseAlert} />
+      )}
     </div>
   );
 };
