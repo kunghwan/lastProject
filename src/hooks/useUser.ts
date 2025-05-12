@@ -3,7 +3,6 @@ import {
   fetchUsersByNickname,
 } from "@/lib/servies/userService";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { User } from "@/types";
 
 export const useUserByUid = (
   uid: string

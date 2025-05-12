@@ -7,6 +7,7 @@ import { dbService } from "@/lib/firebase";
 import { ImCancelCircle } from "react-icons/im";
 import { getUserPostsPaginated } from "@/lib/fbdata";
 import LikeButton from "../post/LikeButton";
+import { Timestamp } from "firebase/firestore";
 
 const ProfileFeedComponent = ({
   posts,
@@ -30,6 +31,17 @@ const ProfileFeedComponent = ({
   useEffect(() => {
     setPostList(posts);
   }, [posts]);
+
+  //! 날짜 변환 함수 (파이어베이스에 저장된객체를 우리가 볼 수 있는 문자열로 바꿈)
+  const getFormattedDate = (createdAt: Post["createdAt"]) => {
+    if (createdAt instanceof Timestamp) {
+      return createdAt.toDate().toLocaleString();
+    } else if (typeof createdAt === "string") {
+      return new Date(createdAt).toLocaleString();
+    } else {
+      return "날짜 정보 없음";
+    }
+  };
 
   const handleDelete = useCallback(async (postId: string) => {
     const ok = window.confirm("정말 이 게시물을 삭제하시겠습니까?");
@@ -116,7 +128,11 @@ const ProfileFeedComponent = ({
               {post.imageUrl ? (
                 <div className="relative">
                   <img
-                    src={(post.imageUrl, post.imgs[0])}
+
+                    
+
+                    src={post.imageUrl?.[0]}
+
                     alt="post"
                     className="w-full h-64 transition-all duration-500 ease-in-out transform hover:scale-[1.02] object-cover rounded"
                   />
@@ -191,7 +207,7 @@ const ProfileFeedComponent = ({
                 src={
                   modalImages.length > 0
                     ? modalImages[currentIndex]
-                    : selectedPost.imageUrl || "/image/logo1.png"
+                    : selectedPost.imageUrl?.[0] || "/image/logo1.png"
                 }
                 alt={`image-${currentIndex}`}
                 className="max-h-64 object-contain rounded"
@@ -218,7 +234,7 @@ const ProfileFeedComponent = ({
             <div className="p-4">
               <div className="text-xs text-gray-500 mt-2 flex justify-between mb-5">
                 <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
-                <div>{selectedPost.createdAt}</div>
+                <div>{getFormattedDate(selectedPost.createdAt)}</div>
               </div>
               <h2 className="text-lg font-bold mb-2 dark:text-gray-600 truncate">
                 {selectedPost.title}

@@ -1,12 +1,12 @@
 "use client";
 
+import { useState, useRef, useCallback, useEffect } from "react";
 import SearchForm from "@/components/map/SearchForm";
 import MobilePlaceList from "@/components/map/MobilePlaceList";
 import PlaceDetail from "@/components/map/PlaceDetail";
-import NoResultsModal from "@/components/map/NoResultsModal";
 import PlaceList from "@/components/map/PlaceList";
 import KeywordButtons from "@/components/map/KeywordButtons";
-import { useCallback, useEffect, useRef, useState } from "react";
+import AlertModal from "@/components/AlertModal"; // AlertModal import 추가
 
 const MapPage = () => {
   const [map, setMap] = useState<any>(null); // 카카오 지도 객체
@@ -15,7 +15,9 @@ const MapPage = () => {
   const [keyword, setKeyword] = useState(""); // 검색 키워드
   const [inputValue, setInputValue] = useState(""); // 입력창의 현재 값
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 모바일 사이드바 열림 상태
-  const [showNoResultsModal, setShowNoResultsModal] = useState(false); // 모달 상태
+  const [showNoResultsModal, setShowNoResultsModal] = useState(false); // 검색 결과가 없을 때 모달 상태
+  const [alertMessage, setAlertMessage] = useState(""); // 알림 메시지
+  const [isAlertVisible, setAlertVisible] = useState(false); // 알림 모달 상태
 
   const markers = useRef<any[]>([]); // 현재 지도에 그려진 마커 및 오버레이 배열
   const mapRef = useRef<HTMLDivElement>(null); // 지도 렌더링 DOM 참조
@@ -100,7 +102,7 @@ const MapPage = () => {
             const DJData = data.filter((place) =>
               place.address_name?.includes("대전")
             );
-            // 백화점 검색 결과는 최대 5개로 제한(이름에 백화점이 붙은 가게들을 제거하기 위해서)
+            // 백화점 검색 결과는 최대 5개로 제한
             const limitedData =
               keyword === "백화점" ? DJData.slice(0, 5) : DJData;
 
@@ -150,6 +152,8 @@ const MapPage = () => {
             setPlaces([]);
             markers.current.forEach((m) => m.setMap(null));
             markers.current = [];
+            setAlertMessage("검색 결과가 없습니다.");
+            setAlertVisible(true); // 알림 모달 표시
           }
         },
         { bounds }
@@ -203,11 +207,6 @@ const MapPage = () => {
     setSelectedPlace(null);
   }, []);
 
-  //! 모달 닫기 핸들러
-  const handleCloseNoResultsModal = useCallback(() => {
-    setShowNoResultsModal(false);
-  }, []);
-
   return (
     <div className="relative flex h-[76vh] dark:text-gray-600">
       <div
@@ -231,7 +230,7 @@ const MapPage = () => {
         </div>
       )}
 
-      {/*검색 장소 리스트 */}
+      {/* 검색 장소 리스트 */}
       {keyword.length > 0 && !showNoResultsModal && places.length > 0 && (
         <PlaceList
           places={places}
@@ -241,7 +240,7 @@ const MapPage = () => {
       )}
 
       {/* 상세 정보창 */}
-      {selectedPlace && !isSidebarOpen && (
+      {selectedPlace && (
         <PlaceDetail
           place={selectedPlace}
           onClose={handleCloseDetail}
@@ -249,7 +248,7 @@ const MapPage = () => {
         />
       )}
 
-      {/*모바일 장소 리스트  */}
+      {/* 모바일 장소 리스트 */}
       {keyword.length > 0 && !showNoResultsModal && places.length > 0 && (
         <MobilePlaceList
           isOpen={isSidebarOpen}
@@ -259,11 +258,13 @@ const MapPage = () => {
         />
       )}
 
-      {/* 검색 결과 없음 모달 */}
-      <NoResultsModal
-        isOpen={showNoResultsModal}
-        onClose={handleCloseNoResultsModal}
-      />
+      {/* 알림 모달 */}
+      {isAlertVisible && (
+        <AlertModal
+          message={alertMessage}
+          onClose={() => setAlertVisible(false)} // 모달 닫기
+        />
+      )}
     </div>
   );
 };

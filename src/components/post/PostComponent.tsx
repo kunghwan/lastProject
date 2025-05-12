@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { getAllPostsPaginated } from "@/lib/fbdata";
-import { Post as PostType, Tag } from "@/types/post";
+import { Post, Post as PostType, Tag } from "@/types/post";
 import LikeButton from "./LikeButton";
 import ShareButton from "./ShareButton";
 import LocationButton from "./LocationButton";
 import { useRouter } from "next/navigation";
 import { authService } from "@/lib";
+import { Timestamp } from "firebase/firestore";
 
 const PostComponent = () => {
   const router = useRouter();
@@ -24,6 +25,17 @@ const PostComponent = () => {
   useEffect(() => {
     loadMorePosts();
   }, []);
+
+  //! 날짜 변환 함수 (파이어베이스에 저장된객체를 우리가 볼 수 있는 문자열로 바꿈)
+  const getFormattedDate = (createdAt: Post["createdAt"]) => {
+    if (createdAt instanceof Timestamp) {
+      return createdAt.toDate().toLocaleString();
+    } else if (typeof createdAt === "string") {
+      return new Date(createdAt).toLocaleString();
+    } else {
+      return "날짜 정보 없음";
+    }
+  };
 
   const loadMorePosts = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -186,7 +198,7 @@ const PostComponent = () => {
               </div>
 
               <div className="items-baseline text-end text-gray500 text-sm">
-                {post.createdAt}
+                {getFormattedDate(post.createdAt)}
               </div>
             </div>
           );
@@ -216,7 +228,7 @@ const PostComponent = () => {
                 src={
                   modalImages.length > 0
                     ? modalImages[currentIndex]
-                    : selectedPost.imageUrl || defaultImgUrl
+                    : selectedPost.imageUrl?.[0] || defaultImgUrl
                 }
                 alt={`image-${currentIndex}`}
                 className="max-h-64 object-contain rounded"
@@ -243,7 +255,7 @@ const PostComponent = () => {
             <div className="p-4">
               <div className="text-xs text-gray-500 mt-2 flex justify-between mb-5">
                 <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
-                <div>{selectedPost.createdAt}</div>
+                <div>{getFormattedDate(selectedPost.createdAt)}</div>
               </div>
               <h2 className="text-lg font-bold mb-2 dark:text-gray-600 truncate">
                 {selectedPost.title}

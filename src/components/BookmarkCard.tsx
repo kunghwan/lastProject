@@ -18,7 +18,7 @@ const BookmarkCard = ({ post, editMode, selected, onSelect }: Props) => {
           className="absolute top-2 left-2"
         />
       )}
-      <img src={post.imageUrl || "/noimg.png"} alt="post" />
+      <img src={post.imageUrl?.[0] || "/noimg.png"} alt="post" />
       <p>{post.title}</p>
       <p>{post.likes.length} Likes</p>
     </div>
