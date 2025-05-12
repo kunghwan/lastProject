@@ -32,7 +32,7 @@ const MobilePlaceList = ({
       {/* 슬라이딩 패널 */}
       <div
         className={twMerge(
-          " fixed inset-x-0 bottom-0  bg-white max-h-[80vh] rounded-t-2xl z-10 transform transition-transform duration-300 ease-in-out md:hidden",
+          " fixed inset-x-0 bottom-0  bg-white max-h-[80vh] rounded-t-2xl z-[21] transform transition-transform duration-300 ease-in-out md:hidden",
           isOpen ? "translate-y-0" : "translate-y-full "
         )}
       >
@@ -45,7 +45,7 @@ const MobilePlaceList = ({
             {places.map((place) => (
               <li
                 key={place.id}
-                className="bg-white rounded-lg border border-gray-300 cursor-pointer"
+                className="bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-100"
               >
                 <button
                   className="flex flex-col items-start w-full p-3 gap-y-1"
