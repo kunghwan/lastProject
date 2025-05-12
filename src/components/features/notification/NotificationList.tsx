@@ -42,49 +42,10 @@ const NotificationListPage = () => {
   //알림 가져오기//최신순부터 가져오기
   //useInfiniteQuery에 전달할 알림을 가져오는 함수. Firestore에서 데이터를 불러옵니다.
   //pageParam은 이전 페이지의 마지막 문서를 의미, 다음 알림을 어디서부터 가져올지 알려주는 기준점
-  // const fetchNotifications = useCallback(
-  //   async ({
-  //     pageParam = 1,
-  //     uid,
-  //   }: {
-  //     pageParam?: number;
-  //     uid?: string;
-  //   }): Promise<Notifications[]> => {
-  //     const snap = await ref.get();
-  //     console.log(snap, "snap");
-  //     const totalCount = snap.docs.length;
-  //     const totalPages = Math.ceil(totalCount / 10);
-  //     setTotalPage(totalPages); // 총 페이지 수 저장
-  //     setCountPage(pageParam); // 현재 페이지 수 저장
-  //     //? const query = pageParam ? ref.startAfter(pageParam) : ref;
-
-  //     //Firestore에서 위 쿼리를 실행해서 결과(snapshot)를 받아옵니다.(snap.docs에 문서들이 들어 있음)
-  //     const snap2 = await ref.get().then((allSnap) => {
-  //       const start = (pageParam - 1) * 10;
-  //       const end = pageParam * 10;
-  //       const slicedDocs = allSnap.docs.slice(start, end);
-  //       return {
-  //         docs: slicedDocs,
-  //       };
-  //     });
-  //     console.log(snap2, "snap2");
-  //     //? pageParam이 있으면 → 해당 문서 다음부터(startAfter) 가져오기,없으면 → 처음부터 가져오기
-  //     //? 이번에 가져온 문서들 중 마지막 문서를 저장=>다음 페이지를 가져올 때 기준점으로 사용(startAfter에서 사용됨).
-  //     //이전 마지막 문서(pageParam) 이후부터 시작하여 데이터를 불러옵니다.
-  //     //파이어베이스(Firebase)의 startAfter 속성은 쿼리에서 특정 문서 이후부터 데이터를 가져올 때 사용하는 기능
-  //     //orderBy와 함께 사용되어야 함
-
-  //     //데이터를 Notification 타입으로 변환하여 리스트에 담기
-  //     //snap.docs는 Firestore에서 가져온 알림 문서들의 배열
-  //     //문서들을 하나씩 돌면서 알림(Notification) 형식으로 변환
-  //     const notifications = snap2.docs.map(
-  //       (doc) => ({ ...doc.data(), id: doc.id } as Notifications)
-  //     );
-  //     console.log(notifications, "noti");
-  //     return notifications;
-  //   },
-  //   [countPage, totalPage]
-  // );
+  //? pageParam이 있으면 → 해당 문서 다음부터(startAfter) 가져오기,없으면 → 처음부터 가져오기
+  //? 이번에 가져온 문서들 중 마지막 문서를 저장=>다음 페이지를 가져올 때 기준점으로 사용(startAfter에서 사용됨).
+  //파이어베이스(Firebase)의 startAfter 속성은 쿼리에서 특정 문서 이후부터 데이터를 가져올 때 사용하는 기능
+  //orderBy와 함께 사용되어야 함
 
   const fetchNotifications = useCallback(
     async ({
