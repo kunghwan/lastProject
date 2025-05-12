@@ -53,7 +53,7 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
   }, [router, place.contentid]);
 
   return (
-    <div className="p-1 rounded-lg shadow">
+    <div className=" rounded-lg shadow p-1 ">
       <div className="relative w-full h-[270px] cursor-pointer rounded overflow-hidden">
         <Image
           src={imageUrl}
@@ -65,8 +65,10 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
           priority={priority}
         />
       </div>
-      <h2 className="text-lg font-bold mt-2">{place.title}</h2>
-      <p className="text-sm text-gray-600 dark:text-white">{place.addr1}</p>
+      <h2 className="text-lg font-bold mt-2 line-clamp-1 ">{place.title}</h2>
+      <p className="text-sm text-gray-600 dark:text-white line-clamp-1 ">
+        {place.addr1}
+      </p>
       <div className="mt-2 flex items-center justify-between">
         <p className="text-sm text-gray-500">❤️ {likeCount}</p>
         {!hideLikeButton && (

@@ -104,7 +104,7 @@ const BookmarkPage = () => {
   if (loading) return <div>로딩 중...</div>;
 
   return (
-    <div className="flex flex-col mx-auto p-2 lg:w-3/4 w-full">
+    <div className="flex flex-col mx-auto p-2 lg:w-3/4 w-full ">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold">❤️ 내가 좋아요한 게시글</h1>
         <button
@@ -178,7 +178,7 @@ const BookmarkPage = () => {
         })}
       </div>
 
-      <div className="col-span-2 lg:col-span-3">
+      <div className="col-span-2 lg:col-span-3 pb-20">
         <UpPlaceBookMark />
       </div>
     </div>
