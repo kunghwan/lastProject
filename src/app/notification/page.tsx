@@ -213,18 +213,21 @@ const NotificationListPage = () => {
         {/* isUnRead는 읽지 않은 알림이 하나라도 있으면 true 없다면 false임 */}
         {/* data 안에 있는 pages 배열을 돌면서,알림(notifications)이 하나라도 있는 페이지가 있는지 확인 */}
         {data?.pages.every((page) => page.notifications.length > 0) && (
-          <div className="flex justify-end">
-            {/* isRead가 다 true라면 버튼을 비활성화함 */}
-            <button
-              onClick={handleAllRead}
-              disabled={!isUnRead}
-              className="hover:scale-105 hover:shadow-md border  font-stretch-105% border-lime-800 hover:text-lime-800 cursor-pointer mr-2.5 bg-[#d7eadf] disabled:text-gray-400  disabled:bg-gray-200 dark:bg-[rgba(232,255,241,0.5)] p-2 rounded"
-            >
-              모두 읽기
-            </button>
+          <div>
+            <div className="flex justify-end">
+              {/* isRead가 다 true라면 버튼을 비활성화함 */}
+              <button
+                onClick={handleAllRead}
+                disabled={!isUnRead}
+                className="hover:scale-105 hover:shadow-md border  font-stretch-105% border-lime-800 hover:text-lime-800 cursor-pointer mr-2.5 bg-[#d7eadf] disabled:text-gray-400  disabled:bg-gray-200 dark:bg-[rgba(232,255,241,0.5)] p-2 rounded"
+              >
+                모두 읽기
+              </button>
+            </div>
+            <hr className="my-2.5 shadow-sm text-gray-300 px-5" />
           </div>
         )}
-        <hr className="my-2.5 shadow-sm text-gray-300 px-5" />
+
         <ul className=" grid md:grid-cols-2 gap-5  items-center  w-full p-2.5 ">
           {data?.pages.map((page) =>
             page.notifications.map((noti) => (

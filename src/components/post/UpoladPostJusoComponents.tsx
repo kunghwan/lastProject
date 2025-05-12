@@ -57,7 +57,7 @@ const JusoComponents = ({
     refetch,
     error,
   } = useQuery({
-    queryKey: ["kakaoSearch", address],
+    queryKey: ["kakaoSearch", address], //! address를 넣는이유 => 만약 없으면 어떤 주소를 검색하든 다 같은 키로 간주하기때문(이전 검색어의 캐시가 재사용 될 위험)
     queryFn: () => searchAddress(address),
     enabled: false, // 수동으로 실행 //컴포넌트가 처음 렌더링될 때 자동으로 요청하지 않음 => refetch로 실행
     //! 자동으로 가져오면 address(사용자가 주소를 한글자씩입력시) 값이 바뀔 때마다 자동 재실행(queryFn실행)=>비효율
