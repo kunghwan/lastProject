@@ -1,5 +1,5 @@
 import { dbService } from "@/lib/firebase";
-import { User } from "@/types";
+
 import { collection, getDocs, query, where } from "firebase/firestore";
 
 export const fetchUserByUid = async (uid: string): Promise<User | null> => {
