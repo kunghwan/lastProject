@@ -95,7 +95,7 @@ const JusoComponents = ({
           }}
           onConfirm={() => {
             modal.onConfirm?.();
-            setModal(null);
+            return setModal(null);
           }}
           showCancel={modal.onConfirm && true}
         />

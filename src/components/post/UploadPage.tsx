@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import { twMerge } from "tailwind-merge";
 import FileItem from "./FileItem";
-
+import { serverTimestamp } from "firebase/firestore";
 import { v4 } from "uuid";
 import { dbService, FBCollection, storageService } from "@/lib";
 
@@ -164,7 +164,7 @@ const UploadPostPage = () => {
           //2. Firestore에 새 게시글 추가 (add 사용)
           await dbService.collection(FBCollection.POSTS).add({
             uid: user.uid,
-            imageUrl: imgUrls[0] || null,
+            imageUrl: imgUrls[0] || null, // 대표 이미지
             imgs: imgUrls,
             content: content,
             title: title,
@@ -177,14 +177,13 @@ const UploadPostPage = () => {
             shares: [],
             bookmarked: [],
             isLiked: false,
-            createdAt: serverTimestamp(), // ✅ 여기 중요!
+            createdAt: serverTimestamp(),
             tags: post.tags,
             userNickname: user.nickname,
             userProfileImage: user.profileImageUrl,
           } as UploadPostProps);
 
           alert("게시물이 성공적으로 등록되었습니다!");
-          navi.push("/feed");
           //게시된후 초기화
           setTag("");
           setPost(initialState);
