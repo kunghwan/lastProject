@@ -250,7 +250,7 @@ const BookmarkPage = () => {
                 src={
                   modalImages.length > 0
                     ? modalImages[currentIndex]
-                    : selectedPost.imageUrl || "/image/logo1.png"
+                    : selectedPost.imageUrl?.[0] || "/image/logo1.png"
                 }
                 alt={`image-${currentIndex}`}
                 className="max-h-64 object-contain rounded"

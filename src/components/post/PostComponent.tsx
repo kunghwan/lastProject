@@ -209,7 +209,7 @@ const PostComponent = () => {
                 src={
                   modalImages.length > 0
                     ? modalImages[currentIndex]
-                    : selectedPost.imageUrl || defaultImgUrl
+                    : selectedPost.imageUrl?.[0] || defaultImgUrl
                 }
                 alt={`image-${currentIndex}`}
                 className="max-h-64 object-contain rounded"
