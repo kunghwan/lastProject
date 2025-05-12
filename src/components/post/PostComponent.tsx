@@ -27,7 +27,9 @@ const PostComponent = () => {
   }, []);
 
   //! 날짜 변환 함수 (파이어베이스에 저장된객체를 우리가 볼 수 있는 문자열로 바꿈)
+  //Todo: Post["createdAt"] => 타입에 접근하려는 문법(Post에 정의된 createdAt 타입을 그대로 받아오겠다"는 뜻)
   const getFormattedDate = (createdAt: Post["createdAt"]) => {
+    //! 지금 들어온 createdAt 값이 Firebase의 Timestamp 객체인가를 검사(instanceof)
     if (createdAt instanceof Timestamp) {
       return createdAt.toDate().toLocaleString();
     } else if (typeof createdAt === "string") {
