@@ -1,5 +1,3 @@
-// mobileHeader.tsx
-
 "use client";
 
 import { useCallback } from "react";
@@ -32,20 +30,23 @@ const MobileHeader = ({
   const router = useRouter();
   const { user, signout } = AUTH.use();
 
+  //! 로그아웃 하는 기능
   const handleLogout = useCallback(() => {
     signout();
     router.push("/");
     setIsMenuOpen(false); // 로그아웃 후 메뉴 닫기
-  }, [signout, router, setIsMenuOpen]); // setIsMenuOpen을 의존성 배열에 추가
+  }, [signout, router, setIsMenuOpen]);
 
+  //! 버튼 클릭 시 해당 경로로 이동하는 기능
   const handleNavigate = useCallback(
     (path: string) => {
       router.push(path);
-      setIsMenuOpen(false);
+      setIsMenuOpen(false); // 해당 경로로 가면 메뉴가 꺼지게 하는 기능
     },
     [router, setIsMenuOpen]
   );
 
+  // 긴 tailwind css 따로 변수화
   const largeButtonClass =
     "w-full mb-2 grayButton dark:bg-[#333333] dark:text-[#F1F5F9] text-xl flex items-center justify-center";
   const smallButtonClass =
@@ -53,16 +54,14 @@ const MobileHeader = ({
   const notificationRedDot =
     "absolute top-0 right-0 h-3 w-3 rounded-full bg-red-600 border border-white";
 
+  //! map으로 뿌릴 객체
   const commonItems = [
     {
       icon: isDarkMode ? <IoMoon /> : <IoSunny />,
       onClick: toggleDarkMode,
-      className: twMerge(
-        "grayButton text-xl flex items-center justify-center",
-        isDarkMode
-          ? "text-gray-800"
-          : "text-black bg-gray-200 dark:bg-[#333333] dark:text-[#F1F5F9]"
-      ),
+      className: isDarkMode
+        ? "text-gray-800"
+        : "text-black bg-gray-200 dark:bg-[#333333] dark:text-[#F1F5F9]",
     },
   ];
 
