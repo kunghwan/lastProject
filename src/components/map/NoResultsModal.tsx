@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 interface Props {
   isOpen: boolean;
@@ -6,13 +6,29 @@ interface Props {
 }
 
 const NoResultsModal = ({ isOpen, onClose }: Props) => {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    //! 엔터키 창끄기
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) {
     return null;
   }
 
   return (
-    <div className="fixed top-0 bg-gray-400/50 left-0 w-full h-full flex justify-center items-center z-50 ">
-      <div className="bg-white p-8 rounded-2xl shadow-lg flex flex-col ">
+    <div className="fixed top-0 bg-gray-400/50 left-0 w-full h-full flex justify-center items-center z-50">
+      <div className="bg-white p-8 rounded-2xl shadow-lg flex flex-col">
         <h2 className="text-lg font-semibold mb-2 flex justify-center items-center">
           검색 결과 없습니다.
         </h2>
