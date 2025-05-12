@@ -85,6 +85,8 @@ const MapPage = () => {
     (keyword: string) => {
       if (!map || !window.kakao) return;
 
+      setShowNoResultsModal(false); //검색결과 나오기전 모달 상태 초기화
+
       const { maps } = window.kakao;
       const ps = new maps.services.Places();
 
@@ -154,6 +156,7 @@ const MapPage = () => {
             markers.current = [];
             setAlertMessage("검색 결과가 없습니다.");
             setAlertVisible(true); // 알림 모달 표시
+            setInputValue(""); // 검색 결과 없으면 검색창 비움
           }
         },
         { bounds }
