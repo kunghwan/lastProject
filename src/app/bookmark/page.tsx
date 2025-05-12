@@ -140,7 +140,7 @@ const BookmarkPage = () => {
   return (
     <div className="flex flex-col mx-auto p-2 lg:w-3/4 w-full ">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold">❤️ 내가 좋아요한 게시글</h1>
+        <h1 className="sm:text-xl font-bold">❤️ 내가 좋아요한 게시글</h1>
         <button
           onClick={handleBack}
           className="text-sm text-indigo-600 dark:text-indigo-200 hover:underline hover:scale-105 transition-transform duration-200"
@@ -169,7 +169,7 @@ const BookmarkPage = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-x-2 mb-20 lg:grid-cols-3 p-1.5 m-1 transition-all">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-2 gap-y-4 mb-20 p-1.5 m-1 w-full max-w-screen-lg mx-auto transition-all">
         {sortedPosts.map((post) => {
           const image =
             typeof post.imageUrl === "string"
@@ -197,7 +197,7 @@ const BookmarkPage = () => {
                 <img
                   src={image}
                   alt="Post image"
-                  className="w-full h-100 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01]"
+                  className="w-full h-64 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01] rounded-xl"
                 />
                 {Array.isArray(post.imgs) && post.imgs.length > 1 && (
                   <div className="absolute top-2 right-2 bg-gray-800 opacity-80 text-white text-xs p-1.5 rounded-full">
