@@ -44,6 +44,9 @@ const ProfileLayout = ({
     message: string;
     onConfirm?: () => void;
   } | null>(null);
+  const [editPreviewImage, setEditPreviewImage] = useState(
+    userData.profileImageUrl ?? ""
+  ); // ✅ 모달용
 
   const handleResize = useCallback(() => {
     setIsSmallScreen(window.innerWidth < 1024);
@@ -64,7 +67,7 @@ const ProfileLayout = ({
       const file = e.target.files?.[0];
       if (file) {
         setImageFile(file);
-        setPreviewImage(URL.createObjectURL(file));
+        setEditPreviewImage(URL.createObjectURL(file)); // ✅ 바깥은 그대로, 미리보기만 갱신
       }
     },
     []
@@ -89,31 +92,23 @@ const ProfileLayout = ({
       await uploadBytes(storageRef, imageFile);
       const newUrl = await getDownloadURL(storageRef);
       imageUrl = newUrl;
-      setPreviewImage(newUrl);
+      setPreviewImage(newUrl); // ✅ 수정 완료 후에만 바깥에 반영
+      setEditPreviewImage(newUrl); // ✅ 모달 미리보기도 동기화
     }
 
-    const handleUpdate = async () => {
-      try {
-        await updateDoc(doc(dbService, "users", userData.uid), {
-          nickname: editNickname,
-          bio: editBio,
-          profileImageUrl: imageUrl,
-        });
-
-        setModal({
-          message: "프로필이 수정되었습니다.",
-          onConfirm: () => {
-            setEditOpen(false);
-            location.reload();
-          },
-        });
-      } catch (err) {
-        setModal({
-          message: "수정에 실패했습니다.",
-        });
-        console.error(err);
-      }
-    };
+    try {
+      await updateDoc(doc(dbService, "users", userData.uid), {
+        nickname: editNickname,
+        bio: editBio,
+        profileImageUrl: imageUrl,
+      });
+      alert("프로필이 수정되었습니다.");
+      setEditOpen(false);
+      location.reload();
+    } catch (err) {
+      alert("수정에 실패했습니다.");
+      console.error(err);
+    }
   }, [editNickname, editBio, imageFile, previewImage, userData.uid]);
 
   const actualPostCount = useMemo(
@@ -159,7 +154,7 @@ const ProfileLayout = ({
           <div className="flex m-5 mb-0 pr-20 pl-20 gap-2.5 justify-center ">
             <div className="relative w-40 h-40">
               <img
-                src={firstPost?.userProfileImage || defaultImgUrl}
+                src={previewImage || defaultImgUrl} // ✅ 수정
                 alt={`${userData.nickname}'s profile`}
                 className="w-full h-full rounded-full  sm:x-auto  transition-all duration-500 ease-in-out transform hover:scale-[1.02] cursor-pointer"
               />
@@ -226,7 +221,7 @@ const ProfileLayout = ({
               <img
                 src={firstPost?.userProfileImage || defaultImgUrl}
                 alt={`${userData.nickname || "유저"}'s profile`}
-                className=" transition-all duration-500 ease-in-out transform hover:scale-[1.02] w-full h-full rounded-full sm:x-auto cursor-pointer"
+                className=" transition-all duration-500 ease-in-out transform hover:scale-[1.02] w-full h-full rounded-full sm:x-auto cursor-pointer "
               />
               {isMyPage && (
                 <button
@@ -346,9 +341,10 @@ const ProfileLayout = ({
                 onChange={handleImageSelect}
                 className="hidden"
               />
-              {previewImage && (
+
+              {editPreviewImage && (
                 <img
-                  src={previewImage}
+                  src={editPreviewImage}
                   alt="preview"
                   className="mt-2 w-32 h-32 object-cover border rounded"
                 />
