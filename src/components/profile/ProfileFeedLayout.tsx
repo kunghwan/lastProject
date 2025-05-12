@@ -121,18 +121,11 @@ const ProfileFeedComponent = ({
       <ul className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
         {postList.map((post) => (
           <li key={post.id} className="p-1">
-            <div
-              className="flex flex-col gap-2 relative hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1.5 transition-all duration-200 cursor-pointer"
-              onClick={() => handleOpenPost(post)}
-            >
+            <div className="flex flex-col gap-2 relative hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1.5 transition-all duration-200 cursor-pointer">
               {post.imageUrl ? (
-                <div className="relative">
+                <div onClick={() => handleOpenPost(post)} className="relative">
                   <img
-
-                    
-
                     src={post.imageUrl?.[0]}
-
                     alt="post"
                     className="w-full h-64 transition-all duration-500 ease-in-out transform hover:scale-[1.02] object-cover rounded"
                   />

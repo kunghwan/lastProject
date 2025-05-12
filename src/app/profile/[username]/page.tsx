@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import ProfileLayout from "@/components/ProfileUI/ProfileLayout";
+import ProfileLayout from "@/components/profile/ProfileLayout";
 import { useUsersByNickname } from "@/hooks/useUser";
 import { usePostsByNickname } from "@/hooks/useAuth";
 

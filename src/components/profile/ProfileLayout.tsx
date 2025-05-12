@@ -114,8 +114,6 @@ const ProfileLayout = ({
         console.error(err);
       }
     };
-
-    await handleUpdate();
   }, [editNickname, editBio, imageFile, previewImage, userData.uid]);
 
   const actualPostCount = useMemo(
@@ -124,12 +122,15 @@ const ProfileLayout = ({
   );
 
   const tagColors = useMemo(() => {
-    return tags.reduce((acc, tag) => {
-      acc[tag.id] = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
-        Math.random() * 256
-      )}, ${Math.floor(Math.random() * 256)})`;
-      return acc;
-    }, {} as Record<string, string>);
+    return tags.reduce(
+      (acc, tag) => {
+        acc[tag.id] = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
+          Math.random() * 256
+        )}, ${Math.floor(Math.random() * 256)})`;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
   }, [tags]);
 
   const firstPost = useMemo(() => posts[0] ?? null, [posts]);

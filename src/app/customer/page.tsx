@@ -56,9 +56,9 @@ const QnaPage = () => {
           ref={qnaRef}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className=" outline-none min-w-96  p-2.5 sm:w-4/5  rounded-full border bg-white border-gray-500 dark:border-white dark:text-black placeholder-gray-400"
+          className=" outline-none min-w-80   sm:min-w-96  p-2.5 sm:w-4/5  rounded-full border bg-white border-gray-500 dark:border-white dark:text-black placeholder-gray-400"
         />
-        <IoSearchOutline className=" absolute right-3 top-1/2 -translate-y-1/2 text-green-950 text-3xl" />
+        <IoSearchOutline className=" absolute right-5  top-1/2 -translate-y-1/2 text-green-950 text-3xl" />
       </div>
 
       <hr className="mb-2 text-gray-300" />
@@ -76,7 +76,7 @@ const QnaPage = () => {
               <button
                 onClick={() => toggleQuestion(item.question)}
                 className={twMerge(
-                  "hover:underline text-sm text-left font-bold  flex justify-between items-center p-2.5 rounded  bg-[rgba(151,218,200)] dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer",
+                  "hover:underline text-xs sm:text-sm text-left font-bold  flex justify-between items-center p-2.5 rounded  bg-[rgba(151,218,200)] dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer",
                   isanswerShowing === item.question && "rounded-b-none"
                 )}
               >
@@ -93,7 +93,11 @@ const QnaPage = () => {
                */}
               {/* isanswerShowing에 저장된 질문이랑 아이템의 질문이랑 같으면 true */}
               {isanswerShowing === item.question && (
-                <div className="hsecol gap-y-1.5 text-sm text-gray-700 rounded rounded-t-none p-2.5 bg-[#def5ef] dark:bg-[rgba(240,255,251,0.5)] md:text-xl dark:text-white">
+                <div
+                  className={twMerge(
+                    "hsecol border-t-2 border-gray-100 gap-y-1.5 text-xs sm:text-sm text-gray-700 rounded rounded-t-none p-2.5 bg-[#def5ef] dark:bg-[rgba(240,255,251,0.5)] md:text-xl dark:text-white"
+                  )}
+                >
                   {item.answer.map((text, index) => (
                     <div key={index}>{text}</div>
                   ))}
@@ -104,11 +108,11 @@ const QnaPage = () => {
         </ul>
       </div>
 
-      <div className="mt-5 font-bold hsecol items-center pb-10  max-[700px]:text-sm md:text-xl w-full xl:pb-0">
-        <p className="text-gray-500 dark:text-white">
+      <div className="mt-5 font-bold hsecol items-center pb-10     w-full xl:mb-16">
+        <p className="text-gray-500 dark:text-white text-[13px] md:text-xl">
           추가로 질문사항이 있으시면
         </p>
-        <p className="z-[4] flex text-gray-500 dark:text-white">
+        <div className="z-[4] flex  text-[13px] text-gray-500 dark:text-white  md:text-xl">
           <a
             href="https://mail.naver.com/write?to=test@test.com"
             target="_blank"
@@ -118,8 +122,8 @@ const QnaPage = () => {
             <LuMailPlus className=" opacity-0 group-hover:opacity-100 transition-opacity " />
             test@test.com
           </a>
-          으로 메일을 보내주시면 감사하겠습니다.
-        </p>
+          <p>으로 메일을 보내주시면 감사하겠습니다.</p>
+        </div>
       </div>
       {/* 빈화면을 눌러도 닫히게 코드 추가 z를 0주고 나머지 요소들은 위로 보이게 z를 3을 줌 */}
       <span
