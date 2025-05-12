@@ -324,7 +324,10 @@ const IdFind = () => {
   );
 
   return (
-    <form onSubmit={(e: FormEvent) => e.preventDefault()}>
+    <form
+      onSubmit={(e: FormEvent) => e.preventDefault()}
+      className="overflow-y-auto min-h-screen "
+    >
       {/* 알림창 */}
       {alertMessage && (
         <AlertModal
@@ -334,7 +337,7 @@ const IdFind = () => {
       )}
 
       {/* 상단 아이디/비밀번호 찾기 헤더 */}
-      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap rounded">
+      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap  ">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
             <FaIdCard className="text-amber-500 text-4xl" />
@@ -413,12 +416,12 @@ const IdFind = () => {
       ))}
 
       {/* 확인 버튼 */}
-      <div className=" px-5 flex">
+      <div className=" px-5 flex ">
         <div className="flex flex-col lg:flex-row lg:justify-center ">
           <div className="flex justify-center w-full mt-5">
             <button
               type="button"
-              className="w-[150px] h-[80px] bg-emerald-300 rounded font-bold text-base lg:text-lg hover:bg-emerald-400 lg:w-[200px] "
+              className="w-[150px] h-[60px] bg-emerald-300 rounded font-bold text-base lg:text-lg hover:bg-emerald-400 lg:w-[200px] "
               onClick={handleSubmit}
             >
               확인
@@ -444,10 +447,7 @@ const IdFind = () => {
                   checked={selectedEmail === email}
                   onChange={() => setSelectedEmail(email)}
                 />
-                <label
-                  htmlFor={`email-${idx}`}
-                  className="whitespace-nowrap z-50"
-                >
+                <label htmlFor={`email-${idx}`} className="whitespace-nowrap ">
                   {email}
                 </label>
               </div>

@@ -266,7 +266,7 @@ const PwFindResult = () => {
   }, [inputName, inputPhone, inputEmail, inputErrors]);
 
   return (
-    <div className="p-2 ">
+    <div className="p-2 overflow-auto min-h-screen sm:overflow-visible lg:overflow-visible md:overflow-visible lg: ">
       <div className="w-full bg-emerald-100 p-4 whitespace-nowrap rounded">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
