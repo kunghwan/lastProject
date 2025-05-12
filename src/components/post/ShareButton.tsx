@@ -1,17 +1,27 @@
 "use client";
 import { GoShareAndroid } from "react-icons/go";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 const ShareButton = () => {
+  const [modal, setModal] = useState<{
+    message: string;
+    onConfirm?: () => void;
+  } | null>(null);
   const pathname = usePathname(); // 현재 경로 가져오기
 
   const handleShare = async () => {
     try {
       const url = `${window.location.origin}${pathname}`;
       await navigator.clipboard.writeText(url);
-      alert("📋 게시물 링크가 복사되었습니다!");
+
+      setModal({
+        message: "📋 게시물 링크가 복사되었습니다!",
+      });
     } catch (err) {
-      alert("❌ 복사 실패. 브라우저가 클립보드를 지원하지 않습니다.");
+      setModal({
+        message: "❌ 복사 실패. 브라우저가 클립보드를 지원하지 않습니다.",
+      });
     }
   };
 

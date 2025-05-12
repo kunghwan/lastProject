@@ -128,7 +128,11 @@ const ProfileFeedComponent = ({
               {post.imageUrl ? (
                 <div className="relative">
                   <img
+
+                    
+
                     src={post.imageUrl?.[0]}
+
                     alt="post"
                     className="w-full h-64 transition-all duration-500 ease-in-out transform hover:scale-[1.02] object-cover rounded"
                   />
@@ -166,6 +170,7 @@ const ProfileFeedComponent = ({
                   </button>
                 )}
               </div>
+
               <div className="text-sm">
                 <p className="font-semibold truncate">
                   {post.title || "제목 없음"}
