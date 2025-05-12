@@ -326,7 +326,7 @@ const IdFind = () => {
   return (
     <form
       onSubmit={(e: FormEvent) => e.preventDefault()}
-      className="overflow-y-auto min-h-screen "
+      className="overflow-y-auto overflow-visible min-h-screen hide-scrollbar "
     >
       {/* 알림창 */}
       {alertMessage && (

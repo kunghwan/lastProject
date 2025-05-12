@@ -19,3 +19,7 @@
 }
 
 @import "../components/post/hseUpPost_FollowBtn.css";
+
+::-webkit-scrollbar {
+  display: none;
+}
