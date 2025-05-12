@@ -10,6 +10,7 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
+import { Timestamp, FieldValue } from "firebase/firestore";
 import { authService, dbService } from "@/lib/firebase";
 import { Post } from "@/types/post";
 import { useRouter } from "next/navigation";
@@ -29,6 +30,29 @@ const BookmarkPage = () => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [modalImages, setModalImages] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // 안전하게 시간값 추출하는 함수
+  const getTimeValue = (value: string | Timestamp | FieldValue): number => {
+    if (value instanceof Timestamp) {
+      return value.toDate().getTime();
+    } else if (typeof value === "string") {
+      return new Date(value).getTime();
+    } else {
+      return 0; // FieldValue 등 아직 날짜로 변환 불가한 경우
+    }
+  };
+  //사람이 읽기 좋은 날짜 문자열로 바꾸는 함수
+  const formatCreatedAt = (
+    createdAt: string | Timestamp | FieldValue
+  ): string => {
+    if (createdAt instanceof Timestamp) {
+      return createdAt.toDate().toLocaleString();
+    } else if (typeof createdAt === "string") {
+      return new Date(createdAt).toLocaleString();
+    } else {
+      return "날짜 정보 없음";
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(authService, async (user) => {
@@ -68,13 +92,11 @@ const BookmarkPage = () => {
     switch (sort) {
       case "recent":
         return [...posts].sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          (a, b) => getTimeValue(b.createdAt) - getTimeValue(a.createdAt)
         );
       case "oldest":
         return [...posts].sort(
-          (a, b) =>
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          (a, b) => getTimeValue(a.createdAt) - getTimeValue(b.createdAt)
         );
       case "likes":
         return [...posts].sort((a, b) => b.likes.length - a.likes.length);
@@ -277,7 +299,7 @@ const BookmarkPage = () => {
             <div className="p-4">
               <div className="text-xs text-gray-500 mt-2 flex justify-between mb-5">
                 <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
-                <div>{selectedPost.createdAt}</div>
+                <div>{formatCreatedAt(selectedPost.createdAt)}</div>
               </div>
               <h2 className="text-lg font-bold mb-2 dark:text-gray-600 truncate">
                 {selectedPost.title}
