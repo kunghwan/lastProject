@@ -6,7 +6,7 @@ import { authService } from "@/lib/firebase";
 import { useUserByUid } from "@/hooks/useUser";
 // import ProfileLayout from "@/components/profileUI/ProfileLayout";
 import { usePostsByUid } from "@/hooks/useAuth";
-import ProfileLayout from "@/components/profileUI/ProfileLayout";
+import ProfileLayout from "@/components/ProfileUI/ProfileLayout";
 
 const MePage = () => {
   const [uid, setUid] = useState<string | null>(null);
