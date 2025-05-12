@@ -16,6 +16,7 @@
   .ykhInputButton {
     @apply rounded p-4 bg-pink-50 w-90 placeholder:text-black outline-none lg:w-120  dark:placeholder:text-gray-900 dark:text-lime-300;
   }
+  /* global.css 또는 globals.css */
 }
 
 @import "../components/post/hseUpPost_FollowBtn.css";
