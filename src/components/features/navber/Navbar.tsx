@@ -30,7 +30,7 @@ const Navbar = () => {
       }
       if (btn.path) {
         router.push(btn.path);
-        setIsNavMenuOpen(false); // 이동 시 메뉴 닫기
+        // setIsNavMenuOpen(false); // 이 줄을 완전히 제거합니다.
       }
     },
     [user, router]
@@ -45,7 +45,9 @@ const Navbar = () => {
   //! nav메뉴 닫기 기능
   const closeNavMenu = useCallback(() => {
     setIsNavMenuOpen(false);
-    setIsGridMenuVisible(true); // 메뉴가 닫히면 그리드 버튼 다시 보이도록
+    setTimeout(() => {
+      setIsGridMenuVisible(true); // 메뉴가 닫히면 그리드 버튼 다시 보이도록
+    }, 300);
   }, []);
 
   const baseNavStyle =
