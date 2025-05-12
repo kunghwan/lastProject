@@ -116,7 +116,7 @@ const ProfileFeedComponent = ({
               {post.imageUrl ? (
                 <div className="relative">
                   <img
-                    src={post.imageUrl}
+                    src={post.imageUrl?.[0]}
                     alt="post"
                     className="w-full h-64 transition-all duration-500 ease-in-out transform hover:scale-[1.02] object-cover rounded"
                   />
@@ -190,7 +190,7 @@ const ProfileFeedComponent = ({
                 src={
                   modalImages.length > 0
                     ? modalImages[currentIndex]
-                    : selectedPost.imageUrl || "/image/logo1.png"
+                    : selectedPost.imageUrl?.[0] || "/image/logo1.png"
                 }
                 alt={`image-${currentIndex}`}
                 className="max-h-64 object-contain rounded"
