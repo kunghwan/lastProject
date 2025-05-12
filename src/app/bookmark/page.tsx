@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import {
   collection,
@@ -25,6 +25,10 @@ const BookmarkPage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<SortOption>("recent");
+
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [modalImages, setModalImages] = useState<string[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(authService, async (user) => {
@@ -94,13 +98,43 @@ const BookmarkPage = () => {
           ? currentLikes.filter((uid) => uid !== user.uid)
           : [...currentLikes, user.uid];
 
-        // Firestore 업데이트
         updateDoc(doc(dbService, "posts", postId), { likes: updatedLikes });
 
         return { ...post, likes: updatedLikes };
       })
     );
   };
+
+  const handleOpenPost = useCallback((post: Post) => {
+    const images = Array.isArray(post.imgs)
+      ? post.imgs.filter((img): img is string => typeof img === "string")
+      : [];
+
+    setSelectedPost(post);
+    setModalImages(images);
+    setCurrentIndex(0);
+  }, []);
+
+  const handlePrev = () => {
+    if (modalImages.length === 0) return;
+    setCurrentIndex((prev) => (prev === 0 ? modalImages.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    if (modalImages.length === 0) return;
+    setCurrentIndex((prev) => (prev === modalImages.length - 1 ? 0 : prev + 1));
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelectedPost(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   if (loading) return <div>로딩 중...</div>;
 
   return (
@@ -147,7 +181,8 @@ const BookmarkPage = () => {
           return (
             <div
               key={post.id}
-              className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1.5"
+              onClick={() => handleOpenPost(post)}
+              className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1.5 cursor-pointer relative"
             >
               <div className="m-1.5 flex items-center gap-1.5">
                 <img
@@ -157,14 +192,26 @@ const BookmarkPage = () => {
                 />
                 <div className="font-bold">{post.userNickname}</div>
               </div>
-              <img
-                src={image}
-                alt="Post image"
-                className="w-full h-100 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01]"
-              />
+
+              <div className="relative">
+                <img
+                  src={image}
+                  alt="Post image"
+                  className="w-full h-100 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01]"
+                />
+                {Array.isArray(post.imgs) && post.imgs.length > 1 && (
+                  <div className="absolute top-2 right-2 bg-gray-800 opacity-80 text-white text-xs p-1.5 rounded-full">
+                    +{post.imgs.length}
+                  </div>
+                )}
+              </div>
+
               <p className="truncate">{post.content}</p>
               <div
-                onClick={() => toggleLike(post.id!)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleLike(post.id!);
+                }}
                 className="flex items-center mb-2.5"
               >
                 <LikeButton
@@ -181,6 +228,67 @@ const BookmarkPage = () => {
       <div className="col-span-2 lg:col-span-3 pb-20">
         <UpPlaceBookMark />
       </div>
+
+      {selectedPost && (
+        <div
+          className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex justify-center items-center"
+          onClick={() => setSelectedPost(null)}
+        >
+          <div
+            className="bg-white rounded-lg w-11/12 md:w-3/5 lg:w-1/2 max-h-[90vh] overflow-y-auto relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setSelectedPost(null)}
+              className="absolute top-2 right-4 text-xl font-bold text-gray-700"
+            >
+              ✕
+            </button>
+
+            <div className="relative w-full h-64 mt-10 flex items-center justify-center">
+              <img
+                src={
+                  modalImages.length > 0
+                    ? modalImages[currentIndex]
+                    : selectedPost.imageUrl || "/image/logo1.png"
+                }
+                alt={`image-${currentIndex}`}
+                className="max-h-64 object-contain rounded"
+                loading="lazy"
+              />
+              {modalImages.length > 1 && (
+                <>
+                  <button
+                    onClick={handlePrev}
+                    className="absolute left-3 text-2xl text-white bg-black/40 rounded-full p-2 hover:bg-black/70"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    onClick={handleNext}
+                    className="absolute right-3 text-2xl text-white bg-black/40 rounded-full p-2 hover:bg-black/70"
+                  >
+                    ›
+                  </button>
+                </>
+              )}
+            </div>
+
+            <div className="p-4">
+              <div className="text-xs text-gray-500 mt-2 flex justify-between mb-5">
+                <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
+                <div>{selectedPost.createdAt}</div>
+              </div>
+              <h2 className="text-lg font-bold mb-2 dark:text-gray-600 truncate">
+                {selectedPost.title}
+              </h2>
+              <p className="text-sm text-gray-700 break-words">
+                {selectedPost.content}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
