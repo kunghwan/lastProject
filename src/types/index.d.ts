@@ -162,15 +162,20 @@ interface HomeMenu {
   Icon: IconType;
 }
 
-type PlaceProps = {
-  id: string; // 장소 id
-  place_name: string; // 장소 이름
-  address_name: string; // 주소
-  road_address_name: string; // 도로명 주소
-  phone: string; // 전화번호
-  x: string; //x좌표
-  y: string; //y좌표
-};
+interface PlaceProps {
+  address_name: string;
+  category_group_code: string;
+  category_group_name: string;
+  category_name: string;
+  distance: string;
+  id: string;
+  phone: string;
+  place_name: string;
+  place_url: string;
+  road_address_name: string;
+  x: string;
+  y: string;
+}
 
 // 전역적으로 상태관리
 interface Window {

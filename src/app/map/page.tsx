@@ -8,6 +8,21 @@ import PlaceList from "@/components/map/PlaceList";
 import KeywordButtons from "@/components/map/KeywordButtons";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+interface PlaceProps {
+  address_name: string;
+  category_group_code: string;
+  category_group_name: string;
+  category_name: string;
+  distance: string;
+  id: string;
+  phone: string;
+  place_name: string;
+  place_url: string;
+  road_address_name: string;
+  x: string;
+  y: string;
+}
+
 const MapPage = () => {
   const [map, setMap] = useState<any>(null); // 카카오 지도 객체
   const [places, setPlaces] = useState<PlaceProps[]>([]); // 검색된 장소 목록
