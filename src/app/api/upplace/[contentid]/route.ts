@@ -1,15 +1,9 @@
 import { NextRequest } from "next/server";
 import axios from "axios";
 
-interface Params {
-  params: {
-    contentid: string;
-  };
-}
-
 export async function GET(
   req: NextRequest,
-  { params }: Params
+  { params }: { params: { contentid: string } }
 ): Promise<Response> {
   const contentid = params.contentid;
 
@@ -37,9 +31,8 @@ export async function GET(
       }
     );
 
-    const item = Array.isArray(response.data.response.body.items.item)
-      ? response.data.response.body.items.item[0]
-      : response.data.response.body.items.item;
+    const items = response.data.response.body.items.item;
+    const item = Array.isArray(items) ? items[0] : items;
 
     return new Response(JSON.stringify(item), {
       status: 200,
@@ -48,6 +41,7 @@ export async function GET(
       },
     });
   } catch (error) {
+    console.error("상세 조회 실패", error);
     return new Response(JSON.stringify({ message: "상세 조회 실패" }), {
       status: 500,
     });
