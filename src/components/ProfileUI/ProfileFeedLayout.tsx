@@ -105,7 +105,7 @@ const ProfileFeedComponent = ({
   }, []);
 
   return (
-    <div className="flex flex-col border-t p-5 border-blue-200 lg:w-[1024px] mx-auto">
+    <div className="flex flex-col border-t p-5 border-blue-200 w-full lg:w-[1024px] mx-auto">
       <ul className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
         {postList.map((post) => (
           <li key={post.id} className="p-1">
