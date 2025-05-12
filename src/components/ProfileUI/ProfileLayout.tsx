@@ -224,12 +224,12 @@ const ProfileLayout = ({
             {isMyPage ? (
               <button
                 onClick={() => setEditOpen(true)}
-                className="text-2xl absolute right-30 sm:right-50 hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400  dark:active:text-gray-100"
+                className="text-2xl absolute right-20 sm:right-50 hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400  dark:active:text-gray-100"
               >
                 <IoSettingsOutline />
               </button>
             ) : (
-              <div className="absolute right-15 sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
+              <div className="absolute right-10  sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
                 <FollowButton
                   followNickName={userData.nickname ?? "unknown"}
                   followingId={userData.uid}
