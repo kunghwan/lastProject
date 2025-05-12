@@ -14,6 +14,7 @@ import AlertModal from "@/components/AlertModal";
 
 const Navbar = () => {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+  const [isGridMenuVisible, setIsGridMenuVisible] = useState(true); // Grid 메뉴 버튼 표시 여부 상태
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const router = useRouter();
@@ -35,26 +36,30 @@ const Navbar = () => {
     [user, router]
   );
 
+  //! 메뉴열고 닫는 기능
   const handleToggleNavMenu = useCallback(() => {
     setIsNavMenuOpen((prev) => !prev);
-  }, []);
+    setIsGridMenuVisible(!isNavMenuOpen); // 메뉴 열리고 닫히면 그리드 버튼 상태 변경
+  }, [isNavMenuOpen]);
 
+  //! nav메뉴 닫기 기능
   const closeNavMenu = useCallback(() => {
     setIsNavMenuOpen(false);
+    setIsGridMenuVisible(true); // 메뉴가 닫히면 그리드 버튼 다시 보이도록
   }, []);
 
   const baseNavStyle =
-    "[@media(min-width:1425px)]:flex absolute w-17 top-40 -left-[125%] bg-gray-200 z-30 rounded-full transition-all duration-300 ease-in-out transform";
+    "[@media(min-width:1425px)]:flex absolute w-17 top-40 -left-[125%] bg-gray-200 z-30 rounded-full transition-all duration-400 ease-in-out transform";
 
   return (
     <>
       <div className="flex relative">
-        {!["/signin", "/signup"].includes(pathname!) && (
+        {/* 로그인 및 회원가입 페이지가 아니면 네비게이션 표시 */}
+        {pathname !== "/signin" && pathname !== "/signup" && (
           <div className="mx-auto max-w-100">
             <div className="fixed w-full max-w-100 left-1/2 transform -translate-x-1/2">
-              {/* 메뉴 열기 버튼 */}
-              <div className="hidden [@media(min-width:1425px)]:block ">
-                {!isNavMenuOpen && (
+              <div className="hidden [@media(min-width:1425px)]:block">
+                {!isNavMenuOpen && isGridMenuVisible && (
                   <button
                     className={twMerge(
                       baseNavStyle,
@@ -74,7 +79,7 @@ const Navbar = () => {
                   "flex flex-col justify-between items-center py-5 h-140 overflow-hidden origin-top",
                   isNavMenuOpen
                     ? "scale-100 opacity-100 translate-y-0"
-                    : "scale-0 opacity-0 -translate-y-5 pointer-events-none"
+                    : "scale-0 opacity-0 -translate-y-0 pointer-events-none"
                 )}
               >
                 <ul className="flex flex-col justify-between items-center w-full h-full transition-opacity duration-300">
@@ -104,7 +109,7 @@ const Navbar = () => {
         )}
 
         {/* 모바일 하단 네비게이션 */}
-        {!["/signin", "/signup"].includes(pathname!) && (
+        {pathname !== "/signin" && pathname !== "/signup" && (
           <nav className="fixed bottom-0 left-0 h-auto right-0 bg-gray-200 z-20 flex justify-around items-center [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto">
             <ul className="flex justify-around w-full">
               {NavBtns.map((btn, index) => (
