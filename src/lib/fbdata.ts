@@ -75,51 +75,33 @@ export const getAllPosts = async (): Promise<Post[]> => {
  * @param count 한 번에 가져올 문서 수 (기본값: 6)
  * @returns { posts, lastDoc } - 게시물 배열과 다음 페이지를 위한 마지막 문서
  */
+
+// lastDoc을 명확하게 타입 지정
 export const getAllPostsPaginated = async (
-  lastDoc: QueryDocumentSnapshot<DocumentData> | null,
-  count: number = 6
-): Promise<{
-  posts: Post[];
-  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
-}> => {
-  try {
-    const postsRef = collection(dbService, "posts");
+  lastDoc: QueryDocumentSnapshot<DocumentData> | null = null
+) => {
+  const postRef = collection(dbService, "posts");
 
-    let q = query(postsRef, orderBy("createdAt", "desc"), limitFn(count));
-
-    if (lastDoc) {
-      q = query(
-        postsRef,
+  const postQuery = lastDoc
+    ? query(
+        postRef,
         orderBy("createdAt", "desc"),
         startAfter(lastDoc),
-        limitFn(count)
-      );
-    }
+        limit(9)
+      )
+    : query(postRef, orderBy("createdAt", "desc"), limit(9));
 
-    const snapshot = await getDocs(q);
+  const snapshot = await getDocs(postQuery);
 
-    const posts: Post[] = snapshot.docs.map((doc) => {
-      const data = doc.data();
-      console.log("📦 게시물 데이터:", {
-        id: doc.id,
-        imageUrl: data.imageUrl,
-        imgs: data.imgs,
-        title: data.title,
-      }); // ✅ 여기서 imgs가 undefined인지 배열인지 확인할 수 있음
+  const posts: Post[] = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...(doc.data() as Post),
+  }));
 
-      return {
-        id: doc.id,
-        ...data,
-      } as Post;
-    });
-
-    const newLastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
-
-    return { posts, lastDoc: newLastDoc };
-  } catch (error) {
-    console.error("🔥 게시물 페이지네이션 실패:", error);
-    return { posts: [], lastDoc: null };
-  }
+  return {
+    posts,
+    lastDoc: snapshot.docs[snapshot.docs.length - 1] ?? null,
+  };
 };
 
 export const getUserPostsPaginated = async (

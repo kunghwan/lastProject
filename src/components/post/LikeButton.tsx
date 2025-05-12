@@ -2,14 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { GoHeart, GoHeartFill } from "react-icons/go";
-import {
-  doc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-  collection,
-  addDoc,
-} from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { dbService, FBCollection } from "@/lib/firebase";
 import { AUTH } from "@/contextapi/context";
