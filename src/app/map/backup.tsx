@@ -1,12 +1,12 @@
-// "use client";
+"use client";
 
 // import SearchForm from "@/components/map/SearchForm";
 // import MobilePlaceList from "@/components/map/MobilePlaceList";
 // import PlaceDetail from "@/components/map/PlaceDetail";
 // import NoResultsModal from "@/components/map/NoResultsModal";
+// import PlaceList from "@/components/map/PlaceList";
+// import KeywordButtons from "@/components/map/KeywordButtons";
 // import { useCallback, useEffect, useRef, useState } from "react";
-// import { IoRestaurantOutline, IoSubway } from "react-icons/io5";
-// import { FaLandmark, FaRegBuilding } from "react-icons/fa6";
 
 // const MapPage = () => {
 //   const [map, setMap] = useState<any>(null); // 카카오 지도 객체
@@ -158,6 +158,13 @@
 //     [map, handlePlaceClick]
 //   );
 
+//   //! 키워드 버튼 클릭 핸들러
+//   const handleKeywordClick = useCallback((keyword: string) => {
+//     setInputValue(keyword);
+//     setKeyword(keyword);
+//     setIsSidebarOpen(true);
+//   }, []);
+
 //   //! 키워드 변경 시 검색
 //   useEffect(() => {
 //     if (keyword && map) {
@@ -220,56 +227,21 @@
 //       {/* 키워드 버튼 */}
 //       {!selectedPlace && (
 //         <div className="absolute z-10 top-20 sm:top-25 left-[50%] translate-x-[-50%] flex gap-2 md:left-50 md:transform-none ">
-//           {keywordBtn.map((word) => (
-//             <button
-//               key={word.name}
-//               className="bg-white border border-gray-300 px-0 py-2 rounded-full shadow-sm hover:bg-gray-100 text-sm w-20 gap-x-1 flex items-center justify-center font-semibold"
-//               onClick={() => {
-//                 setInputValue(word.name);
-//                 setKeyword(word.name);
-//               }}
-//             >
-//               <p className="text-green-500 text-lg">{word.icon}</p>
-//               {word.name}
-//             </button>
-//           ))}
+//           <KeywordButtons onKeywordClick={handleKeywordClick} />
 //         </div>
 //       )}
 
 //       {/*검색 장소 리스트 */}
 //       {keyword.length > 0 && !showNoResultsModal && places.length > 0 && (
-//         <div className="hidden md:flex absolute top-0 right-0 w-72 max-h-[76vh] h-full p-4 bg-gray-100 border-l border-gray-300 flex-col rounded-3xl z-10 overflow-y-auto">
-//           <ul className="space-y-4 pr-2  overflow-y-auto max-h-[76vh]">
-//             {places.map((place) => (
-//               <li
-//                 key={place.id}
-//                 className="bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50"
-//               >
-//                 <button
-//                   ref={(clickFocus) => {
-//                     if (clickFocus) {
-//                       buttonRefs.current.set(place.id, clickFocus);
-//                     }
-//                   }}
-//                   className="flex flex-col items-center w-full p-3 gap-y-1 focus:border focus:rounded-lg focus:bg-gray-50"
-//                   onClick={() => handlePlaceClick(place)}
-//                 >
-//                   <p className="font-bold">{place.place_name}</p>
-//                   <p className="text-sm">
-//                     {place.road_address_name || place.address_name}
-//                   </p>
-//                   <p className="text-xs text-gray-500">
-//                     {place.phone || "전화번호 없음"}
-//                   </p>
-//                 </button>
-//               </li>
-//             ))}
-//           </ul>
-//         </div>
+//         <PlaceList
+//           places={places}
+//           handlePlaceClick={handlePlaceClick}
+//           buttonRefs={buttonRefs}
+//         />
 //       )}
 
 //       {/* 상세 정보창 */}
-//       {selectedPlace && !isSidebarOpen && (
+//       {selectedPlace && (
 //         <PlaceDetail
 //           place={selectedPlace}
 //           onClose={handleCloseDetail}
@@ -297,10 +269,3 @@
 // };
 
 // export default MapPage;
-
-// const keywordBtn = [
-//   { name: "맛집", icon: <IoRestaurantOutline /> },
-//   { name: "명소", icon: <FaLandmark /> },
-//   { name: "백화점", icon: <FaRegBuilding /> },
-//   { name: "지하철", icon: <IoSubway /> },
-// ];
