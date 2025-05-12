@@ -75,6 +75,7 @@ const UpPlaceBookMark = () => {
                 place={place}
                 likedOverride={true}
                 countOverride={place.likeCount}
+                hideLikeButton={true} // ✅ 북마크에서만 좋아요 버튼 숨김
               />
               <button
                 onClick={() => handleDelete(place.contentid)}
