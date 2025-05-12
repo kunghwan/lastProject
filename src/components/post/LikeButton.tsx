@@ -61,7 +61,15 @@ const LikeButton = ({ postId, likedBy = [], postOwnerId }: LikeButtonProps) => {
         });
       }
     }
-  }, [isLiked, meUser?.uid, meUser?.nickname, postId, postOwnerId, user?.uid]);
+  }, [
+    isLiked,
+    meUser?.uid,
+    meUser?.nickname,
+    postId,
+    postOwnerId,
+    user?.uid,
+    meUser?.profileImageUrl,
+  ]);
 
   return (
     <div className="flex items-center gap-1">
