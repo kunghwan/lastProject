@@ -5,7 +5,7 @@ export async function GET(
   req: NextRequest,
   context: { params: { contentid: string } }
 ): Promise<Response> {
-  const { contentid } = context.params;
+  const contentid = context.params.contentid;
 
   if (!contentid) {
     return new Response(JSON.stringify({ message: "contentid가 없습니다" }), {
