@@ -93,10 +93,21 @@ const QnaPage = () => {
                */}
               {/* isanswerShowing에 저장된 질문이랑 아이템의 질문이랑 같으면 true */}
               {isanswerShowing === item.question && (
-                <div className="hsecol gap-y-1.5 text-sm text-gray-700 rounded rounded-t-none p-2.5 bg-[#def5ef] dark:bg-[rgba(240,255,251,0.5)] md:text-xl dark:text-white">
-                  {item.answer.map((text, index) => (
-                    <div key={index}>{text}</div>
-                  ))}
+                <div
+                  className={twMerge(
+                    "transition-all duration-300 overflow-hidden",
+                    isanswerShowing === item.question
+                      ? "max-h-[500px] p-2.5 opacity-100"
+                      : "max-h-0 p-0 opacity-0"
+                  )}
+                >
+                  <div className="hsecol gap-y-1.5 text-sm text-gray-700 bg-[#def5ef] dark:bg-[rgba(240,255,251,0.5)] md:text-xl dark:text-white">
+                    {item.answer.map((text, index) => (
+                      <div className="p-2.5" key={index}>
+                        {text}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </li>
