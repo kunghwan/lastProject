@@ -110,80 +110,87 @@ const PostComponent = () => {
 
   return (
     <div className="grid grid-cols-1 gap-y-3 mb-20 md:grid-cols-2 lg:grid-cols-3 ml-2.5 mr-2.5">
-      {posts.map((post) => {
-        const images = Array.isArray(post.imageUrl)
-          ? post.imageUrl
-          : [post.imageUrl];
+      {posts
+        .slice() // 기존 배열 훼손 방지
+        .sort((a, b) => {
+          const aTime = (a.createdAt as any)?.seconds || 0;
+          const bTime = (b.createdAt as any)?.seconds || 0;
+          return bTime - aTime; // 최신순 정렬
+        })
+        .map((post) => {
+          const images = Array.isArray(post.imageUrl)
+            ? post.imageUrl
+            : [post.imageUrl];
 
-        return (
-          <div
-            key={post.id}
-            className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl"
-          >
-            <button
-              className="flex gap-1.5 items-center text-center m-1.5"
-              onClick={() => handleClick(post.uid, post.userNickname)}
-            >
-              <img
-                className="w-8 h-8 border rounded-2xl border-gray-200"
-                src={post.userProfileImage || defaultImgUrl}
-                alt="user profile image"
-              />
-              <div className="font-bold">{post.userNickname}</div>
-            </button>
-
+          return (
             <div
-              className="relative cursor-pointer"
-              onClick={() => handleOpenPost(post)}
+              key={post.id}
+              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl"
             >
-              <img
-                src={images[0] || defaultImgUrl}
-                alt="Post image"
-                className="w-full opacity-70 border-gray-300 h-128 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01] border "
-              />
+              <button
+                className="flex gap-1.5 items-center text-center m-1.5"
+                onClick={() => handleClick(post.uid, post.userNickname)}
+              >
+                <img
+                  className="w-8 h-8 border rounded-2xl border-gray-200"
+                  src={post.userProfileImage || defaultImgUrl}
+                  alt="user profile image"
+                />
+                <div className="font-bold">{post.userNickname}</div>
+              </button>
 
-              {Array.isArray(post.imgs) && post.imgs.length > 1 && (
-                <div className="absolute top-3 right-3 bg-gray-800 opacity-70 text-white text-xs p-2 rounded-full">
-                  +{post.imgs.length}
-                </div>
-              )}
-            </div>
+              <div
+                className="relative cursor-pointer"
+                onClick={() => handleOpenPost(post)}
+              >
+                <img
+                  src={images[0] || defaultImgUrl}
+                  alt="Post image"
+                  className="w-full opacity-70 border-gray-300 h-128 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01] border "
+                />
 
-            <div className="flex gap-20 justify-between items-center text-s text-gray-500 mt-1 dark:text-gray-300">
-              <div className="flex gap-5">
-                <div className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
-                  <LikeButton
-                    likedBy={post.likes}
-                    postId={post.id!}
-                    postOwnerId={post.uid}
-                  />
+                {Array.isArray(post.imgs) && post.imgs.length > 1 && (
+                  <div className="absolute top-3 right-3 bg-gray-800 opacity-70 text-white text-xs p-2 rounded-full">
+                    +{post.imgs.length}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-20 justify-between items-center text-s text-gray-500 mt-1 dark:text-gray-300">
+                <div className="flex gap-5">
+                  <div className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
+                    <LikeButton
+                      likedBy={post.likes}
+                      postId={post.id!}
+                      postOwnerId={post.uid}
+                    />
+                  </div>
+                  <div className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
+                    <ShareButton />
+                  </div>
                 </div>
-                <div className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
-                  <ShareButton />s
+                <div className="flex-1/2 text-xs text-gray-500 dark:text-gray-300 truncate">
+                  <LocationButton /> {post.lo?.address || "주소 없음"}
                 </div>
               </div>
-              <div className="flex-1/2 text-xs text-gray-500 dark:text-gray-300 truncate">
-                <LocationButton /> {post.lo?.address || "주소 없음"}
+              <p className="text-lg font-semibold truncate">{post.content}</p>
+              <div className="flex flex-wrap">
+                {post.tags.map((tag: Tag) => (
+                  <div
+                    key={tag.id}
+                    className="px-2 py-1 text-xs text-gray-600 dark:text-gray-300"
+                  >
+                    <p>{tag.name}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="items-baseline text-end text-gray500 text-sm">
+                {post.createdAt}
               </div>
             </div>
-            <p className="text-lg font-semibold truncate">{post.content}</p>
-            <div className="flex flex-wrap">
-              {post.tags.map((tag: Tag) => (
-                <div
-                  key={tag.id}
-                  className="px-2 py-1 text-xs text-gray-600 dark:text-gray-300"
-                >
-                  <p>{tag.name}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="items-baseline text-end text-gray500 text-sm">
-              {post.createdAt}
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
 
       <div ref={observerRef} className="col-span-full h-10" />
       {loading && <div className="text-center col-span-full">로딩 중...</div>}

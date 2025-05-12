@@ -4,11 +4,11 @@ import { Post, Tag } from "@/types/post";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { IoSettingsOutline, IoAdd } from "react-icons/io5";
 import FollowButton from "../post/FollowButton";
-import ProfileFeedComponent from "./ProfileFeedLayout";
 import { updateDoc, doc, onSnapshot, collection } from "firebase/firestore";
 import { dbService, FBCollection, storageService } from "@/lib/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { validateNickname, validateBio } from "@/lib/validations";
+import ProfileFeedComponent from "./ProfileFeedLayout";
 
 const ProfileLayout = ({
   isMyPage,
@@ -40,6 +40,10 @@ const ProfileLayout = ({
   const [bioError, setBioError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [followerCount, setFollowerCount] = useState(0);
+  const [modal, setModal] = useState<{
+    message: string;
+    onConfirm?: () => void;
+  } | null>(null);
 
   const handleResize = useCallback(() => {
     setIsSmallScreen(window.innerWidth < 1024);
@@ -88,19 +92,28 @@ const ProfileLayout = ({
       setPreviewImage(newUrl);
     }
 
-    try {
-      await updateDoc(doc(dbService, "users", userData.uid), {
-        nickname: editNickname,
-        bio: editBio,
-        profileImageUrl: imageUrl,
-      });
-      alert("프로필이 수정되었습니다.");
-      setEditOpen(false);
-      location.reload();
-    } catch (err) {
-      alert("수정에 실패했습니다.");
-      console.error(err);
-    }
+    const handleUpdate = async () => {
+      try {
+        await updateDoc(doc(dbService, "users", userData.uid), {
+          nickname: editNickname,
+          bio: editBio,
+          profileImageUrl: imageUrl,
+        });
+
+        setModal({
+          message: "프로필이 수정되었습니다.",
+          onConfirm: () => {
+            setEditOpen(false);
+            location.reload();
+          },
+        });
+      } catch (err) {
+        setModal({
+          message: "수정에 실패했습니다.",
+        });
+        console.error(err);
+      }
+    };
   }, [editNickname, editBio, imageFile, previewImage, userData.uid]);
 
   const actualPostCount = useMemo(
