@@ -114,6 +114,8 @@ const ProfileLayout = ({
         console.error(err);
       }
     };
+
+    await handleUpdate();
   }, [editNickname, editBio, imageFile, previewImage, userData.uid]);
 
   const actualPostCount = useMemo(
