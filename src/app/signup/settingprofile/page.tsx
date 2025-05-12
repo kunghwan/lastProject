@@ -212,7 +212,7 @@ const SettingProfile = () => {
   return (
     <>
       {loading && <LoadingPage />} {/* 로딩 화면 */}
-      <div className="flex flex-col gap-y-4 p-4 lg:mx-auto lg:w-130 md:w-130 sm:w-130">
+      <div className="flex flex-col gap-y-2 p-4 lg:mx-auto lg:w-130 md:w-130 sm:w-130 overflow-auto min-h-screen">
         {/* 닉네임 입력 */}
         <div className="relative">
           <input
@@ -325,4 +325,4 @@ const SettingProfile = () => {
 export default SettingProfile;
 
 // 닉네임 입력창 클래스
-const settingProfile = "bg-lime-400 p-3 rounded w-110 sm:w-122 mt-5";
+const settingProfile = "bg-lime-400 p-3 rounded w-80 sm:w-122 mt-5";
