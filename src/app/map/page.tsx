@@ -54,6 +54,7 @@ const MapPage = () => {
 
     //! 카카오 맵 스크립트 불러오기
     const loadKakaoMapScript = () => {
+      console.log("Vercel API Key:", process.env.NEXT_PUBLIC_KAKAO_API_KEY);
       const script = document.createElement("script");
       script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_API_KEY}&autoload=false&libraries=services`;
       script.async = true;
