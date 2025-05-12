@@ -1,15 +1,13 @@
 "use client";
 
-import ProfileLayout from "@/components/ProfileUI/ProfileLayout";
+import { useParams } from "next/navigation";
+import ProfileLayout from "@/components/profile/ProfileLayout";
 import { useUsersByNickname } from "@/hooks/useUser";
 import { usePostsByNickname } from "@/hooks/useAuth";
 
-interface Props {
-  params: { username: string };
-}
-
-const UserPage = ({ params }: Props) => {
-  const { username } = params;
+const UserPage = () => {
+  const params = useParams();
+  const username = params?.username as string;
 
   const { data: users, isLoading: userLoading } = useUsersByNickname(username);
   const { data: posts, isLoading: postLoading } = usePostsByNickname(username);
