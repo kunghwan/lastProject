@@ -218,7 +218,10 @@ const Header = () => {
           <AlertModal
             message="정말로 로그아웃 하시겠습니까?"
             onClose={() => setShowLogoutModal(false)}
-            onConfirm={handleConfirmLogout}
+            onConfirm={() => {
+              handleConfirmLogout();
+              setShowLogoutModal(false);
+            }}
             showCancel
           />
         )}
