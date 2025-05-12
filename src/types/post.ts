@@ -1,4 +1,4 @@
-import { FieldValue } from "firebase/firestore";
+import { FieldValue, Timestamp } from "firebase/firestore";
 
 // SNS페이지 요구사항명세서
 // 1. 피드페이지 메인
@@ -28,7 +28,7 @@ export interface Post {
   lo: Location; // 장소 정보 (위치, 주소 등)
   // likes: number; // 좋아요 수를 카운트하기위해 uid 좋아요를 클릭한 사람의 uid를 담음 취소하면 uid를 뺌
   title: string; // 게시물 제목
-  createdAt: string | FieldValue; // 작성일시 (ISO 8601)
+  createdAt: string | FieldValue | Timestamp; // 작성일시 (ISO 8601)
   userNickname: string; // 작성자 닉네임
   userProfileImage: string; // 작성자 프로필 이미지 URL
   bookmarked: Array<string>;
