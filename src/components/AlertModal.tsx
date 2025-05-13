@@ -2,7 +2,6 @@
 
 import ReactDOM from "react-dom";
 import { useAlertModal } from "./AlertStore"; // 경로는 상황 맞게 수정
-import { useEffect } from "react";
 
 const AlertModal = () => {
   const {
