@@ -30,7 +30,6 @@ const Navbar = () => {
       }
       if (btn.path) {
         router.push(btn.path);
-        // setIsNavMenuOpen(false); // 이 줄을 완전히 제거합니다.
       }
     },
     [user, router]
