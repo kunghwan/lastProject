@@ -6,6 +6,7 @@ import { twMerge } from "tailwind-merge";
 import AlertModal from "../AlertModal";
 import { IoRefreshOutline } from "react-icons/io5";
 import { useQuery } from "@tanstack/react-query";
+import { useAlertModal } from "../AlertStore";
 
 interface JusoProps {
   juso: Location;
@@ -50,8 +51,7 @@ const JusoComponents = ({
   const [isJusoShowing, setIsJusoShowing] = useState(false);
   const [isJusoUlShowing, setIsJusoUlShowing] = useState(false);
   const [address, setAddress] = useState("");
-
-  const [focusTarget, setFocusTarget] = useState<"juso" | null>(null);
+  const { openAlert } = useAlertModal();
 
   //Todo: refetch가 실행되면 데이터 요청시작
   const {
@@ -67,20 +67,6 @@ const JusoComponents = ({
   });
 
   console.log(searchResults, "data 확인");
-  // 알림 모달 상태
-  const [modal, setModal] = useState<{
-    message: string;
-    onConfirm?: () => void;
-  } | null>(null);
-
-  useEffect(() => {
-    if (!modal?.message && focusTarget === "juso") {
-      setTimeout(() => {
-        jusoRef.current?.focus(); //  포커스 부여
-        setFocusTarget(null); // 포커스 완료 후 초기화
-      }, 0);
-    }
-  }, [modal?.message, focusTarget]);
 
   if (error || !searchResults) {
     return <h1>Error: {error?.message}</h1>;
@@ -88,20 +74,6 @@ const JusoComponents = ({
 
   return (
     <div className="hsecol gap-2">
-      {modal && (
-        <AlertModal
-          message={modal.message}
-          onClose={() => {
-            setModal(null);
-            return setFocusTarget("juso");
-          }}
-          onConfirm={() => {
-            modal.onConfirm?.();
-            return setModal(null);
-          }}
-          showCancel={modal.onConfirm && true}
-        />
-      )}
       <div className="flex gap-x-2 items-center">
         {juso.address.length > 0 && (
           <label className="mt-8 bg-white flex w-full border-2 gap-x-2  border-emerald-800 p-2.5 rounded items-center  dark:text-gray-900">
@@ -117,20 +89,36 @@ const JusoComponents = ({
             <button
               type="button"
               onClick={() => {
-                //다시 juso를  검색하기 위해서 초기화및 인풋창 다시 보여주기
-                setModal({
-                  message: "다시 검색하겠습니까?",
-                  onConfirm() {
-                    setJuso({
-                      latitude: 0,
-                      longitude: 0,
-                      address: "",
-                    });
-                    setIsJusoUlShowing(false);
-                    setIsJusoShowing(false);
-                    return jusoRef.current?.focus();
-                  },
-                });
+                const targetRefs = [jusoRef];
+                openAlert(
+                  "다시 검색하시겠습니까?",
+                  [
+                    {
+                      text: "확인",
+                      isGreen: true,
+                      autoFocus: true,
+                      onClick: () => {
+                        setJuso({
+                          latitude: 0,
+                          longitude: 0,
+                          address: "",
+                        });
+                        setIsJusoUlShowing(false);
+                        return setIsJusoShowing(false);
+                      },
+                      target: 0,
+                    },
+                    {
+                      text: "취소",
+                      isGreen: false,
+                      autoFocus: false,
+                    },
+                  ],
+
+                  "알림",
+                  targetRefs
+                );
+                return;
 
                 // if (confirm("다시 검색하시겠습니까?")) {
                 //   setJuso({
@@ -177,12 +165,29 @@ const JusoComponents = ({
                 const { key } = e;
                 if (!e.nativeEvent.isComposing && key === "Enter") {
                   if (address.trim() === "" || address.length === 0) {
-                    //React에서 setState는 비동기로 처리되기 때문에, 렌더링이 끝나기 전까지 <AlertModal /> 조건부 렌더링이 반응하지 않을 수 있음 =>setTimeout(() => ...)으로 defer 처리하면 렌더링 큐가 정리된 뒤 실행되어 modal이 보장됨
+                    const targetRefs = [jusoRef];
                     setTimeout(() => {
-                      setModal({ message: "주소를 입력해 주세요." });
-                      setFocusTarget("juso");
+                      openAlert(
+                        "장소를 입력해주세요.",
+                        [
+                          {
+                            text: "확인",
+                            isGreen: true,
+                            autoFocus: true,
+                            target: 0,
+                          },
+                        ],
+                        "알림",
+                        targetRefs
+                      );
                     }, 0);
                     return;
+                    //React에서 setState는 비동기로 처리되기 때문에, 렌더링이 끝나기 전까지 <AlertModal /> 조건부 렌더링이 반응하지 않을 수 있음 =>setTimeout(() => ...)으로 defer 처리하면 렌더링 큐가 정리된 뒤 실행되어 modal이 보장됨
+                    // setTimeout(() => {
+                    //   setModal({ message: "주소를 입력해 주세요." });
+                    //   setFocusTarget("juso");
+                    // }, 0);
+                    // return;
                   }
                   refetch();
 
@@ -197,7 +202,21 @@ const JusoComponents = ({
               type="button"
               onClick={() => {
                 if (address.length === 0 || address.trim() === "") {
-                  return setModal({ message: "주소를 입력해 주세요." });
+                  const targetRefs = [jusoRef];
+                  openAlert(
+                    "장소를 입력해주세요.",
+                    [
+                      {
+                        text: "확인",
+                        isGreen: true,
+                        autoFocus: true,
+                        target: 0,
+                      },
+                    ],
+                    "알림",
+                    targetRefs
+                  );
+                  return;
                 }
                 //searchAddress를 호출하여 주소를 검색(address를 인자로 넘겨서 검색 ㄱㄱ)
                 //  searchAddress(address);
@@ -213,7 +232,7 @@ const JusoComponents = ({
         </div>
       )}
       {isJusoUlShowing && (
-        <ul className="mt-2 hsecol gap-y-2 bg-gray-200 dark:bg-green-50/80 border border-gray-400  rounded p-2.5 max-h-40 overflow-y-auto force-scrollbar ">
+        <ul className="mt-2 hsecol gap-y-2 bg-gray-200 dark:bg-green-50/80 border border-gray-400  rounded p-2.5 max-h-40 overflow-y-auto green-scrollbar ">
           {searchResults.length === 0 ? (
             <li>
               <p className="font-bold flex justify-center">

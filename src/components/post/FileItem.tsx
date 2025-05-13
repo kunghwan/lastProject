@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { ImFilePicture } from "react-icons/im";
-import AlertModal from "../AlertModal";
 import Image from "next/image";
+import { useAlertModal } from "../AlertStore";
 
 interface FileItemProps {
   file?: File;
@@ -12,24 +12,10 @@ interface FileItemProps {
   onDeleteFiles?: () => void;
 }
 const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
-  const [modal, setModal] = useState<{
-    message: string;
-    onConfirm?: () => void;
-  } | null>(null);
+  const { openAlert } = useAlertModal();
 
   return (
     <div className="hsecol gap-y-1  hover:text-gray-200  group cursor-pointer  shadow-md  ">
-      {modal && (
-        <AlertModal
-          message={modal.message}
-          onClose={() => setModal(null)}
-          onConfirm={() => {
-            modal.onConfirm?.();
-            setModal(null);
-          }}
-          showCancel={true}
-        />
-      )}
       <div className=" relative  w-24 h-24  ">
         {!file ? (
           <input
@@ -48,12 +34,27 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
           <button
             type="button"
             onClick={() => {
-              setModal({
-                message: "삭제하시겠습니까?",
-                onConfirm() {
-                  return onDeleteFiles && onDeleteFiles();
-                },
-              });
+              openAlert(
+                "삭제하시겠습니까?",
+                [
+                  {
+                    text: "확인",
+                    isGreen: true,
+                    autoFocus: true,
+                    onClick: () => {
+                      return onDeleteFiles && onDeleteFiles();
+                    },
+                  },
+                  {
+                    text: "취소",
+                    isGreen: false,
+                    autoFocus: false,
+                  },
+                ],
+                "알림"
+              );
+              return;
+
               // if (confirm("삭제하시겠습니까?")) {
               //   return onDeleteFiles && onDeleteFiles();
               // }

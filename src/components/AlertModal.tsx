@@ -28,7 +28,7 @@ const AlertModal = () => {
         {title && (
           <h2 className="text-lg font-bold text-center mb-3 ">{title}</h2>
         )}
-        <p className="text-gray-800 text-center whitespace-pre-line mb-4 dark:text-gray-400">
+        <p className="text-gray-800 text-center whitespace-pre-line mb-4 dark:text-gray-400 ">
           {message}
         </p>
         <div className="flex gap-2">
@@ -41,7 +41,9 @@ const AlertModal = () => {
                 // ✅ 포커스 타겟 처리 (null 방지)
                 const ref =
                   btn.target !== undefined ? targetRefs[btn.target] : null;
-                ref?.current?.focus();
+                setTimeout(() => {
+                  ref?.current?.focus();
+                }, 100);
                 closeAlert();
               }}
               className={`flex-1 py-2 rounded text-white transition outline-none  ${

@@ -7,6 +7,7 @@ import { UploadPostProps } from "./UploadPage";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { v4 } from "uuid";
 import AlertModal from "../AlertModal";
+import { useAlertModal } from "../AlertStore";
 
 interface Props {
   tag: string;
@@ -29,9 +30,7 @@ const UploadTag = ({
   setIsTypingTag,
   submitButtonRef,
 }: Props) => {
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const [focusTarget, setFocusTarget] = useState<"tag" | null>(null);
-
+  const { openAlert } = useAlertModal();
   const tagMessage = useMemo(() => {
     const validateText = /^[\p{L}\p{N}\s]+$/u;
 
@@ -49,10 +48,39 @@ const UploadTag = ({
   }, [tag]);
 
   const onClickTag = useCallback(() => {
-    console.log("tagMessage value:", tagMessage);
+    const targetRefs = [tagRef]; // 전달할 ref 배열
+    console.log(tagMessage);
     if (tagMessage) {
-      setAlertMessage(tagMessage);
-      setFocusTarget("tag");
+      openAlert(
+        tagMessage,
+        [
+          {
+            text: "확인",
+
+            isGreen: true,
+            autoFocus: false,
+            target: 0,
+          },
+        ],
+        "알림",
+        targetRefs
+      );
+      return;
+    }
+    if (tags.length >= 10) {
+      openAlert(
+        "태그는 최대 10개까지만\n 추가할 수 있습니다.",
+        [
+          {
+            text: "확인",
+            isGreen: true,
+            autoFocus: false,
+            target: 0,
+          },
+        ],
+        "알림",
+        targetRefs
+      );
       return;
     }
 
@@ -63,8 +91,21 @@ const UploadTag = ({
     };
 
     if (tags.find((t) => t.name === newTag.name)) {
-      setAlertMessage("이미 존재하는 태그입니다.");
-      setFocusTarget("tag");
+      openAlert(
+        "이미 존재하는 태그입니다.",
+        [
+          {
+            text: "확인",
+
+            isGreen: true,
+            autoFocus: false,
+            target: 0,
+          },
+        ],
+        "알림",
+        targetRefs
+      );
+      setTag("");
       return;
     }
     setPost((prev) => ({
@@ -73,26 +114,11 @@ const UploadTag = ({
     }));
 
     return setTag("");
-  }, [tagMessage, tags, post, tag]);
-
-  useEffect(() => {
-    if (alertMessage === null && focusTarget === "tag") {
-      setTimeout(() => {
-        tagRef.current?.focus();
-        setFocusTarget(null);
-      }, 0);
-    }
-  }, [alertMessage, focusTarget]);
+  }, [tagMessage, tags, post, tag, openAlert, tagRef]);
 
   return (
     <>
       <div>
-        {alertMessage != null && (
-          <AlertModal
-            message={alertMessage}
-            onClose={() => setAlertMessage(null)}
-          />
-        )}
         <label
           htmlFor="tags"
           className=" font-bold text-md text-gray-500 dark:text-white"
@@ -118,7 +144,7 @@ const UploadTag = ({
                 tag.trim() === "" &&
                 tags.length > 0
               ) {
-                //! 공백 + 태그 있음이면 주소 인풋으로 포커스 이동
+                //! 공백 + 태그 있음이면 button으로 포커스 이동
                 submitButtonRef.current?.focus();
                 return;
               }
