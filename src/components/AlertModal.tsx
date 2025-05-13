@@ -40,7 +40,9 @@ const AlertModal = ({
       className="fixed inset-0  bg-opacity-40 z-50 flex items-center justify-center"
     >
       <div className="bg-white p-6 rounded-lg shadow-lg w-80">
-        <p className="text-gray-800 text-center mb-4">{message}</p>
+        <p className="text-gray-800 text-center mb-4 whitespace-pre-line">
+          {message}
+        </p>
         <div className="flex gap-4">
           <button
             onClick={onConfirm || onClose}

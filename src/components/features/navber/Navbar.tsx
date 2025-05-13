@@ -30,7 +30,6 @@ const Navbar = () => {
       }
       if (btn.path) {
         router.push(btn.path);
-        // setIsNavMenuOpen(false); // 이 줄을 완전히 제거합니다.
       }
     },
     [user, router]
@@ -136,7 +135,7 @@ const Navbar = () => {
       {/* 로그인 유도 모달 */}
       {showLoginModal && (
         <AlertModal
-          message="유저만 이용 가능한 기능입니다. 로그인 하시겠습니까?"
+          message={"유저만 이용 가능한 기능입니다.\n로그인 하시겠습니까?"}
           onClose={() => setShowLoginModal(false)}
           onConfirm={() => {
             setShowLoginModal(false);

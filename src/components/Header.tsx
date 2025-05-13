@@ -18,7 +18,7 @@ import { dbService } from "@/lib";
 import AlertModal from "@/components/AlertModal";
 import MobileHeader from "./MobileHeader";
 
-const HEAD_BUTTON_CLASS = "grayButton text-xl sm:text-2xl";
+const headBtn = "grayButton text-xl sm:text-2xl";
 
 //! 초기 로딩 시 다크 모드 설정
 const storedDarkMode =
@@ -93,7 +93,7 @@ const Header = () => {
       icon: isDarkMode ? <IoMoon /> : <IoSunny />, // 현재 모드에 따라 달 또는 해 아이콘 표시
       onClick: toggleDarkMode, // 다크 모드 토글 함수 호출
       className: twMerge(
-        HEAD_BUTTON_CLASS,
+        headBtn,
         isDarkMode ? "text-gray-800" : "text-white bg-black"
       ),
     });
@@ -173,7 +173,7 @@ const Header = () => {
               <li key={index}>
                 <button
                   onClick={btn.onClick}
-                  className={btn.className || HEAD_BUTTON_CLASS}
+                  className={btn.className || headBtn}
                 >
                   {btn.icon || btn.label}
                 </button>
