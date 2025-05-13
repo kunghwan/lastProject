@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import Select, { SelectInstance } from "react-select"; // 생년월일 선택용
 import { useRouter } from "next/navigation";
 import {
@@ -13,6 +13,7 @@ import {
 import { AUTH } from "@/contextapi/context";
 import { dbService, FBCollection, authService } from "@/lib/firebase"; // Firebase 연동
 import AlertModal from "@/components/AlertModal";
+import { useTheme } from "next-themes";
 
 const STORAGE_KEY = "signupUser"; // 세션 스토리지 키
 
@@ -27,6 +28,40 @@ const InfoAccount = [
 ];
 
 const SignupForm = () => {
+  const { resolvedTheme } = useTheme();
+  // react-select 스타일
+  const themeMode = resolvedTheme ?? "light"; // fallback to 'light'
+
+  const selectStyle = useMemo(
+    () => ({
+      control: (base: any) => ({
+        ...base,
+        minHeight: "42px",
+        fontSize: "14px",
+        backgroundColor: themeMode === "dark" ? "#1f2937" : "#fff",
+        color: themeMode === "dark" ? "#fff" : "#000",
+      }),
+      menu: (base: any) => ({
+        ...base,
+        backgroundColor: themeMode === "dark" ? "#1f2937" : "#fff",
+        color: themeMode === "dark" ? "#fff" : "#000",
+      }),
+      singleValue: (base: any) => ({
+        ...base,
+        color: themeMode === "dark" ? "#fff" : "#000",
+      }),
+      option: (base: any, state: any) => ({
+        ...base,
+        backgroundColor: state.isFocused
+          ? themeMode === "dark"
+            ? "#374151"
+            : "#e5e7eb"
+          : "transparent",
+        color: themeMode === "dark" ? "#fff" : "#000",
+      }),
+    }),
+    [themeMode] // ✅ 여기서 undefined가 들어오면 hook 순서 깨짐 → 방지됨
+  );
   const [user, setUser] = useState<Omit<User, "uid">>({
     name: "",
     email: "",
@@ -238,12 +273,6 @@ const SignupForm = () => {
   }, [signup, user, validateField, router]);
 
   if (!isLoaded) return null; // 로딩 안 됐으면 렌더 안 함
-
-  // react-select 스타일
-  const selectStyle = {
-    control: (base: any) => ({ ...base, minHeight: "42px", fontSize: "14px" }),
-    menu: (base: any) => ({ ...base, fontSize: "14px" }),
-  };
 
   return (
     <div className="flex flex-col justify-start items-center min-h-screen px-4">
