@@ -16,14 +16,14 @@ interface AlertState {
   title?: string; // 알림창 제목 (옵션)
   message: string | null; // 본문 메시지
   buttons?: AlertButton[]; // 버튼 배열
-  targetRefs?: Array<RefObject<HTMLInputElement | null>>; // 포커스할 ref들 모음 (예: [emailRef, pwRef])
+  targetRefs?: Array<RefObject<HTMLInputElement | HTMLTextAreaElement | null>>; // 포커스할 ref들 모음 (예: [emailRef, pwRef])
 
   // ✅ 알림창 열기 함수
   openAlert: (
     message: string, // 본문 메시지
     buttons?: AlertButton[], // 버튼들
     title?: string, // 제목
-    targetRefs?: Array<RefObject<HTMLInputElement | null>> // 포커스할 ref들
+    targetRefs?: Array<RefObject<HTMLInputElement | HTMLTextAreaElement | null>> // 포커스할 ref들
   ) => void;
 
   // ✅ 알림창 닫기 함수

@@ -11,17 +11,19 @@ import TopButton from "@/components/upplace/TopButton";
 import AlertModal from "@/components/AlertModal";
 import Image from "next/image";
 import { BsExclamationCircle } from "react-icons/bs";
+import { useAlertModal } from "@/components/AlertStore";
 
 //! limit변수처리하기
 const limit = 20;
 const NotificationListPage = () => {
   const { user } = AUTH.use();
+  const { openAlert } = useAlertModal();
   const [isLoadingAllRead, setIsLoadingAllRead] = useState(false);
   //Todo: 모두읽음 알림버튼을 확인용 useState
   const [isUnRead, setIsUnRead] = useState(false);
   const navi = useRouter();
   const uid = user?.uid;
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
   const ref = dbService
     .collection(FBCollection.USERS)
     .doc(uid)
@@ -167,8 +169,20 @@ const NotificationListPage = () => {
     }
     await refetch(); //!  데이터 새로고침 //서버에 요청 → 최신 데이터로 갱신
     setIsLoadingAllRead(false);
-    return setAlertMessage("알림을 모두 읽었습니다.");
-  }, [data, uid, refetch]);
+    openAlert(
+      "알림을 모두 읽었습니다.",
+      [
+        {
+          text: "확인",
+          isGreen: true,
+          autoFocus: true,
+        },
+      ],
+
+      "알림"
+    );
+    return;
+  }, [data, uid, refetch, openAlert]);
   // const isNotifications = data?.pages.map((page) => page.notifications);
   // console.log(isNotifications, "알림확인용");
   //! 안읽은 알림이 없느가를 처음 페이지가 렌더링될때 확인용
@@ -178,20 +192,15 @@ const NotificationListPage = () => {
       checkUnreadNotifications();
     };
   }, [checkUnreadNotifications]);
+
   if (isPending || isLoadingAllRead) {
-    return <Loaiding />;
+    return <Loaiding message="조금만 기달려 주세요 ..." />;
   }
   if (error || !data) {
     return <h1>Error: {error.message}</h1>;
   }
   return (
     <div className="hsecol  gap-y-2.5 mt-2 p-3">
-      {alertMessage && (
-        <AlertModal
-          message={alertMessage}
-          onClose={() => setAlertMessage(null)}
-        />
-      )}
       {data?.pages.every((page) => page.notifications.length === 0) && (
         <div className="hsecol justify-center items-center  h-100 gap-y-5">
           <div>
