@@ -4,6 +4,7 @@ import "./globals.css";
 import BodyLayout from "@/components/BodyLayout";
 import { AuthProvider } from "@/contextapi/provider";
 import ReactQueryProvider from "@/contextapi/ReactQueryClientProvider";
+import AlertModal from "@/components/AlertModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,10 @@ export default function RootLayout({
       >
         <ReactQueryProvider>
           <AuthProvider>
-            <BodyLayout>{children}</BodyLayout>
+            <BodyLayout>
+              {children}
+              <AlertModal />
+            </BodyLayout>
           </AuthProvider>
         </ReactQueryProvider>
       </body>

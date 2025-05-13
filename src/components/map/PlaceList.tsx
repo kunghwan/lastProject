@@ -23,7 +23,7 @@ const PlaceList = ({
         <IoClose />
       </button>
 
-      <ul className="space-y-4 overflow-y-auto max-h-full mt-6 pr-2 ">
+      <ul className="space-y-4 overflow-y-auto max-h-full mt-6">
         {places.map((place) => (
           <li
             key={place.id}
