@@ -6,6 +6,7 @@ import { IoAdd } from "react-icons/io5";
 import { storageService, dbService, FBCollection } from "@/lib/firebase";
 import { AUTH } from "@/contextapi/context";
 import LoadingPage from "@/components/Loading";
+import { useAlertModal } from "@/components/AlertStore";
 import AlertModal from "@/components/AlertModal";
 
 const SettingProfile = () => {
@@ -37,7 +38,7 @@ const SettingProfile = () => {
   const router = useRouter();
   const { signin } = AUTH.use(); // 로그인 함수
 
-  const closeAlert = () => setAlertMsg(""); // 모달 닫기
+  const { openAlert } = useAlertModal();
 
   // 세션에서 작성 중이던 프로필 데이터 복원
   useEffect(() => {
@@ -59,9 +60,23 @@ const SettingProfile = () => {
     if (e.key === "Enter") {
       e.preventDefault();
       if (document.activeElement === nicknameRef.current) {
-        setTimeout(() => setShowConfirmModal(true), 0);
-      } else if (document.activeElement === imageButtonRef.current) {
-        setShowConfirmModal(true);
+        openAlert("프로필 이미지를 추가하시겠습니까?", [
+          {
+            text: "아니오",
+            onClick: () => setTimeout(() => bioRef.current?.focus(), 0),
+          },
+          {
+            text: "예",
+            isGreen: true,
+            autoFocus: true,
+            onClick: () => {
+              setTimeout(() => {
+                fileInputRef.current?.click();
+                document.body.focus();
+              }, 100);
+            },
+          },
+        ]);
       } else if (document.activeElement === bioRef.current) {
         submitButtonRef.current?.click();
       }
@@ -98,10 +113,12 @@ const SettingProfile = () => {
     const signupUser = sessionStorage.getItem("signupUser");
     const baseUser = signupUser ? JSON.parse(signupUser) : null;
     if (!baseUser?.uid) {
-      setAlertMsg("회원가입 절차가 누락되었습니다. 다시 진행해주세요.");
+      openAlert("회원가입 절차가 누락되었습니다. 다시 진행해주세요.", [
+        { text: "확인", isGreen: true, autoFocus: true },
+      ]);
       router.push("/signup");
     }
-  }, [router]);
+  }, [router, openAlert]);
 
   // input 값 변경 시 상태 업데이트 및 유효성 검사
   const handleChange = useCallback(
@@ -140,7 +157,14 @@ const SettingProfile = () => {
   // 가입 완료 처리
   const handleSubmit = useCallback(async () => {
     if (!profile.nickname?.trim()) {
-      setAlertMsg("닉네임을 입력하세요");
+      openAlert("닉네임을 입력하세요", [
+        {
+          text: "확인",
+          isGreen: true,
+          autoFocus: true,
+          onClick: () => nicknameRef.current?.focus(),
+        },
+      ]);
       return;
     }
 
@@ -148,12 +172,29 @@ const SettingProfile = () => {
     const nicknameDuplicationCheck = await validateNickname(profile.nickname);
     if (nicknameDuplicationCheck) {
       setNicknameError(nicknameDuplicationCheck);
-      setAlertMsg("닉네임을 다시 확인해주세요.");
+      openAlert("닉네임을 다시 확인해주세요.", [
+        {
+          text: "확인",
+          isGreen: true,
+          autoFocus: true,
+          onClick: () => nicknameRef.current?.focus(),
+        },
+      ]);
       return;
     }
 
     if (nicknameError || bioError) {
-      setAlertMsg("닉네임과 소개글을 다시 확인해주세요.");
+      openAlert("닉네임과 소개글을 다시 확인해주세요.", [
+        {
+          text: "확인",
+          isGreen: true,
+          autoFocus: true,
+          onClick: () => {
+            if (nicknameError) nicknameRef.current?.focus();
+            else if (bioError) bioRef.current?.focus();
+          },
+        },
+      ]);
       return;
     }
 
@@ -162,7 +203,9 @@ const SettingProfile = () => {
       const signupUser = sessionStorage.getItem("signupUser");
       const baseUser = signupUser ? JSON.parse(signupUser) : null;
       if (!baseUser?.uid) {
-        setAlertMsg("회원가입 정보가 없습니다.");
+        openAlert("회원가입 정보가 없습니다.", [
+          { text: "확인", isGreen: true },
+        ]);
         return;
       }
 
@@ -193,17 +236,28 @@ const SettingProfile = () => {
       // 로그인 시도
       const result = await signin(baseUser.email, baseUser.password);
       if (!result.success) {
-        setAlertMsg("로그인에 실패했습니다: " + result.message);
+        openAlert("로그인에 실패했습니다: " + result.message, [
+          { text: "확인", isGreen: true },
+        ]);
         return;
       }
 
-      setAlertMsg("회원가입이 완료되었습니다!");
+      openAlert("회원가입이 완료되었습니다!", [
+        {
+          text: "확인",
+          isGreen: true,
+          autoFocus: true,
+          onClick: () => router.push("/"),
+        },
+      ]);
       sessionStorage.removeItem("signupUser");
       sessionStorage.removeItem("profileDraft");
       router.push("/");
     } catch (err) {
       console.error("가입 오류:", err);
-      setAlertMsg("회원가입 중 문제가 발생했습니다.");
+      openAlert("회원가입 중 문제가 발생했습니다.", [
+        { text: "확인", isGreen: true },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -235,8 +289,13 @@ const SettingProfile = () => {
         </div>
 
         {/* 프로필 이미지 업로드 */}
-        <div className="flex flex-col gap-y-5">
-          <input type="text" placeholder="프로필추가" disabled />
+        <div className="flex flex-col gap-y-5 mt-5">
+          <input
+            type="text"
+            placeholder="프로필추가"
+            disabled
+            className="placeholder:text-black dark:placeholder:text-white"
+          />
           <button
             ref={imageButtonRef}
             type="button"
@@ -271,7 +330,7 @@ const SettingProfile = () => {
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder="자기소개를 작성해주세요"
-            className="border w-full h-20 p-3 resize-none mt-5"
+            className="border w-full h-20 p-3 resize-none mt-5 placeholder:text-black dark:placeholder:text-white"
           />
           {bioError && (
             <div className="absolute text-red-500 text-xs mt-1">{bioError}</div>
@@ -282,42 +341,13 @@ const SettingProfile = () => {
         <button
           ref={submitButtonRef}
           onClick={handleSubmit}
-          className="p-4 bg-emerald-300 rounded font-bold mt-5"
+          className="p-4 bg-emerald-300 rounded font-bold mt-5 dark:bg-emerald-500"
         >
           가입 완료
         </button>
       </div>
-      {/* 알림 모달 */}
-      {alertMsg && (
-        <AlertModal
-          message={alertMsg}
-          onClose={() => {
-            setAlertMsg("");
-            if (alertMsg === "닉네임을 입력하세요")
-              setTimeout(() => nicknameRef.current?.focus(), 0);
-            if (alertMsg === "소개글을 입력하세요")
-              setTimeout(() => bioRef.current?.focus(), 0);
-          }}
-        />
-      )}
       {/* 프로필 이미지 추가 확인 모달 */}
-      {showConfirmModal && (
-        <AlertModal
-          message="프로필 이미지를 추가하시겠습니까?"
-          showCancel
-          onClose={() => {
-            setShowConfirmModal(false);
-            setTimeout(() => bioRef.current?.focus(), 0);
-          }}
-          onConfirm={() => {
-            setShowConfirmModal(false);
-            setTimeout(() => {
-              fileInputRef.current?.click(); // 이미지 선택 열기
-              document.body.focus(); // 포커스 리셋
-            }, 100);
-          }}
-        />
-      )}
+      {showConfirmModal && <AlertModal />}
     </>
   );
 };
@@ -325,4 +355,5 @@ const SettingProfile = () => {
 export default SettingProfile;
 
 // 닉네임 입력창 클래스
-const settingProfile = "bg-lime-400 p-3 rounded w-80 sm:w-122 mt-5";
+const settingProfile =
+  "bg-lime-400 p-3 rounded w-80 sm:w-122 mt-5 dark:bg-lime-500";

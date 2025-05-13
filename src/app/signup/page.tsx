@@ -15,6 +15,7 @@ import { dbService, FBCollection, authService } from "@/lib/firebase"; // Fireba
 import AlertModal from "@/components/AlertModal";
 import { useTheme } from "next-themes";
 import { useAlertModal } from "@/components/AlertStore";
+import Loaiding from "@/components/Loading";
 
 const STORAGE_KEY = "signupUser"; // 세션 스토리지 키
 
@@ -56,8 +57,8 @@ const SignupForm = () => {
         ...base,
         backgroundColor: state.isFocused
           ? themeMode === "dark"
-            ? "#374151"
-            : "#e5e7eb"
+            ? "#6ee7b7" // ✅ emerald-300
+            : "#d1fae5" // ✅ emerald-100
           : "transparent",
         color: themeMode === "dark" ? "#fff" : "#000",
       }),
@@ -89,6 +90,8 @@ const SignupForm = () => {
   const monthSelectRef = useRef<SelectInstance<any> | null>(null);
   const daySelectRef = useRef<SelectInstance<any> | null>(null);
   const locationAgreeRef = useRef<HTMLInputElement | null>(null);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 입력창 ref 설정 함수
   const setInputRef = useCallback(
@@ -228,6 +231,7 @@ const SignupForm = () => {
 
   // 제출 처리
   const handleSubmit = useCallback(async () => {
+    setIsSubmitting(true); // ✅ 로딩 시작
     // 병렬 유효성 검사 수행
     const validationResults = await Promise.all(
       InfoAccount.map((info) => {
@@ -255,6 +259,7 @@ const SignupForm = () => {
           autoFocus: true,
         },
       ]);
+      setIsSubmitting(false); // ✅ 로딩 종료
       return;
     }
 
@@ -267,6 +272,7 @@ const SignupForm = () => {
           autoFocus: true,
         },
       ]);
+      setIsSubmitting(false); // ✅ 로딩 종료
       return;
     }
 
@@ -279,6 +285,7 @@ const SignupForm = () => {
           autoFocus: true,
         },
       ]);
+      setIsSubmitting(false); // ✅ 로딩 종료
       return;
     }
 
@@ -292,7 +299,7 @@ const SignupForm = () => {
 
   return (
     <div className="flex flex-col justify-start items-center min-h-screen px-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-teal-300 rounded-lg p-6">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-teal-300 rounded-lg p-6 dark:border-teal-100">
         <form className="space-y-8">
           {InfoAccount.map((info, index) => {
             const key = info.name as keyof typeof user;
@@ -316,7 +323,14 @@ const SignupForm = () => {
                             ? { value: birthYear, label: birthYear }
                             : null
                         }
-                        onChange={(opt) => setBirthYear(opt?.value ?? "")}
+                        onChange={(opt) => {
+                          setBirthYear(opt?.value ?? "");
+                          // ✅ 년도 선택 후 자동으로 월 select 열기
+                          setTimeout(() => {
+                            monthSelectRef.current?.focus();
+                            monthSelectRef.current?.onMenuOpen?.();
+                          }, 0); // setState 후 DOM update 기다림
+                        }}
                         placeholder="년도"
                         styles={selectStyle}
                         onKeyDown={(e) => {
@@ -340,7 +354,14 @@ const SignupForm = () => {
                             ? { value: birthMonth, label: birthMonth }
                             : null
                         }
-                        onChange={(opt) => setBirthMonth(opt?.value ?? "")}
+                        onChange={(opt) => {
+                          setBirthMonth(opt?.value ?? "");
+                          // ✅ 월 선택 후 일로 넘어가기
+                          setTimeout(() => {
+                            daySelectRef.current?.focus();
+                            daySelectRef.current?.onMenuOpen?.();
+                          }, 0);
+                        }}
                         placeholder="월"
                         styles={selectStyle}
                         onKeyDown={(e) => {
@@ -362,7 +383,16 @@ const SignupForm = () => {
                         value={
                           birthDay ? { value: birthDay, label: birthDay } : null
                         }
-                        onChange={(opt) => setBirthDay(opt?.value ?? "")}
+                        onChange={(opt) => {
+                          setBirthDay(opt?.value ?? "");
+                          // ✅ 일 선택 후 전화번호 input으로 포커스 이동
+                          setTimeout(() => {
+                            const telInput = inputRefs.current.find(
+                              (el) => el?.getAttribute("name") === "tel"
+                            );
+                            telInput?.focus();
+                          }, 0);
+                        }}
                         placeholder="일"
                         styles={selectStyle}
                         onKeyDown={(e) => {
@@ -389,7 +419,7 @@ const SignupForm = () => {
                       onChange={handleChange}
                       onKeyDown={handleKeyDown(index)}
                       placeholder={info.label}
-                      className={`w-full border rounded-md px-2 pt-5 pb-2 text-base outline-none placeholder-transparent ${
+                      className={` peer w-full border rounded-md  h-12 px-2 pt-[10px] pb-[10px] text-base outline-none placeholder-transparent ${
                         errors[key] ? "border-red-500" : "border-gray-300"
                       } focus:border-teal-400 transition-all h-16 dark:text-white dark:bg-gray-800`}
                     />
@@ -397,7 +427,7 @@ const SignupForm = () => {
                       htmlFor={inputId}
                       className={`absolute left-2 top-5 text-gray-400 text-base transition-all ${
                         value
-                          ? "text-xs top-[3px] text-teal-600"
+                          ? "text-xs top-[4px] text-teal-600"
                           : "text-base top-2"
                       } pointer-events-none`}
                     >
@@ -409,31 +439,40 @@ const SignupForm = () => {
                   </>
                 ) : (
                   // 체크박스 렌더링
-                  <div className="flex items-center mt-2">
-                    <input
-                      id={inputId}
-                      ref={locationAgreeRef}
-                      name={info.name}
-                      type="checkbox"
-                      checked={value as boolean}
-                      onChange={handleChange}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          const button =
-                            document.getElementById("signup-next-button");
-                          button?.click();
-                        }
-                      }}
-                      className="w-4 h-4 mr-2"
-                    />
-                    <label
-                      htmlFor={inputId}
-                      className="text-sm text-gray-700 dark:text-gray-300"
-                    >
-                      {info.label}
-                    </label>
-                  </div>
+                  <>
+                    <div className="flex items-center mt-2">
+                      <input
+                        id={inputId}
+                        ref={locationAgreeRef}
+                        name={info.name}
+                        type="checkbox"
+                        checked={value as boolean}
+                        onChange={handleChange}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const button =
+                              document.getElementById("signup-next-button");
+                            button?.click();
+                          }
+                        }}
+                        className="w-4 h-4 mr-2"
+                      />
+                      <label
+                        htmlFor={inputId}
+                        className="text-sm text-gray-700 dark:text-gray-300"
+                      >
+                        {info.label}
+                      </label>
+                    </div>
+                    {/* ✅ 위치정보 설명문구 조건부로 추가 (Fragment 내부에 있어야 함) */}
+                    {user.agreeLocation && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6">
+                        위치정보는 주변 추천 장소 검색, 맞춤 콘텐츠 제공 등을
+                        위해 사용됩니다.
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             );
@@ -445,7 +484,7 @@ const SignupForm = () => {
           id="signup-next-button"
           type="button"
           onClick={handleSubmit}
-          className="mt-8 w-full bg-green-500 text-white font-bold py-4 rounded-lg hover:bg-green-600 transition"
+          className="mt-8 w-full bg-green-500 text-black font-bold py-4 rounded-lg hover:bg-green-600 transition dark:text-white dark:bg-green-700"
         >
           다음
         </button>
@@ -453,6 +492,10 @@ const SignupForm = () => {
 
       {/* 알림 모달 */}
       <AlertModal />
+
+      {isSubmitting && (
+        <Loaiding isLoading={true} message="가입 처리 중입니다..." />
+      )}
     </div>
   );
 };

@@ -18,13 +18,14 @@ import { validateName, validatePhone } from "@/lib/validations";
 import { dbService, FBCollection } from "@/lib/firebase";
 import AlertModal from "@/components/AlertModal";
 import Link from "next/link";
+import { useAlertModal } from "@/components/AlertStore";
 
 // 세션 저장 키 정의
 const STORAGE_KEY = "idFindForm";
 
 const IdFind = () => {
   const router = useRouter();
-  const pathname = usePathname();
+  // const pathname = usePathname();
   const inputRefs = useRef<HTMLInputElement[]>([]); // 입력창 ref 배열
 
   // 사용자 입력값과 인증 상태 관리
@@ -45,8 +46,12 @@ const IdFind = () => {
   const [isVerified, setIsVerified] = useState(false); // 인증 성공 여부
   const [alertMessage, setAlertMessage] = useState<string | null>(null); // 경고 메시지
 
-  const showAlert = (message: string) => setAlertMessage(message); // 알림창 표시 함수
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const phoneInputRef = useRef<HTMLInputElement>(null);
+  const checkInputRef = useRef<HTMLInputElement>(null);
+
   const [isPending, startTransition] = useTransition();
+  const { openAlert } = useAlertModal();
 
   // 이메일 마스킹 처리 (앞 3글자만 보이고 나머지는 * 처리)
   const maskEmail = useCallback((email: string) => {
@@ -153,6 +158,7 @@ const IdFind = () => {
 
       // 인증번호 입력 후 Enter → 인증번호 확인 실행
       else if (index === 2) {
+        if (!code) return;
         handleVerifyCode();
       }
     }
@@ -189,11 +195,12 @@ const IdFind = () => {
     const nameErr = validateName(name);
     const phoneErr = validatePhone(phone);
     const codeValid = code.length === 6 && code === generatedCode;
-
     setErrors({ name: nameErr || "", phone: phoneErr || "" });
 
     if (nameErr || phoneErr || !codeValid) {
-      showAlert("이름, 전화번호, 인증번호를 모두 정확히 입력해주세요.");
+      openAlert("이름, 전화번호, 인증번호를 모두 정확히 입력해주세요.", [
+        { text: "확인", isGreen: true },
+      ]);
       return;
     }
 
@@ -205,7 +212,9 @@ const IdFind = () => {
         .get();
 
       if (snap.empty) {
-        showAlert("일치하는 계정이 없습니다.");
+        openAlert("일치하는 계정이 없습니다.", [
+          { text: "확인", isGreen: true },
+        ]);
         return;
       }
 
@@ -216,7 +225,9 @@ const IdFind = () => {
       setIsVerified(true);
     } catch (error) {
       console.error("이메일 조회 실패", error);
-      showAlert("이메일 조회 중 오류가 발생했습니다.");
+      openAlert("이메일 조회 중 오류가 발생했습니다.", [
+        { text: "확인", isGreen: true },
+      ]);
     }
   }, [name, phone, code, generatedCode]);
 
@@ -226,10 +237,106 @@ const IdFind = () => {
 
   // 확인 버튼 클릭 → 선택한 이메일 매핑 후 다음 페이지 이동
   const handleSubmit = useCallback(() => {
-    if (!foundEmail || !isVerified)
-      return showAlert("먼저 인증확인을 완료해주세요.");
-    if (!selectedEmail) return showAlert("아이디를 선택해주세요.");
+    const targetRefs = [nameInputRef, phoneInputRef, checkInputRef];
+    const trimmedName = name.trim();
+    const trimmedPhone = phone.trim();
+    const codeValid = code.length === 6 && code === generatedCode;
 
+    // 모두 미입력
+    if (!trimmedName && !trimmedPhone && !code) {
+      return openAlert(
+        "이름, 전화번호, 인증번호를 입력해주세요.",
+        [{ text: "확인", isGreen: true, autoFocus: true, target: 0 }],
+        undefined,
+        targetRefs
+      );
+    }
+
+    // 이름만 입력
+    if (trimmedName && !trimmedPhone && !code) {
+      return openAlert(
+        "전화번호와 인증번호를 입력해주세요.",
+        [{ text: "확인", isGreen: true, autoFocus: true, target: 1 }],
+        undefined,
+        targetRefs
+      );
+    }
+
+    // 전화번호만 입력
+    if (!trimmedName && trimmedPhone && !code) {
+      return openAlert(
+        "이름과 인증번호를 입력해주세요.",
+        [{ text: "확인", isGreen: true, autoFocus: true, target: 0 }],
+        undefined,
+        targetRefs
+      );
+    }
+
+    // 인증번호만 입력
+    if (!trimmedName && !trimmedPhone && code) {
+      return openAlert(
+        "이름과 전화번호를 입력해주세요.",
+        [{ text: "확인", isGreen: true, autoFocus: true, target: 0 }],
+        undefined,
+        targetRefs
+      );
+    }
+
+    // 이름, 전화번호만 입력
+    if (trimmedName && trimmedPhone && !code) {
+      return openAlert(
+        "인증번호를 입력해주세요.",
+        [{ text: "확인", isGreen: true, autoFocus: true, target: 2 }],
+        undefined,
+        targetRefs
+      );
+    }
+
+    // 이름, 인증번호만 입력
+    if (trimmedName && !trimmedPhone && code) {
+      return openAlert(
+        "전화번호를 입력해주세요.",
+        [{ text: "확인", isGreen: true, autoFocus: true, target: 1 }],
+        undefined,
+        targetRefs
+      );
+    }
+
+    // 전화번호, 인증번호만 입력
+    if (!trimmedName && trimmedPhone && code) {
+      return openAlert(
+        "이름을 입력해주세요.",
+        [{ text: "확인", isGreen: true, autoFocus: true, target: 0 }],
+        undefined,
+        targetRefs
+      );
+    }
+
+    // 인증번호 형식 확인
+    if (!codeValid) {
+      return openAlert(
+        "인증번호가 올바르지 않습니다.",
+        [{ text: "확인", isGreen: true, autoFocus: true, target: 2 }],
+        undefined,
+        targetRefs
+      );
+    }
+
+    // 인증 확인 여부
+    if (!foundEmail || !isVerified) {
+      return openAlert("먼저 인증확인을 완료해주세요.", [
+        { text: "확인", isGreen: true },
+      ]);
+    }
+
+    // 이메일 선택 여부
+    if (!selectedEmail) {
+      return openAlert("아이디를 선택해주세요.", [
+        { text: "확인", isGreen: true },
+      ]);
+    }
+
+    // 모든 조건 통과 시 → 실제 이메일 매핑 및 이동
     const realEmails = sessionStorage.getItem("realEmail")?.split(",") || [];
     const selectedIndex = maskedEmailList.findIndex(
       (email) => email === selectedEmail
@@ -249,9 +356,21 @@ const IdFind = () => {
         router.push("/idfind/resultid");
       });
     } else {
-      showAlert("선택한 이메일을 찾을 수 없습니다.");
+      openAlert("선택한 이메일을 찾을 수 없습니다.", [
+        { text: "확인", isGreen: true },
+      ]);
     }
-  }, [foundEmail, selectedEmail, router, isVerified, maskedEmailList]);
+  }, [
+    name,
+    phone,
+    code,
+    generatedCode,
+    foundEmail,
+    isVerified,
+    selectedEmail,
+    router,
+    maskedEmailList,
+  ]);
 
   // 인증번호 처음 발송
   const handleCodeSend = useCallback(() => {
@@ -265,16 +384,25 @@ const IdFind = () => {
     setShowCode(true);
     setCodeRequested(true);
     setCodeSentOnce(true);
-    showAlert("인증번호가 전송되었습니다: " + newCode);
+    openAlert("인증번호가 전송되었습니다: " + newCode, [
+      { text: "확인", isGreen: true },
+    ]);
   }, [name, phone]);
 
   // 인증번호 재발송
   const handleResend = useCallback(() => {
-    if (!codeSentOnce) return showAlert("먼저 인증번호찾기를 눌러주세요.");
+    if (!codeSentOnce) {
+      openAlert("먼저 인증번호찾기를 눌러주세요.", [
+        { text: "확인", isGreen: true },
+      ]);
+      return;
+    }
     const newCode = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedCode(newCode);
     setShowCode(true);
-    showAlert("인증번호가 재전송되었습니다: " + newCode);
+    openAlert("인증번호가 재전송되었습니다: " + newCode, [
+      { text: "확인", isGreen: true },
+    ]);
   }, [codeSentOnce]);
 
   // 페이지 로드 후 첫 번째 입력창 포커싱
@@ -329,12 +457,7 @@ const IdFind = () => {
       className="overflow-y-auto overflow-visible min-h-screen hide-scrollbar "
     >
       {/* 알림창 */}
-      {alertMessage && (
-        <AlertModal
-          message={alertMessage}
-          onClose={() => setAlertMessage(null)}
-        />
-      )}
+      {alertMessage && <AlertModal />}
 
       {/* 상단 아이디/비밀번호 찾기 헤더 */}
       <div className="w-full bg-emerald-100 p-4 whitespace-nowrap  ">
@@ -358,10 +481,13 @@ const IdFind = () => {
       {/* 입력폼 렌더링 */}
       {IdFinds.map((idf, index) => (
         <div key={index}>
-          <div className="flex gap-x-2 p-3 whitespace-nowrap ">
+          <div className="flex gap-x-2  whitespace-nowrap  mt-5">
             <input
               ref={(el) => {
                 if (el) inputRefs.current[index] = el;
+                if (index === 0) nameInputRef.current = el;
+                if (index === 1) phoneInputRef.current = el;
+                if (index === 2) checkInputRef.current = el;
               }}
               type={idf.type || "text"}
               placeholder={idf.label}
@@ -402,9 +528,7 @@ const IdFind = () => {
           </div>
           {/* 유효성 오류 메시지 출력 */}
           {idf.error && (
-            <p className="text-red-500 text-sm mt-0.5  w-150 ml-5">
-              {idf.error}
-            </p>
+            <p className="text-red-500 text-sm mt-5  w-150 ">{idf.error}</p>
           )}
           {/* 인증번호 표시  */}
           {index === 2 && showCode && (
@@ -416,7 +540,7 @@ const IdFind = () => {
       ))}
 
       {/* 확인 버튼 */}
-      <div className=" px-5 flex ">
+      <div className="  flex ">
         <div className="flex flex-col lg:flex-row lg:justify-center ">
           <div className="flex justify-center w-full mt-5">
             <button
