@@ -12,7 +12,7 @@ interface Props {
   detailRef: RefObject<HTMLDivElement | null>;
 }
 
-const PlaceDetail: React.FC<Props> = ({ place, onClose, detailRef }) => {
+const PlaceDetail = ({ detailRef, onClose, place }: Props) => {
   const [isAlertVisible, setAlertVisible] = useState(false); // 알림 모달 보이기 상태
   const [alertMessage, setAlertMessage] = useState(""); // 알림 메시지 상태
 
@@ -52,7 +52,7 @@ const PlaceDetail: React.FC<Props> = ({ place, onClose, detailRef }) => {
   return (
     <div
       ref={detailRef}
-      className="absolute z-10 shadow-md sm:top-[17%] sm:right-75 left-[20%] sm:left-[30%] sm:block top-[28%] -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 w-60 max-w-xs bg-white border border-gray-300 rounded-xl sm:rounded-2xl p-3 h-fit"
+      className="absolute z-10 shadow-md sm:block sm:top-[22%] sm:left-[31%] left-[20%] top-[30%] -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 w-60 max-w-xs bg-white border border-gray-300 rounded-xl sm:rounded-2xl p-3 h-fit dark:bg-[#6B6B6B] dark:text-white"
     >
       <button
         onClick={onClose}
@@ -62,13 +62,13 @@ const PlaceDetail: React.FC<Props> = ({ place, onClose, detailRef }) => {
       </button>
 
       <h2 className="text-sm sm:text-md mb-2 font-semibold">상세 정보</h2>
-      <p className="font-bold sm:font-extrabold text-base sm:text-lg text-green-600 truncate">
+      <p className="font-bold sm:font-extrabold text-base sm:text-lg text-green-400  truncate">
         {place.place_name}
       </p>
       <p className="text-sm truncate">
         {place.road_address_name || place.address_name}
       </p>
-      <p className="text-xs sm:text-sm text-gray-600 mt-1 truncate">
+      <p className="text-xs sm:text-sm  mt-1 truncate">
         {place.phone || "전화번호 없음"}
       </p>
 

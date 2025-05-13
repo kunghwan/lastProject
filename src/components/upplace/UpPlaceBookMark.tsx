@@ -5,6 +5,7 @@ import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { dbService } from "@/lib/firebase";
 import PlaceCard from "@/components/upplace/PlaceCard";
+import { FcLike } from "react-icons/fc";
 
 const UpPlaceBookMark = () => {
   const [places, setPlaces] = useState<Place[]>([]); // 북마크 장소 목록
@@ -60,7 +61,10 @@ const UpPlaceBookMark = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">❤️ 내가 좋아요한 추천 장소</h1>
+      <h1 className="text-xl font-bold mb-4 flex gap-2.5">
+        {" "}
+        <FcLike /> 내가 좋아요한 추천 장소
+      </h1>
 
       {places.length === 0 ? (
         <p className="text-gray-500">좋아요한 장소가 없습니다.</p>

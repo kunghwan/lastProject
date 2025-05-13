@@ -16,6 +16,9 @@ import { Post } from "@/types/post";
 import { useRouter } from "next/navigation";
 import UpPlaceBookMark from "@/components/upplace/UpPlaceBookMark";
 import LikeButton from "@/components/post/LikeButton";
+import { FcLike } from "react-icons/fc";
+import { HiOutlineX } from "react-icons/hi";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 type SortOption = "recent" | "oldest" | "likes";
 
@@ -161,8 +164,11 @@ const BookmarkPage = () => {
 
   return (
     <div className="flex flex-col mx-auto p-2 lg:w-3/4 w-full ">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="sm:text-xl font-bold">❤️ 내가 좋아요한 게시글</h1>
+      <div className="flex items-center justify-between mb-4 gap-2.5">
+        <p className="sm:text-xl font-bold flex gap-2.5">
+          {" "}
+          <FcLike /> 내가 좋아요한 게시글
+        </p>
         <button
           onClick={handleBack}
           className="text-sm text-indigo-600 dark:text-indigo-200 hover:underline hover:scale-105 transition-transform duration-200"
@@ -170,27 +176,29 @@ const BookmarkPage = () => {
           ← 이전 페이지
         </button>
       </div>
-
-      <div className="flex gap-2 mb-4">
-        {[
-          { label: "최신순", value: "recent" },
-          { label: "오래된순", value: "oldest" },
-          { label: "좋아요순", value: "likes" },
-        ].map(({ label, value }) => (
-          <button
-            key={value}
-            onClick={() => setSort(value as SortOption)}
-            className={`px-4 py-1.5 rounded-full border text-sm font-medium shadow transition-all duration-200 hover:scale-105 ${
-              sort === value
-                ? "bg-blue-500 text-white border-blue-500 dark:text-gray-200"
-                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-300"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
+      {posts.length === 0 ? (
+        <p className="text-gray-500">좋아요한 게시글이 없습니다.</p>
+      ) : (
+        <div className="flex gap-2 mb-4">
+          {[
+            { label: "최신순", value: "recent" },
+            { label: "오래된순", value: "oldest" },
+            { label: "좋아요순", value: "likes" },
+          ].map(({ label, value }) => (
+            <button
+              key={value}
+              onClick={() => setSort(value as SortOption)}
+              className={`px-4 py-1.5 rounded-full border text-sm font-medium shadow transition-all duration-200 hover:scale-105 ${
+                sort === value
+                  ? "bg-blue-500 text-white border-blue-500 dark:text-gray-200"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-300"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-2 gap-y-4 mb-20 p-1.5 m-1 w-full max-w-screen-lg mx-auto transition-all">
         {sortedPosts.map((post) => {
           const image =
@@ -250,53 +258,52 @@ const BookmarkPage = () => {
       <div className="col-span-2 lg:col-span-3 pb-20">
         <UpPlaceBookMark />
       </div>
-
       {selectedPost && (
         <div
-          className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex justify-center items-center"
+          className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex justify-center items-center "
           onClick={() => setSelectedPost(null)}
         >
           <div
-            className="bg-white rounded-lg w-11/12 md:w-3/5 lg:w-1/2 max-h-[90vh] overflow-y-auto relative"
+            className="bg-white rounded-lg w-11/12 md:w-3/5 lg:w-1/2 max-h-[60vh] md:max-h-[80vh] h-screen relative"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setSelectedPost(null)}
-              className="absolute top-2 right-4 text-xl font-bold text-gray-700"
+              className="absolute z-40 top-2 right-4 md:text-3xl transition-all text-xl font-bold text-gray-700 p-5"
             >
-              ✕
+              <HiOutlineX />
             </button>
 
-            <div className="relative w-full h-64 mt-10 flex items-center justify-center">
+            <div className="relative md:w-full w-auto h-1/2 md:h-2/3 mt-5 md:mt-10 flex items-center justify-center">
               <img
                 src={
                   modalImages.length > 0
                     ? modalImages[currentIndex]
-                    : selectedPost.imageUrl?.[0] || "/image/logo1.png"
+                    : selectedPost.imageUrl?.[0] || defaultImgUrl
                 }
                 alt={`image-${currentIndex}`}
-                className="max-h-64 object-contain rounded"
+                className=" object-contain rounded md:max-h-110 md:w-110"
                 loading="lazy"
               />
               {modalImages.length > 1 && (
                 <>
                   <button
                     onClick={handlePrev}
-                    className="absolute left-3 text-2xl text-white bg-black/40 rounded-full p-2 hover:bg-black/70"
+                    className="absolute left-3 text-2xl text-gray-700 hover:text-gray-400 rounded-full p-1.5"
                   >
-                    ‹
+                    <FaChevronLeft />
                   </button>
                   <button
                     onClick={handleNext}
-                    className="absolute right-3 text-2xl text-white bg-black/40 rounded-full p-2 hover:bg-black/70"
+                    className="absolute right-3 text-2xl text-gray-700 hover:text-gray-400 rounded-full p-1.5"
                   >
-                    ›
+                    <FaChevronRight />
                   </button>
                 </>
               )}
             </div>
 
-            <div className="p-4">
+            <div className="p-4 justify-end flex flex-col">
               <div className="text-xs text-gray-500 mt-2 flex justify-between mb-5">
                 <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
                 <div>{formatCreatedAt(selectedPost.createdAt)}</div>
@@ -316,3 +323,5 @@ const BookmarkPage = () => {
 };
 
 export default BookmarkPage;
+
+const defaultImgUrl = "/image/logo1.png"; // 기본 프로필 이미지 URL

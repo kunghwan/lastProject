@@ -117,15 +117,12 @@ const ProfileLayout = ({
   );
 
   const tagColors = useMemo(() => {
-    return tags.reduce(
-      (acc, tag) => {
-        acc[tag.id] = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
-          Math.random() * 256
-        )}, ${Math.floor(Math.random() * 256)})`;
-        return acc;
-      },
-      {} as Record<string, string>
-    );
+    return tags.reduce((acc, tag) => {
+      acc[tag.id] = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
+        Math.random() * 256
+      )}, ${Math.floor(Math.random() * 256)})`;
+      return acc;
+    }, {} as Record<string, string>);
   }, [tags]);
 
   const firstPost = useMemo(() => posts[0] ?? null, [posts]);
@@ -196,7 +193,9 @@ const ProfileLayout = ({
                   구독수 <span>{followerCount}</span>
                 </div>
               </div>
-              <div>{userData.bio}</div>
+              <div className="h-full line-clamp-3 break-words">
+                {userData.bio}
+              </div>
             </div>
           </div>
           <div className="flex text-2xl p-2.5 ml-30 mr-30">

@@ -15,11 +15,11 @@ interface KeywordButtonsProps {
 }
 
 const keywordBtnStyle =
-  "bg-white border border-gray-300 px-0 py-2 rounded-full shadow-sm hover:border-green-500 text-sm w-20 gap-x-1 flex items-center justify-center font-semibold focus:border-green-500 focus:bg-gray-100";
+  "bg-white border border-gray-300 px-0 py-2 rounded-full shadow-sm hover:border-green-500 text-sm w-20 gap-x-1 flex items-center justify-center font-semibold focus:border-green-500 dark:bg-[#6B6B6B] dark:text-[#E5E7EB]";
 
 const KeywordButton = ({ name, icon, onClick }: KeywordButtonProps) => (
   <button className={keywordBtnStyle} onClick={() => onClick(name)}>
-    <p className="text-green-500 text-lg">{icon}</p>
+    <p className="text-green-400 text-lg">{icon}</p>
     {name}
   </button>
 );
