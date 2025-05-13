@@ -1,12 +1,12 @@
-"use client";
+// "use client";
 
+// import { useState, useRef, useCallback, useEffect } from "react";
 // import SearchForm from "@/components/map/SearchForm";
 // import MobilePlaceList from "@/components/map/MobilePlaceList";
 // import PlaceDetail from "@/components/map/PlaceDetail";
-// import NoResultsModal from "@/components/map/NoResultsModal";
 // import PlaceList from "@/components/map/PlaceList";
 // import KeywordButtons from "@/components/map/KeywordButtons";
-// import { useCallback, useEffect, useRef, useState } from "react";
+// import AlertModal from "@/components/AlertModal";
 
 // const MapPage = () => {
 //   const [map, setMap] = useState<any>(null); // 카카오 지도 객체
@@ -15,7 +15,8 @@
 //   const [keyword, setKeyword] = useState(""); // 검색 키워드
 //   const [inputValue, setInputValue] = useState(""); // 입력창의 현재 값
 //   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 모바일 사이드바 열림 상태
-//   const [showNoResultsModal, setShowNoResultsModal] = useState(false); // 모달 상태
+//   const [alertMessage, setAlertMessage] = useState(""); // 알림 메시지
+//   const [isShhowingAlert, setIsShhowingAlert] = useState(false); // 알림 모달 상태
 
 //   const markers = useRef<any[]>([]); // 현재 지도에 그려진 마커 및 오버레이 배열
 //   const mapRef = useRef<HTMLDivElement>(null); // 지도 렌더링 DOM 참조
@@ -100,7 +101,7 @@
 //             const DJData = data.filter((place) =>
 //               place.address_name?.includes("대전")
 //             );
-//             // 백화점 검색 결과는 최대 5개로 제한(이름에 백화점이 붙은 가게들을 제거하기 위해서)
+//             // 백화점 검색 결과는 최대 5개로 제한(검색결과 상위 5개만 백화점이고 나머지는 이름에 백화점이 붙은 일반 가게들)
 //             const limitedData =
 //               keyword === "백화점" ? DJData.slice(0, 5) : DJData;
 
@@ -146,10 +147,12 @@
 //             });
 //             //! 검색 결과 없을 경우
 //           } else if (status === maps.services.Status.ZERO_RESULT) {
-//             setShowNoResultsModal(true); // 모달 상태를 true로 변경
 //             setPlaces([]);
 //             markers.current.forEach((m) => m.setMap(null));
 //             markers.current = [];
+//             setAlertMessage("검색 결과가 없습니다.");
+//             setIsShhowingAlert(true); // 알림 모달 표시
+//             setInputValue(""); // 검색 결과 없으면 검색창 비움
 //           }
 //         },
 //         { bounds }
@@ -203,11 +206,6 @@
 //     setSelectedPlace(null);
 //   }, []);
 
-//   //! 모달 닫기 핸들러
-//   const handleCloseNoResultsModal = useCallback(() => {
-//     setShowNoResultsModal(false);
-//   }, []);
-
 //   return (
 //     <div className="relative flex h-[76vh] dark:text-gray-600">
 //       <div
@@ -220,19 +218,19 @@
 //         inputValue={inputValue}
 //         setInputValue={setInputValue}
 //         handleSearch={handleSearch}
-//         className="absolute z-10 top-5 left-[50%] translate-x-[-50%] md:left-50 md:my-2.5 md:transform-none"
+//         className="absolute z-10 top-5 left-[50%] translate-x-[-50%] md:left-40 md:my-2.5 md:transform-none"
 //         inputClassName="mx-2 w-48"
 //       />
 
 //       {/* 키워드 버튼 */}
 //       {!selectedPlace && (
-//         <div className="absolute z-10 top-20 sm:top-25 left-[50%] translate-x-[-50%] flex gap-2 md:left-50 md:transform-none ">
+//         <div className="absolute z-10 top-20 sm:top-25 left-[50%] translate-x-[-50%] flex gap-2 md:left-50 md:transform-none">
 //           <KeywordButtons onKeywordClick={handleKeywordClick} />
 //         </div>
 //       )}
 
-//       {/*검색 장소 리스트 */}
-//       {keyword.length > 0 && !showNoResultsModal && places.length > 0 && (
+//       {/* 검색 장소 리스트 */}
+//       {keyword.length > 0 && places.length > 0 && (
 //         <PlaceList
 //           places={places}
 //           handlePlaceClick={handlePlaceClick}
@@ -249,8 +247,8 @@
 //         />
 //       )}
 
-//       {/*모바일 장소 리스트  */}
-//       {keyword.length > 0 && !showNoResultsModal && places.length > 0 && (
+//       {/* 모바일 장소 리스트 */}
+//       {keyword.length > 0 && places.length > 0 && (
 //         <MobilePlaceList
 //           isOpen={isSidebarOpen}
 //           setIsOpen={setIsSidebarOpen}
@@ -259,11 +257,13 @@
 //         />
 //       )}
 
-//       {/* 검색 결과 없음 모달 */}
-//       <NoResultsModal
-//         isOpen={showNoResultsModal}
-//         onClose={handleCloseNoResultsModal}
-//       />
+//       {/* 알림 모달 */}
+//       {isShhowingAlert && (
+//         <AlertModal
+//           message={alertMessage}
+//           onClose={() => setIsShhowingAlert(false)}
+//         />
+//       )}
 //     </div>
 //   );
 // };
