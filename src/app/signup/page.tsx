@@ -14,6 +14,7 @@ import { AUTH } from "@/contextapi/context";
 import { dbService, FBCollection, authService } from "@/lib/firebase"; // Firebase 연동
 import AlertModal from "@/components/AlertModal";
 import { useTheme } from "next-themes";
+import { useAlertModal } from "@/components/AlertStore";
 
 const STORAGE_KEY = "signupUser"; // 세션 스토리지 키
 
@@ -28,6 +29,7 @@ const InfoAccount = [
 ];
 
 const SignupForm = () => {
+  const { openAlert } = useAlertModal();
   const { resolvedTheme } = useTheme();
   // react-select 스타일
   const themeMode = resolvedTheme ?? "light"; // fallback to 'light'
@@ -87,9 +89,6 @@ const SignupForm = () => {
   const monthSelectRef = useRef<SelectInstance<any> | null>(null);
   const daySelectRef = useRef<SelectInstance<any> | null>(null);
   const locationAgreeRef = useRef<HTMLInputElement | null>(null);
-
-  const [alertMsg, setAlertMsg] = useState(""); // 모달 메시지
-  const closeAlert = () => setAlertMsg(""); // 모달 닫기
 
   // 입력창 ref 설정 함수
   const setInputRef = useCallback(
@@ -249,20 +248,37 @@ const SignupForm = () => {
 
     // 유효성 오류가 있으면 중단
     if (Object.values(newErrors).some((msg) => msg)) {
-      setAlertMsg("입력값을 다시 확인해주세요.");
+      openAlert("입력값을 다시 확인해주세요.", [
+        {
+          text: "확인",
+          isGreen: true,
+          autoFocus: true,
+        },
+      ]);
       return;
     }
 
-    // Firebase 인증 생성
     const result = await signup(user as User, user.password!);
     if (!result.success) {
-      setAlertMsg("회원가입 실패: " + result.message);
+      openAlert("회원가입 실패: " + result.message, [
+        {
+          text: "확인",
+          isGreen: true,
+          autoFocus: true,
+        },
+      ]);
       return;
     }
 
     const fbUser = authService.currentUser;
     if (!fbUser) {
-      setAlertMsg("회원 정보가 없습니다. 다시 시도해주세요.");
+      openAlert("회원 정보가 없습니다. 다시 시도해주세요.", [
+        {
+          text: "확인",
+          isGreen: true,
+          autoFocus: true,
+        },
+      ]);
       return;
     }
 
@@ -436,11 +452,9 @@ const SignupForm = () => {
       </div>
 
       {/* 알림 모달 */}
-      {alertMsg && <AlertModal message={alertMsg} onClose={closeAlert} />}
+      <AlertModal />
     </div>
   );
 };
 
 export default SignupForm;
-
-//! 빌드

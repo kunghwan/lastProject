@@ -34,7 +34,10 @@ export default function RootLayout({
         <AlertModal />
         <ReactQueryProvider>
           <AuthProvider>
-            <BodyLayout>{children}</BodyLayout>
+            <BodyLayout>
+              {children}
+              <AlertModal />
+            </BodyLayout>
           </AuthProvider>
         </ReactQueryProvider>
       </body>

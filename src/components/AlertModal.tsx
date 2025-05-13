@@ -29,7 +29,7 @@ const AlertModal = () => {
 
   return ReactDOM.createPortal(
     <div
-      className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center dark:bg-black/50"
+      className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center "
       onClick={closeAlert}
     >
       <div
@@ -42,7 +42,8 @@ const AlertModal = () => {
         {title && (
           <h2 className="text-lg font-bold text-center mb-3 ">{title}</h2>
         )}
-        <p className="text-gray-800 text-center whitespace-pre-line mb-4 dark:text-gray-400 ">
+
+        <p className="text-gray-800 text-center whitespace-pre-line mb-4 ">
           {message}
         </p>
         <div className="flex gap-2">
@@ -62,8 +63,8 @@ const AlertModal = () => {
               }}
               className={`flex-1 py-2 rounded text-white transition outline-none  ${
                 btn.isGreen
-                  ? "bg-green-500 hover:bg-green-600 dark:bg-green-300 dark:hover:bg-green-200"
-                  : "bg-gray-400 hover:bg-gray-500 dark:bg-gray-300 dark:hover:bg-gray-200"
+                  ? "bg-green-500 hover:bg-green-600 "
+                  : "bg-gray-400 hover:bg-gray-500 "
               }`}
             >
               {btn.text || "확인"}
