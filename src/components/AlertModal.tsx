@@ -2,6 +2,8 @@
 
 import ReactDOM from "react-dom";
 import { useAlertModal } from "./AlertStore"; // 경로는 상황 맞게 수정
+import { useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 const AlertModal = () => {
   const {
@@ -13,6 +15,16 @@ const AlertModal = () => {
     targetRefs = [],
   } = useAlertModal();
 
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && message) {
+      setTimeout(() => setShow(true), 10); // mount 후 애니메이션 트리거
+    } else {
+      setShow(false);
+    }
+  }, [isOpen, message]);
+
   if (!isOpen || !message) return null;
 
   return ReactDOM.createPortal(
@@ -21,7 +33,10 @@ const AlertModal = () => {
       onClick={closeAlert}
     >
       <div
-        className="bg-white p-6 rounded-lg shadow-lg w-80 "
+        className={twMerge(
+          "bg-white p-6 rounded-lg shadow-lg w-80 transform transition-all duration-1000 ease-out",
+          show ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
+        )}
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
@@ -29,7 +44,6 @@ const AlertModal = () => {
         )}
 
         <p className="text-gray-800 text-center whitespace-pre-line mb-4 ">
-
           {message}
         </p>
         <div className="flex gap-2">
