@@ -162,19 +162,20 @@ interface HomeMenu {
   Icon: IconType;
 }
 
+// 카카오 지도 api 관련
 interface PlaceProps {
-  address_name: string;
+  address_name: string; // 지번 주소
   category_group_code: string;
   category_group_name: string;
   category_name: string;
-  distance: string;
-  id: string;
-  phone: string;
-  place_name: string;
-  place_url: string;
-  road_address_name: string;
-  x: string;
-  y: string;
+  distance: string; // 거리
+  id: string; // 장소 id
+  phone: string; // 장소 전화번호
+  place_name: string; // 장소 이름
+  place_url: string; // 장소 관련 url
+  road_address_name: string; // 도로명 주소
+  x: string; // x좌표
+  y: string; // y좌표
 }
 
 // 전역적으로 상태관리

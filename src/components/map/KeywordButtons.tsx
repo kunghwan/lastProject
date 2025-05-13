@@ -15,7 +15,7 @@ interface KeywordButtonsProps {
 }
 
 const keywordBtnStyle =
-  "bg-white border border-gray-300 px-0 py-2 rounded-full shadow-sm hover:bg-gray-100 text-sm w-20 gap-x-1 flex items-center justify-center font-semibold";
+  "bg-white border border-gray-300 px-0 py-2 rounded-full shadow-sm hover:border-green-500 text-sm w-20 gap-x-1 flex items-center justify-center font-semibold focus:border-green-500 focus:bg-gray-100";
 
 const KeywordButton = ({ name, icon, onClick }: KeywordButtonProps) => (
   <button className={keywordBtnStyle} onClick={() => onClick(name)}>
@@ -26,7 +26,7 @@ const KeywordButton = ({ name, icon, onClick }: KeywordButtonProps) => (
 
 const KeywordButtons = ({ onKeywordClick }: KeywordButtonsProps) => {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 ">
       {keywordBtn.map((word) => (
         <KeywordButton
           key={word.name}
