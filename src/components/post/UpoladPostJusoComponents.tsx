@@ -158,7 +158,7 @@ const JusoComponents = ({
             htmlFor="jusos"
             className="font-bold text-md text-gray-500 dark:text-white"
           >
-            주소
+            장소
           </label>
           <div className="flex ">
             <input
@@ -167,10 +167,10 @@ const JusoComponents = ({
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               className={twMerge(
-                "w-full upPostInput shadow-sm border-r-0 rounded-r-none"
+                "w-full upPostInput shadow-sm border-r-0 dark:text-white rounded-r-none darkTextInput"
               )}
               ref={jusoRef}
-              placeholder="입력후 검색버튼 또는 엔터를 눌러주세요."
+              placeholder="장소를 입력후 엔터를 눌러주세요."
               onKeyDown={(e) => {
                 const { key } = e;
                 if (!e.nativeEvent.isComposing && key === "Enter") {
@@ -211,7 +211,7 @@ const JusoComponents = ({
         </div>
       )}
       {isJusoUlShowing && (
-        <ul className="mt-2 hsecol gap-y-2 bg-gray-200 dark:bg-green-50/80 border border-gray-400  rounded p-2.5 max-h-50 overflow-y-auto">
+        <ul className="mt-2 hsecol gap-y-2 bg-gray-200 dark:bg-green-50/80 border border-gray-400  rounded p-2.5 max-h-40 overflow-y-auto force-scrollbar ">
           {searchResults.length === 0 ? (
             <li>
               <p className="font-bold flex justify-center">

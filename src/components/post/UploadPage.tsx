@@ -80,6 +80,7 @@ const UploadPostPage = () => {
   const jusoRef = useRef<HTMLInputElement>(null);
   const tagRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
 
   const titleMessage = useMemo(() => {
     if (title.length === 0 || title.trim() === "") {
@@ -233,7 +234,7 @@ const UploadPostPage = () => {
           tagRef.current?.focus();
         }
         setFocusTarget(null);
-      }, 300);
+      }, 100);
     }
   }, [modal?.message, focusTarget]);
 
@@ -262,7 +263,7 @@ const UploadPostPage = () => {
     <form
       action=""
       onSubmit={onSubmit}
-      className="bg-gray-50/80  dark:bg-gray-500 relative  h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  md:grid-cols-2 md:gap-5  max-w-300 mx-auto  p-5  border rounded-2xl shadow-sm border-gray-400 "
+      className="bg-gray-50/80  dark:bg-[#484848] relative  h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  md:grid-cols-2 md:gap-5  max-w-300 mx-auto  p-5  border rounded-2xl shadow-sm border-gray-400 "
     >
       {isPending && <Loaiding />}
       {modal && (
@@ -315,7 +316,7 @@ const UploadPostPage = () => {
                   title: e.target.value,
                 }))
               }
-              className={twMerge("upPostInput shadow-sm")}
+              className={twMerge("upPostInput shadow-sm darkTextInput")}
               ref={titleRef}
               placeholder="제목을 입력하세요."
             />
@@ -332,7 +333,9 @@ const UploadPostPage = () => {
               name=""
               id="content"
               placeholder="관광지의 소개글이나 리뷰를 작성해주세요."
-              className={twMerge("h-50 shadow-sm resize-none upPostInput")}
+              className={twMerge(
+                "h-50 shadow-sm resize-none upPostInput darkTextInput"
+              )}
               value={content}
               ref={descRef}
               // 변경은 post는 객체라서 전개연산자 사용후 content만 변경
@@ -397,13 +400,14 @@ const UploadPostPage = () => {
           tag={tag}
           tagRef={tagRef}
           tags={tags}
+          jusoRef={jusoRef}
         />
         <JusoComponents
           setIsTypingTag={setIsTypingTag}
           juso={juso}
           setJuso={setJuso}
           jusoRef={jusoRef}
-          titleRef={titleRef} //! 주소 선택 후 바로 내용인풋에 포컷스를 하기 위해서
+          submitButtonRef={submitButtonRef} //! 주소 선택 후 바로 내용인풋에 포컷스를 하기 위해서
         />
       </div>
 
@@ -426,6 +430,7 @@ const UploadPostPage = () => {
         </button>
         <button
           type="submit"
+          ref={submitButtonRef}
           className={twMerge(
             "  hover:bg-[rgba(116,212,186,0.7)]  bg-[rgba(62,188,154)] transition duration-300 upPostButton dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
           )}
