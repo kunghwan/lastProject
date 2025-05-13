@@ -17,11 +17,12 @@ const MapPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 모바일 사이드바 열림 상태
   const [alertMessage, setAlertMessage] = useState(""); // 알림 메시지
   const [isShhowingAlert, setIsShhowingAlert] = useState(false); // 알림 모달 상태
+  const [isPlaceListOpen, setIsPlaceListOpen] = useState(true); // 검색 리스트 열고닫기 상태
 
   const markers = useRef<any[]>([]); // 현재 지도에 그려진 마커 및 오버레이 배열
   const mapRef = useRef<HTMLDivElement>(null); // 지도 렌더링 DOM 참조
   const detailRef = useRef<HTMLDivElement>(null); // 상세 정보창 DOM 참조
-  const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map()); //버튼 참조
+  const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map()); // 키워드 버튼 참조
 
   //! 지도 초기화 및 kakao map API 로드
   useEffect(() => {
@@ -101,11 +102,12 @@ const MapPage = () => {
             const DJData = data.filter((place) =>
               place.address_name?.includes("대전")
             );
-            // 백화점 검색 결과는 최대 5개로 제한(검색결과 상위 5개만 백화점이고 나머지는 이름에 백화점이 붙은 일반 가게들)
+            // 백화점 검색 결과는 최대 5개로 제한
             const limitedData =
               keyword === "백화점" ? DJData.slice(0, 5) : DJData;
 
             setPlaces(limitedData);
+            setIsPlaceListOpen(true); //검색 결과 있을 때 리스트 열기
 
             // 기존 마커 제거
             markers.current.forEach((m) => m.setMap(null));
@@ -126,7 +128,7 @@ const MapPage = () => {
               // 사용자 정의 마커(label)
               const label = document.createElement("div");
               label.className =
-                "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-22 text-center cursor-pointer";
+                "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-22 text-center cursor-pointer  dark:bg-[#6B6B6B] dark:text-white";
               label.innerText = place.place_name;
 
               // 라벨 클릭 시 상세 보기
@@ -166,9 +168,10 @@ const MapPage = () => {
     setInputValue(keyword);
     setKeyword(keyword);
     setIsSidebarOpen(true);
+    setIsPlaceListOpen(true);
   }, []);
 
-  //! 키워드 변경 시 검색
+  //! 키워드 변경 시 검색 실행
   useEffect(() => {
     if (keyword && map) {
       searchPlaces(keyword);
@@ -184,6 +187,7 @@ const MapPage = () => {
       return;
     }
     setKeyword(trimmed);
+    setIsPlaceListOpen(true);
   }, [inputValue]);
 
   //! 상세 정보 외 클릭 시 닫기
@@ -213,7 +217,7 @@ const MapPage = () => {
   }, []);
 
   return (
-    <div className="relative flex h-[76vh] dark:text-gray-600">
+    <div className="relative flex h-[76vh] ">
       <div
         ref={mapRef}
         className="flex-1 bg-gray-200 relative rounded-t-3xl sm:rounded-3xl border border-gray-300 overflow-hidden min-h-100"
@@ -225,24 +229,33 @@ const MapPage = () => {
           inputValue={inputValue}
           setInputValue={setInputValue}
           handleSearch={handleSearch}
-          className="w-full"
+          className="w-full dark:text-white dark:bg-[#4B4B4B]"
           inputClassName="w-55"
         />
 
-        {!selectedPlace && (
-          <div className="flex flex-wrap justify-center gap-2 md:justify-start">
-            <KeywordButtons onKeywordClick={handleKeywordClick} />
-          </div>
-        )}
+        <div className="flex flex-wrap justify-center gap-2 md:justify-start ">
+          <KeywordButtons onKeywordClick={handleKeywordClick} />
+        </div>
       </div>
 
       {/* 검색 장소 리스트 */}
-      {keyword.length > 0 && places.length > 0 && (
+      {isPlaceListOpen && keyword.length > 0 && places.length > 0 && (
         <PlaceList
           places={places}
           handlePlaceClick={handlePlaceClick}
           buttonRefs={buttonRefs}
+          onClose={() => setIsPlaceListOpen(false)}
         />
+      )}
+
+      {/* 닫힌 상태에서 다시 열기 버튼 */}
+      {!isPlaceListOpen && places.length > 0 && (
+        <button
+          onClick={() => setIsPlaceListOpen(true)}
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 py-1 rounded z-10 transition md:block hidden"
+        >
+          <div className="w-3 h-[40ch] rounded-bl-xl rounded-tl-xl dark:bg-zinc-500 bg-gray-400 hover:animate-pulse" />
+        </button>
       )}
 
       {/* 상세 정보창 */}

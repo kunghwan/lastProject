@@ -35,7 +35,7 @@ const SearchForm = ({
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder={placeholder}
-          className={`p-1 text-sm focus:outline-none placeholder:text-gray-500  ${inputClassName}`}
+          className={`p-1 text-sm focus:outline-none dark:placeholder:text-gray-200 placeholder:text-gray-500  ${inputClassName}`}
         />
         <button
           type="submit"
