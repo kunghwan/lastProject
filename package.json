@@ -33,7 +33,8 @@
     "tailwind-merge": "^3.2.0",
     "typeit": "^8.8.7",
     "typeit-react": "^2.7.8",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
