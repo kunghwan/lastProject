@@ -30,10 +30,10 @@ const UpPlaceBookMark = () => {
       const data = snap.docs.map((doc) => {
         const d = doc.data();
         return {
-          contentid: doc.id,
+          contentid: d.contentid || doc.id.replace("places_", ""),
           title: d.title,
           addr1: d.addr1,
-          firstimage: d.imageUrl,
+          firstimage: d.firstimage || d.imageUrl || "", // ✅ 안정적 처리
           likeCount: d.likeCount ?? 0,
         };
       });

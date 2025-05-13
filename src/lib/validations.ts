@@ -3,8 +3,8 @@
 //  이름 유효성
 export function validateName(name: string): string | null {
   if (!name) return "이름을 입력해주세요";
-  if (name.length === 1) return "이름을 2~4글자로 입력해주세요";
-  if (name.length > 4) return "이름이 너무 깁니다";
+  if (name.length === 8) return "이름을 2~7글자로 입력해주세요";
+  if (name.length > 10) return "이름이 너무 깁니다";
   return null;
 }
 

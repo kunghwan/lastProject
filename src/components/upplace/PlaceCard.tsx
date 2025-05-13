@@ -37,6 +37,7 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
 
   const imageUrl = useMemo(() => {
     if (place.firstimage?.trim()) return place.firstimage.trim();
+    if ((place as any).imageUrl?.trim) return (place as any).imageUrl.trim(); // 보완 처리
     return fallbackImages[place.title] || defaultImage;
   }, [place.firstimage, place.title]);
 
