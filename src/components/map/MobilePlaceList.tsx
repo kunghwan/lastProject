@@ -45,7 +45,7 @@ const MobilePlaceList = ({
             {places.map((place) => (
               <li
                 key={place.id}
-                className="bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-100"
+                className="bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-100 hover:border hover:border-green-500"
               >
                 <button
                   className="flex flex-col items-start w-full p-3 gap-y-1"
