@@ -11,8 +11,9 @@ interface JusoProps {
   juso: Location;
   setJuso: (props: Location) => void;
   jusoRef: React.RefObject<HTMLInputElement | null>;
-  titleRef: React.RefObject<HTMLInputElement | null>;
+  titleRef?: React.RefObject<HTMLInputElement | null>;
   setIsTypingTag: React.Dispatch<React.SetStateAction<boolean>>;
+  submitButtonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
 //juso를 저장하기 위해 kakao api를 사용함
@@ -44,6 +45,7 @@ const JusoComponents = ({
   jusoRef,
   setIsTypingTag,
   titleRef,
+  submitButtonRef,
 }: JusoProps) => {
   const [isJusoShowing, setIsJusoShowing] = useState(false);
   const [isJusoUlShowing, setIsJusoUlShowing] = useState(false);
@@ -237,7 +239,7 @@ const JusoComponents = ({
                   setIsJusoUlShowing(false);
                   // setAddress를 클릭한 주소로 변경 다시 검색하기 위해 주소를 저장함
                   setAddress(item.address_name);
-                  return titleRef.current?.focus();
+                  return submitButtonRef.current?.focus();
                 }}
               >
                 {item.address_name}

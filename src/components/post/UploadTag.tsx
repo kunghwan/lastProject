@@ -16,7 +16,7 @@ interface Props {
   post: UploadPostProps;
   setPost: React.Dispatch<React.SetStateAction<UploadPostProps>>;
   setIsTypingTag: React.Dispatch<React.SetStateAction<boolean>>;
-  jusoRef: React.RefObject<HTMLInputElement | null>;
+  submitButtonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
 const UploadTag = ({
@@ -27,7 +27,7 @@ const UploadTag = ({
   tagRef,
   tags,
   setIsTypingTag,
-  jusoRef,
+  submitButtonRef,
 }: Props) => {
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [focusTarget, setFocusTarget] = useState<"tag" | null>(null);
@@ -119,7 +119,7 @@ const UploadTag = ({
                 tags.length > 0
               ) {
                 //! 공백 + 태그 있음이면 주소 인풋으로 포커스 이동
-                jusoRef.current?.focus();
+                submitButtonRef.current?.focus();
                 return;
               }
 
