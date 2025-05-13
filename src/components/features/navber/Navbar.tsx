@@ -1,6 +1,6 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 import { AUTH } from "@/contextapi/context";
 import { IoPersonSharp, IoStarOutline, IoGridOutline } from "react-icons/io5";
@@ -14,44 +14,48 @@ import AlertModal from "@/components/AlertModal";
 
 const Navbar = () => {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
-  const [isGridMenuVisible, setIsGridMenuVisible] = useState(true); // Grid 메뉴 버튼 표시 여부 상태
+  const [isGridMenuVisible, setIsGridMenuVisible] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
   const { user } = AUTH.use();
 
+  const NavBtns = useMemo(
+    () => [
+      { name: "Q&A", icon: <FaCircleQuestion />, path: "/customer" },
+      { name: "추천", icon: <IoStarOutline />, path: "/upplace" },
+      { name: "피드", icon: <FaRegMessage />, path: "/feed" },
+      { name: "글쓰기", icon: <FaPencil />, path: "/profile/create" },
+      { name: "MY", icon: <IoPersonSharp />, path: "/profile" },
+    ],
+    []
+  );
+
   const navBtnClick = useCallback(
-    (btn: (typeof NavBtns)[number], index: number) => {
+    (btn: (typeof NavBtns)[0], index: number) => {
       const needsAuth = [2, 3, 4].includes(index);
       if (!user && needsAuth) {
         setShowLoginModal(true);
         return;
       }
-      if (btn.path) {
-        router.push(btn.path);
-        // setIsNavMenuOpen(false); // 이 줄을 완전히 제거합니다.
-      }
+      if (btn.path) router.push(btn.path);
     },
     [user, router]
   );
 
-  //! 메뉴열고 닫는 기능
   const handleToggleNavMenu = useCallback(() => {
     setIsNavMenuOpen((prev) => !prev);
-    setIsGridMenuVisible(!isNavMenuOpen); // 메뉴 열리고 닫히면 그리드 버튼 상태 변경
-  }, [isNavMenuOpen]);
+    setIsGridMenuVisible((prev) => !prev);
+  }, []);
 
-  //! nav메뉴 닫기 기능
   const closeNavMenu = useCallback(() => {
     setIsNavMenuOpen(false);
-    setTimeout(() => {
-      setIsGridMenuVisible(true); // 메뉴가 닫히면 그리드 버튼 다시 보이도록
-    }, 300);
+    setTimeout(() => setIsGridMenuVisible(true), 300);
   }, []);
 
   const baseNavStyle =
-    "[@media(min-width:1425px)]:flex absolute w-17 top-40 -left-[125%] bg-gray-200 z-30 rounded-full transition-all duration-400 ease-in-out transform";
+    "[@media(min-width:1425px)]:flex absolute w-17 top-40 -left-[125%] bg-gray-100 z-30 rounded-full transition-all duration-400 ease-in-out transform dark:bg-[#6B6B6B] dark:text-white";
 
   return (
     <>
@@ -69,7 +73,7 @@ const Navbar = () => {
                     )}
                     onClick={handleToggleNavMenu}
                   >
-                    <IoGridOutline className="hover:animate-pulse text-3xl dark:text-gray-600" />
+                    <IoGridOutline className="hover:animate-pulse text-3xl text-green-400" />
                   </button>
                 )}
               </div>
@@ -85,17 +89,21 @@ const Navbar = () => {
                 )}
               >
                 <ul className="flex flex-col justify-between items-center w-full h-full transition-opacity duration-300">
-                  <li className="flex justify-center text-4xl dark:text-gray-600">
+                  <li className="flex justify-center text-4xl dark:text-white ">
                     <button onClick={closeNavMenu}>
                       <FaCaretUp className="hover:animate-pulse text-3xl" />
                     </button>
                   </li>
                   {NavBtns.map((btn, index) => (
-                    <li key={index}>
+                    <li
+                      key={index}
+                      className="dark:bg-[#6B6B6B] dark:text-[#E5E7EB]"
+                    >
                       <button
                         className={twMerge(
-                          "grayButton flex flex-col gap-y-1.5 items-center transition-all duration-200",
-                          pathname === btn.path && "text-green-500"
+                          "flex flex-col gap-y-1.5 items-center transition-all duration-200 hover:text-green-400 justify-center text-3xl p-3",
+                          pathname?.startsWith(btn.path) &&
+                            "text-green-400 dark:text-green-400"
                         )}
                         onClick={() => navBtnClick(btn, index)}
                       >
@@ -112,19 +120,19 @@ const Navbar = () => {
 
         {/* 모바일 하단 네비게이션 */}
         {pathname !== "/signin" && pathname !== "/signup" && (
-          <nav className="fixed bottom-0 left-0 h-auto right-0 bg-gray-200 z-20 flex justify-around items-center [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto">
+          <nav className="dark:bg-[#6B6B6B] dark:text-white fixed bottom-0 left-0 right-0 bg-gray-100 z-20 flex justify-around items-center [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto">
             <ul className="flex justify-around w-full">
               {NavBtns.map((btn, index) => (
                 <li key={index}>
                   <button
                     className={twMerge(
-                      "grayButton text-2xl flex flex-col gap-y-1.5 items-center",
-                      pathname === btn.path && "text-green-500"
+                      "grayButton text-2xl flex flex-col gap-y-1.5 items-center bg-gray-100 dark:bg-[#6B6B6B] dark:text-[#E5E7EB]",
+                      pathname === btn.path && "text-green-400"
                     )}
                     onClick={() => navBtnClick(btn, index)}
                   >
                     {btn.icon}
-                    <p className="text-black text-xs">{btn.name}</p>
+                    <p className="text-xs">{btn.name}</p>
                   </button>
                 </li>
               ))}
@@ -136,7 +144,7 @@ const Navbar = () => {
       {/* 로그인 유도 모달 */}
       {showLoginModal && (
         <AlertModal
-          message="유저만 이용 가능한 기능입니다. 로그인 하시겠습니까?"
+          message={"유저만 이용 가능한 기능입니다.\n로그인 하시겠습니까?"}
           onClose={() => setShowLoginModal(false)}
           onConfirm={() => {
             setShowLoginModal(false);
@@ -148,12 +156,5 @@ const Navbar = () => {
     </>
   );
 };
-export default Navbar;
 
-const NavBtns = [
-  { name: "Q&A", icon: <FaCircleQuestion />, path: "/customer" },
-  { name: "추천", icon: <IoStarOutline />, path: "/upplace" },
-  { name: "피드", icon: <FaRegMessage />, path: "/feed" },
-  { name: "글쓰기", icon: <FaPencil />, path: "/profile/create" },
-  { name: "MY", icon: <IoPersonSharp />, path: "/profile" },
-];
+export default Navbar;

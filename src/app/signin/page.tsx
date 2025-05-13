@@ -1,39 +1,33 @@
-"use client"; // Next.js의 Client Component로 선언
+"use client";
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AUTH } from "@/contextapi/context";
-import AlertModal from "@/components/AlertModal";
+
 import Loading from "@/components/Loading";
+import { useAlertModal } from "@/components/AlertStore";
+import AlertModal from "@/components/AlertModal";
 
 const LoginForm = () => {
-  // ✅ 로그인 이메일 상태 (초기값은 sessionStorage에서 복원)
+  const { openAlert } = useAlertModal();
+
   const [email, setEmail] = useState(
     () => sessionStorage.getItem("login_email") || ""
   );
-
   const [password, setPassword] = useState("");
-
-  const [alertMsg, setAlertMsg] = useState("");
-
   const router = useRouter();
-
-  // ✅ Context API에서 로그인 함수 추출
   const { signin } = AUTH.use();
 
-  // ✅ 입력창에 포커스를 주기 위한 Ref
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
   const [isPending, startTransition] = useTransition();
 
-  // ✅ 페이지 로드 시 이메일 입력창에 자동 포커스
   useEffect(() => {
     emailRef.current?.focus();
   }, []);
 
-  // ✅ 이메일 변경 시 상태 및 sessionStorage 동기화
   const handleEmailChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const val = e.target.value;
@@ -43,7 +37,6 @@ const LoginForm = () => {
     []
   );
 
-  // ✅ 비밀번호 입력 핸들러
   const handlePasswordChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setPassword(e.target.value);
@@ -51,63 +44,146 @@ const LoginForm = () => {
     []
   );
 
-  // ✅ 알림 닫기 + 오류 포커스 처리
-  const handleCloseAlert = useCallback(() => {
-    setAlertMsg("");
-    setTimeout(() => {
-      if (
-        alertMsg === "아이디가 존재하지 않습니다" ||
-        alertMsg === "아이디를 입력해주세요." ||
-        alertMsg === "아이디와 비밀번호를 입력해주세요."
-      ) {
-        emailRef.current?.focus();
-      } else if (
-        alertMsg === "비밀번호를 입력해주세요." ||
-        alertMsg === "비밀번호가 일치하지 않습니다"
-      ) {
-        passwordRef.current?.focus();
-      }
-    }, 0);
-  }, [alertMsg]);
-
-  // ✅ 로그인 실행 함수
   const handleLogin = useCallback(() => {
-    // 1. 입력 유효성 검사
+    const targetRefs = [emailRef, passwordRef]; // ✅ 전달할 ref 배열
+
     if (!email && !password) {
-      setAlertMsg("아이디와 비밀번호를 입력해주세요.");
-      emailRef.current?.focus();
-      return;
-    }
-    if (!email) {
-      setAlertMsg("아이디를 입력해주세요.");
-      return;
-    }
-    if (!password) {
-      setAlertMsg("비밀번호를 입력해주세요.");
+      openAlert(
+        "아이디와 비밀번호를 입력해주세요",
+        [
+          {
+            text: "확인",
+
+            isGreen: true,
+            autoFocus: true,
+            target: 0,
+          },
+          {
+            text: "취소",
+
+            isGreen: false,
+            autoFocus: false,
+          },
+        ],
+        undefined,
+        targetRefs
+      );
       return;
     }
 
-    // 2. 로그인 시도 (transition으로 로딩 처리)
+    if (!email) {
+      openAlert(
+        "아이디를 입력해주세요",
+        [
+          {
+            text: "확인",
+            isGreen: true,
+            autoFocus: true,
+            target: 0,
+          },
+          {
+            text: "취소",
+            isGreen: false,
+            autoFocus: false,
+          },
+        ],
+        undefined,
+        targetRefs
+      );
+      return;
+    }
+
+    if (!password) {
+      openAlert(
+        "비밀번호를 입력해주세요",
+        [
+          {
+            text: "확인",
+            isGreen: true,
+            autoFocus: true,
+            target: 1,
+          },
+          {
+            text: "취소",
+            isGreen: false,
+            autoFocus: false,
+          },
+        ],
+        undefined,
+        targetRefs
+      );
+      return;
+    }
+
     startTransition(async () => {
       const result = await signin(email, password);
 
       if (!result.success) {
-        // 3. 에러 코드에 따라 메시지 처리
         if (result.reason === "wrong-password") {
-          setAlertMsg("비밀번호가 일치하지 않습니다");
+          openAlert(
+            "비밀번호가 일치하지 않습니다",
+            [
+              {
+                text: "확인",
+                isGreen: true,
+                autoFocus: true,
+                target: 1,
+              },
+              {
+                text: "취소",
+                isGreen: false,
+                autoFocus: false,
+              },
+            ],
+            undefined,
+            targetRefs
+          );
         } else if (result.reason === "user-not-found") {
-          setAlertMsg("아이디가 존재하지 않습니다");
+          openAlert(
+            "아이디가 존재하지 않습니다",
+            [
+              {
+                text: "확인",
+                isGreen: true,
+                autoFocus: true,
+                target: 0,
+              },
+              {
+                text: "취소",
+                isGreen: false,
+                autoFocus: false,
+              },
+            ],
+            undefined,
+            targetRefs
+          );
         } else {
-          setAlertMsg("아이디와 비밀번호가 일치하지 않습니다");
+          openAlert(
+            "아이디와 비밀번호가 일치하지 않습니다",
+            [
+              {
+                text: "확인",
+                isGreen: true,
+                autoFocus: true,
+                target: 0,
+              },
+              {
+                text: "취소",
+                isGreen: false,
+                autoFocus: false,
+              },
+            ],
+            undefined,
+            targetRefs
+          );
         }
         return;
       }
 
       router.push("/");
     });
-  }, [email, password, signin, router]);
+  }, [email, password, signin, router, openAlert]);
 
-  // ✅ 이메일 입력창에서 Enter → 비밀번호로 포커스 이동
   const handleEmailKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
@@ -118,7 +194,6 @@ const LoginForm = () => {
     []
   );
 
-  // ✅ 비밀번호 입력창에서 Enter → 로그인 시도
   const handlePasswordKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
@@ -133,19 +208,16 @@ const LoginForm = () => {
     <>
       <form onSubmit={(e) => e.preventDefault()}>
         <div className="flex flex-col gap-y-2.5 items-center justify-center h-120">
-          {/* 아이디/비밀번호 입력 영역 */}
           <div className="flex flex-col gap-y-2.5">
-            {/* ✅ 아이디 입력 */}
             <input
               type="text"
               ref={emailRef}
-              className="ykhInputButton dark:text-black"
+              className="ykhInputButton dark:text-black "
               placeholder="아이디"
               value={email}
               onChange={handleEmailChange}
               onKeyDown={handleEmailKeyDown}
             />
-            {/* ✅ 비밀번호 입력 */}
             <input
               type="password"
               ref={passwordRef}
@@ -157,7 +229,6 @@ const LoginForm = () => {
             />
           </div>
 
-          {/* 아이디/비밀번호 찾기 링크 */}
           <div className="flex gap-x-20 justify-start w-100 lg:w-120 px-5">
             <Link href="/idfind" className={Find}>
               아이디찾기
@@ -181,10 +252,8 @@ const LoginForm = () => {
         </div>
       </form>
 
-      {/* 알림 모달 */}
-      {alertMsg && <AlertModal message={alertMsg} onClose={handleCloseAlert} />}
-
       {isPending && <Loading message="로그인 중입니다..." />}
+      <AlertModal />
     </>
   );
 };
@@ -193,9 +262,6 @@ export default LoginForm;
 
 const Find = "cursor-pointer dark:text-[#C5E3DB]";
 const LoginButton =
-  "p-3 rounded w-90 cursor-pointer bg-green-400 lg:w-120 dark:text-gray-900";
+  "p-3 rounded w-90 cursor-pointer bg-green-400 lg:w-120 dark:text-gray-700 dark:bg-green-200";
 const SignUserButton =
-  "p-3 rounded w-90 cursor-pointer bg-lime-300 text-center lg:w-120 dark:text-gray-900";
-
-//! 실험 sdfsdfsdfsdfsdfsdfsdfsdfsdf
-//!sefsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdf
+  "p-3 rounded w-90 cursor-pointer bg-lime-300 text-center lg:w-120 dark:text-gray-700 dark:bg-lime-200";

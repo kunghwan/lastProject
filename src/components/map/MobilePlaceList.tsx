@@ -20,7 +20,7 @@ const MobilePlaceList = ({
     <>
       {/* 목록 보기 버튼 */}
       <button
-        className="md:hidden fixed bottom-[11vh] my-2 left-[50%] translate-x-[-50%] z-10 bg-white text-gray-500 py-2 rounded-full shadow px-7 hover:bg-gray-50"
+        className="md:hidden fixed bottom-[11vh] my-2 left-[50%] translate-x-[-50%] z-10 bg-white text-gray-500 py-2 rounded-full shadow px-7 hover:bg-gray-50 dark:hover:bg-gray-600  dark:bg-[#6B6B6B] dark:text-gray-50"
         onClick={() => setIsOpen(true)}
       >
         <div className="flex items-center gap-x-2">
@@ -32,12 +32,12 @@ const MobilePlaceList = ({
       {/* 슬라이딩 패널 */}
       <div
         className={twMerge(
-          " fixed inset-x-0 bottom-0  bg-white max-h-[80vh] rounded-t-2xl z-[21] transform transition-transform duration-300 ease-in-out md:hidden",
+          " fixed inset-x-0 bottom-0  bg-white max-h-[80vh] rounded-t-2xl z-[21] transform transition-transform duration-300 ease-in-out md:hidden dark:bg-[#4B4B4B] ",
           isOpen ? "translate-y-0" : "translate-y-full "
         )}
       >
         <div className="mt-5" onClick={() => setIsOpen(false)}>
-          <button className="flex items-center justify-center p-3 rounded-2xl mx-auto w-[40vw] bg-gray-200 hover:bg-gray-300 " />
+          <button className="flex items-center justify-center p-3 rounded-2xl mx-auto w-[40vw] bg-gray-200 hover:bg-gray-300 dark:bg-zinc-400 dark:hover:opacity-80" />
         </div>
 
         <div className="p-4 overflow-y-auto h-full">
@@ -45,7 +45,7 @@ const MobilePlaceList = ({
             {places.map((place) => (
               <li
                 key={place.id}
-                className="bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-100"
+                className="bg-white rounded-lg border border-gray-300 cursor-pointer opacity-80 hover:border hover:border-green-500  dark:bg-[#6B6B6B] dark:text-white"
               >
                 <button
                   className="flex flex-col items-start w-full p-3 gap-y-1"
@@ -55,12 +55,10 @@ const MobilePlaceList = ({
                   }}
                 >
                   <p className="font-bold">{place.place_name}</p>
-                  <p className="text-sm">
+                  <p className="text-md">
                     {place.road_address_name || place.address_name}
                   </p>
-                  <p className="text-xs text-gray-500">
-                    {place.phone || "전화번호 없음"}
-                  </p>
+                  <p className="text-xs">{place.phone || "전화번호 없음"}</p>
                 </button>
               </li>
             ))}
