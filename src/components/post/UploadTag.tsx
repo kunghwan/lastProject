@@ -139,20 +139,22 @@ const UploadTag = ({
             onKeyUp={(e) => {
               const { key } = e;
 
-              if (
-                (key === "Enter" || key === " ") &&
-                tag.trim() === "" &&
-                tags.length > 0
-              ) {
+              if (key === " " && tag.trim() === "" && tags.length > 0) {
                 //! 공백 + 태그 있음이면 button으로 포커스 이동
                 submitButtonRef.current?.focus();
                 return;
               }
 
-              if (key === "Enter") {
-                //React에서 setState는 비동기로 처리되기 때문에, 렌더링이 끝나기 전까지 <AlertModal /> 조건부 렌더링이 반응하지 않을 수 있음 =>setTimeout(() => ...)으로 defer 처리하면 렌더링 큐가 정리된 뒤 실행되어 modal이 보장됨
-                setTimeout(() => onClickTag(), 0);
-              } else if (key === " ") {
+              // if (key === "Enter") {
+              //   //React에서 setState는 비동기로 처리되기 때문에, 렌더링이 끝나기 전까지 <AlertModal /> 조건부 렌더링이 반응하지 않을 수 있음 =>setTimeout(() => ...)으로 defer 처리하면 렌더링 큐가 정리된 뒤 실행되어 modal이 보장됨
+              //   setTimeout(() => onClickTag(), 0);
+              // } else if (key === " ") {
+              //   if (!e.nativeEvent.isComposing) {
+              //     onClickTag();
+              //   }
+              // }
+
+              if (key === " ") {
                 if (!e.nativeEvent.isComposing) {
                   onClickTag();
                 }
