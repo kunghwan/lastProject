@@ -25,7 +25,7 @@ const PlaceList = ({
                   buttonRefs.current?.set(place.id, clickFocus);
                 }
               }}
-              className="flex flex-col items-center w-full p-3 gap-y-1 focus:border focus:rounded-lg focus:bg-gray-50"
+              className="flex flex-col items-center w-full p-3 gap-y-1 focus:border focus:border-green-500 focus:rounded-lg focus:bg-gray-50"
               onClick={() => handlePlaceClick(place)}
             >
               <p className="font-bold">{place.place_name}</p>
