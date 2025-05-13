@@ -57,7 +57,7 @@ const Navbar = () => {
     <>
       <div className="flex relative">
         {/* 로그인 및 회원가입 페이지가 아니면 네비게이션 표시 */}
-        {pathname !== "/signin" && pathname !== "/signup" && (
+        {!["/signin", "/signup", "/idfind", "/pwfind"].includes(pathname!) && (
           <div className="mx-auto max-w-100">
             <div className="fixed w-full max-w-100 left-1/2 transform -translate-x-1/2">
               <div className="hidden [@media(min-width:1425px)]:block">
