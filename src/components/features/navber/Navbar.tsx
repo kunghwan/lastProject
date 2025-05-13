@@ -50,7 +50,7 @@ const Navbar = () => {
   }, []);
 
   const baseNavStyle =
-    "[@media(min-width:1425px)]:flex absolute w-17 top-40 -left-[125%] bg-gray-200 z-30 rounded-full transition-all duration-400 ease-in-out transform";
+    "[@media(min-width:1425px)]:flex absolute w-17 top-40 -left-[125%] bg-gray-100 z-30 rounded-full transition-all duration-400 ease-in-out transform";
 
   return (
     <>
@@ -64,11 +64,11 @@ const Navbar = () => {
                   <button
                     className={twMerge(
                       baseNavStyle,
-                      "opacity-100 scale-100 translate-y-0 items-center justify-center h-17"
+                      "opacity-100 scale-100 translate-y-0 items-center justify-center h-17 "
                     )}
                     onClick={handleToggleNavMenu}
                   >
-                    <IoGridOutline className="hover:animate-pulse text-3xl dark:text-gray-600" />
+                    <IoGridOutline className="hover:animate-pulse text-3xl text-green-500" />
                   </button>
                 )}
               </div>
@@ -93,7 +93,7 @@ const Navbar = () => {
                     <li key={index}>
                       <button
                         className={twMerge(
-                          "grayButton flex flex-col gap-y-1.5 items-center transition-all duration-200",
+                          "grayButton flex flex-col gap-y-1.5 items-center transition-all duration-200 bg-gray-100 hover:text-green-500",
                           pathname === btn.path && "text-green-500"
                         )}
                         onClick={() => navBtnClick(btn, index)}
@@ -111,13 +111,13 @@ const Navbar = () => {
 
         {/* 모바일 하단 네비게이션 */}
         {pathname !== "/signin" && pathname !== "/signup" && (
-          <nav className="fixed bottom-0 left-0 h-auto right-0 bg-gray-200 z-20 flex justify-around items-center [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto">
+          <nav className="fixed bottom-0 left-0 h-auto right-0 bg-gray-100 z-20 flex justify-around items-center [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto">
             <ul className="flex justify-around w-full">
               {NavBtns.map((btn, index) => (
                 <li key={index}>
                   <button
                     className={twMerge(
-                      "grayButton text-2xl flex flex-col gap-y-1.5 items-center",
+                      "grayButton text-2xl flex flex-col gap-y-1.5 items-center bg-gray-100",
                       pathname === btn.path && "text-green-500"
                     )}
                     onClick={() => navBtnClick(btn, index)}

@@ -25,7 +25,7 @@ const SearchForm = ({
   return (
     <>
       <form
-        className={`flex bg-white rounded-full shadow-md p-2 border border-gray-300 ${className}`}
+        className={`flex  bg-white rounded-full shadow-md p-2 border border-gray-300 focus-within:border-green-500 transition${className}`}
         onSubmit={(e) => {
           e.preventDefault();
           handleSearch();
@@ -35,11 +35,11 @@ const SearchForm = ({
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder={placeholder}
-          className={`p-1 text-sm focus:outline-none placeholder:text-gray-500 ${inputClassName}`}
+          className={`p-1 text-sm focus:outline-none placeholder:text-gray-500  ${inputClassName}`}
         />
         <button
           type="submit"
-          className={`text-xl px-2 cursor-pointer ${buttonClassName}`}
+          className={`text-xl px-2 cursor-pointer hover:text-green-500 ${buttonClassName}`}
         >
           <IoSearch />
         </button>

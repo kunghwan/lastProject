@@ -220,13 +220,13 @@ const MapPage = () => {
       />
 
       {/* 검색창 + 키워드 버튼 */}
-      <div className="absolute w-full z-10 flex flex-col items-center gap-4 top-5 left-[50%] translate-x-[-50%] md:translate-x-[-45%] md:top-10 md:items-start">
+      <div className="absolute w-full z-10 flex flex-col items-center gap-4 top-5 left-[50%] translate-x-[-50%] md:translate-x-[-45%] md:top-10 md:items-start ">
         <SearchForm
           inputValue={inputValue}
           setInputValue={setInputValue}
           handleSearch={handleSearch}
-          className="w-70 "
-          inputClassName="w-full "
+          className="w-full"
+          inputClassName="w-55"
         />
 
         {!selectedPlace && (
