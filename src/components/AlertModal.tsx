@@ -34,7 +34,7 @@ const AlertModal = () => {
     >
       <div
         className={twMerge(
-          "bg-white p-6 rounded-lg shadow-lg w-80 transform transition-all duration-800 ease-out",
+          "bg-white p-6 rounded-lg shadow-lg w-80 transform transition-all duration-1000 ease-out",
           show ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
         )}
         onClick={(e) => e.stopPropagation()}
