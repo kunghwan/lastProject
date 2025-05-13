@@ -13,6 +13,9 @@
   .hsecol {
     @apply flex flex-col;
   }
+  .darkTextInput {
+    @apply dark:bg-[#666666] dark:placeholder:text-white dark:text-white;
+  }
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
