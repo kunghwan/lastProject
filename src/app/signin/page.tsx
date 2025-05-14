@@ -8,6 +8,7 @@ import { AUTH } from "@/contextapi/context";
 import Loading from "@/components/Loading";
 import { useAlertModal } from "@/components/AlertStore";
 import AlertModal from "@/components/AlertModal";
+import { twMerge } from "tailwind-merge";
 
 const LoginForm = () => {
   const { openAlert } = useAlertModal();
@@ -212,7 +213,7 @@ const LoginForm = () => {
             <input
               type="text"
               ref={emailRef}
-              className="ykhInputButton dark:text-black "
+              className="ykhInputButton dark:text-gray-500 "
               placeholder="이메일"
               value={email}
               onChange={handleEmailChange}
@@ -221,16 +222,16 @@ const LoginForm = () => {
             <input
               type="password"
               ref={passwordRef}
-              className="ykhInputButton dark:text-black"
+              className="ykhInputButton dark:text-gray-500"
               placeholder="비밀번호"
               value={password}
               onChange={handlePasswordChange}
               onKeyDown={handlePasswordKeyDown}
             />
           </div>
-
-          <div className="flex gap-x-20 justify-start w-100 lg:w-120 px-5">
-            <Link href="/idfind" className={Find}>
+          {/* flex gap-x-20 justify-start w-100 lg:w-120 px-5 */}
+          <div className=" border">
+            <Link href="/idfind" className={twMerge(Find, "border")}>
               아이디찾기
             </Link>
             <Link href="/pwfind" className={Find}>
@@ -264,4 +265,4 @@ const Find = "cursor-pointer dark:text-[#C5E3DB]";
 const LoginButton =
   "p-3 rounded w-90 cursor-pointer bg-green-400 lg:w-120 dark:text-gray-700 dark:bg-green-200";
 const SignUserButton =
-  "p-3 rounded w-90 cursor-pointer bg-lime-300 text-center lg:w-120 dark:text-gray-700 dark:bg-lime-200";
+  "p-3 rounded w-90 cursor-pointer bg-gray-200 text-center lg:w-120 dark:text-gray-700 dark:bg-gray-300 ";
