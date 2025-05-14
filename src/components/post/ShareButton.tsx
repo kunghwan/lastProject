@@ -44,7 +44,7 @@ const ShareButton = ({ userNickname }: ShareButtonProps) => {
       </button>
 
       {modal && (
-        <div className="absolute top-2 right-2 bg-gray-800 text-white text-xs px-3 py-2 rounded shadow-lg z-50">
+        <div className="absolute top-4 right-4 bg-gray-800 text-white text-xs px-3 py-2 rounded shadow-lg z-50">
           {modal.message}
         </div>
       )}

@@ -282,13 +282,13 @@ const PostComponent = () => {
                 <>
                   <button
                     onClick={handlePrev}
-                    className="absolute left-3 text-2xl text-gray-700 hover:text-gray-400 rounded-full p-1.5"
+                    className="absolute left-3 text-2xl text-gray-700 hover:text-gray-400 rounded-full hover:bg-black/5 p-1.5"
                   >
                     <FaChevronLeft />
                   </button>
                   <button
                     onClick={handleNext}
-                    className="absolute right-3 text-2xl text-gray-700 hover:text-gray-400 rounded-full p-1.5"
+                    className="absolute right-3 text-2xl text-gray-700 hover:text-gray-400 rounded-full hover:bg-black/5  p-1.5"
                   >
                     <FaChevronRight />
                   </button>

@@ -1,3 +1,9 @@
+# 0514
+
+1. feed 페이지 query 처리하기
+
+2. 무한스크롤 query 처리하기 (feed, profilePage)
+
 # 0508
 
 1. 팔로우수 업데이트하기
