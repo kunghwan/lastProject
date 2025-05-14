@@ -51,7 +51,7 @@ const PlaceDetail = ({ detailRef, onClose, place }: Props) => {
   return (
     <div
       ref={detailRef}
-      className="absolute z-10 shadow-md sm:block sm:top-[20%] sm:left-[25%] left-[20%] top-[32%] -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 w-60 max-w-xs bg-white border border-gray-300 rounded-xl sm:rounded-2xl p-3 h-fit dark:bg-[#6B6B6B] dark:text-white"
+      className="absolute z-10 shadow-md sm:block sm:top-[21%] sm:left-[27%] left-[20%] top-[32%] -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 w-60 max-w-xs bg-white border border-gray-300 rounded-xl sm:rounded-2xl p-3 h-fit dark:bg-[#6B6B6B] dark:text-white "
     >
       <button
         onClick={onClose}
