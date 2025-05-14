@@ -230,11 +230,23 @@ const LoginForm = () => {
             />
           </div>
           {/* flex gap-x-20 justify-start w-100 lg:w-120 px-5 */}
-          <div className=" border">
-            <Link href="/idfind" className={twMerge(Find, "border")}>
+          <div className="  w-90 flex justify-between lg:w-120">
+            <Link
+              href="/idfind"
+              className={twMerge(
+                Find,
+                "w-45 text-center hover:text-emerald-300 lg:w-60 dark:hover:text-emerald-500   "
+              )}
+            >
               아이디찾기
             </Link>
-            <Link href="/pwfind" className={Find}>
+            <Link
+              href="/pwfind"
+              className={twMerge(
+                Find,
+                "w-45 text-center hover:text-emerald-500 lg:w-60 dark:hover:text-emerald-700  "
+              )}
+            >
               비밀번호찾기
             </Link>
           </div>
@@ -263,6 +275,6 @@ export default LoginForm;
 
 const Find = "cursor-pointer dark:text-[#C5E3DB]";
 const LoginButton =
-  "p-3 rounded w-90 cursor-pointer bg-green-400 lg:w-120 dark:text-gray-700 dark:bg-green-200";
+  "p-3 rounded w-90 cursor-pointer bg-emerald-300 lg:w-120 dark:text-gray-700 dark:bg-green-200";
 const SignUserButton =
   "p-3 rounded w-90 cursor-pointer bg-gray-200 text-center lg:w-120 dark:text-gray-700 dark:bg-gray-300 ";

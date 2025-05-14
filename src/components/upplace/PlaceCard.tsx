@@ -2,10 +2,13 @@
 
 import React, { useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import UpPlaceLikeButton from "@/components/upplace/UpPlaceLikeButton";
-import Image from "next/image";
-import { FcLike } from "react-icons/fc";
 
+import Image from "next/image";
+
+import { GoHeart, GoHeartFill } from "react-icons/go";
+import { doc, deleteDoc, setDoc } from "firebase/firestore";
+import { dbService } from "@/lib/firebase";
+import { getAuth } from "firebase/auth";
 const fallbackImages: Record<string, string> = {
   테미오래: "/custom/temiora.jpg",
 };
@@ -22,6 +25,9 @@ interface PlaceCardProps {
   countOverride?: number;
   hideLikeButton?: boolean;
   priority?: boolean;
+
+  // 북마크 페이지 등에서 사용될 콜백 (예: 북마크 리스트에서 제거용)
+  onLikedChange?: (liked: boolean) => void;
 }
 
 const PlaceCard: React.FC<PlaceCardProps> = ({
@@ -30,8 +36,11 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
   countOverride,
   hideLikeButton,
   priority = false,
+  onLikedChange,
 }) => {
   const router = useRouter();
+  const auth = getAuth();
+  const user = auth.currentUser;
   if (!place) return null;
 
   const defaultImage = "/image/logoc.PNG";
@@ -46,9 +55,35 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
     countOverride !== undefined ? countOverride : place.likeCount
   );
 
-  const handleLiked = useCallback((newCount: number) => {
-    setLikeCount(newCount);
-  }, []);
+  const [liked, setLiked] = useState<boolean>(likedOverride || false); // 좋아요 여부 상태 추가
+
+  const handleToggleLike = async () => {
+    if (!user) return alert("로그인이 필요합니다.");
+
+    const likeRef = doc(dbService, `users/${user.uid}/likes`, place.contentid);
+
+    try {
+      if (liked) {
+        await deleteDoc(likeRef);
+        setLiked(false);
+        setLikeCount((prev) => Math.max(prev - 1, 0));
+        onLikedChange?.(false); // 북마크 페이지에서 리스트 제거에 사용
+      } else {
+        await setDoc(likeRef, {
+          contentid: place.contentid,
+          title: place.title,
+          addr1: place.addr1,
+          firstimage: place.firstimage,
+          likeCount: place.likeCount,
+        });
+        setLiked(true);
+        setLikeCount((prev) => prev + 1);
+        onLikedChange?.(true);
+      }
+    } catch (error) {
+      console.error("좋아요 처리 실패", error);
+    }
+  };
 
   const handleClickImage = useCallback(() => {
     router.push(`/upplace/${place.contentid}`);
@@ -74,22 +109,17 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
       </p>
 
       <div className="mt-2 flex items-center justify-between">
-        <p className=" flex gap-2 items-center">
-          <FcLike className="text-lg" /> {likeCount}
-        </p>
-        {!hideLikeButton && (
-          <UpPlaceLikeButton
-            contentId={place.contentid}
-            onLiked={handleLiked}
-            placeInfo={{
-              title: place.title,
-              addr1: place.addr1,
-              imageUrl: place.firstimage,
-            }}
-            likedOverride={likedOverride}
-            countOverride={countOverride}
-          />
-        )}
+        <button
+          onClick={handleToggleLike}
+          className="flex gap-2 items-center text-gray-700 dark:text-white"
+        >
+          {liked ? (
+            <GoHeartFill className="text-lg text-red-500" />
+          ) : (
+            <GoHeart className="text-lg" />
+          )}
+          {likeCount}
+        </button>
       </div>
     </div>
   );
