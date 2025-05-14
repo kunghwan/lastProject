@@ -1,4 +1,10 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  Timestamp,
+  where,
+} from "firebase/firestore";
 import { dbService } from "@/lib/firebase";
 import { Post } from "@/types/post";
 
@@ -20,3 +26,29 @@ export const fetchPosts = async (uid: string): Promise<Post[]> => {
     return [];
   }
 };
+
+export function getTimeAgo(createdAt: string | Timestamp): string {
+  let createdDate: Date;
+
+  if (typeof createdAt === "string") {
+    createdDate = new Date(createdAt);
+  } else if (createdAt instanceof Timestamp) {
+    createdDate = createdAt.toDate();
+  } else {
+    return "알 수 없음";
+  }
+
+  const now = new Date();
+  const diff = now.getTime() - createdDate.getTime();
+
+  const minutes = Math.floor(diff / (1000 * 60));
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const weeks = Math.floor(days / 7);
+
+  if (minutes < 1) return "방금 전";
+  if (minutes < 60) return `${minutes}분 전`;
+  if (hours < 24) return `${hours}시간 전`;
+  if (days < 7) return `${days}일 전`;
+  return `${weeks}주 전`;
+}

@@ -10,6 +10,7 @@ import LikeButton from "../post/LikeButton";
 import { Timestamp } from "firebase/firestore";
 import { HiOutlineX } from "react-icons/hi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { getTimeAgo } from "@/lib/post";
 
 const ProfileFeedComponent = ({
   posts,

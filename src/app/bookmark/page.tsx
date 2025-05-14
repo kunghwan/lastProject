@@ -19,6 +19,7 @@ import LikeButton from "@/components/post/LikeButton";
 import { FcLike } from "react-icons/fc";
 import { HiOutlineX } from "react-icons/hi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { getTimeAgo } from "@/lib/post";
 
 type SortOption = "recent" | "oldest" | "likes";
 
@@ -33,6 +34,33 @@ const BookmarkPage = () => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [modalImages, setModalImages] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  function getTimeAgo(time: string | Timestamp | FieldValue): string {
+    let createdTime: Date;
+
+    if (typeof time === "string") {
+      createdTime = new Date(time);
+    } else if (time instanceof Timestamp) {
+      createdTime = time.toDate();
+    } else {
+      // FieldValue인 경우는 렌더링 시점에는 있을 수 없음
+      return "시간 정보 없음";
+    }
+
+    const now = new Date();
+    const diff = now.getTime() - createdTime.getTime();
+
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+    const week = 7 * day;
+
+    if (diff < minute) return "방금 전";
+    if (diff < hour) return `${Math.floor(diff / minute)}분 전`;
+    if (diff < day) return `${Math.floor(diff / hour)}시간 전`;
+    if (diff < week) return `${Math.floor(diff / day)}일 전`;
+    return `${Math.floor(diff / week)}주 전`;
+  }
 
   // 안전하게 시간값 추출하는 함수
   const getTimeValue = (value: string | Timestamp | FieldValue): number => {
@@ -171,7 +199,7 @@ const BookmarkPage = () => {
         </p>
         <button
           onClick={handleBack}
-          className="text-sm text-indigo-600 dark:text-indigo-200 hover:underline hover:scale-105 transition-transform duration-200"
+          className="text-sm text-emerald-600 font-bold dark:text-emerald-200 hover:underline hover:scale-105 transition-transform duration-200"
         >
           ← 이전 페이지
         </button>
