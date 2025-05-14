@@ -69,7 +69,7 @@ const Navbar = () => {
   }, []);
 
   const baseNavStyle =
-    "[@media(min-width:1425px)]:flex absolute w-17 top-45 -left-[125%] bg-gray-100 z-30 rounded-full transition-all duration-400 ease-in-out transform dark:bg-[#6B6B6B] dark:text-white";
+    "[@media(min-width:1425px)]:flex absolute w-17 top-45 -left-[125%] bg-gray-100 z-30 rounded-full duration-400 ease-in-out transform dark:bg-[#6B6B6B] dark:text-white";
 
   return (
     <>
@@ -84,7 +84,7 @@ const Navbar = () => {
                   <button
                     className={twMerge(
                       baseNavStyle,
-                      "opacity-100 scale-100 translate-y-0 items-center justify-center h-17"
+                      "opacity-100 scale-100 translate-y-0 items-center justify-center h-17 transition-none"
                     )}
                     onClick={handleToggleNavMenu}
                   >
