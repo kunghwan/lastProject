@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import Select, { SelectInstance } from "react-select"; // 생년월일 선택용
 import { useRouter } from "next/navigation";
 import {
@@ -13,6 +13,9 @@ import {
 import { AUTH } from "@/contextapi/context";
 import { dbService, FBCollection, authService } from "@/lib/firebase"; // Firebase 연동
 import AlertModal from "@/components/AlertModal";
+import { useTheme } from "next-themes";
+import { useAlertModal } from "@/components/AlertStore";
+import Loaiding from "@/components/Loading";
 
 const STORAGE_KEY = "signupUser"; // 세션 스토리지 키
 
@@ -27,6 +30,41 @@ const InfoAccount = [
 ];
 
 const SignupForm = () => {
+  const { openAlert } = useAlertModal();
+  const { resolvedTheme } = useTheme();
+  // react-select 스타일
+  const themeMode = resolvedTheme ?? "light"; // fallback to 'light'
+
+  const selectStyle = useMemo(
+    () => ({
+      control: (base: any) => ({
+        ...base,
+        minHeight: "42px",
+        fontSize: "14px",
+        backgroundColor: themeMode === "dark" ? "#1f2937" : "#fff",
+        color: themeMode === "dark" ? "#fff" : "#000",
+      }),
+      menu: (base: any) => ({
+        ...base,
+        backgroundColor: themeMode === "dark" ? "#1f2937" : "#fff",
+        color: themeMode === "dark" ? "#fff" : "#000",
+      }),
+      singleValue: (base: any) => ({
+        ...base,
+        color: themeMode === "dark" ? "#fff" : "#000",
+      }),
+      option: (base: any, state: any) => ({
+        ...base,
+        backgroundColor: state.isFocused
+          ? themeMode === "dark"
+            ? "#6ee7b7" // ✅ emerald-300
+            : "#d1fae5" // ✅ emerald-100
+          : "transparent",
+        color: themeMode === "dark" ? "#fff" : "#000",
+      }),
+    }),
+    [themeMode] // ✅ 여기서 undefined가 들어오면 hook 순서 깨짐 → 방지됨
+  );
   const [user, setUser] = useState<Omit<User, "uid">>({
     name: "",
     email: "",
@@ -53,8 +91,7 @@ const SignupForm = () => {
   const daySelectRef = useRef<SelectInstance<any> | null>(null);
   const locationAgreeRef = useRef<HTMLInputElement | null>(null);
 
-  const [alertMsg, setAlertMsg] = useState(""); // 모달 메시지
-  const closeAlert = () => setAlertMsg(""); // 모달 닫기
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 입력창 ref 설정 함수
   const setInputRef = useCallback(
@@ -194,6 +231,7 @@ const SignupForm = () => {
 
   // 제출 처리
   const handleSubmit = useCallback(async () => {
+    setIsSubmitting(true); // ✅ 로딩 시작
     // 병렬 유효성 검사 수행
     const validationResults = await Promise.all(
       InfoAccount.map((info) => {
@@ -213,21 +251,74 @@ const SignupForm = () => {
     setErrors(newErrors);
 
     // 유효성 오류가 있으면 중단
-    if (Object.values(newErrors).some((msg) => msg)) {
-      setAlertMsg("입력값을 다시 확인해주세요.");
+    const requiredFields: (keyof typeof user)[] = [
+      "name",
+      "email",
+      "password",
+      "tel",
+    ];
+    const missingFields = requiredFields.filter(
+      (key) => !user[key]?.toString().trim()
+    );
+
+    if (missingFields.length > 0) {
+      const fieldLabels: Record<string, string> = {
+        name: "이름",
+        email: "이메일",
+        password: "비밀번호",
+        tel: "전화번호",
+      };
+
+      const missingText = missingFields
+        .map((key) => fieldLabels[key])
+        .join(", ");
+      const message =
+        missingFields.length === requiredFields.length
+          ? "아무것도 입력되지 않았습니다. 다시 입력해주세요."
+          : `${missingText} 항목을 입력해주세요.`;
+
+      openAlert(message, [
+        {
+          text: "확인",
+          isGreen: true,
+          autoFocus: true,
+          onClick: () => {
+            const firstMissing = missingFields[0];
+            const target = inputRefs.current.find(
+              (el) => el?.getAttribute("name") === firstMissing
+            );
+            target?.focus();
+          },
+        },
+      ]);
+
+      setIsSubmitting(false);
       return;
     }
 
-    // Firebase 인증 생성
     const result = await signup(user as User, user.password!);
     if (!result.success) {
-      setAlertMsg("회원가입 실패: " + result.message);
+      openAlert("회원가입 실패: " + result.message, [
+        {
+          text: "확인",
+          isGreen: true,
+          autoFocus: true,
+        },
+      ]);
+      setIsSubmitting(false); // ✅ 로딩 종료
       return;
     }
 
     const fbUser = authService.currentUser;
     if (!fbUser) {
-      setAlertMsg("회원 정보가 없습니다. 다시 시도해주세요.");
+      openAlert("회원 정보가 없습니다. 다시 시도해주세요.", [
+        {
+          text: "확인",
+          isGreen: true,
+          autoFocus: true,
+        },
+      ]);
+      setIsSubmitting(false); // ✅ 로딩 종료
       return;
     }
 
@@ -239,15 +330,9 @@ const SignupForm = () => {
 
   if (!isLoaded) return null; // 로딩 안 됐으면 렌더 안 함
 
-  // react-select 스타일
-  const selectStyle = {
-    control: (base: any) => ({ ...base, minHeight: "42px", fontSize: "14px" }),
-    menu: (base: any) => ({ ...base, fontSize: "14px" }),
-  };
-
   return (
     <div className="flex flex-col justify-start items-center min-h-screen px-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-teal-300 rounded-lg p-6">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-teal-300 rounded-lg p-6 dark:border-teal-100">
         <form className="space-y-8">
           {InfoAccount.map((info, index) => {
             const key = info.name as keyof typeof user;
@@ -271,7 +356,14 @@ const SignupForm = () => {
                             ? { value: birthYear, label: birthYear }
                             : null
                         }
-                        onChange={(opt) => setBirthYear(opt?.value ?? "")}
+                        onChange={(opt) => {
+                          setBirthYear(opt?.value ?? "");
+                          // ✅ 년도 선택 후 자동으로 월 select 열기
+                          setTimeout(() => {
+                            monthSelectRef.current?.focus();
+                            monthSelectRef.current?.onMenuOpen?.();
+                          }, 0); // setState 후 DOM update 기다림
+                        }}
                         placeholder="년도"
                         styles={selectStyle}
                         onKeyDown={(e) => {
@@ -295,7 +387,14 @@ const SignupForm = () => {
                             ? { value: birthMonth, label: birthMonth }
                             : null
                         }
-                        onChange={(opt) => setBirthMonth(opt?.value ?? "")}
+                        onChange={(opt) => {
+                          setBirthMonth(opt?.value ?? "");
+                          // ✅ 월 선택 후 일로 넘어가기
+                          setTimeout(() => {
+                            daySelectRef.current?.focus();
+                            daySelectRef.current?.onMenuOpen?.();
+                          }, 0);
+                        }}
                         placeholder="월"
                         styles={selectStyle}
                         onKeyDown={(e) => {
@@ -317,7 +416,16 @@ const SignupForm = () => {
                         value={
                           birthDay ? { value: birthDay, label: birthDay } : null
                         }
-                        onChange={(opt) => setBirthDay(opt?.value ?? "")}
+                        onChange={(opt) => {
+                          setBirthDay(opt?.value ?? "");
+                          // ✅ 일 선택 후 전화번호 input으로 포커스 이동
+                          setTimeout(() => {
+                            const telInput = inputRefs.current.find(
+                              (el) => el?.getAttribute("name") === "tel"
+                            );
+                            telInput?.focus();
+                          }, 0);
+                        }}
                         placeholder="일"
                         styles={selectStyle}
                         onKeyDown={(e) => {
@@ -344,7 +452,7 @@ const SignupForm = () => {
                       onChange={handleChange}
                       onKeyDown={handleKeyDown(index)}
                       placeholder={info.label}
-                      className={`w-full border rounded-md px-2 pt-5 pb-2 text-base outline-none placeholder-transparent ${
+                      className={` peer w-full border rounded-md  h-12 px-2 pt-[10px] pb-[10px] text-base outline-none placeholder-transparent ${
                         errors[key] ? "border-red-500" : "border-gray-300"
                       } focus:border-teal-400 transition-all h-16 dark:text-white dark:bg-gray-800`}
                     />
@@ -352,7 +460,7 @@ const SignupForm = () => {
                       htmlFor={inputId}
                       className={`absolute left-2 top-5 text-gray-400 text-base transition-all ${
                         value
-                          ? "text-xs top-[3px] text-teal-600"
+                          ? "text-xs top-[4px] text-teal-600"
                           : "text-base top-2"
                       } pointer-events-none`}
                     >
@@ -364,31 +472,40 @@ const SignupForm = () => {
                   </>
                 ) : (
                   // 체크박스 렌더링
-                  <div className="flex items-center mt-2">
-                    <input
-                      id={inputId}
-                      ref={locationAgreeRef}
-                      name={info.name}
-                      type="checkbox"
-                      checked={value as boolean}
-                      onChange={handleChange}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          const button =
-                            document.getElementById("signup-next-button");
-                          button?.click();
-                        }
-                      }}
-                      className="w-4 h-4 mr-2"
-                    />
-                    <label
-                      htmlFor={inputId}
-                      className="text-sm text-gray-700 dark:text-gray-300"
-                    >
-                      {info.label}
-                    </label>
-                  </div>
+                  <>
+                    <div className="flex items-center mt-2">
+                      <input
+                        id={inputId}
+                        ref={locationAgreeRef}
+                        name={info.name}
+                        type="checkbox"
+                        checked={value as boolean}
+                        onChange={handleChange}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const button =
+                              document.getElementById("signup-next-button");
+                            button?.click();
+                          }
+                        }}
+                        className="w-4 h-4 mr-2"
+                      />
+                      <label
+                        htmlFor={inputId}
+                        className="text-sm text-gray-700 dark:text-gray-300"
+                      >
+                        {info.label}
+                      </label>
+                    </div>
+                    {/* ✅ 위치정보 설명문구 조건부로 추가 (Fragment 내부에 있어야 함) */}
+                    {user.agreeLocation && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6">
+                        위치정보는 주변 추천 장소 검색, 맞춤 콘텐츠 제공 등을
+                        위해 사용됩니다.
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             );
@@ -400,14 +517,18 @@ const SignupForm = () => {
           id="signup-next-button"
           type="button"
           onClick={handleSubmit}
-          className="mt-8 w-full bg-green-500 text-white font-bold py-4 rounded-lg hover:bg-green-600 transition"
+          className="mt-8 w-full bg-green-500 text-black font-bold py-4 rounded-lg hover:bg-green-600 transition dark:text-white dark:bg-green-700"
         >
           다음
         </button>
       </div>
 
       {/* 알림 모달 */}
-      {alertMsg && <AlertModal message={alertMsg} onClose={closeAlert} />}
+      <AlertModal />
+
+      {isSubmitting && (
+        <Loaiding isLoading={true} message="가입 처리 중입니다..." />
+      )}
     </div>
   );
 };

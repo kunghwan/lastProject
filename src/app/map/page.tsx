@@ -6,7 +6,7 @@ import MobilePlaceList from "@/components/map/MobilePlaceList";
 import PlaceDetail from "@/components/map/PlaceDetail";
 import PlaceList from "@/components/map/PlaceList";
 import KeywordButtons from "@/components/map/KeywordButtons";
-import AlertModal from "@/components/AlertModal"; // AlertModal import 추가
+import { useAlertModal } from "@/components/AlertStore";
 
 const MapPage = () => {
   const [map, setMap] = useState<any>(null); // 카카오 지도 객체
@@ -15,14 +15,14 @@ const MapPage = () => {
   const [keyword, setKeyword] = useState(""); // 검색 키워드
   const [inputValue, setInputValue] = useState(""); // 입력창의 현재 값
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 모바일 사이드바 열림 상태
-  const [showNoResultsModal, setShowNoResultsModal] = useState(false); // 검색 결과가 없을 때 모달 상태
-  const [alertMessage, setAlertMessage] = useState(""); // 알림 메시지
-  const [isAlertVisible, setAlertVisible] = useState(false); // 알림 모달 상태
+  const [isPlaceListOpen, setIsPlaceListOpen] = useState(true); // 검색 리스트 열고닫기 상태
 
   const markers = useRef<any[]>([]); // 현재 지도에 그려진 마커 및 오버레이 배열
   const mapRef = useRef<HTMLDivElement>(null); // 지도 렌더링 DOM 참조
   const detailRef = useRef<HTMLDivElement>(null); // 상세 정보창 DOM 참조
-  const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map()); //버튼 참조
+  const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map()); // 키워드 버튼 참조
+
+  const { openAlert } = useAlertModal(); // useAlertModal 훅 사용
 
   //! 지도 초기화 및 kakao map API 로드
   useEffect(() => {
@@ -85,8 +85,6 @@ const MapPage = () => {
     (keyword: string) => {
       if (!map || !window.kakao) return;
 
-      setShowNoResultsModal(false); //검색결과 나오기전 모달 상태 초기화
-
       const { maps } = window.kakao;
       const ps = new maps.services.Places();
 
@@ -109,6 +107,7 @@ const MapPage = () => {
               keyword === "백화점" ? DJData.slice(0, 5) : DJData;
 
             setPlaces(limitedData);
+            setIsPlaceListOpen(true); //검색 결과 있을 때 리스트 열기
 
             // 기존 마커 제거
             markers.current.forEach((m) => m.setMap(null));
@@ -129,7 +128,7 @@ const MapPage = () => {
               // 사용자 정의 마커(label)
               const label = document.createElement("div");
               label.className =
-                "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-22 text-center cursor-pointer";
+                "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-22 text-center cursor-pointer  dark:bg-[#6B6B6B] dark:text-white";
               label.innerText = place.place_name;
 
               // 라벨 클릭 시 상세 보기
@@ -150,19 +149,19 @@ const MapPage = () => {
             });
             //! 검색 결과 없을 경우
           } else if (status === maps.services.Status.ZERO_RESULT) {
-            setShowNoResultsModal(true); // 모달 상태를 true로 변경
             setPlaces([]);
             markers.current.forEach((m) => m.setMap(null));
             markers.current = [];
-            setAlertMessage("검색 결과가 없습니다.");
-            setAlertVisible(true); // 알림 모달 표시
+            openAlert("검색 결과가 없습니다.", [
+              { text: "확인", isGreen: true },
+            ]); // AlertModal 사용
             setInputValue(""); // 검색 결과 없으면 검색창 비움
           }
         },
         { bounds }
       );
     },
-    [map, handlePlaceClick]
+    [map, handlePlaceClick, openAlert] // openAlert 추가
   );
 
   //! 키워드 버튼 클릭 핸들러
@@ -170,9 +169,10 @@ const MapPage = () => {
     setInputValue(keyword);
     setKeyword(keyword);
     setIsSidebarOpen(true);
+    setIsPlaceListOpen(true);
   }, []);
 
-  //! 키워드 변경 시 검색
+  //! 키워드 변경 시 검색 실행
   useEffect(() => {
     if (keyword && map) {
       searchPlaces(keyword);
@@ -181,8 +181,14 @@ const MapPage = () => {
 
   //! 검색 버튼 클릭 시 실행
   const handleSearch = useCallback(() => {
-    setKeyword(inputValue.trim());
-  }, [inputValue]);
+    const trimmed = inputValue.trim();
+    if (!trimmed) {
+      openAlert("검색어를 입력해주세요.", [{ text: "확인", isGreen: true }]); // AlertModal 사용
+      return;
+    }
+    setKeyword(trimmed);
+    setIsPlaceListOpen(true);
+  }, [inputValue, openAlert]);
 
   //! 상세 정보 외 클릭 시 닫기
   const handleOutsideClick = useCallback(
@@ -211,35 +217,45 @@ const MapPage = () => {
   }, []);
 
   return (
-    <div className="relative flex h-[76vh] dark:text-gray-600">
+    <div className="relative flex h-[76vh] ">
       <div
         ref={mapRef}
-        className="flex-1 bg-gray-200 relative rounded-t-3xl sm:rounded-3xl  border border-gray-300 overflow-hidden min-h-100"
+        className="flex-1 bg-gray-200 relative rounded-t-3xl sm:rounded-3xl border border-gray-300 overflow-hidden min-h-100"
       />
 
-      {/* 검색창 */}
-      <SearchForm
-        inputValue={inputValue}
-        setInputValue={setInputValue}
-        handleSearch={handleSearch}
-        className="absolute z-10 top-5 left-[50%] translate-x-[-50%] md:left-50 md:my-2.5 md:transform-none"
-        inputClassName="mx-2 w-48"
-      />
+      {/* 검색창 + 키워드 버튼 */}
+      <div className="absolute w-full z-10 flex flex-col items-center gap-4 top-5 left-[50%] translate-x-[-50%] md:translate-x-[-45%] md:top-10 md:items-start ">
+        <SearchForm
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          handleSearch={handleSearch}
+          className="w-full dark:text-white dark:bg-[#4B4B4B]"
+          inputClassName="w-55"
+        />
 
-      {/* 키워드 버튼 */}
-      {!selectedPlace && (
-        <div className="absolute z-10 top-20 sm:top-25 left-[50%] translate-x-[-50%] flex gap-2 md:left-50 md:transform-none ">
+        <div className="flex flex-wrap justify-center gap-2 md:justify-start ">
           <KeywordButtons onKeywordClick={handleKeywordClick} />
         </div>
-      )}
+      </div>
 
       {/* 검색 장소 리스트 */}
-      {keyword.length > 0 && !showNoResultsModal && places.length > 0 && (
+      {isPlaceListOpen && keyword.length > 0 && places.length > 0 && (
         <PlaceList
           places={places}
           handlePlaceClick={handlePlaceClick}
           buttonRefs={buttonRefs}
+          onClose={() => setIsPlaceListOpen(false)}
         />
+      )}
+
+      {/* 닫힌 상태에서 다시 열기 버튼 */}
+      {!isPlaceListOpen && places.length > 0 && (
+        <button
+          onClick={() => setIsPlaceListOpen(true)}
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 py-1 rounded z-10 transition md:block hidden"
+        >
+          <div className="w-3 h-[40ch] rounded-bl-xl rounded-tl-xl dark:bg-zinc-500 bg-gray-400 hover:animate-pulse" />
+        </button>
       )}
 
       {/* 상세 정보창 */}
@@ -252,20 +268,12 @@ const MapPage = () => {
       )}
 
       {/* 모바일 장소 리스트 */}
-      {keyword.length > 0 && !showNoResultsModal && places.length > 0 && (
+      {keyword.length > 0 && places.length > 0 && (
         <MobilePlaceList
           isOpen={isSidebarOpen}
           setIsOpen={setIsSidebarOpen}
           places={places}
           handlePlaceClick={handlePlaceClick}
-        />
-      )}
-
-      {/* 알림 모달 */}
-      {isAlertVisible && (
-        <AlertModal
-          message={alertMessage}
-          onClose={() => setAlertVisible(false)} // 모달 닫기
         />
       )}
     </div>

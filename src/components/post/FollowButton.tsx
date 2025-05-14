@@ -5,6 +5,7 @@ import { dbService, FBCollection } from "@/lib";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState, useTransition } from "react";
 import AlertModal from "@/components/AlertModal";
+import { useAlertModal } from "../AlertStore";
 
 interface FollowButtonProps {
   followingId?: string;
@@ -13,9 +14,10 @@ interface FollowButtonProps {
 
 const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
   const { user } = AUTH.use();
+  const { openAlert } = useAlertModal();
   const navi = useRouter();
   const [isFollowing, setIsFollowing] = useState(false);
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
   const [isPending, startTransition] = useTransition();
 
   const onFollow = useCallback(() => {
@@ -63,18 +65,38 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
           });
 
         setIsFollowing(true);
+        openAlert(
+          `${followNickName}님을 팔로우 했습니다`,
+          [
+            {
+              text: "확인",
+              isGreen: true,
+              autoFocus: true,
+            },
+          ],
+          "알림"
+        );
 
-        setAlertMessage(`${followNickName}님을 팔로우 했습니다`);
+        return;
       } catch (error: any) {
-        console.log(error.message);
         alert("팔로우 중 오류가 발생했습니다. 다시 시도해주세요.");
       }
     });
-  }, [user, followingId, followNickName, navi]);
+  }, [user, followingId, followNickName, navi, openAlert]);
 
   const onUnFollow = useCallback(() => {
     if (!user) {
-      setAlertMessage("로그인 후 이용해주세요");
+      openAlert(
+        "로그인 후 이용해주세요.",
+        [
+          {
+            text: "확인",
+            isGreen: true,
+            autoFocus: true,
+          },
+        ],
+        "알림"
+      );
       return navi.push("/signin");
     }
 
@@ -97,11 +119,22 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
 
         setIsFollowing(false);
       } catch (error: any) {
-        console.error("언팔로우 오류:", error.message);
-        setAlertMessage("언팔로우 중 오류가 발생했습니다.");
+        openAlert(
+          "언팔로우 중 오류가 발생했습니다.",
+          [
+            {
+              text: "확인",
+              isGreen: true,
+              autoFocus: true,
+            },
+          ],
+          "알림"
+        );
+
+        return;
       }
     });
-  }, [user, followingId, navi]);
+  }, [user, followingId, navi, openAlert]);
 
   useEffect(() => {
     const checkFollowing = async () => {
@@ -118,23 +151,27 @@ const FollowButton = ({ followingId, followNickName }: FollowButtonProps) => {
         const snap = await ref.get();
         setIsFollowing(snap.exists);
       } catch (error: any) {
-        console.error("팔로우 상태 확인 오류:", error.message);
-        setIsFollowing(false);
-        return;
+        openAlert(
+          "팔로우 상태를 확인하지 못하였습니다.",
+          [
+            {
+              text: "확인",
+              isGreen: true,
+              autoFocus: true,
+            },
+          ],
+          "알림"
+        );
+
+        return setIsFollowing(false);
       }
     };
 
     checkFollowing();
-  }, [user, followingId]);
+  }, [user, followingId, openAlert]);
 
   return (
     <div>
-      {alertMessage && (
-        <AlertModal
-          message={alertMessage}
-          onClose={() => setAlertMessage(null)}
-        />
-      )}
       {isFollowing ? (
         <button
           onClick={(e) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import {
   IoMoon,
   IoSunny,
@@ -11,7 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import { AUTH } from "@/contextapi/context";
 import { twMerge } from "tailwind-merge";
-import AlertModal from "@/components/AlertModal";
+import { useAlertModal } from "@/components/AlertStore";
 
 // 모바일 전용 헤더 메뉴 (모달 기반)
 interface MobileHeaderProps {
@@ -31,7 +31,7 @@ const MobileHeader = ({
 }: MobileHeaderProps) => {
   const router = useRouter();
   const { user, signout } = AUTH.use();
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false); // 로그아웃 확인 모달 상태
+  const { openAlert } = useAlertModal();
 
   // 메뉴 닫기 공통 함수
   const closeMenu = () => setIsMenuOpen(false);
@@ -47,7 +47,15 @@ const MobileHeader = ({
 
   // 로그아웃 버튼 클릭 시 모달 표시
   const handleLogoutClick = () => {
-    setIsLogoutModalOpen(true);
+    openAlert("정말로 로그아웃 하시겠습니까?", [
+      { text: "아니요" },
+      {
+        text: "네",
+        isGreen: true,
+        autoFocus: true,
+        onClick: performLogout,
+      },
+    ]);
     closeMenu();
   };
 
@@ -56,7 +64,6 @@ const MobileHeader = ({
     signout();
     router.push("/");
     closeMenu();
-    setIsLogoutModalOpen(false);
   };
 
   // 버튼 스타일 공통 클래스 정의
@@ -114,16 +121,6 @@ const MobileHeader = ({
 
   return (
     <>
-      {/* 로그아웃 확인 모달 */}
-      {isLogoutModalOpen && (
-        <AlertModal
-          message="정말로 로그아웃 하시겠습니까?"
-          onClose={() => setIsLogoutModalOpen(false)}
-          onConfirm={performLogout}
-          showCancel
-        />
-      )}
-
       {/* 모바일 메뉴 오픈 시 표시되는 전체 메뉴 */}
       {isMenuOpen && (
         <div className="fixed h-screen w-full bg-gray-500/50 z-50 flex items-center justify-center sm:hidden">

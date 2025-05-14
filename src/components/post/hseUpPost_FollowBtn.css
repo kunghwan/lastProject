@@ -13,11 +13,32 @@
   .hsecol {
     @apply flex flex-col;
   }
+  .darkTextInput {
+    @apply dark:bg-[#666666] dark:placeholder:text-white dark:text-white;
+  }
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+  .green-scrollbar::-webkit-scrollbar {
+    /* 전체 스크롤바 영역 (트랙 + 손잡이 포함) */
+    width: 8px;
+  }
+  .green-scrollbar::-webkit-scrollbar-track {
+    /* 스크롤바의 "트랙" — 손잡이가 움직이는 배경 영역 */
+    background: #ffffff; /* 밝은 녹색 배경 */
+  }
+  .green-scrollbar::-webkit-scrollbar-thumb {
+    /* 	실제로 사용자가 드래그하는 "스크롤 손잡이" */
+    background-color: #10b981; /* 진한 녹색 */
+    border-radius: 9999px;
+  }
+  .green-scrollbar {
+    /* fierfox용 */
+    scrollbar-color: #10b981 #ffffff;
+    scrollbar-width: thin;
   }
 }

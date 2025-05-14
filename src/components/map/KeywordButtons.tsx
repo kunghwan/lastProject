@@ -15,18 +15,18 @@ interface KeywordButtonsProps {
 }
 
 const keywordBtnStyle =
-  "bg-white border border-gray-300 px-0 py-2 rounded-full shadow-sm hover:bg-gray-100 text-sm w-20 gap-x-1 flex items-center justify-center font-semibold";
+  "bg-white outline-none border dark:border-gray-500 border-gray-300 px-0 py-2 rounded-full shadow-sm hover:border-green-500 text-sm w-20 gap-x-1 flex items-center justify-center font-semibold focus:border-green-500 dark:bg-[#6B6B6B] dark:text-[#E5E7EB]";
 
 const KeywordButton = ({ name, icon, onClick }: KeywordButtonProps) => (
   <button className={keywordBtnStyle} onClick={() => onClick(name)}>
-    <p className="text-green-500 text-lg">{icon}</p>
+    <p className="text-green-400 text-lg">{icon}</p>
     {name}
   </button>
 );
 
 const KeywordButtons = ({ onKeywordClick }: KeywordButtonsProps) => {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 ">
       {keywordBtn.map((word) => (
         <KeywordButton
           key={word.name}

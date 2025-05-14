@@ -23,6 +23,7 @@ import Loaiding from "../Loading";
 import UploadTag from "./UploadTag";
 import AlertModal from "../AlertModal";
 import { TypeAnimation } from "react-type-animation";
+import { useAlertModal } from "../AlertStore";
 
 export interface UploadPostProps extends Post {
   imgs: string[];
@@ -65,11 +66,6 @@ const UploadPostPage = () => {
     address: "",
   });
 
-  const [modal, setModal] = useState<{
-    message: string;
-    onConfirm?: () => void;
-  } | null>(null);
-
   const navi = useRouter();
 
   const [isPending, startTransition] = useTransition();
@@ -80,6 +76,9 @@ const UploadPostPage = () => {
   const jusoRef = useRef<HTMLInputElement>(null);
   const tagRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+  const { openAlert } = useAlertModal();
 
   const titleMessage = useMemo(() => {
     if (title.length === 0 || title.trim() === "") {
@@ -109,7 +108,18 @@ const UploadPostPage = () => {
       //! 사진은 최대 10개까지만 가능하게
       //Todo: files.length만 비교하거나 items.length만 본다면, 합쳐서 10개 초과하는 걸 막지 못하게 됨
       if (files.length + items.length > 10) {
-        setModal({ message: "이미지 최대 개수는 10개 입니다." });
+        openAlert(
+          "이미지 최대 갯수는 10개 입니다.",
+          [
+            {
+              text: "확인",
+              isGreen: true,
+              autoFocus: true,
+            },
+          ],
+          "알림"
+        );
+
         return;
       }
 
@@ -117,11 +127,8 @@ const UploadPostPage = () => {
         setFiles((prev) => [...prev, file]);
       }
     },
-    [files]
+    [files, openAlert]
   );
-  const [focusTarget, setFocusTarget] = useState<
-    "title" | "desc" | "juso" | "tags" | null
-  >(null);
 
   const onSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -129,22 +136,74 @@ const UploadPostPage = () => {
       if (isTypingTag) {
         return;
       }
-
+      const targetRefs = [titleRef, descRef, jusoRef, tagRef];
       if (titleMessage) {
-        setModal({ message: titleMessage });
-        return setFocusTarget("title");
+        openAlert(
+          titleMessage,
+          [
+            {
+              text: "확인",
+              isGreen: true,
+              autoFocus: true,
+              target: 0,
+            },
+          ],
+
+          "알림",
+          targetRefs
+        );
+        return;
       }
       if (descMessage) {
-        setModal({ message: descMessage });
-        return setFocusTarget("desc");
+        openAlert(
+          descMessage,
+          [
+            {
+              text: "확인",
+              isGreen: true,
+              autoFocus: true,
+              target: 1,
+            },
+          ],
+
+          "알림",
+          targetRefs
+        );
+        return;
       }
       if (jusoMessage) {
-        setModal({ message: jusoMessage });
-        return setFocusTarget("juso");
+        openAlert(
+          jusoMessage,
+          [
+            {
+              text: "확인",
+              isGreen: true,
+              autoFocus: true,
+              target: 2,
+            },
+          ],
+
+          "알림",
+          targetRefs
+        );
+        return;
       }
       if (tagsMessage) {
-        setModal({ message: tagsMessage });
-        return setFocusTarget("tags");
+        openAlert(
+          tagsMessage,
+          [
+            {
+              text: "확인",
+              isGreen: true,
+              autoFocus: true,
+              target: 3,
+            },
+          ],
+
+          "알림",
+          targetRefs
+        );
+        return;
       }
 
       startTransition(async () => {
@@ -196,7 +255,19 @@ const UploadPostPage = () => {
 
           return navi.push("/feed");
         } catch (error: any) {
-          return setModal({ message: `에러:${error.message}` });
+          openAlert(
+            `에러:${error.message}`,
+            [
+              {
+                text: "확인",
+                isGreen: true,
+                autoFocus: true,
+              },
+            ],
+
+            "알림"
+          );
+          return;
         }
       });
     },
@@ -213,29 +284,13 @@ const UploadPostPage = () => {
       tagsMessage,
       navi,
       isTypingTag,
+      openAlert,
     ]
   );
 
   useEffect(() => {
     titleRef.current?.focus();
   }, []);
-
-  useEffect(() => {
-    if (modal?.message === null && focusTarget !== null) {
-      setTimeout(() => {
-        if (focusTarget === "title") {
-          titleRef.current?.focus();
-        } else if (focusTarget === "desc") {
-          descRef.current?.focus();
-        } else if (focusTarget === "juso") {
-          jusoRef.current?.focus();
-        } else if (focusTarget === "tags") {
-          tagRef.current?.focus();
-        }
-        setFocusTarget(null);
-      }, 300);
-    }
-  }, [modal?.message, focusTarget]);
 
   //! 마우스 휠 가로로 변경
   useEffect(() => {
@@ -262,20 +317,10 @@ const UploadPostPage = () => {
     <form
       action=""
       onSubmit={onSubmit}
-      className="bg-gray-50/80  dark:bg-gray-500 relative  h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  md:grid-cols-2 md:gap-5  max-w-300 mx-auto  p-5  border rounded-2xl shadow-sm border-gray-400 "
+      className="bg-gray-50/80  dark:bg-[#484848] relative  h-full overflow-y-auto flex-1  grid grid-cols-1 gap-2 dark:text-gray-700  md:grid-cols-2 md:gap-5  max-w-300 mx-auto  p-5  border rounded-2xl shadow-sm border-gray-400 "
     >
-      {isPending && <Loaiding />}
-      {modal && (
-        <AlertModal
-          message={modal.message}
-          onClose={() => setModal(null)}
-          onConfirm={() => {
-            modal.onConfirm?.();
-            setModal(null);
-          }}
-          showCancel={modal.onConfirm && true}
-        />
-      )}
+      {isPending && <Loaiding message="게시글 등록중 ..." />}
+
       <div className="hsecol gap-4  ">
         {/* <h1 className=" w-fit  text-3xl font-bold text-black dark:text-white">새글작성</h1> */}
         <div className="flex gap-x-1.5 items-center">
@@ -315,7 +360,7 @@ const UploadPostPage = () => {
                   title: e.target.value,
                 }))
               }
-              className={twMerge("upPostInput shadow-sm")}
+              className={twMerge("upPostInput shadow-sm darkTextInput")}
               ref={titleRef}
               placeholder="제목을 입력하세요."
             />
@@ -332,7 +377,9 @@ const UploadPostPage = () => {
               name=""
               id="content"
               placeholder="관광지의 소개글이나 리뷰를 작성해주세요."
-              className={twMerge("h-50 shadow-sm resize-none upPostInput")}
+              className={twMerge(
+                "h-50 shadow-sm resize-none upPostInput darkTextInput"
+              )}
               value={content}
               ref={descRef}
               // 변경은 post는 객체라서 전개연산자 사용후 content만 변경
@@ -397,13 +444,14 @@ const UploadPostPage = () => {
           tag={tag}
           tagRef={tagRef}
           tags={tags}
+          submitButtonRef={submitButtonRef}
         />
         <JusoComponents
           setIsTypingTag={setIsTypingTag}
           juso={juso}
           setJuso={setJuso}
           jusoRef={jusoRef}
-          titleRef={titleRef} //! 주소 선택 후 바로 내용인풋에 포컷스를 하기 위해서
+          submitButtonRef={submitButtonRef} //! 주소 선택 후 바로 내용인풋에 포컷스를 하기 위해서
         />
       </div>
 
@@ -411,12 +459,27 @@ const UploadPostPage = () => {
         <button
           type="button"
           onClick={() => {
-            setModal({
-              message: "취소 하시겠습니까?",
-              onConfirm() {
-                return navi.back();
-              },
-            });
+            openAlert(
+              "취소 하시겠습니까?",
+              [
+                {
+                  text: "확인",
+                  isGreen: true,
+                  autoFocus: true,
+                  onClick: () => {
+                    return navi.back();
+                  },
+                },
+                {
+                  text: "취소",
+                  isGreen: false,
+                  autoFocus: false,
+                },
+              ],
+
+              "알림"
+            );
+            return;
           }}
           className={twMerge(
             " bg-gray-300 hover:bg-gray-200 transition duration-300  upPostButton"
@@ -426,8 +489,9 @@ const UploadPostPage = () => {
         </button>
         <button
           type="submit"
+          ref={submitButtonRef}
           className={twMerge(
-            "  hover:bg-[rgba(116,212,186,0.7)]  bg-[rgba(62,188,154)] transition duration-300 upPostButton dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
+            " outline-lime-100 hover:bg-[rgba(116,212,186,0.7)]  bg-[rgba(62,188,154)] transition duration-300 upPostButton dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
           )}
         >
           게시

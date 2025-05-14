@@ -1,12 +1,12 @@
-"use client";
+// "use client";
 
+// import { useState, useRef, useCallback, useEffect } from "react";
 // import SearchForm from "@/components/map/SearchForm";
 // import MobilePlaceList from "@/components/map/MobilePlaceList";
 // import PlaceDetail from "@/components/map/PlaceDetail";
-// import NoResultsModal from "@/components/map/NoResultsModal";
 // import PlaceList from "@/components/map/PlaceList";
 // import KeywordButtons from "@/components/map/KeywordButtons";
-// import { useCallback, useEffect, useRef, useState } from "react";
+// import AlertModal from "@/components/AlertModal";
 
 // const MapPage = () => {
 //   const [map, setMap] = useState<any>(null); // 카카오 지도 객체
@@ -15,12 +15,14 @@
 //   const [keyword, setKeyword] = useState(""); // 검색 키워드
 //   const [inputValue, setInputValue] = useState(""); // 입력창의 현재 값
 //   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 모바일 사이드바 열림 상태
-//   const [showNoResultsModal, setShowNoResultsModal] = useState(false); // 모달 상태
+//   const [alertMessage, setAlertMessage] = useState(""); // 알림 메시지
+//   const [isShhowingAlert, setIsShhowingAlert] = useState(false); // 알림 모달 상태
+//   const [isPlaceListOpen, setIsPlaceListOpen] = useState(true); // 검색 리스트 열고닫기 상태
 
 //   const markers = useRef<any[]>([]); // 현재 지도에 그려진 마커 및 오버레이 배열
 //   const mapRef = useRef<HTMLDivElement>(null); // 지도 렌더링 DOM 참조
 //   const detailRef = useRef<HTMLDivElement>(null); // 상세 정보창 DOM 참조
-//   const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map()); //버튼 참조
+//   const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map()); // 키워드 버튼 참조
 
 //   //! 지도 초기화 및 kakao map API 로드
 //   useEffect(() => {
@@ -100,11 +102,12 @@
 //             const DJData = data.filter((place) =>
 //               place.address_name?.includes("대전")
 //             );
-//             // 백화점 검색 결과는 최대 5개로 제한(이름에 백화점이 붙은 가게들을 제거하기 위해서)
+//             // 백화점 검색 결과는 최대 5개로 제한
 //             const limitedData =
 //               keyword === "백화점" ? DJData.slice(0, 5) : DJData;
 
 //             setPlaces(limitedData);
+//             setIsPlaceListOpen(true); //검색 결과 있을 때 리스트 열기
 
 //             // 기존 마커 제거
 //             markers.current.forEach((m) => m.setMap(null));
@@ -125,7 +128,7 @@
 //               // 사용자 정의 마커(label)
 //               const label = document.createElement("div");
 //               label.className =
-//                 "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-22 text-center cursor-pointer";
+//                 "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-22 text-center cursor-pointer  dark:bg-[#6B6B6B] dark:text-white";
 //               label.innerText = place.place_name;
 
 //               // 라벨 클릭 시 상세 보기
@@ -146,10 +149,12 @@
 //             });
 //             //! 검색 결과 없을 경우
 //           } else if (status === maps.services.Status.ZERO_RESULT) {
-//             setShowNoResultsModal(true); // 모달 상태를 true로 변경
 //             setPlaces([]);
 //             markers.current.forEach((m) => m.setMap(null));
 //             markers.current = [];
+//             setAlertMessage("검색 결과가 없습니다.");
+//             setIsShhowingAlert(true); // 알림 모달 표시
+//             setInputValue(""); // 검색 결과 없으면 검색창 비움
 //           }
 //         },
 //         { bounds }
@@ -163,9 +168,10 @@
 //     setInputValue(keyword);
 //     setKeyword(keyword);
 //     setIsSidebarOpen(true);
+//     setIsPlaceListOpen(true);
 //   }, []);
 
-//   //! 키워드 변경 시 검색
+//   //! 키워드 변경 시 검색 실행
 //   useEffect(() => {
 //     if (keyword && map) {
 //       searchPlaces(keyword);
@@ -174,7 +180,14 @@
 
 //   //! 검색 버튼 클릭 시 실행
 //   const handleSearch = useCallback(() => {
-//     setKeyword(inputValue.trim());
+//     const trimmed = inputValue.trim();
+//     if (!trimmed) {
+//       setAlertMessage("검색어를 입력해주세요."); // 검색창에 아무것도 입력안했을때
+//       setIsShhowingAlert(true);
+//       return;
+//     }
+//     setKeyword(trimmed);
+//     setIsPlaceListOpen(true);
 //   }, [inputValue]);
 
 //   //! 상세 정보 외 클릭 시 닫기
@@ -203,41 +216,46 @@
 //     setSelectedPlace(null);
 //   }, []);
 
-//   //! 모달 닫기 핸들러
-//   const handleCloseNoResultsModal = useCallback(() => {
-//     setShowNoResultsModal(false);
-//   }, []);
-
 //   return (
-//     <div className="relative flex h-[76vh] dark:text-gray-600">
+//     <div className="relative flex h-[76vh] ">
 //       <div
 //         ref={mapRef}
-//         className="flex-1 bg-gray-200 relative rounded-t-3xl sm:rounded-3xl  border border-gray-300 overflow-hidden min-h-100"
+//         className="flex-1 bg-gray-200 relative rounded-t-3xl sm:rounded-3xl border border-gray-300 overflow-hidden min-h-100"
 //       />
 
-//       {/* 검색창 */}
-//       <SearchForm
-//         inputValue={inputValue}
-//         setInputValue={setInputValue}
-//         handleSearch={handleSearch}
-//         className="absolute z-10 top-5 left-[50%] translate-x-[-50%] md:left-50 md:my-2.5 md:transform-none"
-//         inputClassName="mx-2 w-48"
-//       />
+//       {/* 검색창 + 키워드 버튼 */}
+//       <div className="absolute w-full z-10 flex flex-col items-center gap-4 top-5 left-[50%] translate-x-[-50%] md:translate-x-[-45%] md:top-10 md:items-start ">
+//         <SearchForm
+//           inputValue={inputValue}
+//           setInputValue={setInputValue}
+//           handleSearch={handleSearch}
+//           className="w-full dark:text-white dark:bg-[#4B4B4B]"
+//           inputClassName="w-55"
+//         />
 
-//       {/* 키워드 버튼 */}
-//       {!selectedPlace && (
-//         <div className="absolute z-10 top-20 sm:top-25 left-[50%] translate-x-[-50%] flex gap-2 md:left-50 md:transform-none ">
+//         <div className="flex flex-wrap justify-center gap-2 md:justify-start ">
 //           <KeywordButtons onKeywordClick={handleKeywordClick} />
 //         </div>
-//       )}
+//       </div>
 
-//       {/*검색 장소 리스트 */}
-//       {keyword.length > 0 && !showNoResultsModal && places.length > 0 && (
+//       {/* 검색 장소 리스트 */}
+//       {isPlaceListOpen && keyword.length > 0 && places.length > 0 && (
 //         <PlaceList
 //           places={places}
 //           handlePlaceClick={handlePlaceClick}
 //           buttonRefs={buttonRefs}
+//           onClose={() => setIsPlaceListOpen(false)}
 //         />
+//       )}
+
+//       {/* 닫힌 상태에서 다시 열기 버튼 */}
+//       {!isPlaceListOpen && places.length > 0 && (
+//         <button
+//           onClick={() => setIsPlaceListOpen(true)}
+//           className="absolute right-0 top-1/2 transform -translate-y-1/2 py-1 rounded z-10 transition md:block hidden"
+//         >
+//           <div className="w-3 h-[40ch] rounded-bl-xl rounded-tl-xl dark:bg-zinc-500 bg-gray-400 hover:animate-pulse" />
+//         </button>
 //       )}
 
 //       {/* 상세 정보창 */}
@@ -249,8 +267,8 @@
 //         />
 //       )}
 
-//       {/*모바일 장소 리스트  */}
-//       {keyword.length > 0 && !showNoResultsModal && places.length > 0 && (
+//       {/* 모바일 장소 리스트 */}
+//       {keyword.length > 0 && places.length > 0 && (
 //         <MobilePlaceList
 //           isOpen={isSidebarOpen}
 //           setIsOpen={setIsSidebarOpen}
@@ -259,11 +277,13 @@
 //         />
 //       )}
 
-//       {/* 검색 결과 없음 모달 */}
-//       <NoResultsModal
-//         isOpen={showNoResultsModal}
-//         onClose={handleCloseNoResultsModal}
-//       />
+//       {/* 알림 모달 */}
+//       {isShhowingAlert && (
+//         <AlertModal
+//           message={alertMessage}
+//           onClose={() => setIsShhowingAlert(false)}
+//         />
+//       )}
 //     </div>
 //   );
 // };

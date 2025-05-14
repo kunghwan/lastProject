@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { ImFilePicture } from "react-icons/im";
-import AlertModal from "../AlertModal";
 import Image from "next/image";
+import { useAlertModal } from "../AlertStore";
 
 interface FileItemProps {
   file?: File;
@@ -12,25 +12,11 @@ interface FileItemProps {
   onDeleteFiles?: () => void;
 }
 const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
-  const [modal, setModal] = useState<{
-    message: string;
-    onConfirm?: () => void;
-  } | null>(null);
+  const { openAlert } = useAlertModal();
 
   return (
-    <div className="hsecol gap-y-1 hover:text-gray-400 cursor-pointer  shadow-md ">
-      {modal && (
-        <AlertModal
-          message={modal.message}
-          onClose={() => setModal(null)}
-          onConfirm={() => {
-            modal.onConfirm?.();
-            setModal(null);
-          }}
-          showCancel={true}
-        />
-      )}
-      <div className=" relative  w-24 h-24">
+    <div className="hsecol gap-y-1  hover:text-gray-200  group cursor-pointer  shadow-md  ">
+      <div className=" relative  w-24 h-24  ">
         {!file ? (
           <input
             id="imgs"
@@ -48,24 +34,39 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
           <button
             type="button"
             onClick={() => {
-              setModal({
-                message: "삭제하시겠습니까?",
-                onConfirm() {
-                  return onDeleteFiles && onDeleteFiles();
-                },
-              });
+              openAlert(
+                "삭제하시겠습니까?",
+                [
+                  {
+                    text: "확인",
+                    isGreen: true,
+                    autoFocus: true,
+                    onClick: () => {
+                      return onDeleteFiles && onDeleteFiles();
+                    },
+                  },
+                  {
+                    text: "취소",
+                    isGreen: false,
+                    autoFocus: false,
+                  },
+                ],
+                "알림"
+              );
+              return;
+
               // if (confirm("삭제하시겠습니까?")) {
               //   return onDeleteFiles && onDeleteFiles();
               // }
               // setAlertMessage("취소했습니다.");
             }}
-            className=" absolute border rounded-2xl text-xl bg-white z-20 w-24 h-24 opacity-0 hover:opacity-80 flex justify-center items-center cursor-pointer"
+            className=" absolute border rounded-2xl text-xl bg-white z-20 w-24 h-24 opacity-0 hover:opacity-80 flex justify-center items-center cursor-pointer pointer-events-auto"
           >
-            <RiDeleteBin5Fill />
+            <RiDeleteBin5Fill className="text-green-900" />
           </button>
         )}
 
-        <div className="absolute top-0 left-0  w-full h-full border border-gray-400 rounded-2xl bg-white cursor-pointer  flex justify-center items-center overflow-hidden ">
+        <div className="absolute top-0 left-0 w-full h-full border border-gray-400 rounded-2xl bg-white dark:bg-[#666666]  cursor-pointer  flex justify-center items-center overflow-hidden ">
           {file ? (
             <div className="border max-w-24 min-h-24 ">
               <Image
@@ -77,9 +78,9 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
               />
             </div>
           ) : (
-            <div className="flex gap-x-1 items-center ">
-              <ImFilePicture className="text-3xl " />
-              <FaPlus className="text-md text-black  " />
+            <div className="flex gap-x-1 items-center  group-hover:text-gray-100  transition-colors">
+              <ImFilePicture className="text-3xl dark:text-gray-300 dark:group-hover:text-white " />
+              <FaPlus className="text-md text-black dark:text-gray-300 dark:group-hover:text-white" />
             </div>
           )}
         </div>

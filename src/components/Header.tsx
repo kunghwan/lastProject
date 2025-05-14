@@ -15,10 +15,10 @@ import { AUTH } from "@/contextapi/context";
 import { twMerge } from "tailwind-merge";
 import Navbar from "./features/navber/Navbar";
 import { dbService } from "@/lib";
-import AlertModal from "@/components/AlertModal";
 import MobileHeader from "./MobileHeader";
+import { useAlertModal } from "@/components/AlertStore"; // ✅ Alert 모달 전역 상태 훅
 
-const HEAD_BUTTON_CLASS = "grayButton text-xl sm:text-2xl";
+const headBtn = "grayButton text-xl sm:text-2xl";
 
 //! 초기 로딩 시 다크 모드 설정
 const storedDarkMode =
@@ -33,12 +33,12 @@ const Header = () => {
   );
   const [isMenuOpen, setIsMenuOpen] = useState(false); // 모바일 메뉴 상태 관리
   const [hasUnread, setHasUnread] = useState(false); // 읽지 않은 알림 존재 여부 상태
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // 로그아웃 모달 상태
 
   const router = useRouter();
   const pathname = usePathname();
 
   const { user, signout } = AUTH.use(); //! Context API를 통해 사용자 인증 상태 및 로그아웃 함수 가져오기
+  const { openAlert } = useAlertModal(); //! AlertModal 오픈 함수 가져오기
 
   //! 현재 경로가 로그인 또는 회원가입 페이지인지 확인
   const isAuthPage = useMemo(
@@ -49,14 +49,24 @@ const Header = () => {
   //! 다크 모드 토글 함수
   const toggleDarkMode = useCallback(() => setIsDarkMode((prev) => !prev), []);
 
-  //! 로그아웃 처리 함수 (AlertModal 표시)
-  const handleLogout = useCallback(() => setShowLogoutModal(true), []);
-
-  //! AlertModal에서 로그아웃을 최종 확인한 경우 실행
-  const handleConfirmLogout = useCallback(() => {
-    signout();
-    router.push("/");
-  }, [signout, router]);
+  //! 로그아웃 버튼 클릭 시 AlertModal 표시
+  const handleLogout = useCallback(() => {
+    openAlert("정말로 로그아웃 하시겠습니까?", [
+      {
+        text: "예",
+        isGreen: true,
+        autoFocus: true,
+        onClick: () => {
+          signout();
+          router.push("/");
+        },
+      },
+      {
+        text: "아니오",
+        isGreen: false,
+      },
+    ]);
+  }, [openAlert, signout, router]);
 
   //! isDarkMode 상태가 변경될 때마다 실행
   useEffect(() => {
@@ -67,6 +77,8 @@ const Header = () => {
   //! 헤더에 표시될 버튼들을 정의
   const headerButtons = useMemo(() => {
     const buttons = [];
+
+    // 로그인 상태일 때 북마크, 알림 버튼 추가
     if (user) {
       buttons.push(
         {
@@ -88,17 +100,17 @@ const Header = () => {
       );
     }
 
-    //! 다크 모드 토글 버튼
+    // 다크 모드 토글 버튼
     buttons.push({
       icon: isDarkMode ? <IoMoon /> : <IoSunny />, // 현재 모드에 따라 달 또는 해 아이콘 표시
       onClick: toggleDarkMode, // 다크 모드 토글 함수 호출
       className: twMerge(
-        HEAD_BUTTON_CLASS,
+        headBtn,
         isDarkMode ? "text-gray-800" : "text-white bg-black"
       ),
     });
 
-    //! 로그인/로그아웃 버튼 (인증 페이지가 아닐 경우에만 표시)
+    // 로그인/로그아웃 버튼 (인증 페이지가 아닐 경우에만 표시)
     if (!isAuthPage) {
       buttons.push({
         label: user ? "로그아웃" : "로그인", // 로그인 상태에 따라 텍스트 변경
@@ -106,6 +118,7 @@ const Header = () => {
         className: "text-2xl font-bold h-14 hover:opacity-80",
       });
     }
+
     return buttons;
   }, [
     user,
@@ -131,20 +144,22 @@ const Header = () => {
           .where("isRead", "==", false) // 읽지 않은 알림만 필터링
           .limit(1) // 최대 1개만 가져옴 (존재 여부만 확인)
           .get();
-        setHasUnread(!snapshot.empty); // 스냅샷이 비어있지 않으면 읽지 않은 알림이 있다고 상태 업데이트
+
+        setHasUnread(!snapshot.empty); // 읽지 않은 알림이 하나라도 있으면 true
       } catch (error) {
         console.error("알림 체크 에러:", error);
       }
     };
 
-    window.checkUnreadNotifications = checkUnreadNotifications; // 전역 스코프에 함수 등록 (필요시 외부에서 호출 가능)
-    checkUnreadNotifications(); // 컴포넌트 마운트 시 읽지 않은 알림 확인
+    window.checkUnreadNotifications = checkUnreadNotifications; //외부에서 호출할 수 있도록 전역 등록
+    checkUnreadNotifications(); // 컴포넌트 마운트 시 실행
   }, [user]);
 
   return (
     <>
-      <div className="fixed top-0 left-1/2 translate-x-[-50%] w-full z-50 flex justify-center shadow-sm">
+      <div className="fixed top-0 left-1/2 translate-x-[-50%] w-full z-50 flex justify-center shadow-sm dark:border-b-2 dark:border-emerald-100">
         <header className="bg-white dark:bg-[#333333] w-full flex items-center justify-between px-4 py-4 lg:max-w-300 mx-auto">
+          {/* 로고 영역 */}
           <Link href="/" className="hover:opacity-80 flex items-center gap-x-2">
             <Image
               src={
@@ -173,7 +188,7 @@ const Header = () => {
               <li key={index}>
                 <button
                   onClick={btn.onClick}
-                  className={btn.className || HEAD_BUTTON_CLASS}
+                  className={btn.className || headBtn}
                 >
                   {btn.icon || btn.label}
                 </button>
@@ -204,7 +219,7 @@ const Header = () => {
           </div>
         </header>
 
-        {/* 모바일 헤더 메뉴창 */}
+        {/* 모바일 메뉴 컴포넌트 */}
         <MobileHeader
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
@@ -212,21 +227,9 @@ const Header = () => {
           setIsMenuOpen={setIsMenuOpen}
           hasUnread={hasUnread}
         />
-
-        {/* 로그아웃 확인 모달 */}
-        {showLogoutModal && (
-          <AlertModal
-            message="정말로 로그아웃 하시겠습니까?"
-            onClose={() => setShowLogoutModal(false)}
-            onConfirm={() => {
-              handleConfirmLogout();
-              setShowLogoutModal(false);
-            }}
-            showCancel
-          />
-        )}
       </div>
 
+      {/* 하단 네비게이션 */}
       <Navbar />
     </>
   );
