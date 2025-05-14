@@ -217,7 +217,7 @@ const PostComponent = () => {
                     />
                   </div>
                   <div className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
-                    <ShareButton />
+                    <ShareButton userNickname={post.userNickname} />
                   </div>
                 </div>
                 <div className="flex-1/2 text-xs text-gray-500 dark:text-gray-300 truncate">
@@ -282,13 +282,13 @@ const PostComponent = () => {
                 <>
                   <button
                     onClick={handlePrev}
-                    className="absolute left-3 text-2xl text-gray-700 hover:text-gray-400 rounded-full p-1.5"
+                    className="absolute left-3 text-2xl text-gray-700 hover:text-gray-400 rounded-full hover:bg-black/5 p-1.5"
                   >
                     <FaChevronLeft />
                   </button>
                   <button
                     onClick={handleNext}
-                    className="absolute right-3 text-2xl text-gray-700 hover:text-gray-400 rounded-full p-1.5"
+                    className="absolute right-3 text-2xl text-gray-700 hover:text-gray-400 rounded-full hover:bg-black/5  p-1.5"
                   >
                     <FaChevronRight />
                   </button>
