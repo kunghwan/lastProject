@@ -25,7 +25,7 @@ const SearchForm = ({
   return (
     <>
       <form
-        className={`flex  bg-white rounded-full shadow-md p-2 border border-gray-300 focus-within:border-green-500 transition${className}`}
+        className={`flex  bg-white rounded-full shadow-md p-2 outline-none border border-gray-300 focus-within:border-green-500 transition${className}`}
         onSubmit={(e) => {
           e.preventDefault();
           handleSearch();

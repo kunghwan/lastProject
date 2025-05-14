@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-black dark:bg-[#333333] dark:text-[#F1F5F9] transition-colors lg:max-w-300 lg:mx-auto`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-black dark:bg-[#333333] dark:text-[#F1F5F9]  lg:max-w-300 lg:mx-auto`}
       >
         <AlertModal />
         <ReactQueryProvider>

@@ -15,7 +15,7 @@ interface KeywordButtonsProps {
 }
 
 const keywordBtnStyle =
-  "bg-white border border-gray-300 px-0 py-2 rounded-full shadow-sm hover:border-green-500 text-sm w-20 gap-x-1 flex items-center justify-center font-semibold focus:border-green-500 dark:bg-[#6B6B6B] dark:text-[#E5E7EB]";
+  "bg-white outline-none border dark:border-gray-500 border-gray-300 px-0 py-2 rounded-full shadow-sm hover:border-green-500 text-sm w-20 gap-x-1 flex items-center justify-center font-semibold focus:border-green-500 dark:bg-[#6B6B6B] dark:text-[#E5E7EB]";
 
 const KeywordButton = ({ name, icon, onClick }: KeywordButtonProps) => (
   <button className={keywordBtnStyle} onClick={() => onClick(name)}>
