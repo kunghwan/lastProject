@@ -399,8 +399,6 @@ const PwFindResult = () => {
           </div>
         </>
       )}
-
-      <AlertModal />
     </div>
   );
 };

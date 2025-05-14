@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import { FaIdCard } from "react-icons/fa6";
 import { TbPassword } from "react-icons/tb";
 import { useAlertModal } from "@/components/AlertStore";
-import AlertModal from "@/components/AlertModal";
 
 const IdFindResult = () => {
   // 상태 정의
@@ -48,10 +47,6 @@ const IdFindResult = () => {
 
   return (
     <>
-      {/* 알림 모달 */}
-
-      <AlertModal />
-
       {/* 상단 헤더 - 아이디/비밀번호 찾기 */}
       <div className="w-full bg-emerald-100 p-4 whitespace-nowrap dark:bg-emerald-500">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
