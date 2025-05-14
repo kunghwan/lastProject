@@ -30,10 +30,10 @@ const UpPlaceBookMark = () => {
       const data = snap.docs.map((doc) => {
         const d = doc.data();
         return {
-          contentid: doc.id,
+          contentid: d.contentid || doc.id.replace("places_", ""),
           title: d.title,
           addr1: d.addr1,
-          firstimage: d.imageUrl,
+          firstimage: d.firstimage || d.imageUrl || "", // ✅ 안정적 처리
           likeCount: d.likeCount ?? 0,
         };
       });
@@ -60,38 +60,39 @@ const UpPlaceBookMark = () => {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4 flex gap-2.5">
-        {" "}
+    <>
+      <h1 className="text-xl font-bold mb-4 flex gap-2.5 px-1">
         <FcLike /> 내가 좋아요한 추천 장소
       </h1>
 
       {places.length === 0 ? (
-        <p className="text-gray-500">좋아요한 장소가 없습니다.</p>
+        <p className="text-gray-500 px-1">좋아요한 장소가 없습니다.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {places.map((place) => (
-            <div
-              key={place.contentid}
-              className="relative hover:bg-gray-100 rounded-2xl p-1.5 transition-all duration-200"
-            >
-              <PlaceCard
-                place={place}
-                likedOverride={true}
-                countOverride={place.likeCount}
-                hideLikeButton={true} // ✅ 북마크에서만 좋아요 버튼 숨김
-              />
-              <button
-                onClick={() => handleDelete(place.contentid)}
-                className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded shadow"
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-2 gap-y-4 p-1.5 m-1 w-full max-w-screen-lg mx-auto transition-all">
+            {places.map((place) => (
+              <div
+                key={place.contentid}
+                className="relative hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1.5 transition-all duration-200"
               >
-                삭제
-              </button>
-            </div>
-          ))}
-        </div>
+                <PlaceCard
+                  place={place}
+                  likedOverride={true}
+                  countOverride={place.likeCount}
+                  hideLikeButton={true}
+                />
+                <button
+                  onClick={() => handleDelete(place.contentid)}
+                  className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded shadow dark:bg-red-700"
+                >
+                  삭제
+                </button>
+              </div>
+            ))}
+          </div>
+        </>
       )}
-    </div>
+    </>
   );
 };
 

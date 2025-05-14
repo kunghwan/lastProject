@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { FaIdCard } from "react-icons/fa6";
 import { TbPassword } from "react-icons/tb";
+import { useAlertModal } from "@/components/AlertStore";
 import AlertModal from "@/components/AlertModal";
 
 const IdFindResult = () => {
@@ -10,7 +11,8 @@ const IdFindResult = () => {
   const [email, setEmail] = useState(""); // 선택된 이메일 저장
   const [isChecked, setIsChecked] = useState(false); // 체크박스 상태
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태
-  const [alertMsg, setAlertMsg] = useState<string | null>(null); // 알림 메시지 상태
+
+  const { openAlert } = useAlertModal();
 
   // ✅ 이메일/체크 상태가 바뀔 때마다 세션에 저장
   useEffect(() => {
@@ -34,10 +36,12 @@ const IdFindResult = () => {
   const handleClick = useCallback(
     (url: string) => {
       if (!isChecked) {
-        setAlertMsg("체크박스를 체크해주세요."); // 체크 안 했을 경우 알림창 표시
+        openAlert("체크박스를 체크해주세요.", [
+          { text: "확인", isGreen: true, autoFocus: true },
+        ]);
         return;
       }
-      window.location.href = url; // 체크됐으면 해당 경로로 이동
+      window.location.href = url;
     },
     [isChecked]
   );
@@ -45,20 +49,21 @@ const IdFindResult = () => {
   return (
     <>
       {/* 알림 모달 */}
-      {alertMsg && (
-        <AlertModal message={alertMsg} onClose={() => setAlertMsg(null)} />
-      )}
+
+      <AlertModal />
 
       {/* 상단 헤더 - 아이디/비밀번호 찾기 */}
-      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap">
+      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap dark:bg-emerald-500">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
-            <FaIdCard className="text-amber-500 text-4xl" />
-            <p className="font-bold text-amber-500">아이디 찾기</p>
+            <FaIdCard className="text-amber-500 text-4xl dark:text-amber-700" />
+            <p className="font-bold text-amber-500 dark:text-amber-700">
+              아이디 찾기
+            </p>
           </div>
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded whitespace-nowrap">
-            <TbPassword className="text-blue-500 text-4xl" />
-            <p className="font-bold text-black dark:text-black">
+            <TbPassword className="text-blue-500 text-4xl dark:text-blue-700" />
+            <p className="font-bold text-black  dark:text-white">
               비밀번호 찾기
             </p>
           </div>
@@ -111,7 +116,7 @@ const IdFindResult = () => {
 export default IdFindResult;
 
 const pwButton =
-  "bg-gray-300 text-black font-bold px-6 py-3 rounded-2xl hover:bg-blue-600 w-40 lg:h-20 lg:flex lg:items-center lg:justify-center";
+  "bg-gray-300 text-black font-bold px-6 py-3 rounded-2xl hover:bg-blue-600 w-40 lg:h-20 lg:flex lg:items-center lg:justify-center dark:bg-gray-500 dark:text-white";
 
 const loginButton =
-  "bg-emerald-300 px-6 py-3 rounded-2xl hover:bg-emerald-600 w-40 text-black font-bold flex justify-center lg:h-20 lg:flex lg:items-center lg:justify-center";
+  "bg-emerald-300 px-6 py-3 rounded-2xl hover:bg-emerald-600 w-40 text-black font-bold flex justify-center lg:h-20 lg:flex lg:items-center lg:justify-center dark:bg-emerald-800 dark:text-white";

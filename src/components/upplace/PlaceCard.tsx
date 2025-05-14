@@ -37,6 +37,7 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
 
   const imageUrl = useMemo(() => {
     if (place.firstimage?.trim()) return place.firstimage.trim();
+    if ((place as any).imageUrl?.trim) return (place as any).imageUrl.trim(); // 보완 처리
     return fallbackImages[place.title] || defaultImage;
   }, [place.firstimage, place.title]);
 
@@ -53,24 +54,26 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
   }, [router, place.contentid]);
 
   return (
-    <div className=" rounded-lg shadow p-1 ">
-      <div className="relative w-full h-[270px] cursor-pointer rounded overflow-hidden">
+    <div className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1.5 cursor-pointer relative transition-all duration-200">
+      <div className="relative w-full h-64 rounded-xl overflow-hidden">
         <Image
           src={imageUrl}
           alt={place.title}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
-          className="object-cover"
+          className="object-cover transition-all duration-500 ease-in-out transform hover:scale-[1.01]"
           onClick={handleClickImage}
           priority={priority}
         />
       </div>
-      <h2 className="text-lg font-bold mt-2 line-clamp-1 ">{place.title}</h2>
-      <p className="text-sm text-gray-600 dark:text-white line-clamp-1 ">
+
+      <h2 className="text-sm font-semibold mt-2 line-clamp-1">{place.title}</h2>
+      <p className="text-xs text-gray-500 dark:text-white line-clamp-1">
         {place.addr1}
       </p>
+
       <div className="mt-2 flex items-center justify-between">
-        <p className="text-sm text-gray-500">❤️ {likeCount}</p>
+        <p className="text-xs text-gray-500">❤️ {likeCount}</p>
         {!hideLikeButton && (
           <UpPlaceLikeButton
             contentId={place.contentid}

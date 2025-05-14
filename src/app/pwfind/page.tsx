@@ -21,6 +21,7 @@ import AlertModal from "@/components/AlertModal";
 import { FaIdCard } from "react-icons/fa6";
 import { TbPassword } from "react-icons/tb";
 import Link from "next/link";
+import { useAlertModal } from "@/components/AlertStore"; // ✅ zustand 기반 모달 상태
 
 // 세션 스토리지 키 상수
 const STORAGE_KEYS = {
@@ -65,11 +66,7 @@ const PwFindResult = () => {
     confirmPassword: "",
   });
 
-  // 알림 모달 상태
-  const [modal, setModal] = useState<{
-    message: string;
-    onConfirm?: () => void;
-  } | null>(null);
+  const { openAlert } = useAlertModal(); // ✅ 모달 열기 함수
 
   // 컴포넌트가 로드되었을 때 포커스 처리
   useEffect(() => {
@@ -111,7 +108,6 @@ const PwFindResult = () => {
     if (realEmail) {
       setEmail(realEmail);
     } else {
-      // 이전 입력값 복원
       const savedName = sessionStorage.getItem(STORAGE_KEYS.NAME) || "";
       const savedPhone = sessionStorage.getItem(STORAGE_KEYS.PHONE) || "";
       const savedEmail = sessionStorage.getItem(STORAGE_KEYS.EMAIL) || "";
@@ -120,14 +116,12 @@ const PwFindResult = () => {
       setInputPhone(savedPhone);
       setInputEmail(savedEmail);
 
-      // 기본 유효성 검사
       setInputErrors({
         name: validateName(savedName) || "",
         phone: validatePhone(savedPhone) || "",
         email: "",
       });
 
-      // 이메일은 비동기 검사
       if (savedEmail) {
         validateEmail(savedEmail).then((error) => {
           if (error) {
@@ -138,22 +132,16 @@ const PwFindResult = () => {
     }
   }, []);
 
-  // 비밀번호 폼 유효성 검사
-
   // ✅ 1. useMemo로 validationResult 계산
-  // form 상태(newPassword, confirmPassword)가 변경될 때만 유효성 검사 결과를 재계산하고,
-  // 그렇지 않으면 기존 결과를 메모이제이션해서 성능을 최적화한다.
   const validationResult = useMemo(() => {
-    const errors: FindPasswordValidation = {}; // 유효성 오류 결과를 담을 객체
-    const { newPassword, confirmPassword } = form; // form 상태에서 필드 추출
+    const errors: FindPasswordValidation = {};
+    const { newPassword, confirmPassword } = form;
 
-    // ✅ 새 비밀번호 유효성 검사
     const newPasswordMessage = validatePassword(newPassword);
     if (newPasswordMessage) {
       errors.newPassword = { isValid: false, message: newPasswordMessage };
     }
 
-    // ✅ 비밀번호 확인 유효성 검사
     if (!confirmPassword) {
       errors.confirmPassword = {
         isValid: false,
@@ -170,37 +158,37 @@ const PwFindResult = () => {
   }, [form]);
 
   // ✅ 2. useCallback으로 실제 검증 실행 함수 정의
-  // validateForm을 여러 곳에서 재사용하더라도 불필요하게 다시 생성되지 않도록 최적화
   const validateForm = useCallback((): boolean => {
-    setValidation(validationResult); // 결과를 상태에 반영 (화면에 표시할 수 있도록)
-    return Object.keys(validationResult).length === 0; // 에러 객체가 비어있으면 true 반환 (검증 통과)
-  }, [validationResult]); // 🚩 validationResult가 바뀔 때만 함수 재생성
+    setValidation(validationResult);
+    return Object.keys(validationResult).length === 0;
+  }, [validationResult]);
 
-  // 비밀번호 폼 상태 변경 시 자동 유효성 검사
   useEffect(() => {
     validateForm();
   }, [form, validateForm]);
 
-  // 비밀번호 입력 변경 핸들러
   const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }, []);
 
-  // 비밀번호 변경 확인 버튼 클릭 핸들러
   const handleSubmit = useCallback(() => {
     if (!validateForm()) return;
 
-    setModal({
-      message: "비밀번호가 성공적으로 변경되었습니다.",
-      onConfirm: () => {
-        sessionStorage.removeItem("selectedRealEmail");
-        router.push("/signin"); // 로그인 페이지로 이동
-      },
-    });
-  }, [router, validateForm]);
+    openAlert("비밀번호가 성공적으로 변경되었습니다.", [
+      {
+        text: "확인",
+        isGreen: true,
+        autoFocus: true,
 
-  // 이름/전화번호/이메일 입력값 변경 시
+        onClick: () => {
+          sessionStorage.removeItem("selectedRealEmail");
+          router.push("/signin");
+        },
+      },
+    ]);
+  }, [router, validateForm, openAlert]);
+
   const handleInputChange = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
@@ -226,19 +214,19 @@ const PwFindResult = () => {
     []
   );
 
-  // 사용자 인증 확인 처리
   const handleFindPassword = useCallback(async () => {
     if (inputErrors.name || inputErrors.phone || inputErrors.email) {
-      setModal({ message: "입력한 정보를 다시 확인해주세요." });
+      openAlert("입력한 정보를 다시 확인해주세요.", [
+        { text: "확인", isGreen: true },
+      ]);
       return;
     }
     if (!inputName || !inputPhone || !inputEmail) {
-      setModal({ message: "모든 항목을 입력해주세요." });
+      openAlert("모든 항목을 입력해주세요.", [{ text: "확인", isGreen: true }]);
       return;
     }
 
     try {
-      // Firestore에서 사용자 찾기
       const snap = await dbService
         .collection(FBCollection.USERS)
         .where("name", "==", inputName)
@@ -247,50 +235,51 @@ const PwFindResult = () => {
         .get();
 
       if (snap.empty) {
-        setModal({
-          message: "입력하신 정보와 일치하는 사용자를 찾을 수 없습니다.",
-        });
+        openAlert("입력하신 정보와 일치하는 사용자를 찾을 수 없습니다.", [
+          { text: "확인", isGreen: true },
+        ]);
         return;
       }
 
-      // 인증 성공 처리
       sessionStorage.setItem("selectedRealEmail", inputEmail);
       setEmail(inputEmail);
-      setModal({
-        message: "본인 인증이 완료되었습니다. 비밀번호를 재설정해주세요.",
-      });
+      openAlert("본인 인증이 완료되었습니다. 비밀번호를 재설정해주세요.", [
+        { text: "확인", isGreen: true },
+      ]);
     } catch (error) {
       console.error("비밀번호 찾기 오류", error);
-      setModal({ message: "비밀번호 찾기 중 오류가 발생했습니다." });
+      openAlert("비밀번호 찾기 중 오류가 발생했습니다.", [
+        { text: "확인", isGreen: true },
+      ]);
     }
   }, [inputName, inputPhone, inputEmail, inputErrors]);
 
   return (
-    <div className="p-2 overflow-auto min-h-screen sm:overflow-visible lg:overflow-visible md:overflow-visible lg: ">
-      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap rounded">
+    <div className="p-2 overflow-auto min-h-screen sm:overflow-visible lg:overflow-visible md:overflow-visible  ">
+      {/* 상단 아이디/비밀번호 찾기 헤더 */}
+      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap dark:bg-emerald-500  ">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
-            <FaIdCard className="text-amber-500 text-4xl " />
-            <Link href="/idfind" className="font-bold text-black">
-              아이디 찾기
-            </Link>
+            <FaIdCard className="text-amber-500 text-4xl dark:text-amber-700" />
+            <p className="font-bold text-black dark:text-white">아이디 찾기</p>
           </div>
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
-            <TbPassword className="text-blue-500 text-4xl" />
+            <TbPassword className="text-blue-500 text-4xl dark:text-blue-700" />
             <Link
               href="/pwfind"
-              className="font-bold   whitespace-nowrap text-amber-500 dark:text-amber-500 "
+              className="font-bold text-black-500  whitespace-nowrap text-amber-500 dark:text-amber-700"
             >
               비밀번호 찾기
             </Link>
           </div>
         </div>
       </div>
+
       <h2 className="text-2xl font-bold mb-4 mt-4">비밀번호 재설정</h2>
 
       {/* 인증 전 화면 */}
       {!user && !email && (
-        <div className="flex flex-col gap-2 mb-4 ">
+        <div className="flex flex-col gap-2 mb-4  ">
           {/* 이름 입력 */}
           <input
             type="text"
@@ -300,7 +289,7 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="이름 입력"
-            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150"
+            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150 dark:border-emerald-500 dark:placeholder:text-emerald-500"
           />
           {inputErrors.name && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.name}</p>
@@ -315,7 +304,7 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="전화번호 입력"
-            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150"
+            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150 dark:border-emerald-500 dark:placeholder:text-emerald-500"
           />
           {inputErrors.phone && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.phone}</p>
@@ -330,7 +319,7 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="이메일 입력"
-            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150"
+            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150 dark:border-emerald-500 dark:placeholder:text-emerald-500"
           />
           {inputErrors.email && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.email}</p>
@@ -340,7 +329,7 @@ const PwFindResult = () => {
           <button
             ref={findPasswordButtonRef}
             type="button"
-            className="bg-gray-300 rounded-2xl p-3 mt-2 flex justify-center w-50 items-center lg:w-80"
+            className="bg-gray-300 rounded-2xl p-3 mt-2 flex justify-center w-50 items-center lg:w-80 dark:text-white dark:bg-gray-500"
             onClick={handleFindPassword}
           >
             비밀번호 찾기
@@ -351,11 +340,11 @@ const PwFindResult = () => {
       {/* 인증 후 비밀번호 재설정 화면 */}
       {(user || email) && (
         <>
-          <div className="border h-80 justify-center flex items-center">
+          <div className="border h-80 justify-center flex items-center border-emerald-100 dark:border-emerald-300">
             <div>
               <p className="text-xl text-black dark:text-white">
                 이메일:{" "}
-                <span className="font-bold text-blue-600">
+                <span className="font-bold text-blue-600 dark:text-blue-800">
                   {user ? user.email : email}
                 </span>
               </p>
@@ -370,7 +359,7 @@ const PwFindResult = () => {
                   onChange={handleChange}
                   onKeyDown={handleKeyDown}
                   placeholder="새비밀번호"
-                  className="border p-2 border-emerald-300 placeholder:text-emerald-300"
+                  className="border p-2 border-emerald-300 placeholder:text-emerald-300 dark:border-emerald-500 dark:placeholder:text-emerald-500"
                 />
                 {validation.newPassword?.message && (
                   <p className="text-sm text-red-500 ml-1">
@@ -387,7 +376,7 @@ const PwFindResult = () => {
                   onChange={handleChange}
                   onKeyDown={handleKeyDown}
                   placeholder="새 비밀번호 확인"
-                  className="border p-2 border-emerald-300 mt-2 placeholder:text-emerald-300"
+                  className="border p-2 border-emerald-300 mt-2 placeholder:text-emerald-300 dark:border-emerald-500 dark:placeholder:text-emerald-500"
                 />
                 {validation.confirmPassword?.message && (
                   <p className="text-sm text-red-500 ml-1">
@@ -402,7 +391,7 @@ const PwFindResult = () => {
           <div className="flex justify-center">
             <button
               ref={submitButtonRef}
-              className="bg-gray-300 rounded-2xl p-5 mt-3 flex justify-center w-50 items-center lg:w-80"
+              className="bg-gray-300 rounded-2xl p-5 mt-3 flex justify-center w-50 items-center lg:w-80 dark:bg-gray-500"
               onClick={handleSubmit}
             >
               확인
@@ -411,17 +400,7 @@ const PwFindResult = () => {
         </>
       )}
 
-      {/* 알림 모달 */}
-      {modal && (
-        <AlertModal
-          message={modal.message}
-          onClose={() => setModal(null)}
-          onConfirm={() => {
-            modal.onConfirm?.();
-            setModal(null);
-          }}
-        />
-      )}
+      <AlertModal />
     </div>
   );
 };

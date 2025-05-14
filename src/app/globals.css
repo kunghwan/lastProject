@@ -11,15 +11,16 @@
 
 @layer components {
   .grayButton {
-    @apply p-3 rounded-full cursor-pointer hover:opacity-70 justify-center flex items-center dark:text-gray-800 text-3xl bg-gray-200;
+    @apply p-3 rounded-full  hover:opacity-70 justify-center flex items-center dark:text-gray-800 text-3xl bg-gray-200;
   }
   .ykhInputButton {
-    @apply rounded p-4 bg-pink-50 w-90 placeholder:text-black outline-none lg:w-120  dark:placeholder:text-gray-900 dark:text-lime-300;
+    @apply rounded p-4 bg-white w-90 placeholder:text-black outline-none lg:w-120  dark:placeholder:text-gray-900 dark:text-lime-300 border border-emerald-300 dark:border-emerald-100;
   }
   /* global.css 또는 globals.css */
 }
 
 @import "../components/post/hseUpPost_FollowBtn.css";
+
 
 ::-webkit-scrollbar {
   display: none;
@@ -32,3 +33,4 @@
   background-color: rgba(100, 100, 100, 0.5);
   border-radius: 4px;
 }
+
