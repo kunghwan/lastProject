@@ -115,6 +115,11 @@ const MobileHeader = ({
       label: "로그인",
       className: smallBtnClass,
     },
+    {
+      onClick: () => handleNavigate("/signup"),
+      label: "회원가입",
+      className: smallBtnClass,
+    },
   ];
 
   const isUserBtn = user ? loggedInButtons : loggedOutButtons;
