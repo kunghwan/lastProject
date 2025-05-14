@@ -32,7 +32,7 @@ const MapPage = () => {
       const center = new window.kakao.maps.LatLng(36.3286, 127.4229);
       const mapInstance = new window.kakao.maps.Map(mapRef.current, {
         center,
-        level: 5, // 확대 레벨 설정
+        level: 7, // 확대 레벨 설정
       });
 
       setMap(mapInstance); // 지도 객체 저장
