@@ -217,7 +217,7 @@ const PostComponent = () => {
                     />
                   </div>
                   <div className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
-                    <ShareButton />
+                    <ShareButton userNickname={post.userNickname} />
                   </div>
                 </div>
                 <div className="flex-1/2 text-xs text-gray-500 dark:text-gray-300 truncate">
