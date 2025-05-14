@@ -38,7 +38,7 @@ const Header = () => {
   const pathname = usePathname();
 
   const { user, signout } = AUTH.use(); //! Context API를 통해 사용자 인증 상태 및 로그아웃 함수 가져오기
-  const { openAlert } = useAlertModal(); // ✅ AlertModal 오픈 함수 가져오기
+  const { openAlert } = useAlertModal(); //! AlertModal 오픈 함수 가져오기
 
   //! 현재 경로가 로그인 또는 회원가입 페이지인지 확인
   const isAuthPage = useMemo(
@@ -151,7 +151,7 @@ const Header = () => {
       }
     };
 
-    window.checkUnreadNotifications = checkUnreadNotifications; // (선택) 외부에서 호출할 수 있도록 전역 등록
+    window.checkUnreadNotifications = checkUnreadNotifications; //외부에서 호출할 수 있도록 전역 등록
     checkUnreadNotifications(); // 컴포넌트 마운트 시 실행
   }, [user]);
 

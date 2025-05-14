@@ -65,7 +65,7 @@ const Navbar = () => {
 
   const closeNavMenu = useCallback(() => {
     setIsNavMenuOpen(false);
-    setTimeout(() => setIsGridMenuVisible(true), 300);
+    setTimeout(() => setIsGridMenuVisible(true), 100);
   }, []);
 
   const baseNavStyle =
