@@ -62,6 +62,17 @@ const BookmarkPage = () => {
     return `${Math.floor(diff / week)}주 전`;
   }
 
+  const getFormattedDate = (createdAt: Post["createdAt"]) => {
+    //! 지금 들어온 createdAt 값이 Firebase의 Timestamp 객체인가를 검사(instanceof)
+    if (createdAt instanceof Timestamp) {
+      return createdAt.toDate().toLocaleString();
+    } else if (typeof createdAt === "string") {
+      return new Date(createdAt).toLocaleString();
+    } else {
+      return "날짜 정보 없음";
+    }
+  };
+
   // 안전하게 시간값 추출하는 함수
   const getTimeValue = (value: string | Timestamp | FieldValue): number => {
     if (value instanceof Timestamp) {
@@ -334,7 +345,7 @@ const BookmarkPage = () => {
             <div className="p-4 justify-end flex flex-col">
               <div className="text-xs text-gray-500 mt-2 flex justify-between mb-5">
                 <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
-                <div>{formatCreatedAt(selectedPost.createdAt)}</div>
+                <div>{getFormattedDate(selectedPost.createdAt)}</div>
               </div>
               <h2 className="text-lg font-bold mb-2 dark:text-gray-600 truncate">
                 {selectedPost.title}
