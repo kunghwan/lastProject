@@ -11,7 +11,7 @@
 
 @layer components {
   .grayButton {
-    @apply p-3 rounded-full  hover:opacity-70 justify-center flex items-center dark:text-gray-800 text-3xl bg-gray-200;
+    @apply p-3 rounded-full  hover:opacity-80 justify-center flex items-center dark:text-gray-800 text-3xl bg-gray-200;
   }
   .ykhInputButton {
     @apply rounded p-4 bg-white w-90 placeholder:text-black outline-none lg:w-120  
