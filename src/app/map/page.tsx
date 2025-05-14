@@ -233,7 +233,7 @@ const MapPage = () => {
           inputClassName="w-55"
         />
 
-        <div className="flex flex-wrap justify-center gap-2 md:justify-start ">
+        <div className="flex flex-wrap justify-center md:justify-start ">
           <KeywordButtons onKeywordClick={handleKeywordClick} />
         </div>
       </div>
