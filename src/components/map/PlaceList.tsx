@@ -1,5 +1,6 @@
-import { RefObject } from "react";
+import { RefObject, useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
+import { twMerge } from "tailwind-merge";
 
 interface PlaceListProps {
   places: PlaceProps[];
@@ -17,11 +18,26 @@ const PlaceList = ({
   buttonRefs,
   onClose,
 }: PlaceListProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    setIsOpen(true);
+    return () => setIsOpen(false);
+  }, []);
+
   return (
-    <div className="hidden md:flex absolute top-0 right-0 w-80 max-h-[76vh] h-full p-4 bg-gray-100 border border-gray-200 flex-col rounded-3xl z-10 dark:bg-[#4B4B4B]  dark:text-[#E5E7EB] ">
+    <div
+      className={twMerge(
+        "hidden md:flex absolute top-0 right-0 w-80 max-h-[76vh] h-full p-4 bg-gray-100 border border-gray-200 flex-col rounded-3xl z-10 dark:bg-[#4B4B4B] dark:text-[#E5E7EB] transition-transform duration-300 ease-in-out",
+        isOpen ? "translate-x-0" : "translate-x-full"
+      )}
+    >
       <button
-        onClick={onClose}
-        className="text-gray-500 hover:text-gray-700 text-2xl  absolute top-3 right-5 dark:text-white"
+        onClick={() => {
+          setIsOpen(false);
+          setTimeout(onClose, 300);
+        }}
+        className="text-gray-500 hover:text-gray-300 text-2xl absolute top-3 right-5 dark:text-white"
       >
         <IoClose />
       </button>
