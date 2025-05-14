@@ -23,6 +23,9 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  .green-scrollbar::-webkit-scrollbar-button {
+    display: none;
+  }
   .green-scrollbar::-webkit-scrollbar {
     /* 전체 스크롤바 영역 (트랙 + 손잡이 포함) */
     width: 8px;
