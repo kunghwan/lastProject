@@ -217,10 +217,10 @@ const MapPage = () => {
   }, []);
 
   return (
-    <div className="relative flex h-[76vh] ">
+    <div className="relative flex h-[76vh] px-4 sm:p-0">
       <div
         ref={mapRef}
-        className="flex-1 bg-gray-200 relative rounded-t-3xl sm:rounded-3xl border border-gray-300 overflow-hidden min-h-100"
+        className="flex-1 bg-gray-200 relative rounded-2xl sm:rounded-3xl  border border-gray-300 overflow-hidden min-h-100"
       />
 
       {/* 검색창 + 키워드 버튼 */}

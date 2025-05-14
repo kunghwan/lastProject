@@ -110,13 +110,28 @@ const Header = () => {
       ),
     });
 
-    // 로그인/로그아웃 버튼 (인증 페이지가 아닐 경우에만 표시)
+    // 로그인/로그아웃 + 회원가입 버튼 (인증 페이지가 아닐 경우에만 표시)
     if (!isAuthPage) {
-      buttons.push({
-        label: user ? "로그아웃" : "로그인", // 로그인 상태에 따라 텍스트 변경
-        onClick: () => (user ? handleLogout() : router.push("/signin")), // 클릭 시 로그아웃 또는 로그인 페이지로 이동
-        className: "text-2xl font-bold h-14 hover:opacity-80",
-      });
+      if (user) {
+        buttons.push({
+          label: "로그아웃",
+          onClick: handleLogout,
+          className: "text-2xl font-bold h-14 hover:opacity-80",
+        });
+      } else {
+        buttons.push(
+          {
+            label: "로그인",
+            onClick: () => router.push("/signin"),
+            className: "text-2xl font-bold h-14 hover:opacity-80",
+          },
+          {
+            label: "회원가입",
+            onClick: () => router.push("/signup"),
+            className: "text-2xl font-bold h-14 hover:opacity-80",
+          }
+        );
+      }
     }
 
     return buttons;
@@ -157,7 +172,7 @@ const Header = () => {
 
   return (
     <>
-      <div className="fixed top-0 left-1/2 translate-x-[-50%] w-full z-50 flex justify-center shadow-sm dark:border-b-2 dark:border-emerald-100">
+      <div className="fixed top-0 left-1/2 translate-x-[-50%] h-30 w-full z-50 flex justify-center shadow-sm dark:border-b-2 dark:border-emerald-100">
         <header className="bg-white dark:bg-[#333333] w-full flex items-center justify-between px-4 py-4 lg:max-w-300 mx-auto">
           {/* 로고 영역 */}
           <Link href="/" className="hover:opacity-80 flex items-center gap-x-2">

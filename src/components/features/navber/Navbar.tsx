@@ -4,14 +4,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useCallback, useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 import { AUTH } from "@/contextapi/context";
-import { IoPersonSharp, IoStarOutline, IoGridOutline } from "react-icons/io5";
+import { IoPersonSharp, IoStar, IoGridOutline } from "react-icons/io5";
 import {
-  FaRegMessage,
+  FaMessage,
   FaPencil,
   FaCircleQuestion,
   FaCaretUp,
 } from "react-icons/fa6";
-import { useAlertModal } from "@/components/AlertStore"; // ✅ Alert 훅 사용
+import { useAlertModal } from "@/components/AlertStore";
 
 const Navbar = () => {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
@@ -20,20 +20,20 @@ const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = AUTH.use();
-  const { openAlert } = useAlertModal(); // ✅ AlertModal 전역 제어
+  const { openAlert } = useAlertModal(); // AlertModal 전역 제어
 
   const NavBtns = useMemo(
     () => [
       { name: "Q&A", icon: <FaCircleQuestion />, path: "/customer" },
-      { name: "추천", icon: <IoStarOutline />, path: "/upplace" },
-      { name: "피드", icon: <FaRegMessage />, path: "/feed" },
+      { name: "추천", icon: <IoStar />, path: "/upplace" },
+      { name: "피드", icon: <FaMessage />, path: "/feed" },
       { name: "글쓰기", icon: <FaPencil />, path: "/profile/create" },
       { name: "MY", icon: <IoPersonSharp />, path: "/profile" },
     ],
     []
   );
 
-  // ✅ 버튼 클릭 시 로그인 여부 확인 및 모달 호출
+  // 버튼 클릭 시 로그인 여부 확인 및 모달 호출
   const navBtnClick = useCallback(
     (btn: (typeof NavBtns)[0], index: number) => {
       const needsAuth = [2, 3, 4].includes(index); // 피드, 글쓰기, MY는 로그인 필요
@@ -69,7 +69,7 @@ const Navbar = () => {
   }, []);
 
   const baseNavStyle =
-    "[@media(min-width:1425px)]:flex absolute w-17 top-40 -left-[125%] bg-gray-100 z-30 rounded-full transition-all duration-400 ease-in-out transform dark:bg-[#6B6B6B] dark:text-white";
+    "[@media(min-width:1425px)]:flex absolute w-17 top-45 -left-[125%] bg-gray-100 z-30 rounded-full transition-all duration-400 ease-in-out transform dark:bg-[#6B6B6B] dark:text-white";
 
   return (
     <>
@@ -118,7 +118,7 @@ const Navbar = () => {
                         className={twMerge(
                           "flex flex-col gap-y-1.5 items-center justify-center text-3xl p-3",
                           "hover:text-green-400",
-                          pathname?.startsWith(btn.path) &&
+                          pathname === btn.path &&
                             "text-green-400 dark:text-green-400"
                         )}
                         onClick={() => navBtnClick(btn, index)}
@@ -136,14 +136,15 @@ const Navbar = () => {
 
         {/* 모바일 하단 네비게이션 */}
         {pathname !== "/signin" && pathname !== "/signup" && (
-          <nav className="dark:bg-[#6B6B6B] dark:text-white fixed bottom-0 left-0 right-0 bg-gray-100 z-20 flex justify-around items-center [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto">
+          <nav className="dark:bg-[#6B6B6B] dark:text-white fixed bottom-0 left-0 right-0 bg-gray-100 z-20 flex justify-around items-center [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto ">
             <ul className="flex justify-around w-full">
               {NavBtns.map((btn, index) => (
                 <li key={index}>
                   <button
                     className={twMerge(
                       "grayButton text-2xl flex flex-col gap-y-1.5 items-center bg-gray-100 dark:bg-[#6B6B6B] dark:text-[#E5E7EB]",
-                      pathname === btn.path && "text-green-400"
+                      pathname === btn.path &&
+                        "text-green-400 dark:text-green-400"
                     )}
                     onClick={() => navBtnClick(btn, index)}
                   >
