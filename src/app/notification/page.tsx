@@ -12,9 +12,11 @@ import AlertModal from "@/components/AlertModal";
 import Image from "next/image";
 import { BsExclamationCircle } from "react-icons/bs";
 import { useAlertModal } from "@/components/AlertStore";
+import { QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
 
 //! limit변수처리하기
 const limit = 20;
+
 const NotificationListPage = () => {
   const { user } = AUTH.use();
   const { openAlert } = useAlertModal();
@@ -29,13 +31,38 @@ const NotificationListPage = () => {
     .doc(uid)
     .collection(FBCollection.NOTIFICATION)
     .orderBy("createdAt", "desc");
+
   useEffect(() => {
     //! 로그인안한 유저 거르기
     if (!user) {
-      alert("로그인하고 이용해주세요.");
-      return navi.push("/signin");
+      openAlert(
+        "로그인 후 이용해 주세요!",
+        [
+          {
+            text: "확인",
+            isGreen: true,
+            autoFocus: true,
+            onClick: () => {
+              return navi.push("/signin");
+            },
+          },
+        ],
+
+        "알림"
+      );
+      return;
     }
   }, [user?.uid, navi]);
+
+  //! QueryDocumentSnapshot<T>=>특정 문서의 스냅샷을 표현하는 타입,DocumentData=>Firestore가 기본적으로 문서 안에 있는 데이터를 Record<string, any> 식으로 추론한 기본 타입(type DocumentData = { [field: string]: any };)
+  //Todo: QueryDocumentSnapshot<DocumentData> = Firestore 문서 1개의 정보
+  type pageParamType = QueryDocumentSnapshot<DocumentData> | null;
+
+  type fetchType = {
+    notifications: Notifications[];
+    lastDoc: any;
+  };
+
   //? pageParam이 있으면 → 해당 문서 다음부터(startAfter) 가져오기,없으면 → 처음부터 가져오기
   //? 이번에 가져온 문서들 중 마지막 문서를 저장=>다음 페이지를 가져올 때 기준점으로 사용(startAfter에서 사용됨).
   //이전 마지막 문서(pageParam) 이후부터 시작하여 데이터를 불러옵니다.
@@ -45,8 +72,8 @@ const NotificationListPage = () => {
     async ({
       pageParam, //pageParam: 마지막 문서를 기억해서 다음 데이터를 가져오기 위함
     }: {
-      pageParam?: any;
-    }): Promise<{ notifications: Notifications[]; lastDoc: any }> => {
+      pageParam?: pageParamType;
+    }): Promise<fetchType> => {
       //Todo: 처음이면 그냥 20개 가져오고 이어지는 페이지라면 pageParam 이후부터 20개 가져옴
       let query = ref.limit(limit);
       if (pageParam) {
@@ -137,7 +164,7 @@ const NotificationListPage = () => {
       }
       //Todo: 매개변수로 받은 특정 알림 한 건만 .update()하기 때문 //하나의 알림 에만 update를 검("하나만" 업데이트하는 용도)
       // 예: 상세페이지 이동 등
-      return console.log("알림 클릭됨:", noti.id);
+      return;
     },
     [uid]
   );
