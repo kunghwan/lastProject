@@ -61,7 +61,7 @@ const PlaceDetailPage = () => {
 
       <Link
         href="/upplace"
-        className="block mt-4 rounded bg-emerald-300 text-center py-2 font-bold lg:w-80 md:w-150"
+        className="block mt-4 rounded bg-emerald-300 text-center py-2 font-bold lg:w-80 md:w-150 dark:bg-emerald-500"
       >
         추천장소 홈으로 돌아가기
       </Link>
