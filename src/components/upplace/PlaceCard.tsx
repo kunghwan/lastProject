@@ -55,7 +55,9 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
     countOverride !== undefined ? countOverride : place.likeCount
   );
 
-  const [liked, setLiked] = useState<boolean>(likedOverride || false); // 좋아요 여부 상태 추가
+  const [liked, setLiked] = useState<boolean>(
+    likedOverride !== undefined ? likedOverride : false
+  ); // 좋아요 여부 상태 추가
 
   const handleToggleLike = async () => {
     if (!user) return alert("로그인이 필요합니다.");
