@@ -220,7 +220,12 @@ const NotificationListPage = () => {
     };
   }, [checkUnreadNotifications]);
 
-  if (isPending || isLoadingAllRead) {
+  if (!user) {
+    // 알림 모달이 떠있을 때는 배경 로딩이 없어야 함
+    return null;
+  }
+
+  if (isPending || (isLoadingAllRead && user)) {
     return <Loaiding message="조금만 기달려 주세요 ..." />;
   }
   if (error || !data) {
