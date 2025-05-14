@@ -36,7 +36,7 @@ const Navbar = () => {
   // 버튼 클릭 시 로그인 여부 확인 및 모달 호출
   const navBtnClick = useCallback(
     (btn: (typeof NavBtns)[0], index: number) => {
-      const needsAuth = [2, 3, 4].includes(index); // 피드, 글쓰기, MY는 로그인 필요
+      const needsAuth = [, 3, 4].includes(index); //글쓰기, MY는 로그인 필요
       if (!user && needsAuth) {
         openAlert(
           "유저만 이용 가능한 기능입니다.\n로그인 하시겠습니까?",
@@ -49,7 +49,7 @@ const Navbar = () => {
               onClick: () => router.push("/signin"),
             },
           ],
-          "로그인 필요"
+          "로그인이 필요 필요합니다."
         );
         return;
       }
