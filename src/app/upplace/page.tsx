@@ -1,5 +1,3 @@
-// ✅ 수정된 UpPlace.tsx
-
 "use client";
 
 import { useEffect, useState, lazy, Suspense } from "react";
@@ -7,7 +5,7 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import TopButton from "@/components/upplace/TopButton";
 
-const PlaceCard = lazy(() => import("@/components/upplace/PlaceCard")); // ✅ lazy import
+const PlaceCard = lazy(() => import("@/components/upplace/PlaceCard")); //
 
 interface Place {
   contentid: string;
@@ -97,5 +95,3 @@ const UpPlace = () => {
 };
 
 export default UpPlace;
-
-//!sdfsdfsdfdsfdfsdfsdfsdfsdfsdfdsfsdfsdfsdfdsfsdfsdfsdfsdfsdfsdf

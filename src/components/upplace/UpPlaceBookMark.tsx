@@ -80,13 +80,15 @@ const UpPlaceBookMark = () => {
                   likedOverride={true}
                   countOverride={place.likeCount}
                   hideLikeButton={true}
+                  onLikedChange={(newLiked) => {
+                    if (!newLiked) {
+                      // 좋아요 취소되면 리스트에서 제거
+                      setPlaces((prev) =>
+                        prev.filter((p) => p.contentid !== place.contentid)
+                      );
+                    }
+                  }}
                 />
-                <button
-                  onClick={() => handleDelete(place.contentid)}
-                  className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded shadow dark:bg-red-700"
-                >
-                  삭제
-                </button>
               </div>
             ))}
           </div>
