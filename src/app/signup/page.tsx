@@ -251,15 +251,48 @@ const SignupForm = () => {
     setErrors(newErrors);
 
     // 유효성 오류가 있으면 중단
-    if (Object.values(newErrors).some((msg) => msg)) {
-      openAlert("입력값을 다시 확인해주세요.", [
+    const requiredFields: (keyof typeof user)[] = [
+      "name",
+      "email",
+      "password",
+      "tel",
+    ];
+    const missingFields = requiredFields.filter(
+      (key) => !user[key]?.toString().trim()
+    );
+
+    if (missingFields.length > 0) {
+      const fieldLabels: Record<string, string> = {
+        name: "이름",
+        email: "이메일",
+        password: "비밀번호",
+        tel: "전화번호",
+      };
+
+      const missingText = missingFields
+        .map((key) => fieldLabels[key])
+        .join(", ");
+      const message =
+        missingFields.length === requiredFields.length
+          ? "아무것도 입력되지 않았습니다. 다시 입력해주세요."
+          : `${missingText} 항목을 입력해주세요.`;
+
+      openAlert(message, [
         {
           text: "확인",
           isGreen: true,
           autoFocus: true,
+          onClick: () => {
+            const firstMissing = missingFields[0];
+            const target = inputRefs.current.find(
+              (el) => el?.getAttribute("name") === firstMissing
+            );
+            target?.focus();
+          },
         },
       ]);
-      setIsSubmitting(false); // ✅ 로딩 종료
+
+      setIsSubmitting(false);
       return;
     }
 
