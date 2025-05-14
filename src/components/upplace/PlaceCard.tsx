@@ -16,6 +16,7 @@ import {
 } from "firebase/firestore";
 import { dbService } from "@/lib/firebase";
 import { getAuth } from "firebase/auth";
+import { useAlertModal } from "@/components/AlertStore"; // 추가
 const fallbackImages: Record<string, string> = {
   테미오래: "/custom/temiora.jpg",
 };
@@ -45,6 +46,7 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
   priority = false,
   onLikedChange,
 }) => {
+  const { openAlert } = useAlertModal();
   const router = useRouter();
   const auth = getAuth();
   const user = auth.currentUser;
@@ -64,9 +66,25 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
 
   const [liked, setLiked] = useState<boolean>(!!likedOverride); // 좋아요 여부 상태 추가
 
-  const handleToggleLike = async () => {
-    if (!user || !place?.contentId)
-      return alert("로그인이 필요하거나 잘못된 데이터입니다.");
+  const handleToggleLike = useCallback(async () => {
+    if (!user || !place?.contentId) {
+      openAlert("로그인을 해야 이동할수 있습니다 가시겠습니까?", [
+        {
+          text: "확인",
+          isGreen: true,
+          autoFocus: true,
+          onClick: () => {
+            router.push("/signin");
+          },
+        },
+        {
+          text: "취소",
+          isGreen: false,
+        },
+      ]);
+
+      return;
+    }
 
     const likeRef = doc(
       dbService,
@@ -115,7 +133,7 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
     } catch (error) {
       console.error("좋아요 처리 실패", error);
     }
-  };
+  }, [user, place?.contentId, liked, likeCount, onLikedChange, router]);
 
   const handleClickImage = useCallback(() => {
     router.push(`/upplace/${place.contentId}`);
