@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   collection,
   getDocs,
-  orderBy,
   query,
+  where,
+  orderBy,
   startAfter,
   limit,
   QueryDocumentSnapshot,
@@ -17,43 +18,52 @@ import { dbService } from "@/lib/firebase";
 import PlaceCard from "@/components/upplace/PlaceCard";
 import TopButton from "@/components/upplace/TopButton";
 import type { InfiniteData } from "@tanstack/react-query";
+import { getAuth } from "firebase/auth";
 
 const PAGE_SIZE = 12;
 
-// ✅ pageParam 타입 명시
-type PageParam = QueryDocumentSnapshot<DocumentData> | null;
+type PageParam = {
+  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
+  isPopularPhase: boolean;
+};
 
 interface Place {
-  contentid: string;
+  contentId: string;
   title: string;
   addr1: string;
   firstimage: string;
   likeCount: number;
-  id: string; // 🔥 추가
+  id: string;
 }
 
 interface FetchResult {
   places: Place[];
   lastDoc: QueryDocumentSnapshot<DocumentData> | null;
+  isPopularPhase: boolean;
 }
 
-// ✅ Firestore에서 데이터 불러오는 함수
 const fetchPlaces = async ({
   pageParam,
 }: {
   pageParam?: PageParam;
 }): Promise<FetchResult> => {
-  let q = query(
-    collection(dbService, "places"),
-    orderBy("createdAt", "desc"),
-    limit(PAGE_SIZE)
-  );
+  const isPopularPhase = pageParam?.isPopularPhase ?? true;
+  const lastDoc = pageParam?.lastDoc ?? null;
 
-  if (pageParam) {
+  let q;
+  if (isPopularPhase) {
+    q = query(
+      collection(dbService, "places"),
+      where("likeCount", ">=", 10),
+      orderBy("likeCount", "desc"),
+      ...(lastDoc ? [startAfter(lastDoc)] : []),
+      limit(PAGE_SIZE)
+    );
+  } else {
     q = query(
       collection(dbService, "places"),
       orderBy("createdAt", "desc"),
-      startAfter(pageParam),
+      ...(lastDoc ? [startAfter(lastDoc)] : []),
       limit(PAGE_SIZE)
     );
   }
@@ -63,8 +73,12 @@ const fetchPlaces = async ({
     ...(doc.data() as Place),
     id: doc.id,
   }));
-  const lastDoc = snap.docs[snap.docs.length - 1] ?? null;
-  return { places, lastDoc };
+
+  return {
+    places,
+    lastDoc: snap.docs[snap.docs.length - 1] ?? null,
+    isPopularPhase,
+  };
 };
 
 const UpPlace = () => {
@@ -76,20 +90,47 @@ const UpPlace = () => {
     isLoading,
     isError,
   } = useInfiniteQuery<
-    FetchResult, // TQueryFnData (1 페이지 결과)
-    Error, // TError
-    InfiniteData<FetchResult>, // ✅ TData: 전체 페이지를 포함한 InfiniteData로 명시
-    [string], // TQueryKey
-    PageParam // TPageParam
+    FetchResult,
+    Error,
+    InfiniteData<FetchResult>,
+    [string],
+    PageParam
   >({
-    queryKey: ["places-infinite"],
+    queryKey: ["places-hybrid-infinite"],
     queryFn: ({ pageParam }) => fetchPlaces({ pageParam }),
     getNextPageParam: (lastPage) => {
-      if (!lastPage || lastPage.places.length < PAGE_SIZE) return undefined;
-      return lastPage.lastDoc;
+      // 📌 인기 목록이 아직 끝나지 않았으면 계속 가져오기
+      if (lastPage.isPopularPhase && lastPage.places.length === PAGE_SIZE) {
+        return { lastDoc: lastPage.lastDoc, isPopularPhase: true };
+      }
+
+      // 📌 인기 목록이 끝났다면 일반 목록으로 전환
+      if (lastPage.isPopularPhase) {
+        return { lastDoc: null, isPopularPhase: false };
+      }
+
+      // 📌 일반 목록도 다 불러왔으면 종료
+      if (lastPage.places.length < PAGE_SIZE) return undefined;
+
+      return { lastDoc: lastPage.lastDoc, isPopularPhase: false };
     },
-    initialPageParam: null,
+    initialPageParam: { lastDoc: null, isPopularPhase: true },
   });
+
+  const [likedIds, setLikedIds] = useState<string[]>([]);
+  const user = getAuth().currentUser;
+
+  useEffect(() => {
+    const fetchLikedIds = async () => {
+      if (!user) return;
+      const snap = await getDocs(
+        collection(dbService, `users/${user.uid}/likes`)
+      );
+      const ids = snap.docs.map((doc) => doc.id); // 예: "places_12345"
+      setLikedIds(ids);
+    };
+    fetchLikedIds();
+  }, [user]);
 
   const { ref, inView } = useInView();
 
@@ -101,7 +142,7 @@ const UpPlace = () => {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-10">
         {Array.from({ length: 9 }).map((_, i) => (
           <div
             key={i}
@@ -122,10 +163,15 @@ const UpPlace = () => {
 
   return (
     <div className="pb-28">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-12 sm:px-4">
         {data?.pages.flatMap((page, i) =>
           page.places.map((place) => (
-            <PlaceCard key={place.id} place={place} priority={i === 0} />
+            <PlaceCard
+              key={place.id}
+              place={place}
+              priority={i === 0}
+              likedOverride={likedIds.includes(`places_${place.contentId}`)}
+            />
           ))
         )}
       </div>

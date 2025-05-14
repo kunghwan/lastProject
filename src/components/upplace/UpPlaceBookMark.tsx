@@ -30,13 +30,15 @@ const UpPlaceBookMark = () => {
       const data = snap.docs.map((doc) => {
         const d = doc.data();
         return {
-          contentid: d.contentid || doc.id.replace("places_", ""),
+          contentId:
+            d.contentId || d.contentid || doc.id.replace("places_", ""), // ✅
           title: d.title,
           addr1: d.addr1,
-          firstimage: d.firstimage || d.imageUrl || "", // ✅ 안정적 처리
+          firstimage: d.firstimage || d.imageUrl || "",
           likeCount: d.likeCount ?? 0,
         };
       });
+
       setPlaces(data);
     } catch (err) {
       console.error("🔥 북마크 장소 로딩 실패", err);
@@ -48,16 +50,16 @@ const UpPlaceBookMark = () => {
     fetchLikedPlaces();
   }, [fetchLikedPlaces]);
 
-  // 특정 장소 북마크 삭제
-  const handleDelete = async (contentid: string) => {
-    if (!user) return;
-    try {
-      await deleteDoc(doc(dbService, `users/${user.uid}/likes`, contentid));
-      setPlaces((prev) => prev.filter((p) => p.contentid !== contentid));
-    } catch (err) {
-      console.error("❌ 북마크 삭제 실패", err);
-    }
-  };
+  // // 특정 장소 북마크 삭제
+  // const handleDelete = async (contentid: string) => {
+  //   if (!user) return;
+  //   try {
+  //     await deleteDoc(doc(dbService, `users/${user.uid}/likes`, contentid));
+  //     setPlaces((prev) => prev.filter((p) => p.contentid !== contentid));
+  //   } catch (err) {
+  //     console.error("❌ 북마크 삭제 실패", err);
+  //   }
+  // };
 
   return (
     <>
@@ -72,7 +74,7 @@ const UpPlaceBookMark = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-2 gap-y-4 p-1.5 m-1 w-full max-w-screen-lg mx-auto transition-all">
             {places.map((place) => (
               <div
-                key={place.contentid}
+                key={place.contentId}
                 className="relative hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1.5 transition-all duration-200"
               >
                 <PlaceCard
@@ -82,9 +84,15 @@ const UpPlaceBookMark = () => {
                   hideLikeButton={true}
                   onLikedChange={(newLiked) => {
                     if (!newLiked) {
-                      // 좋아요 취소되면 리스트에서 제거
                       setPlaces((prev) =>
-                        prev.filter((p) => p.contentid !== place.contentid)
+                        prev.filter((p) => p.contentId !== place.contentId)
+                      );
+                      deleteDoc(
+                        doc(
+                          dbService,
+                          `users/${user?.uid}/likes`,
+                          `places_${place.contentId}`
+                        )
                       );
                     }
                   }}

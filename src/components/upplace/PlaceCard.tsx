@@ -6,7 +6,14 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 import { GoHeart, GoHeartFill } from "react-icons/go";
-import { doc, deleteDoc, setDoc } from "firebase/firestore";
+import {
+  doc,
+  deleteDoc,
+  setDoc,
+  updateDoc,
+  increment,
+  getDoc,
+} from "firebase/firestore";
 import { dbService } from "@/lib/firebase";
 import { getAuth } from "firebase/auth";
 const fallbackImages: Record<string, string> = {
@@ -15,7 +22,7 @@ const fallbackImages: Record<string, string> = {
 
 interface PlaceCardProps {
   place: {
-    contentid: string;
+    contentId: string;
     title: string;
     addr1: string;
     firstimage: string;
@@ -34,7 +41,7 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
   place,
   likedOverride,
   countOverride,
-  hideLikeButton,
+
   priority = false,
   onLikedChange,
 }) => {
@@ -55,30 +62,52 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
     countOverride !== undefined ? countOverride : place.likeCount
   );
 
-  const [liked, setLiked] = useState<boolean>(
-    likedOverride !== undefined ? likedOverride : false
-  ); // 좋아요 여부 상태 추가
+  const [liked, setLiked] = useState<boolean>(!!likedOverride); // 좋아요 여부 상태 추가
 
   const handleToggleLike = async () => {
-    if (!user) return alert("로그인이 필요합니다.");
+    if (!user || !place?.contentId)
+      return alert("로그인이 필요하거나 잘못된 데이터입니다.");
 
-    const likeRef = doc(dbService, `users/${user.uid}/likes`, place.contentid);
+    const likeRef = doc(
+      dbService,
+      `users/${user.uid}/likes`,
+      `places_${place.contentId}`
+    );
+    const placeRef = doc(dbService, "places", place.contentId);
 
     try {
       if (liked) {
         await deleteDoc(likeRef);
+
+        // 🔐 Firestore에서 현재 좋아요 수 가져옴
+        const placeSnap = await getDoc(placeRef);
+        const currentCount = placeSnap.exists()
+          ? (placeSnap.data().likeCount ?? 0)
+          : 0;
+
+        // 🔐 현재 count가 1 이상일 때만 감소
+        if (currentCount > 0) {
+          await updateDoc(placeRef, {
+            likeCount: increment(-1),
+          });
+        }
+
         setLiked(false);
         setLikeCount((prev) => Math.max(prev - 1, 0));
-        onLikedChange?.(false); // 북마크 페이지에서 리스트 제거에 사용
+        onLikedChange?.(false);
       } else {
-        const newCount = likeCount + 1;
         await setDoc(likeRef, {
-          contentid: place.contentid,
+          contentId: place.contentId,
           title: place.title,
           addr1: place.addr1,
           firstimage: place.firstimage,
-          likeCount: newCount,
+          likeCount: likeCount + 1,
         });
+
+        await updateDoc(placeRef, {
+          likeCount: increment(1),
+        });
+
         setLiked(true);
         setLikeCount((prev) => prev + 1);
         onLikedChange?.(true);
@@ -89,11 +118,11 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
   };
 
   const handleClickImage = useCallback(() => {
-    router.push(`/upplace/${place.contentid}`);
-  }, [router, place.contentid]);
+    router.push(`/upplace/${place.contentId}`);
+  }, [router, place.contentId]);
 
   return (
-    <div className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1.5 cursor-pointer relative transition-all duration-200">
+    <div className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1.5 cursor-pointer relative transition-all duration-200 ">
       <div className="relative w-full h-64 rounded-xl overflow-hidden">
         <Image
           src={imageUrl}

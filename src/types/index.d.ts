@@ -99,7 +99,7 @@ interface FindPasswordValidation {
 // 5. 추천장소
 // 장소 데이터 타입 정의
 interface Place {
-  contentid: string; // 콘텐츠 ID
+  contentId: string; // 콘텐츠 ID
   title: string; // 장소 제목
   addr1: string; // 주소
   firstimage: string; // 이미지 URL
@@ -129,7 +129,7 @@ interface PlaceDetail {
 
 interface PlaceCardProps {
   place: {
-    contentid: string;
+    contentId: string;
     title: string;
     addr1: string;
     firstimage: string;
