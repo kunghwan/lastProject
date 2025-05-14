@@ -255,31 +255,31 @@ const PwFindResult = () => {
   }, [inputName, inputPhone, inputEmail, inputErrors]);
 
   return (
-    <div className="p-2 overflow-auto min-h-screen sm:overflow-visible lg:overflow-visible md:overflow-visible lg: ">
-      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap rounded">
+    <div className="p-2 overflow-auto min-h-screen sm:overflow-visible lg:overflow-visible md:overflow-visible  ">
+      {/* 상단 아이디/비밀번호 찾기 헤더 */}
+      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap dark:bg-emerald-500  ">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
-            <FaIdCard className="text-amber-500 text-4xl " />
-            <Link href="/idfind" className="font-bold text-black">
-              아이디 찾기
-            </Link>
+            <FaIdCard className="text-amber-500 text-4xl dark:text-amber-700" />
+            <p className="font-bold text-black dark:text-white">아이디 찾기</p>
           </div>
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
-            <TbPassword className="text-blue-500 text-4xl" />
+            <TbPassword className="text-blue-500 text-4xl dark:text-blue-700" />
             <Link
               href="/pwfind"
-              className="font-bold   whitespace-nowrap text-amber-500 dark:text-amber-500 "
+              className="font-bold text-black-500  whitespace-nowrap text-amber-500 dark:text-amber-700"
             >
               비밀번호 찾기
             </Link>
           </div>
         </div>
       </div>
+
       <h2 className="text-2xl font-bold mb-4 mt-4">비밀번호 재설정</h2>
 
       {/* 인증 전 화면 */}
       {!user && !email && (
-        <div className="flex flex-col gap-2 mb-4 ">
+        <div className="flex flex-col gap-2 mb-4  ">
           {/* 이름 입력 */}
           <input
             type="text"
@@ -289,7 +289,7 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="이름 입력"
-            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150"
+            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150 dark:border-emerald-500 dark:placeholder:text-emerald-500"
           />
           {inputErrors.name && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.name}</p>
@@ -304,7 +304,7 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="전화번호 입력"
-            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150"
+            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150 dark:border-emerald-500 dark:placeholder:text-emerald-500"
           />
           {inputErrors.phone && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.phone}</p>
@@ -319,7 +319,7 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="이메일 입력"
-            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150"
+            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150 dark:border-emerald-500 dark:placeholder:text-emerald-500"
           />
           {inputErrors.email && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.email}</p>
@@ -329,7 +329,7 @@ const PwFindResult = () => {
           <button
             ref={findPasswordButtonRef}
             type="button"
-            className="bg-gray-300 rounded-2xl p-3 mt-2 flex justify-center w-50 items-center lg:w-80 dark:text-black"
+            className="bg-gray-300 rounded-2xl p-3 mt-2 flex justify-center w-50 items-center lg:w-80 dark:text-white dark:bg-gray-500"
             onClick={handleFindPassword}
           >
             비밀번호 찾기
@@ -340,11 +340,11 @@ const PwFindResult = () => {
       {/* 인증 후 비밀번호 재설정 화면 */}
       {(user || email) && (
         <>
-          <div className="border h-80 justify-center flex items-center">
+          <div className="border h-80 justify-center flex items-center border-emerald-100 dark:border-emerald-300">
             <div>
               <p className="text-xl text-black dark:text-white">
                 이메일:{" "}
-                <span className="font-bold text-blue-600">
+                <span className="font-bold text-blue-600 dark:text-blue-800">
                   {user ? user.email : email}
                 </span>
               </p>
@@ -359,7 +359,7 @@ const PwFindResult = () => {
                   onChange={handleChange}
                   onKeyDown={handleKeyDown}
                   placeholder="새비밀번호"
-                  className="border p-2 border-emerald-300 placeholder:text-emerald-300"
+                  className="border p-2 border-emerald-300 placeholder:text-emerald-300 dark:border-emerald-500 dark:placeholder:text-emerald-500"
                 />
                 {validation.newPassword?.message && (
                   <p className="text-sm text-red-500 ml-1">
@@ -376,7 +376,7 @@ const PwFindResult = () => {
                   onChange={handleChange}
                   onKeyDown={handleKeyDown}
                   placeholder="새 비밀번호 확인"
-                  className="border p-2 border-emerald-300 mt-2 placeholder:text-emerald-300"
+                  className="border p-2 border-emerald-300 mt-2 placeholder:text-emerald-300 dark:border-emerald-500 dark:placeholder:text-emerald-500"
                 />
                 {validation.confirmPassword?.message && (
                   <p className="text-sm text-red-500 ml-1">
@@ -391,7 +391,7 @@ const PwFindResult = () => {
           <div className="flex justify-center">
             <button
               ref={submitButtonRef}
-              className="bg-gray-300 rounded-2xl p-5 mt-3 flex justify-center w-50 items-center lg:w-80"
+              className="bg-gray-300 rounded-2xl p-5 mt-3 flex justify-center w-50 items-center lg:w-80 dark:bg-gray-500"
               onClick={handleSubmit}
             >
               확인

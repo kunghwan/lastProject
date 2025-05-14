@@ -62,7 +62,7 @@ const IdFindResult = () => {
             </p>
           </div>
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded whitespace-nowrap">
-            <TbPassword className="text-blue-500 text-4xl" />
+            <TbPassword className="text-blue-500 text-4xl dark:text-blue-700" />
             <p className="font-bold text-black  dark:text-white">
               비밀번호 찾기
             </p>

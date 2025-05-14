@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, {
   useCallback,
   useState,
@@ -460,17 +460,19 @@ const IdFind = () => {
       {alertMessage && <AlertModal />}
 
       {/* 상단 아이디/비밀번호 찾기 헤더 */}
-      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap  ">
+      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap dark:bg-emerald-500  ">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
-            <FaIdCard className="text-amber-500 text-4xl" />
-            <p className="font-bold text-amber-500">아이디 찾기</p>
+            <FaIdCard className="text-amber-500 text-4xl dark:text-amber-700" />
+            <p className="font-bold text-amber-500 dark:text-amber-700">
+              아이디 찾기
+            </p>
           </div>
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
-            <TbPassword className="text-blue-500 text-4xl" />
+            <TbPassword className="text-blue-500 text-4xl dark:text-blue-700" />
             <Link
               href="/pwfind"
-              className="font-bold text-black-500 dark:text-black whitespace-nowrap"
+              className="font-bold text-black-500  whitespace-nowrap dark:text-white"
             >
               비밀번호 찾기
             </Link>
@@ -491,7 +493,7 @@ const IdFind = () => {
               }}
               type={idf.type || "text"}
               placeholder={idf.label}
-              className="bg-lime-200 p-5 placeholder:text-black outline-none lg:w-100 w-70 dark:caret-red-500 rounded dark:text-black"
+              className="bg-lime-200 p-5 placeholder:text-black outline-none lg:w-100 w-70 dark:caret-red-500 rounded dark:text-black dark:bg-lime-400"
               value={idf.value}
               onChange={idf.onChange}
               onKeyDown={(e) => handleKeyDown(e, index)}
@@ -501,14 +503,14 @@ const IdFind = () => {
               <>
                 <button
                   type="button"
-                  className="bg-emerald-300 p-5 font-bold w-15 text-sm whitespace-nowrap lg:w-20 flex justify-center rounded "
+                  className="bg-emerald-300 p-5 font-bold w-15 text-sm  whitespace-nowrap lg:w-20 flex justify-center rounded dark:bg-emerald-500 "
                   onClick={idf.btAction}
                 >
                   {idf.bt}
                 </button>
                 <button
                   type="button"
-                  className="bg-emerald-300 p-5 font-bold w-15 whitespace-nowrap text-sm flex justify-center lg:w-20 rounded"
+                  className="bg-emerald-300 p-5 font-bold w-15 whitespace-nowrap text-sm flex justify-center lg:w-20 rounded dark:bg-emerald-500"
                   onClick={handleVerifyCode}
                 >
                   {idf.bt1}
@@ -517,7 +519,7 @@ const IdFind = () => {
             ) : idf.bt ? (
               <button
                 type="button"
-                className="bg-emerald-300 p-5 font-bold w-40 rounded"
+                className="bg-emerald-300 p-5 font-bold w-40 rounded dark:bg-emerald-500"
                 onClick={idf.btAction}
               >
                 {idf.bt}
@@ -532,7 +534,7 @@ const IdFind = () => {
           )}
           {/* 인증번호 표시  */}
           {index === 2 && showCode && (
-            <p className="text-center text-sm text-green-600 lg:text-start lg:ml-2 md:text-start md:ml-3 ">
+            <p className="text-center text-sm text-green-600 lg:text-start lg:ml-2 md:text-start md:ml-3 dark:text-green-800 ">
               인증번호: {generatedCode}
             </p>
           )}
@@ -545,7 +547,7 @@ const IdFind = () => {
           <div className="flex justify-center w-full mt-5">
             <button
               type="button"
-              className="w-[150px] h-[60px] bg-emerald-300 rounded font-bold text-base lg:text-lg hover:bg-emerald-400 lg:w-[200px] "
+              className="w-[150px] h-[60px] bg-emerald-300 rounded font-bold text-base lg:text-lg hover:bg-emerald-400 lg:w-[200px] dark:bg-emerald-500 "
               onClick={handleSubmit}
             >
               확인
@@ -557,7 +559,7 @@ const IdFind = () => {
       {/* 마스킹된 이메일 결과 표시 및 선택 */}
       {foundEmail.trim() !== "" && (
         <>
-          <p className="text-center text-amber-600 font-bold mt-1 text-sm lg:justify-start lg:flex lg:p-2">
+          <p className="text-center text-amber-600 font-bold mt-1 text-sm lg:justify-start lg:flex lg:p-2 dark:text-amber-700">
             내 아이디는 <span className="underline">{foundEmail}</span> 입니다.
           </p>
           <div className="grid grid-cols-2 gap-x-8">

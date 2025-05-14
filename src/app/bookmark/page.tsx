@@ -255,7 +255,7 @@ const BookmarkPage = () => {
         })}
       </div>
 
-      <div className="col-span-2 lg:col-span-3 pb-20">
+      <div className="col-span-2 lg:col-span-3 pb-20 ">
         <UpPlaceBookMark />
       </div>
       {selectedPost && (
