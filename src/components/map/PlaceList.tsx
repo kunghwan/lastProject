@@ -46,7 +46,7 @@ const PlaceList = ({
         {places.map((place) => (
           <li
             key={place.id}
-            className="bg-white dark:bg-[#6B6B6B] dark:text-[#E5E7EB] rounded-lg cursor-pointer hover:opacity-80"
+            className="bg-white dark:bg-[#6B6B6B] dark:text-[#E5E7EB] rounded-lg hover:opacity-80"
           >
             <button
               ref={(clickFocus) => {

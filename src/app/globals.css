@@ -23,10 +23,6 @@
 
 @import "../components/post/hseUpPost_FollowBtn.css";
 
-::-webkit-scrollbar {
-  display: none;
-}
-
 .scrollbar::-webkit-scrollbar {
   width: 6px;
 }
