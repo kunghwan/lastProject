@@ -40,7 +40,9 @@ const AlertModal = () => {
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <h2 className="text-lg font-bold text-center mb-3 ">{title}</h2>
+          <h2 className="text-lg font-bold text-center mb-3 dark:text-black">
+            {title}
+          </h2>
         )}
 
         <p className="text-gray-800 text-center whitespace-pre-line mb-4 ">
