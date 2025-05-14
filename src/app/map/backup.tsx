@@ -6,7 +6,7 @@
 // import PlaceDetail from "@/components/map/PlaceDetail";
 // import PlaceList from "@/components/map/PlaceList";
 // import KeywordButtons from "@/components/map/KeywordButtons";
-// import AlertModal from "@/components/AlertModal";
+// import { useAlertModal } from "@/components/AlertStore";
 
 // const MapPage = () => {
 //   const [map, setMap] = useState<any>(null); // 카카오 지도 객체
@@ -15,14 +15,14 @@
 //   const [keyword, setKeyword] = useState(""); // 검색 키워드
 //   const [inputValue, setInputValue] = useState(""); // 입력창의 현재 값
 //   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 모바일 사이드바 열림 상태
-//   const [alertMessage, setAlertMessage] = useState(""); // 알림 메시지
-//   const [isShhowingAlert, setIsShhowingAlert] = useState(false); // 알림 모달 상태
 //   const [isPlaceListOpen, setIsPlaceListOpen] = useState(true); // 검색 리스트 열고닫기 상태
 
 //   const markers = useRef<any[]>([]); // 현재 지도에 그려진 마커 및 오버레이 배열
 //   const mapRef = useRef<HTMLDivElement>(null); // 지도 렌더링 DOM 참조
 //   const detailRef = useRef<HTMLDivElement>(null); // 상세 정보창 DOM 참조
 //   const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map()); // 키워드 버튼 참조
+
+//   const { openAlert } = useAlertModal(); // useAlertModal 훅 사용
 
 //   //! 지도 초기화 및 kakao map API 로드
 //   useEffect(() => {
@@ -152,15 +152,16 @@
 //             setPlaces([]);
 //             markers.current.forEach((m) => m.setMap(null));
 //             markers.current = [];
-//             setAlertMessage("검색 결과가 없습니다.");
-//             setIsShhowingAlert(true); // 알림 모달 표시
+//             openAlert("검색 결과가 없습니다.", [
+//               { text: "확인", isGreen: true },
+//             ]); // AlertModal 사용
 //             setInputValue(""); // 검색 결과 없으면 검색창 비움
 //           }
 //         },
 //         { bounds }
 //       );
 //     },
-//     [map, handlePlaceClick]
+//     [map, handlePlaceClick, openAlert] // openAlert 추가
 //   );
 
 //   //! 키워드 버튼 클릭 핸들러
@@ -182,13 +183,12 @@
 //   const handleSearch = useCallback(() => {
 //     const trimmed = inputValue.trim();
 //     if (!trimmed) {
-//       setAlertMessage("검색어를 입력해주세요."); // 검색창에 아무것도 입력안했을때
-//       setIsShhowingAlert(true);
+//       openAlert("검색어를 입력해주세요.", [{ text: "확인", isGreen: true }]); // AlertModal 사용
 //       return;
 //     }
 //     setKeyword(trimmed);
 //     setIsPlaceListOpen(true);
-//   }, [inputValue]);
+//   }, [inputValue, openAlert]);
 
 //   //! 상세 정보 외 클릭 시 닫기
 //   const handleOutsideClick = useCallback(
@@ -217,10 +217,10 @@
 //   }, []);
 
 //   return (
-//     <div className="relative flex h-[76vh] ">
+//     <div className="relative flex h-[76vh] px-4 sm:p-0">
 //       <div
 //         ref={mapRef}
-//         className="flex-1 bg-gray-200 relative rounded-t-3xl sm:rounded-3xl border border-gray-300 overflow-hidden min-h-100"
+//         className="flex-1 bg-gray-200 relative rounded-2xl sm:rounded-3xl  border border-gray-300 overflow-hidden min-h-100"
 //       />
 
 //       {/* 검색창 + 키워드 버튼 */}
@@ -233,7 +233,7 @@
 //           inputClassName="w-55"
 //         />
 
-//         <div className="flex flex-wrap justify-center gap-2 md:justify-start ">
+//         <div className="flex flex-wrap justify-center md:justify-start ">
 //           <KeywordButtons onKeywordClick={handleKeywordClick} />
 //         </div>
 //       </div>
@@ -274,14 +274,6 @@
 //           setIsOpen={setIsSidebarOpen}
 //           places={places}
 //           handlePlaceClick={handlePlaceClick}
-//         />
-//       )}
-
-//       {/* 알림 모달 */}
-//       {isShhowingAlert && (
-//         <AlertModal
-//           message={alertMessage}
-//           onClose={() => setIsShhowingAlert(false)}
 //         />
 //       )}
 //     </div>
