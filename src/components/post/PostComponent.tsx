@@ -8,7 +8,7 @@ import ShareButton from "./ShareButton";
 import LocationButton from "./LocationButton";
 import { useRouter } from "next/navigation";
 import { authService } from "@/lib";
-import { Timestamp } from "firebase/firestore";
+import { FieldValue, Timestamp } from "firebase/firestore";
 import { HiOutlineX } from "react-icons/hi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
@@ -23,6 +23,33 @@ const PostComponent = () => {
   const [selectedPost, setSelectedPost] = useState<PostType | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0); // 슬라이더 인덱스
   const [modalImages, setModalImages] = useState<string[]>([]);
+
+  function getTimeAgo(time: string | Timestamp | FieldValue): string {
+    let createdTime: Date;
+
+    if (typeof time === "string") {
+      createdTime = new Date(time);
+    } else if (time instanceof Timestamp) {
+      createdTime = time.toDate();
+    } else {
+      // FieldValue인 경우는 렌더링 시점에는 있을 수 없음
+      return "시간 정보 없음";
+    }
+
+    const now = new Date();
+    const diff = now.getTime() - createdTime.getTime();
+
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+    const week = 7 * day;
+
+    if (diff < minute) return "방금 전";
+    if (diff < hour) return `${Math.floor(diff / minute)}분 전`;
+    if (diff < day) return `${Math.floor(diff / hour)}시간 전`;
+    if (diff < week) return `${Math.floor(diff / day)}일 전`;
+    return `${Math.floor(diff / week)}주 전`;
+  }
 
   useEffect(() => {
     loadMorePosts();
@@ -197,7 +224,12 @@ const PostComponent = () => {
                   <LocationButton /> {post.lo?.address || "주소 없음"}
                 </div>
               </div>
-              <p className="text-lg font-semibold truncate">{post.content}</p>
+              <p
+                className="text-lg font-semibold truncate  overflow-y-auto
+            "
+              >
+                {post.content}
+              </p>
               <div className="flex flex-wrap">
                 {post.tags.map((tag: Tag) => (
                   <div
@@ -210,7 +242,7 @@ const PostComponent = () => {
               </div>
 
               <div className="items-baseline text-end text-gray500 text-sm">
-                {getFormattedDate(post.createdAt)}
+                {getTimeAgo(post.createdAt)}
               </div>
             </div>
           );
@@ -243,7 +275,7 @@ const PostComponent = () => {
                     : selectedPost.imageUrl?.[0] || defaultImgUrl
                 }
                 alt={`image-${currentIndex}`}
-                className=" object-contain rounded md:max-h-110 md:w-110"
+                className=" object-contain rounded max-h-9/10 md:max-h-110 md:w-110"
                 loading="lazy"
               />
               {modalImages.length > 1 && (
@@ -265,14 +297,14 @@ const PostComponent = () => {
             </div>
 
             <div className="p-4 justify-end flex flex-col">
-              <div className="text-xs text-gray-500 mt-2 flex justify-between mb-5">
+              <div className="text-xs text-gray-500 mt-2 flex justify-between mb-2">
                 <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
                 <div>{getFormattedDate(selectedPost.createdAt)}</div>
               </div>
               <h2 className="text-lg font-bold mb-2 dark:text-gray-600 truncate">
                 {selectedPost.title}
               </h2>
-              <p className="text-sm text-gray-700 break-words">
+              <p className="text-sm text-gray-700 break-words max-h-24 overflow-y-auto pr-1 scrollbar">
                 {selectedPost.content}
               </p>
             </div>
