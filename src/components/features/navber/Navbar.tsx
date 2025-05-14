@@ -116,8 +116,7 @@ const Navbar = () => {
                     >
                       <button
                         className={twMerge(
-                          "flex flex-col gap-y-1.5 items-center justify-center text-3xl p-3",
-                          "hover:text-green-400",
+                          "flex flex-col gap-y-1.5 items-center justify-center text-3xl p-3 hover:text-green-300",
                           pathname === btn.path &&
                             "text-green-400 dark:text-green-400"
                         )}
@@ -142,7 +141,7 @@ const Navbar = () => {
                 <li key={index}>
                   <button
                     className={twMerge(
-                      "grayButton text-2xl flex flex-col gap-y-1.5 items-center bg-gray-100 dark:bg-[#6B6B6B] dark:text-[#E5E7EB]",
+                      "justify-center text-3xl p-2.5 flex flex-col gap-y-1.5 items-center bg-gray-100 dark:bg-[#6B6B6B] dark:text-[#E5E7EB] hover:text-green-300",
                       pathname === btn.path &&
                         "text-green-400 dark:text-green-400"
                     )}
