@@ -76,9 +76,9 @@ const JusoComponents = ({
     <div className="hsecol gap-2">
       <div className="flex gap-x-2 items-center">
         {juso.address.length > 0 && (
-          <label className="mt-8 bg-white flex w-full border-2 gap-x-2  border-emerald-800 p-2.5 rounded items-center  dark:text-gray-900">
+          <label className="mt-8 bg-white  dark:bg-[#9d9d9d] flex w-full border-2 gap-x-2  border-emerald-800 dark:border-emerald-700 p-2.5 rounded items-center  dark:text-white">
             <span>
-              <IoLocationSharp className="text-2xl" />
+              <IoLocationSharp className="text-2xl dark:text-white hover:text-emerald-600 dark:hover:text-emerald-700  " />
             </span>
             {juso.address}
           </label>
