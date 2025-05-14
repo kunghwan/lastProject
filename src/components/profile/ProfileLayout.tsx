@@ -353,13 +353,13 @@ const ProfileLayout = ({
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setEditOpen(false)}
-                className="px-4 py-2 bg-gray-300 rounded"
+                className="px-4 py-2 bg-gray-300 rounded dark:bg-gray-500"
               >
                 취소
               </button>
               <button
                 onClick={handleSaveProfile}
-                className="px-4 py-2 bg-blue-500 text-white rounded"
+                className="px-4 py-2 bg-emerald-300 text-white rounded dark:bg-emerald-500"
               >
                 저장
               </button>

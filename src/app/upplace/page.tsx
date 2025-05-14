@@ -97,5 +97,3 @@ const UpPlace = () => {
 };
 
 export default UpPlace;
-
-//!sdfsdfsdfdsfdfsdfsdfsdfsdfsdfdsfsdfsdfsdfdsfsdfsdfsdfsdfsdfsdf
