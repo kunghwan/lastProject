@@ -69,12 +69,13 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
         setLikeCount((prev) => Math.max(prev - 1, 0));
         onLikedChange?.(false); // 북마크 페이지에서 리스트 제거에 사용
       } else {
+        const newCount = likeCount + 1;
         await setDoc(likeRef, {
           contentid: place.contentid,
           title: place.title,
           addr1: place.addr1,
           firstimage: place.firstimage,
-          likeCount: place.likeCount,
+          likeCount: newCount,
         });
         setLiked(true);
         setLikeCount((prev) => prev + 1);
