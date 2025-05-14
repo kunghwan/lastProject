@@ -4,6 +4,7 @@ import React, { useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import UpPlaceLikeButton from "@/components/upplace/UpPlaceLikeButton";
 import Image from "next/image";
+import { FcLike } from "react-icons/fc";
 
 const fallbackImages: Record<string, string> = {
   테미오래: "/custom/temiora.jpg",
@@ -73,7 +74,9 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
       </p>
 
       <div className="mt-2 flex items-center justify-between">
-        <p className="text-xs text-gray-500">❤️ {likeCount}</p>
+        <p className=" flex gap-2 items-center">
+          <FcLike className="text-lg" /> {likeCount}
+        </p>
         {!hideLikeButton && (
           <UpPlaceLikeButton
             contentId={place.contentid}
