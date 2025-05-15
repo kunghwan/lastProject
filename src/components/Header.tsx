@@ -219,23 +219,22 @@ const Header = () => {
             ))}
           </ul>
 
-          {/* 모바일 햄버거 메뉴 */}
-          <div className="sm:hidden">
-            {isAuthPage ? (
-              <button
-                onClick={toggleDarkMode}
-                className={twMerge(
-                  "grayButton text-xl",
-                  isDarkMode ? "text-gray-800" : "text-white bg-black"
-                )}
-              >
-                {isDarkMode ? <IoMoon /> : <IoSunny />}
-              </button>
-            ) : (
-              <button
-                onClick={() => setIsMenuOpen(true)}
-                className="text-4xl mx-2"
-              >
+          {/* 모바일 햄버거 메뉴 + 다크모드 버튼 */}
+          <div className="sm:hidden flex items-center gap-x-3">
+            {/* 다크모드 버튼 항상 표시 */}
+            <button
+              onClick={toggleDarkMode}
+              className={twMerge(
+                "grayButton text-xl",
+                isDarkMode ? "text-gray-800" : "text-white bg-black"
+              )}
+            >
+              {isDarkMode ? <IoMoon /> : <IoSunny />}
+            </button>
+
+            {/* 로그인/회원가입 페이지가 아닐 때 햄버거 메뉴 표시 */}
+            {!isAuthPage && (
+              <button onClick={() => setIsMenuOpen(true)} className="text-4xl">
                 <IoMenu />
               </button>
             )}
