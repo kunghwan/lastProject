@@ -1,5 +1,5 @@
-import { getUserByUsername } from "@/lib/otherUser";
 import { Metadata } from "next";
+import { getUserByUsername } from "@/lib/otherUser";
 
 type Props = {
   params: { username: string };
