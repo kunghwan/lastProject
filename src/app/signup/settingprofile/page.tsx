@@ -341,7 +341,7 @@ const SettingProfile = () => {
         <button
           ref={submitButtonRef}
           onClick={handleSubmit}
-          className="p-4 bg-emerald-300 rounded font-bold mt-5 dark:bg-emerald-500"
+          className="p-4 bg-emerald-300 rounded font-bold mt-5 dark:bg-emerald-500  "
         >
           가입 완료
         </button>
@@ -356,4 +356,4 @@ export default SettingProfile;
 
 // 닉네임 입력창 클래스
 const settingProfile =
-  "bg-lime-400 p-3 rounded w-80 sm:w-122 mt-5 dark:bg-lime-500";
+  "bg-primary p-3 rounded w-80 sm:w-122 mt-5 dark:bg-emerald-500 placeholder:text-black dark:placeholder:text-white";

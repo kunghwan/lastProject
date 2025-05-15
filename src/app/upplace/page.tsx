@@ -191,17 +191,41 @@ const UpPlace = () => {
     <div className="pb-28">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-12 sm:px-4">
         {data?.pages.flatMap((page, i) =>
-          page.places.map((place) => (
-            <PlaceCard
-              key={place.id}
-              place={place}
-              priority={i === 0}
-              likedOverride={likedIds.includes(`places_${place.contentId}`)}
-              onLikedChange={(liked) =>
-                handleLikedChange(`places_${place.contentId}`, liked)
+          page.places
+            .filter(
+              (place) => place.firstimage && place.firstimage.trim() !== ""
+            )
+
+            .map((place) => {
+              const isFetching =
+                isFetchingNextPage && i === data.pages.length - 1;
+              const hasImage =
+                place.firstimage && place.firstimage.trim() !== "";
+
+              // 🔁 이미지가 없고, 추가 페이지 불러오는 중이면 가짜 로딩 카드로 대체
+              if (!hasImage && isFetching) {
+                return (
+                  <div
+                    key={place.id}
+                    className="h-60 bg-gray-200 animate-pulse rounded-lg flex items-center justify-center text-gray-500 text-sm"
+                  >
+                    장소 불러오는 중...
+                  </div>
+                );
               }
-            />
-          ))
+
+              return (
+                <PlaceCard
+                  key={place.id}
+                  place={place}
+                  priority={i === 0}
+                  likedOverride={likedIds.includes(`places_${place.contentId}`)}
+                  onLikedChange={(liked) =>
+                    handleLikedChange(`places_${place.contentId}`, liked)
+                  }
+                />
+              );
+            })
         )}
       </div>
 
