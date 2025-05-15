@@ -9,6 +9,7 @@ import { dbService, FBCollection, storageService } from "@/lib/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { validateNickname, validateBio } from "@/lib/validations";
 import ProfileFeedComponent from "./ProfileFeedLayout";
+import { useAlertModal } from "../AlertStore";
 
 const ProfileLayout = ({
   isMyPage,
@@ -143,6 +144,7 @@ const ProfileLayout = ({
 
     return () => unsubscribe();
   }, [userData?.uid]);
+  const { openAlert } = useAlertModal();
 
   return (
     <div className="flex flex-col w-full min-h-screen">
@@ -155,12 +157,42 @@ const ProfileLayout = ({
                 alt={`${userData.nickname}'s profile`}
                 className="w-full h-full rounded-full  sm:x-auto  transition-all duration-500 ease-in-out transform hover:scale-[1.02] cursor-pointer"
               />
-              {isMyPage && (
+              {isMyPage ? (
                 <button
                   onClick={() => setEditOpen(true)} // ✅ 추가됨
                   className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-medium rounded-full opacity-0 hover:opacity-70 transition-opacity"
                 >
                   수정하기
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    openAlert(
+                      `${userData.nickname}님의 프로필 링크를 복사하시겠습니까?`,
+                      [
+                        {
+                          text: "취소",
+                          isGreen: false,
+                        },
+                        {
+                          text: "복사",
+                          isGreen: true,
+                          onClick: async () => {
+                            const url = `${
+                              window.location.origin
+                            }/profile/${encodeURIComponent(
+                              userData.nickname ?? ""
+                            )}`;
+                            await navigator.clipboard.writeText(url);
+                            openAlert("📋 프로필 링크가 복사되었습니다!");
+                          },
+                        },
+                      ]
+                    );
+                  }}
+                  className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-medium rounded-full opacity-0 hover:opacity-70 transition-opacity"
+                >
+                  공유하기
                 </button>
               )}
             </div>
