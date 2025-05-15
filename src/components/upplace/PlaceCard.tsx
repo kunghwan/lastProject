@@ -70,6 +70,12 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
     setLiked(!!likedOverride);
   }, [likedOverride]);
 
+  useEffect(() => {
+    if (countOverride !== undefined) {
+      setLikeCount(countOverride);
+    }
+  }, [countOverride]);
+
   const handleToggleLike = useCallback(async () => {
     if (!user || !place?.contentId) {
       openAlert("로그인을 해야 이동할수 있습니다 가시겠습니까?", [
@@ -104,7 +110,7 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
         // 🔐 Firestore에서 현재 좋아요 수 가져옴
         const placeSnap = await getDoc(placeRef);
         const currentCount = placeSnap.exists()
-          ? placeSnap.data().likeCount ?? 0
+          ? (placeSnap.data().likeCount ?? 0)
           : 0;
 
         // 🔐 현재 count가 1 이상일 때만 감소
