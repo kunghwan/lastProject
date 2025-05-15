@@ -1,4 +1,4 @@
-// app/profile/[username]/layout.tsx
+// app/profile/[username]/page.tsx
 
 import { Metadata } from "next";
 import { getUserByUsername } from "@/lib/otherUser";
