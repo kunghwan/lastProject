@@ -18,14 +18,22 @@ import { dbService } from "@/lib";
 import MobileHeader from "./MobileHeader";
 import { useAlertModal } from "@/components/AlertStore";
 
-const headBtn = "grayButton text-xl sm:text-2xl";
-
 //! 초기 로딩 시 다크 모드 설정
 const storedDarkMode =
   typeof window !== "undefined" ? localStorage.getItem("darkMode") : null;
 if (storedDarkMode === "true") {
   document.documentElement.classList.add("dark");
 }
+
+//! 공통 스타일 상수 정의
+const headBtn = "grayButton text-xl sm:text-2xl";
+const boldBtn = "text-2xl font-bold h-14 hover:opacity-80";
+const mobileAuthBtn = "text-xl font-bold hover:opacity-80";
+const darkModeBtn = (isDarkMode: boolean) =>
+  twMerge(
+    "grayButton text-xl",
+    isDarkMode ? "text-gray-800" : "text-white bg-black"
+  );
 
 const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState(
@@ -104,10 +112,7 @@ const Header = () => {
     buttons.push({
       icon: isDarkMode ? <IoMoon /> : <IoSunny />,
       onClick: toggleDarkMode,
-      className: twMerge(
-        headBtn,
-        isDarkMode ? "text-gray-800" : "text-white bg-black"
-      ),
+      className: darkModeBtn(isDarkMode),
     });
 
     if (!isSigninPage) {
@@ -115,26 +120,26 @@ const Header = () => {
         buttons.push({
           label: "로그아웃",
           onClick: handleLogout,
-          className: "text-2xl font-bold h-14 hover:opacity-80",
+          className: boldBtn,
         });
       } else {
         if (isSignupPage) {
           buttons.push({
             label: "로그인",
             onClick: () => router.push("/signin"),
-            className: "text-2xl font-bold h-14 hover:opacity-80",
+            className: boldBtn,
           });
         } else {
           buttons.push(
             {
               label: "로그인",
               onClick: () => router.push("/signin"),
-              className: "text-2xl font-bold h-14 hover:opacity-80",
+              className: boldBtn,
             },
             {
               label: "회원가입",
               onClick: () => router.push("/signup"),
-              className: "text-2xl font-bold h-14 hover:opacity-80",
+              className: boldBtn,
             }
           );
         }
@@ -174,7 +179,7 @@ const Header = () => {
       }
     };
 
-    window.checkUnreadNotifications = checkUnreadNotifications; //외부에서 호출할 수 있도록 전역 등록
+    window.checkUnreadNotifications = checkUnreadNotifications; // 외부에서 호출할 수 있도록 전역 등록
     checkUnreadNotifications(); // 컴포넌트 마운트 시 실행
   }, [user]);
 
@@ -224,16 +229,29 @@ const Header = () => {
             {/* 다크모드 버튼 항상 표시 */}
             <button
               onClick={toggleDarkMode}
-              className={twMerge(
-                "grayButton text-xl",
-                isDarkMode ? "text-gray-800" : "text-white bg-black"
-              )}
+              className={darkModeBtn(isDarkMode)}
             >
               {isDarkMode ? <IoMoon /> : <IoSunny />}
             </button>
 
-            {/* 로그인/회원가입 페이지가 아닐 때 햄버거 메뉴 표시 */}
-            {!isAuthPage && (
+            {pathname === "/signup" && (
+              <button
+                onClick={() => router.push("/signin")}
+                className={mobileAuthBtn}
+              >
+                로그인
+              </button>
+            )}
+
+            {/* 로그인 페이지일 때만 메뉴 버튼 보임, 회원가입 페이지에서는 숨김 */}
+            {pathname === "/signin" && (
+              <button onClick={() => setIsMenuOpen(true)} className="text-4xl">
+                <IoMenu />
+              </button>
+            )}
+
+            {/* 로그인도 아니고 회원가입도 아니면 메뉴 버튼 항상 보임 */}
+            {pathname !== "/signin" && pathname !== "/signup" && (
               <button onClick={() => setIsMenuOpen(true)} className="text-4xl">
                 <IoMenu />
               </button>
