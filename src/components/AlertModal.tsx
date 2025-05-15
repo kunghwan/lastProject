@@ -34,18 +34,18 @@ const AlertModal = () => {
     >
       <div
         className={twMerge(
-          "bg-white p-6 rounded-lg shadow-lg w-80 transform transition-all duration-1000 ease-out",
+          "bg-white  dark:bg-gray-500 p-6 rounded-lg shadow-lg w-80 transform transition-all duration-1000 ease-out",
           show ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
         )}
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <h2 className="text-lg font-bold text-center mb-3 dark:text-black">
+          <h2 className="text-lg font-bold text-center mb-3 dark:text-white">
             {title}
           </h2>
         )}
 
-        <p className="text-gray-800 text-center whitespace-pre-line mb-4 ">
+        <p className="text-gray-800 text-center whitespace-pre-line mb-4 dark:text-white">
           {message}
         </p>
         <div className="flex gap-2">
@@ -63,10 +63,10 @@ const AlertModal = () => {
                 }, 100);
                 closeAlert();
               }}
-              className={`flex-1 py-2 rounded text-white transition outline-none  ${
+              className={`flex-1 py-2 rounded  transition outline-none  ${
                 btn.isGreen
-                  ? "bg-green-500 hover:bg-green-600 "
-                  : "bg-gray-100  hover:bg-gray-300  "
+                  ? "bg-green-500 dark:bg-green-800 hover:bg-green-600 text-white "
+                  : "bg-gray-100  hover:bg-gray-300 dark:bg-gray-300 text-gray-500 "
               }`}
             >
               {btn.text || "확인"}
