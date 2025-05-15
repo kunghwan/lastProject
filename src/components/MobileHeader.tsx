@@ -103,13 +103,11 @@ const MobileHeader = ({
       onClick: () => setTimeout(() => handleNavigate("/notification"), 100),
       icon: notificationIcon,
     },
-    { onClick: toggleDarkMode, icon: themeIcon },
     { onClick: handleLogoutClick, label: "로그아웃", className: smallBtnClass },
   ];
 
   // 비로그인 유저를 위한 버튼 목록
   const loggedOutButtons = [
-    { onClick: toggleDarkMode, icon: themeIcon },
     {
       onClick: () => handleNavigate("/signin"),
       label: "로그인",
@@ -153,7 +151,7 @@ const MobileHeader = ({
                   onClick={btn.onClick}
                   className={twMerge(btn.className ?? largeBtnClass)}
                 >
-                  {btn.icon ?? btn.label}
+                  {btn.label ?? btn.icon}
                 </button>
               ))}
             </div>
