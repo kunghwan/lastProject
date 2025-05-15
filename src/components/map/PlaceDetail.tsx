@@ -21,6 +21,7 @@ interface Props {
 const PlaceDetail = ({ detailRef, onClose, place }: Props) => {
   const { openAlert } = useAlertModal();
 
+  //! 주소 복사 기능
   const jusoClip = useCallback(
     (selectedPlace: PlaceProps) => [
       {
@@ -37,6 +38,7 @@ const PlaceDetail = ({ detailRef, onClose, place }: Props) => {
     []
   );
 
+  //! 전화번호 없을경우
   const handleCopy = (text: string, msg: string) => {
     if (text === "전화번호 없음") {
       openAlert("해당 장소의 전화번호가 등록되지 않았습니다.", [
