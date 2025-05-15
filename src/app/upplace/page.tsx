@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   collection,
   getDocs,
@@ -99,19 +99,13 @@ const UpPlace = () => {
     queryKey: ["places-hybrid-infinite"],
     queryFn: ({ pageParam }) => fetchPlaces({ pageParam }),
     getNextPageParam: (lastPage) => {
-      // 📌 인기 목록이 아직 끝나지 않았으면 계속 가져오기
       if (lastPage.isPopularPhase && lastPage.places.length === PAGE_SIZE) {
         return { lastDoc: lastPage.lastDoc, isPopularPhase: true };
       }
-
-      // 📌 인기 목록이 끝났다면 일반 목록으로 전환
       if (lastPage.isPopularPhase) {
         return { lastDoc: null, isPopularPhase: false };
       }
-
-      // 📌 일반 목록도 다 불러왔으면 종료
       if (lastPage.places.length < PAGE_SIZE) return undefined;
-
       return { lastDoc: lastPage.lastDoc, isPopularPhase: false };
     },
     initialPageParam: { lastDoc: null, isPopularPhase: true },
@@ -141,7 +135,7 @@ const UpPlace = () => {
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        fetchLikedIds(); // 🔄 북마크에서 뒤로가기로 돌아온 경우에도 동기화됨
+        fetchLikedIds();
       }
     };
 
@@ -158,13 +152,28 @@ const UpPlace = () => {
     }
   }, [inView, hasNextPage, fetchNextPage]);
 
-  // 1. handleLikedChange 함수 추가
   const handleLikedChange = (id: string, liked: boolean) => {
     setLikedIds((prev) => {
       if (liked) return [...prev, id];
       return prev.filter((item) => item !== id);
     });
   };
+
+  // ✅ 중복 제거 및 이미지 유효성 체크 포함
+  const uniquePlaces = useMemo(() => {
+    const all = data?.pages.flatMap((page) => page.places) || [];
+    const map = new Map<string, Place>();
+    all.forEach((place) => {
+      if (
+        place.firstimage &&
+        place.firstimage.trim() !== "" &&
+        !map.has(place.contentId)
+      ) {
+        map.set(place.contentId, place);
+      }
+    });
+    return Array.from(map.values());
+  }, [data]);
 
   if (isLoading) {
     return (
@@ -190,28 +199,30 @@ const UpPlace = () => {
   return (
     <div className="pb-28">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-12 sm:px-4">
-        {data?.pages.flatMap((page, i) =>
-          page.places.map((place) => (
-            <PlaceCard
-              key={place.id}
-              place={place}
-              priority={i === 0}
-              likedOverride={likedIds.includes(`places_${place.contentId}`)}
-              onLikedChange={(liked) =>
-                handleLikedChange(`places_${place.contentId}`, liked)
-              }
-            />
-          ))
-        )}
+        {uniquePlaces.map((place, index) => (
+          <PlaceCard
+            key={place.contentId}
+            place={place}
+            priority={index === 0}
+            likedOverride={likedIds.includes(`places_${place.contentId}`)}
+            onLikedChange={(liked) =>
+              handleLikedChange(`places_${place.contentId}`, liked)
+            }
+          />
+        ))}
       </div>
 
       <div ref={ref} className="h-10" />
 
-      {isFetchingNextPage && (
-        <div className="text-center py-5 text-sm text-gray-500">
-          더 불러오는 중...
-        </div>
-      )}
+      {isFetchingNextPage &&
+        Array.from({ length: 9 }).map((_, i) => (
+          <div
+            key={`loading-${i}`}
+            className="h-60 bg-gray-200 animate-pulse rounded-lg flex items-center justify-center text-gray-500 text-sm"
+          >
+            장소 불러오는 중...
+          </div>
+        ))}
 
       <TopButton />
     </div>
@@ -219,5 +230,3 @@ const UpPlace = () => {
 };
 
 export default UpPlace;
-
-//!sdfsdfsdf

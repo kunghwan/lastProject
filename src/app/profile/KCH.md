@@ -1,3 +1,35 @@
+# 0515
+
+1. 모듈창 버튼 css 업데이트하기 ( bg, rounded-full, z-99)
+
+1-1 ProfileFeedLayout.tsx 모둘창의 text 스크롤 구현, 업로드일 구현
+
+1-2 PostComponent.tsx 모둘창 이미지, 버튼 수정
+
+1-3 각 페이지마다 top 버튼 만들기
+
+2. 모든 페이지에 react query 적용하기 ( 특히 피드, 북마크 )
+
+3. ppt 만들기, 프레임워크/데이터베이스/전역상태관리/스타일도구 등 소개와 선택 이유, 맡은 페이지 설명 (엄청엄청엄청엄청엄청엄청 변태같이 보여주기/자세하기 스트랩)
+
+// -무한 스크롤
+IntersectionObserver + getUserPostsPaginated 연동으로 성능 좋고 깔끔함.
+
+-모달 이미지 뷰어
+여러 이미지 지원 (+N 표시) + 좌우 넘기기 + ESC 키 닫기 등 UX가 좋음.
+
+-삭제 기능
+AlertModal로 삭제 확인 후 Firestore에서 제거 + UI 동기화 → 실용적이고 안정적.
+
+-시간 포맷 및 날짜 변환 함수
+getTimeAgo, getFormattedDate 깔끔하게 처리되어 유지보수 좋음.
+
+-타입 안정성
+Post, Timestamp, FieldValue 등의 TypeScript 타입 잘 활용됨.
+
+-디자인
+Tailwind 기반 스타일 적용도 훌륭하고, 다크모드 고려도 있음.
+
 # 0514
 
 1. feed 페이지 query 처리하기
