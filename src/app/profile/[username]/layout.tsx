@@ -1,13 +1,15 @@
-// app/profile/[username]/layout.tsx
 import { Metadata } from "next";
 import { getUserByUsername } from "@/lib/otherUser";
 
-export async function generateMetadata({
-  params,
-}: {
+type UsernameParams = {
   params: { username: string };
-}): Promise<Metadata> {
-  const user = await getUserByUsername(params.username);
+};
+
+export async function generateMetadata(
+  props: UsernameParams
+): Promise<Metadata> {
+  const user = await getUserByUsername(props.params.username);
+
   return {
     title: `방방콕콕 ${user?.nickname || "알 수 없음"}님 페이지`,
     description: `${user?.nickname || "유저"}님 마이페이지`,
