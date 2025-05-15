@@ -4,7 +4,6 @@ import { AUTH } from "@/contextapi/context";
 import { dbService, FBCollection } from "@/lib";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState, useTransition } from "react";
-import AlertModal from "@/components/AlertModal";
 import { useAlertModal } from "../AlertStore";
 
 interface FollowButtonProps {
