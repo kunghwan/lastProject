@@ -118,11 +118,7 @@ const NotificationListPage = () => {
     //lastPage는 fetchNotifications함수임 내가 마음대로 인자이름 지은거임
     getNextPageParam: (lastPage) => {
       // 마지막으로 가져올 데이터가 없거나 0개거나 20개 미만이면 undefined임
-      if (
-        !lastPage ||
-        lastPage.notifications.length === 0 ||
-        lastPage.notifications.length < limit
-      ) {
+      if (!lastPage || lastPage.notifications.length < limit) {
         return undefined; //다음페이지가 없으면 undefined임
       }
       //있다면 lastDoc를 반환해서 lastDoc로 나머지 가져옴
@@ -194,7 +190,9 @@ const NotificationListPage = () => {
     if (window.checkUnreadNotifications) {
       window.checkUnreadNotifications();
     }
-    await refetch(); //!  데이터 새로고침 //서버에 요청 → 최신 데이터로 갱신
+    await refetch(); //!  데이터 새로고침 //서버에 요청 → 최신 데이터로 갱신 //Firestore에서 최신 알림 목록을 다시 가져오기
+    await checkUnreadNotifications(); //! 알림 새로고침 후 상태 갱신 //	새로 불러온 알림 중 안 읽은 것이 있는지 판단해서 isUnRead 상태 업데이트
+
     setIsLoadingAllRead(false);
     openAlert(
       "알림을 모두 읽었습니다.",
@@ -243,7 +241,7 @@ const NotificationListPage = () => {
           </p>
           <button
             onClick={() => navi.back()}
-            className="hover:scale-105 hover:animate-pulse font-bold p-2.5 rounded w-40 bg-[rgba(62,188,154)] dark:bg-[rgba(116,212,186,0.5)] text-white hover:shadow-md"
+            className="hover:scale-105 hover:animate-pulse font-bold p-2.5 rounded w-40 bg-primary dark:bg-[rgba(116,212,186,0.5)] text-white hover:shadow-md"
           >
             돌아가기
           </button>
@@ -253,7 +251,7 @@ const NotificationListPage = () => {
       <div>
         {/* isUnRead는 읽지 않은 알림이 하나라도 있으면 true 없다면 false임 */}
         {/* data 안에 있는 pages 배열을 돌면서,알림(notifications)이 하나라도 있는 페이지가 있는지 확인 */}
-        {data?.pages.every((page) => page.notifications.length > 0) && (
+        {data?.pages.some((page) => page.notifications.length > 0) && (
           <div>
             <div className="flex justify-end">
               {/* isRead가 다 true라면 버튼을 비활성화함 */}
@@ -288,25 +286,38 @@ const NotificationListPage = () => {
                   "hover:scale-105 hover:shadow-sm hsecol  gap-x-2.5 justify-center p-2.5 rounded-2xl w-full cursor-pointer transition-transform, duration-300, ease-in-out",
                   noti.isRead
                     ? "text-gray-500 border dark:border-gray-700 border-gray-200 bg-gray-100 dark:bg-gray-500 dark:text-gray-300 "
-                    : "text-black font-semibold border border-gray-200 hover:text-lime-700 dark:hover:text-lime-200  bg-[rgba(232,255,241)] dark:bg-[rgba(232,255,241,0.4)] dark:text-white"
+                    : "text-white font-semibold border border-gray-200 hover:text-lime-700 dark:hover:text-lime-200  bg-primary dark:bg-[rgba(232,255,241,0.4)] dark:text-white"
                 )}
               >
-                <div className="flex items-center gap-x-2.5">
-                  <div className="w-10 h-10  overflow-hidden rounded-full">
-                    <Image
-                      src={noti.profileImageUrl || defaultImgUrl}
-                      alt="profile"
-                      width={40}
-                      height={40}
-                      className="object-cover object-center"
-                    />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-x-2.5">
+                    <div className="w-10 h-10  overflow-hidden rounded-full">
+                      <Image
+                        src={noti.profileImageUrl || defaultImgUrl}
+                        alt="profile"
+                        width={40}
+                        height={40}
+                        className="object-cover object-center"
+                      />
+                    </div>
+                    <p className="font-bold text-md">
+                      {noti.type === "follow" &&
+                        `${noti.followerNickname}님이 팔로우했습니다.`}
+                      {noti.type === "like" &&
+                        `${noti.likerName}님이 게시글을 좋아했습니다.`}
+                    </p>
                   </div>
-                  <p className="font-bold text-md">
-                    {noti.type === "follow" &&
-                      `${noti.followerNickname}님이 팔로우했습니다.`}
-                    {noti.type === "like" &&
-                      `${noti.likerName}님이 게시글을 좋아했습니다.`}
-                  </p>
+                  <div>
+                    <p
+                      className={twMerge(
+                        noti.isRead
+                          ? "text-gray-500 dark:text-gray-400"
+                          : "text-white"
+                      )}
+                    >
+                      {noti.isRead ? "읽음" : "안읽음"}
+                    </p>
+                  </div>
                 </div>
                 <p className="text-sm font-light  flex justify-end">
                   {noti.createdAt.toDate().toLocaleString()}
