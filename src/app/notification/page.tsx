@@ -289,8 +289,8 @@ const NotificationListPage = () => {
                     : "text-white font-semibold border border-gray-200 hover:text-lime-700 dark:hover:text-lime-200  bg-primary dark:bg-[rgba(232,255,241,0.4)] dark:text-white"
                 )}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-x-2.5">
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center gap-x-2.5 flex-1 min-w-0">
                     <div className="w-10 h-10  overflow-hidden rounded-full">
                       <Image
                         src={noti.profileImageUrl || defaultImgUrl}
@@ -300,7 +300,7 @@ const NotificationListPage = () => {
                         className="object-cover object-center"
                       />
                     </div>
-                    <p className="font-bold text-md">
+                    <p className=" truncate font-bold text-md">
                       {noti.type === "follow" &&
                         `${noti.followerNickname}님이 팔로우했습니다.`}
                       {noti.type === "like" &&
@@ -312,7 +312,8 @@ const NotificationListPage = () => {
                       className={twMerge(
                         noti.isRead
                           ? "text-gray-500 dark:text-gray-400"
-                          : "text-white"
+                          : "text-white",
+                        "ml-2 text-sm shrink-0 whitespace-nowrap"
                       )}
                     >
                       {noti.isRead ? "읽음" : "안읽음"}
