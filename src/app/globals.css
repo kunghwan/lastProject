@@ -6,6 +6,10 @@
   --color-primary: var(--color-emerald-400);
 }
 
+:root {
+  --color-primary: var(--color-emerald-300); /* Tailwind emerald-300 */
+}
+
 @layer base {
   button,
   a {

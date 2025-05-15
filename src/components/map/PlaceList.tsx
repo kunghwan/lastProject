@@ -28,7 +28,7 @@ const PlaceList = ({
   return (
     <div
       className={twMerge(
-        "hidden md:flex absolute top-0 right-0 w-80 max-h-[76vh] h-full p-4 bg-gray-100 border border-gray-200 flex-col rounded-3xl z-10 dark:bg-[#4B4B4B] dark:text-[#E5E7EB] transition-transform duration-300 ease-in-out",
+        "hidden md:flex absolute top-0 right-4 w-80 max-h-[76vh] h-full p-4 bg-gray-100 border border-gray-200 flex-col rounded-3xl z-10 dark:bg-[#4B4B4B] dark:text-[#E5E7EB] transition-transform duration-300 ease-in-out",
         isOpen ? "translate-x-0" : "translate-x-full"
       )}
     >
