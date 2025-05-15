@@ -16,7 +16,7 @@ import { twMerge } from "tailwind-merge";
 import Navbar from "./features/navber/Navbar";
 import { dbService } from "@/lib";
 import MobileHeader from "./MobileHeader";
-import { useAlertModal } from "@/components/AlertStore"; // ✅ Alert 모달 전역 상태 훅
+import { useAlertModal } from "@/components/AlertStore";
 
 const headBtn = "grayButton text-xl sm:text-2xl";
 
@@ -75,10 +75,12 @@ const Header = () => {
   }, [isDarkMode]);
 
   //! 헤더에 표시될 버튼들을 정의
+  const isSigninPage = pathname === "/signin";
+  const isSignupPage = pathname === "/signup";
+
   const headerButtons = useMemo(() => {
     const buttons = [];
 
-    // 로그인 상태일 때 북마크, 알림 버튼 추가
     if (user) {
       buttons.push(
         {
@@ -90,28 +92,25 @@ const Header = () => {
             <div className="relative text-2xl">
               <IoNotificationsOutline />
               {hasUnread && (
-                // 읽지 않은 알림이 있을 경우 생기는 표시
                 <span className="absolute top-0 right-0 h-3 w-3 rounded-full bg-red-600 border border-white" />
               )}
             </div>
           ),
-          onClick: () => setTimeout(() => router.push("/notification"), 100), // 알림 버튼
+          onClick: () => setTimeout(() => router.push("/notification"), 100),
         }
       );
     }
 
-    // 다크 모드 토글 버튼
     buttons.push({
-      icon: isDarkMode ? <IoMoon /> : <IoSunny />, // 현재 모드에 따라 달 또는 해 아이콘 표시
-      onClick: toggleDarkMode, // 다크 모드 토글 함수 호출
+      icon: isDarkMode ? <IoMoon /> : <IoSunny />,
+      onClick: toggleDarkMode,
       className: twMerge(
         headBtn,
         isDarkMode ? "text-gray-800" : "text-white bg-black"
       ),
     });
 
-    // 로그인/로그아웃 + 회원가입 버튼 (인증 페이지가 아닐 경우에만 표시)
-    if (!isAuthPage) {
+    if (!isSigninPage) {
       if (user) {
         buttons.push({
           label: "로그아웃",
@@ -119,18 +118,26 @@ const Header = () => {
           className: "text-2xl font-bold h-14 hover:opacity-80",
         });
       } else {
-        buttons.push(
-          {
+        if (isSignupPage) {
+          buttons.push({
             label: "로그인",
             onClick: () => router.push("/signin"),
             className: "text-2xl font-bold h-14 hover:opacity-80",
-          },
-          {
-            label: "회원가입",
-            onClick: () => router.push("/signup"),
-            className: "text-2xl font-bold h-14 hover:opacity-80",
-          }
-        );
+          });
+        } else {
+          buttons.push(
+            {
+              label: "로그인",
+              onClick: () => router.push("/signin"),
+              className: "text-2xl font-bold h-14 hover:opacity-80",
+            },
+            {
+              label: "회원가입",
+              onClick: () => router.push("/signup"),
+              className: "text-2xl font-bold h-14 hover:opacity-80",
+            }
+          );
+        }
       }
     }
 
@@ -140,7 +147,8 @@ const Header = () => {
     isDarkMode,
     toggleDarkMode,
     handleLogout,
-    isAuthPage,
+    isSigninPage,
+    isSignupPage,
     router,
     hasUnread,
   ]);
