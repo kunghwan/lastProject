@@ -2,6 +2,10 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --color-primary: var(--color-emerald-300);
+}
+
 @layer base {
   button,
   a {

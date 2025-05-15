@@ -274,6 +274,6 @@ export default LoginForm;
 
 const Find = "cursor-pointer dark:text-[#C5E3DB]";
 const LoginButton =
-  "p-3 rounded w-90 cursor-pointer bg-emerald-300 lg:w-120 dark:text-gray-700 dark:bg-green-200";
+  "p-3 rounded w-90 cursor-pointer bg-primary lg:w-120 dark:text-gray-700 dark:bg-green-200";
 const SignUserButton =
   "p-3 rounded w-90 cursor-pointer bg-gray-200 text-center lg:w-120 dark:text-gray-700 dark:bg-gray-300 ";
