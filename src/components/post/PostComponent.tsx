@@ -11,6 +11,7 @@ import { authService } from "@/lib";
 import { FieldValue, Timestamp } from "firebase/firestore";
 import { HiOutlineX } from "react-icons/hi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { useQueryClient } from "@tanstack/react-query";
 
 const PostComponent = () => {
   const router = useRouter();
@@ -23,6 +24,8 @@ const PostComponent = () => {
   const [selectedPost, setSelectedPost] = useState<PostType | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0); // 슬라이더 인덱스
   const [modalImages, setModalImages] = useState<string[]>([]);
+
+  const queryClient = useQueryClient();
 
   function getTimeAgo(time: string | Timestamp | FieldValue): string {
     let createdTime: Date;
@@ -52,7 +55,13 @@ const PostComponent = () => {
   }
 
   useEffect(() => {
-    loadMorePosts();
+    const cached = queryClient.getQueryData<PostType[]>(["cachedPosts"]);
+    if (cached && cached.length > 0) {
+      setPosts(cached);
+      setHasMore(true);
+    } else {
+      loadMorePosts(); // 최초 호출
+    }
   }, []);
 
   //! 날짜 변환 함수 (파이어베이스에 저장된객체를 우리가 볼 수 있는 문자열로 바꿈)
@@ -78,7 +87,12 @@ const PostComponent = () => {
     setPosts((prev) => {
       const ids = new Set(prev.map((p) => p.id));
       const filteredNewPosts = newPosts.filter((p) => !ids.has(p.id));
-      return [...prev, ...filteredNewPosts];
+      const updatedPosts = [...prev, ...filteredNewPosts];
+
+      // ✅ 캐시에 저장
+      queryClient.setQueryData(["cachedPosts"], updatedPosts);
+
+      return updatedPosts;
     });
 
     lastDocRef.current = lastDoc;
@@ -183,7 +197,7 @@ const PostComponent = () => {
                 onClick={() => handleClick(post.uid, post.userNickname)}
               >
                 <img
-                  className="w-8 h-8 border rounded-2xl border-gray-200"
+                  className="w-8 h-8 border rounded-2xl pb-2.5 border-gray-200"
                   src={post.userProfileImage || defaultImgUrl}
                   alt="user profile image"
                 />
@@ -225,12 +239,12 @@ const PostComponent = () => {
                 </div>
               </div>
               <p
-                className="text-lg font-semibold truncate  overflow-y-auto
+                className="text-lg font-semibold truncate pt-2.5 overflow-y-auto
             "
               >
                 {post.content}
               </p>
-              <div className="flex flex-wrap">
+              <div className="flex pt-2.5 flex-wrap">
                 {post.tags.map((tag: Tag) => (
                   <div
                     key={tag.id}
@@ -262,12 +276,12 @@ const PostComponent = () => {
           >
             <button
               onClick={() => setSelectedPost(null)}
-              className="absolute z-40 top-2 right-4 md:text-3xl transition-all text-xl font-bold text-gray-700 p-5"
+              className="absolute z-40 top-0.5 right-1 md:text-3xl transition-all text-2xl font-bold text-gray-700 p-5 hover:text-gray-400"
             >
               <HiOutlineX />
             </button>
 
-            <div className="relative md:w-full w-auto h-1/2 md:h-2/3 mt-5 md:mt-10 flex items-center justify-center">
+            <div className="relative md:w-full w-auto h-1/2 md:h-2/3 mt-10 flex items-center justify-center">
               <img
                 src={
                   modalImages.length > 0
@@ -275,20 +289,20 @@ const PostComponent = () => {
                     : selectedPost.imageUrl?.[0] || defaultImgUrl
                 }
                 alt={`image-${currentIndex}`}
-                className=" object-contain rounded max-h-9/10 md:max-h-110 md:w-110"
+                className=" object-contain h-80 rounded md:h-110 md:w-110"
                 loading="lazy"
               />
               {modalImages.length > 1 && (
                 <>
                   <button
                     onClick={handlePrev}
-                    className="absolute left-3 text-2xl text-gray-700 hover:text-gray-400 rounded-full hover:bg-black/5 p-1.5"
+                    className="absolute left-3 text-2xl text-gray-700 invert hover:text-gray-600 rounded-full p-1.5 hover:bg-black/80 hover:scale-110 hover:opacity-85 transition-all duration-200"
                   >
                     <FaChevronLeft />
                   </button>
                   <button
                     onClick={handleNext}
-                    className="absolute right-3 text-2xl text-gray-700 hover:text-gray-400 rounded-full hover:bg-black/5  p-1.5"
+                    className="absolute right-3 text-2xl text-gray-700 invert hover:text-gray-600 rounded-full p-1.5 hover:bg-black/80 hover:scale-110 hover:opacity-85 transition-all duration-200"
                   >
                     <FaChevronRight />
                   </button>
