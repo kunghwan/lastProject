@@ -11,6 +11,7 @@ import { Timestamp } from "firebase/firestore";
 import { HiOutlineX } from "react-icons/hi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { getTimeAgo } from "@/lib/post";
+import { useAlertModal } from "../AlertStore";
 
 const ProfileFeedComponent = ({
   posts,
@@ -45,19 +46,32 @@ const ProfileFeedComponent = ({
       return "날짜 정보 없음";
     }
   };
+  const { openAlert } = useAlertModal();
 
-  const handleDelete = useCallback(async (postId: string) => {
-    const ok = window.confirm("정말 이 게시물을 삭제하시겠습니까?");
-    if (!ok) return;
-    try {
-      await deleteDoc(doc(dbService, "posts", postId));
-      setPostList((prev) => prev.filter((p) => p.id !== postId));
-    } catch (error) {
-      console.error("삭제 실패:", error);
-      alert("삭제에 실패했습니다.");
-    }
-  }, []);
-
+  const handleDelete = useCallback(
+    (postId: string) => {
+      openAlert("정말 이 게시물을 삭제하시겠습니까?", [
+        {
+          text: "삭제",
+          isGreen: true,
+          autoFocus: true,
+          onClick: async () => {
+            try {
+              await deleteDoc(doc(dbService, "posts", postId));
+              setPostList((prev) => prev.filter((p) => p.id !== postId));
+            } catch (error) {
+              console.error("삭제 실패:", error);
+              openAlert("❌ 삭제에 실패했습니다.");
+            }
+          },
+        },
+        {
+          text: "취소",
+        },
+      ]);
+    },
+    [openAlert]
+  );
   const loadMorePosts = useCallback(async () => {
     if (loading || !hasMore) return;
     setLoading(true);
@@ -157,7 +171,7 @@ const ProfileFeedComponent = ({
                 {isMyPage && (
                   <button
                     onClick={(e) => {
-                      e.stopPropagation(); // 클릭 전파 방지
+                      e.stopPropagation(); // 클릭 이벤트 전파 방지
                       handleDelete(post.id!);
                     }}
                     className="text-s text-pink-700 hover:animate-pulse hover:scale-[1.02] cursor-pointer p-2 hover:text-pink-600 active:text-pink-700 dark:active:text-pink-100"
