@@ -286,7 +286,7 @@ const NotificationListPage = () => {
                   "hover:scale-105 hover:shadow-sm hsecol  gap-x-2.5 justify-center p-2.5 rounded-2xl w-full cursor-pointer transition-transform, duration-300, ease-in-out",
                   noti.isRead
                     ? "text-gray-500 border dark:border-gray-700 border-gray-200 bg-gray-100 dark:bg-gray-500 dark:text-gray-300 "
-                    : "text-white font-semibold border border-gray-200 hover:text-lime-700 dark:hover:text-lime-200  bg-primary dark:bg-[rgba(232,255,241,0.4)] dark:text-white"
+                    : "text-white font-semibold border border-gray-200 hover:text-lime-100 dark:hover:text-lime-200  bg-primary dark:bg-[rgba(232,255,241,0.4)] dark:text-white"
                 )}
               >
                 <div className="flex items-center justify-between w-full">
