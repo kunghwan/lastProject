@@ -190,26 +190,8 @@ const MobileHeader = ({
               </div>
             )}
 
-<<<<<<< HEAD
             {/* 버튼 목록 렌더링 */}
             {renderButtons()}
-=======
-            {/* 버튼 리스트 */}
-
-            <div className="grid grid-cols-2 gap-2 justify-items-center items-center">
-
-              {buttons.map((btn, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => onButtonClick(btn)}
-                  className={btnClass}
-                >
-                  {btn.icon && <span className="text-2xl">{btn.icon}</span>}
-                  <span>{btn.label}</span>
-                </button>
-              ))}
-            </div>
->>>>>>> a169a988c7d7c9f2d1d8319ebd0b012f3b1e5747
           </div>
         </div>
       )}
