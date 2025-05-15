@@ -132,7 +132,7 @@ const MobileHeader = ({
   }, [user, hasUnread]);
 
   const btnClass = twMerge(
-    "flex flex-col items-center justify-center gap-1 px-1 py-3 rounded-lg font-semibold text-md",
+    "flex flex-col items-center justify-center gap-1 px-1 py-4 rounded-lg font-semibold text-md",
     "bg-gray-200 dark:bg-[#333333] text-black dark:text-[#F1F5F9]",
     "hover:bg-gray-300 dark:hover:bg-[#444444] w-20 h-20",
     "transition-colors duration-200"
@@ -153,7 +153,10 @@ const MobileHeader = ({
               text: "네",
               isGreen: true,
               autoFocus: true,
-              onClick: () => router.push("/signin"),
+              onClick: () => {
+                router.push("/signin");
+                closeMenu();
+              },
             },
           ],
           "로그인이 필요합니다."
@@ -176,32 +179,31 @@ const MobileHeader = ({
           onClick={closeMenu} // 배경 클릭 시 메뉴 닫기
         >
           <div
-            className="bg-white dark:bg-gray-300 p-6 rounded-xl shadow-lg w-[65vw] max-w-sm text-center flex flex-col"
+            className="bg-white dark:bg-zinc-600 p-6 rounded-xl shadow-lg w-[65vw] max-w-sm text-center flex flex-col"
             onClick={(e) => e.stopPropagation()} // 내부 클릭 시 이벤트 전파 막기
           >
             {/* 닫기 버튼 */}
             <div className="flex justify-end mb-2">
               <button onClick={closeMenu} className="text-2xl">
-                <IoCloseSharp className="dark:text-black m-1 text-2xl" />
+                <IoCloseSharp className="dark:text-white m-1 text-2xl" />
               </button>
             </div>
 
             {/* 닉네임 */}
             {user && (
-              <div className="text-2xl font-bold whitespace-nowrap flex justify-center mb-6 text-black">
+              <div className="text-2xl font-bold whitespace-nowrap flex justify-center mb-6 text-black dark:text-white">
                 <div className="max-w-40 truncate">{user.nickname}</div>
                 <p className="font-medium ml-1">님</p>
               </div>
             )}
 
             {/* 버튼 리스트 */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 border border-red-200  justify-items-center items-center">
               {buttons.map((btn, idx) => (
                 <button
                   key={idx}
                   onClick={() => onButtonClick(btn)}
                   className={btnClass}
-                  style={{ justifyContent: btn.icon ? "flex-start" : "center" }}
                 >
                   {btn.icon && <span className="text-2xl">{btn.icon}</span>}
                   <span>{btn.label}</span>

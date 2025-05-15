@@ -25,7 +25,7 @@ const MobilePlaceList = ({
           onClick={() => setIsOpen(true)}
         >
           <div className="flex items-center gap-x-2">
-            <IoMenu className="text-green-500" />
+            <IoMenu className="text-primary" />
             목록보기
           </div>
         </button>
