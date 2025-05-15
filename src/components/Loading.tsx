@@ -16,9 +16,10 @@ const Loaiding = ({ message, isLoading }: LoadingState) => {
         </div>
       </div>
 
-      <p className="text-xl font-semibold">{message}</p>
+      <p className="text-xl font-semibold dark:text-black">{message}</p>
     </div>
   );
 };
 
 export default Loaiding;
+//!dsfsdf
