@@ -1,41 +1,24 @@
-"use client";
+// app/profile/[username]/layout.tsx
 
-import { useParams } from "next/navigation";
-import ProfileLayout from "@/components/profile/ProfileLayout";
-import { useUsersByNickname } from "@/hooks/useUser";
-import { usePostsByNickname } from "@/hooks/useAuth";
+import { Metadata } from "next";
+import { getUserByUsername } from "@/lib/otherUser";
 
-const UserPage = () => {
-  const params = useParams();
-  const username = params?.username as string;
+export async function generateMetadata({
+  params,
+}: {
+  params: { username: string };
+}): Promise<Metadata> {
+  const user = await getUserByUsername(params.username);
+  return {
+    title: `방방콕콕 ${user?.nickname || "알 수 없음"}님 페이지`,
+    description: `${user?.nickname || "유저"}님 마이페이지`,
+  };
+}
 
-  const { data: users, isLoading: userLoading } = useUsersByNickname(username);
-  const { data: posts, isLoading: postLoading } = usePostsByNickname(username);
-
-  const userData = users?.[0];
-
-  if (userLoading || postLoading) return <h1>로딩 중...</h1>;
-  if (!userData) return <h1>해당 유저 없음</h1>;
-
-  const filteredPosts = (posts || []).filter(
-    (post) =>
-      post.uid === userData.uid &&
-      post.userNickname === userData.nickname &&
-      post.id !== "default"
-  );
-
-  return (
-    <ProfileLayout
-      posts={posts || []}
-      userData={{
-        uid: userData.uid,
-        nickname: userData.nickname,
-        profileImageUrl: userData.profileImageUrl,
-        bio: userData.bio,
-      }}
-      isMyPage={false}
-    />
-  );
-};
-
-export default UserPage;
+export default function ProfileLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <>{children}</>;
+}
