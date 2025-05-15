@@ -296,7 +296,7 @@ const ProfileFeedComponent = ({
               <h2 className="text-lg font-bold mb-2 dark:text-gray-600 truncate">
                 {selectedPost.title}
               </h2>
-              <p className="text-sm text-gray-700 break-words overflow-y-auto max-h-12 md:max-h-24 pr-1">
+              <p className="text-xs text-gray-700 break-words overflow-y-auto max-h-12 md:max-h-24 pr-1">
                 {selectedPost.content}
               </p>
             </div>

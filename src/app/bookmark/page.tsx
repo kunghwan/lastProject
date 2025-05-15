@@ -20,6 +20,7 @@ import { FcLike } from "react-icons/fc";
 import { HiOutlineX } from "react-icons/hi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useQueryClient } from "@tanstack/react-query";
+import TopButton from "@/components/upplace/TopButton";
 
 type SortOption = "recent" | "oldest" | "likes";
 
@@ -329,6 +330,7 @@ const BookmarkPage = () => {
           </div>
         </div>
       )}
+      <TopButton />
     </div>
   );
 };
