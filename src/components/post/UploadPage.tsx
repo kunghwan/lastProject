@@ -491,7 +491,7 @@ const UploadPostPage = () => {
           type="submit"
           ref={submitButtonRef}
           className={twMerge(
-            " outline-lime-100 hover:bg-[rgba(116,212,186,0.7)]  bg-[rgba(62,188,154)] transition duration-300 upPostButton dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
+            " outline-lime-100 hover:bg-[rgba(116,212,186,0.7)]  bg-primary transition duration-300 upPostButton dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
           )}
         >
           게시
