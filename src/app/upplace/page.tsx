@@ -118,6 +118,8 @@ const UpPlace = () => {
   });
 
   const [likedIds, setLikedIds] = useState<string[]>([]);
+  const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
+
   const user = getAuth().currentUser;
 
   useEffect(() => {
@@ -126,19 +128,26 @@ const UpPlace = () => {
       const snap = await getDocs(
         collection(dbService, `users/${user.uid}/likes`)
       );
-      const ids = snap.docs.map((doc) => doc.id); // 예: "places_12345"
+      const ids = snap.docs.map((doc) => doc.id);
+      const counts: Record<string, number> = {};
+      snap.docs.forEach((doc) => {
+        counts[doc.id] = doc.data().likeCount ?? 0;
+      });
       setLikedIds(ids);
+      setLikeCounts(counts);
     };
 
     fetchLikedIds();
 
-    // ✅ 브라우저가 포커스를 다시 받을 때도 좋아요 목록 새로고침
-    const handleFocus = () => {
-      fetchLikedIds();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        fetchLikedIds(); // 🔄 북마크에서 뒤로가기로 돌아온 경우에도 동기화됨
+      }
     };
 
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
+    window.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      window.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [user]);
 
   const { ref, inView } = useInView();
