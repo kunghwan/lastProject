@@ -1,11 +1,12 @@
 import { Metadata } from "next";
 import { getUserByUsername } from "@/lib/otherUser";
 
-export async function generateMetadata({
-  params: { username },
-}: {
-  params: { username: string };
-}): Promise<Metadata> {
+type Params = { username: string };
+
+export async function generateMetadata(
+  props: Awaited<Promise<{ params: Params }>>
+): Promise<Metadata> {
+  const username = props.params.username;
   const user = await getUserByUsername(username);
 
   return {
