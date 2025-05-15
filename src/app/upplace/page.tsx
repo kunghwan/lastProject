@@ -208,6 +208,7 @@ const UpPlace = () => {
             onLikedChange={(liked) =>
               handleLikedChange(`places_${place.contentId}`, liked)
             }
+            countOverride={likeCounts[place.contentId]}
           />
         ))}
       </div>
