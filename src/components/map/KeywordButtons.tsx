@@ -14,14 +14,16 @@ interface KeywordButtonsProps {
   onKeywordClick: (keyword: string) => void;
 }
 const keywordBtnStyle =
-  "group bg-white border dark:border-gray-500 border-gray-300 p-2.5 rounded-full shadow-sm hover:border-primary gap-x-1 flex items-center justify-center font-semibold dark:bg-[#6B6B6B] dark:text-[#E5E7EB] sm:text-sm text-xs focus:bg-primary focus:border-none focus:text-zinc-900";
+  "group bg-white border dark:border-gray-500 border-gray-300 p-2.5 rounded-full shadow-sm hover:border-primary gap-x-1 flex items-center justify-center font-semibold dark:bg-[#6B6B6B] dark:text-[#E5E7EB] sm:text-sm text-xs focus:bg-primary focus:border-none";
 
 const KeywordButton = ({ name, icon, onClick }: KeywordButtonProps) => (
   <button className={keywordBtnStyle} onClick={() => onClick(name)}>
     <p className="text-primary sm:text-lg text-base group-focus:text-white dark:group-focus:text-zinc-900">
       {icon}
     </p>
-    {name}
+    <span className="group-focus:text-white dark:group-focus:text-zinc-900">
+      {name}
+    </span>
   </button>
 );
 
