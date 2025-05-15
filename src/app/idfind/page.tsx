@@ -460,7 +460,7 @@ const IdFind = () => {
       {alertMessage && <AlertModal />}
 
       {/* 상단 아이디/비밀번호 찾기 헤더 */}
-      <div className="w-full bg-emerald-100 p-4 whitespace-nowrap dark:bg-emerald-500  ">
+      <div className="w-full bg-emerald-300 p-4 whitespace-nowrap dark:bg-emerald-500  ">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
             <FaIdCard className="text-amber-500 text-4xl dark:text-amber-700" />
