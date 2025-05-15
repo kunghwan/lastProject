@@ -31,8 +31,8 @@ const SearchForm = ({
           placeholder={placeholder}
           className="p-1 text-sm focus:outline-none dark:placeholder:text-gray-200 placeholder:text-gray-500 w-55 focus:text-white focus:placeholder:text-white"
         />
-        <button type="submit" className="text-xl px-2 hover:text-green-500">
-          <IoSearch className="group-focus-within:text-white " />
+        <button className="text-xl px-2">
+          <IoSearch className="group-focus-within:text-white hover:scale-125 transition-transform duration-200" />
         </button>
       </form>
     </>
