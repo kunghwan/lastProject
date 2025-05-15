@@ -117,7 +117,8 @@ const Navbar = () => {
                       <button
                         className={twMerge(
                           "flex flex-col gap-y-1.5 items-center justify-center text-3xl p-3 hover:opacity-80 hover:text-primary",
-                          pathname === btn.path && "text-primary"
+                          pathname === btn.path &&
+                            "text-primary dark:text-primary"
                         )}
                         onClick={() => navBtnClick(btn, index)}
                       >
@@ -141,7 +142,7 @@ const Navbar = () => {
                   <button
                     className={twMerge(
                       "justify-center text-3xl p-2.5 flex flex-col gap-y-1.5 items-center bg-gray-100 dark:bg-[#6B6B6B] dark:text-[#E5E7EB] hover:text-primary hover:opacity-80",
-                      pathname === btn.path && "text-primary"
+                      pathname === btn.path && "text-primary dark:text-primary"
                     )}
                     onClick={() => navBtnClick(btn, index)}
                   >
