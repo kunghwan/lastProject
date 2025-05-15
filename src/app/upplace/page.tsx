@@ -129,7 +129,16 @@ const UpPlace = () => {
       const ids = snap.docs.map((doc) => doc.id); // 예: "places_12345"
       setLikedIds(ids);
     };
+
     fetchLikedIds();
+
+    // ✅ 브라우저가 포커스를 다시 받을 때도 좋아요 목록 새로고침
+    const handleFocus = () => {
+      fetchLikedIds();
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
   }, [user]);
 
   const { ref, inView } = useInView();
@@ -139,6 +148,14 @@ const UpPlace = () => {
       fetchNextPage();
     }
   }, [inView, hasNextPage, fetchNextPage]);
+
+  // 1. handleLikedChange 함수 추가
+  const handleLikedChange = (id: string, liked: boolean) => {
+    setLikedIds((prev) => {
+      if (liked) return [...prev, id];
+      return prev.filter((item) => item !== id);
+    });
+  };
 
   if (isLoading) {
     return (
@@ -171,6 +188,9 @@ const UpPlace = () => {
               place={place}
               priority={i === 0}
               likedOverride={likedIds.includes(`places_${place.contentId}`)}
+              onLikedChange={(liked) =>
+                handleLikedChange(`places_${place.contentId}`, liked)
+              }
             />
           ))
         )}
