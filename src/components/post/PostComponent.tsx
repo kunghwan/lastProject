@@ -299,7 +299,9 @@ const PostComponent = () => {
             <div className="p-4 justify-end flex flex-col">
               <div className="text-xs text-gray-500 mt-2 flex justify-between mb-2">
                 <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
-                <div>{getFormattedDate(selectedPost.createdAt)}</div>
+                <div>
+                  업로드 시간 : {getFormattedDate(selectedPost.createdAt)}
+                </div>
               </div>
               <h2 className="text-lg font-bold mb-2 dark:text-gray-600 truncate">
                 {selectedPost.title}
