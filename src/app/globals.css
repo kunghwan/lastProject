@@ -36,7 +36,7 @@
   .ykhInputButton {
     @apply rounded p-4 bg-white w-90 placeholder:text-black outline-none lg:w-120  
     
-    dark:placeholder:text-gray-900 dark:text-lime-300 border border-emerald-300 dark:border-emerald-100;
+    dark:placeholder:text-gray-900 dark:text-lime-300 border border-primary dark:border-emerald-100;
   }
   /* global.css 또는 globals.css */
 }
