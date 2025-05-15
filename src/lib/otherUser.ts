@@ -1,5 +1,5 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { dbService, FBCollection } from "@/lib/firebase";
+import { dbService } from "@/lib/firebase";
 
 export interface User {
   uid: string;
