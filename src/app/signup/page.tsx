@@ -350,7 +350,7 @@ const SignupForm = () => {
 
   return (
     <div className="flex flex-col justify-start items-center min-h-screen px-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-primary rounded-lg p-6 dark:border-teal-100">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-primary rounded-lg p-6 dark:border-emerald-500">
         <form className="space-y-8">
           {InfoAccount.map((info, index) => {
             const key = info.name as keyof typeof user;
@@ -471,7 +471,7 @@ const SignupForm = () => {
                       onKeyDown={handleKeyDown(index)}
                       placeholder={info.label}
                       className={` peer w-full border rounded-md  h-12 px-2 pt-[10px] pb-[10px] text-base outline-none placeholder-transparent ${
-                        errors[key] ? "border-red-500" : "border-gray-300"
+                        errors[key] ? "border-primary" : "border-emerald-500"
                       } focus:border-teal-400 transition-all h-16 dark:text-white dark:bg-gray-800`}
                     />
                     <label
