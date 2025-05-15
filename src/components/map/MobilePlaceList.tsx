@@ -45,7 +45,7 @@ const MobilePlaceList = ({
 
         {/* 장소 목록 */}
         <div className="p-4 overflow-y-auto h-full">
-          <ul className="space-y-4 max-h-[60vh] overflow-y-auto mt-4 px-2 green-scrollbar">
+          <ul className="space-y-4 max-h-[60vh] overflow-y-auto mt-4 px-2 ">
             {places.map((place) => (
               <li
                 key={place.id}
