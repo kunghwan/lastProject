@@ -1,3 +1,21 @@
+# 0516
+
+1. 모든 게시물의 이미지 hover에 overflow-hidden 구현
+
+2. 북마크 게시물 이미지, 모둘 창 css 만지기 +invert
+
+3. 모둘 창 이미지 영역과 설명 영역 고정하기 ( aspect-video )
+
+4. 스크롤바 색깔 넣기 ( global.css 의 scrollbar-thumb, scrollbar )
+
+5. 프로필 페이지에서 게시물 없을 때 height 값 빼기, border-t 넣기
+
+6. 프로필 페이지에서 css : mt -> pt 로 바꾸기
+
+7. 구독수 -> 구독자, 구독자 누르면 구독한 유저들 나오는 페이지
+
+8. 작은 화면일때 팔로우 버튼 위치 깨지는 것
+
 # 0515
 
 1. 모듈창 버튼 css 업데이트하기 ( bg, rounded-full, z-99)
