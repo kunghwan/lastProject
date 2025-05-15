@@ -243,8 +243,6 @@ const Header = () => {
 
         {/* 모바일 메뉴 컴포넌트 */}
         <MobileHeader
-          isDarkMode={isDarkMode}
-          toggleDarkMode={toggleDarkMode}
           isMenuOpen={isMenuOpen}
           setIsMenuOpen={setIsMenuOpen}
           hasUnread={hasUnread}

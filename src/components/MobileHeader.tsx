@@ -176,13 +176,13 @@ const MobileHeader = ({
           onClick={closeMenu} // 배경 클릭 시 메뉴 닫기
         >
           <div
-            className="bg-white dark:bg-gray-300 p-6 rounded-xl shadow-lg w-[65vw] max-w-sm text-center flex flex-col"
+            className="bg-white dark:bg-zinc-600 p-6 rounded-xl shadow-lg w-[65vw] max-w-sm text-center flex flex-col"
             onClick={(e) => e.stopPropagation()} // 내부 클릭 시 이벤트 전파 막기
           >
             {/* 닫기 버튼 */}
             <div className="flex justify-end mb-2">
               <button onClick={closeMenu} className="text-2xl">
-                <IoCloseSharp className="dark:text-black m-1 text-2xl" />
+                <IoCloseSharp className="dark:text-white m-1 text-2xl" />
               </button>
             </div>
 

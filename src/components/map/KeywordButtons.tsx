@@ -18,7 +18,7 @@ const keywordBtnStyle =
 
 const KeywordButton = ({ name, icon, onClick }: KeywordButtonProps) => (
   <button className={keywordBtnStyle} onClick={() => onClick(name)}>
-    <p className="text-green-400 sm:text-lg text-base">{icon}</p>
+    <p className="text-emerald-300 sm:text-lg text-base">{icon}</p>
     {name}
   </button>
 );
