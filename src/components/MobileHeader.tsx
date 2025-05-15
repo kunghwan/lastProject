@@ -198,7 +198,7 @@ const MobileHeader = ({
             )}
 
             {/* 버튼 리스트 */}
-            <div className="grid grid-cols-2 gap-2 border border-red-200  justify-items-center items-center">
+            <div className="grid grid-cols-2 gap-2  justify-items-center items-center">
               {buttons.map((btn, idx) => (
                 <button
                   key={idx}
