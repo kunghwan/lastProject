@@ -21,7 +21,7 @@ const MobilePlaceList = ({
       {/* 수동으로 열기 버튼 */}
       {!isOpen && places.length > 0 && (
         <button
-          className="md:hidden fixed bottom-[11vh] my-2 left-[50%] translate-x-[-50%] z-10 bg-white text-gray-500 py-2 rounded-full shadow px-7 hover:bg-gray-50 dark:hover:bg-gray-600 dark:bg-[#6B6B6B] dark:text-gray-50"
+          className="md:hidden fixed bottom-[11vh] my-2 left-[50%] translate-x-[-50%] z-10 bg-white text-gray-500 py-2 rounded-full shadow px-7 hover:opacity-80  dark:bg-[#6B6B6B] dark:text-gray-50"
           onClick={() => setIsOpen(true)}
         >
           <div className="flex items-center gap-x-2">

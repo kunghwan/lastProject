@@ -48,12 +48,6 @@ const Header = () => {
   const { user, signout } = AUTH.use(); //! Context API를 통해 사용자 인증 상태 및 로그아웃 함수 가져오기
   const { openAlert } = useAlertModal(); //! AlertModal 오픈 함수 가져오기
 
-  //! 현재 경로가 로그인 또는 회원가입 페이지인지 확인
-  const isAuthPage = useMemo(
-    () => ["/signin", "/signup"].includes(pathname!),
-    [pathname]
-  );
-
   //! 다크 모드 토글 함수
   const toggleDarkMode = useCallback(() => setIsDarkMode((prev) => !prev), []);
 
@@ -243,16 +237,11 @@ const Header = () => {
               </button>
             )}
 
-            {/* 로그인 페이지일 때만 메뉴 버튼 보임, 회원가입 페이지에서는 숨김 */}
-            {pathname === "/signin" && (
-              <button onClick={() => setIsMenuOpen(true)} className="text-4xl">
-                <IoMenu />
-              </button>
-            )}
-
-            {/* 로그인도 아니고 회원가입도 아니면 메뉴 버튼 항상 보임 */}
-            {pathname !== "/signin" && pathname !== "/signup" && (
-              <button onClick={() => setIsMenuOpen(true)} className="text-4xl">
+            {pathname !== "/signup" && (
+              <button
+                onClick={() => setIsMenuOpen(true)}
+                className="text-4xl hover:text-primary hover:opacity-80"
+              >
                 <IoMenu />
               </button>
             )}

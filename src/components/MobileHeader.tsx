@@ -133,7 +133,7 @@ const MobileHeader = ({
 
   const btnClass = twMerge(
     "flex flex-col items-center justify-center gap-1 px-1 py-4 rounded-lg font-semibold text-md",
-    "bg-gray-200 dark:bg-[#333333] text-black dark:text-[#F1F5F9]",
+    "bg-gray-200 dark:bg-[#373737] text-black dark:text-[#F1F5F9]",
     "hover:bg-gray-300 dark:hover:bg-[#444444] w-20 h-20",
     "transition-colors duration-200"
   );
@@ -179,7 +179,7 @@ const MobileHeader = ({
           onClick={closeMenu} // 배경 클릭 시 메뉴 닫기
         >
           <div
-            className="bg-white dark:bg-zinc-600 p-6 rounded-xl shadow-lg w-[65vw] max-w-sm text-center flex flex-col"
+            className="bg-white dark:bg-zinc-500 p-6 rounded-xl shadow-lg  w-[60vw] mx-auto  text-center flex flex-col"
             onClick={(e) => e.stopPropagation()} // 내부 클릭 시 이벤트 전파 막기
           >
             {/* 닫기 버튼 */}
@@ -198,7 +198,7 @@ const MobileHeader = ({
             )}
 
             {/* 버튼 리스트 */}
-            <div className="grid grid-cols-2 gap-2 border border-red-200  justify-items-center items-center">
+            <div className="grid grid-cols-2 gap-2 justify-items-center items-center">
               {buttons.map((btn, idx) => (
                 <button
                   key={idx}
