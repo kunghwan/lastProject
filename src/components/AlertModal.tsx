@@ -66,7 +66,7 @@ const AlertModal = () => {
               className={`flex-1 py-2 rounded text-white transition outline-none  ${
                 btn.isGreen
                   ? "bg-green-500 hover:bg-green-600 "
-                  : "bg-gray-100  hover:bg-gray-300  "
+                  : "bg-gray-400 hover:bg-gray-500 "
               }`}
             >
               {btn.text || "확인"}
