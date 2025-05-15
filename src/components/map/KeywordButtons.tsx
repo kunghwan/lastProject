@@ -1,6 +1,6 @@
 import React from "react";
-import { IoRestaurantOutline, IoSubway } from "react-icons/io5";
-import { FaLandmark, FaRegBuilding } from "react-icons/fa6";
+import { IoRestaurant, IoSubway } from "react-icons/io5";
+import { FaLandmark, FaBuilding } from "react-icons/fa6";
 
 // 개별 키워드 버튼의 속성 타입 정의
 interface KeywordButtonProps {
@@ -41,8 +41,8 @@ const KeywordButtons = ({ onKeywordClick }: KeywordButtonsProps) => {
 export default KeywordButtons;
 
 const keywordBtn = [
-  { name: "맛집", icon: <IoRestaurantOutline /> },
+  { name: "맛집", icon: <IoRestaurant /> },
   { name: "명소", icon: <FaLandmark /> },
-  { name: "백화점", icon: <FaRegBuilding /> },
+  { name: "백화점", icon: <FaBuilding /> },
   { name: "지하철", icon: <IoSubway /> },
 ];
