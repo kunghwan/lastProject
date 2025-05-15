@@ -240,7 +240,9 @@ const MapPage = () => {
           onClick={() => setIsPlaceListOpen(true)}
           className="absolute right-0 top-1/2 transform -translate-y-1/2 py-1 rounded z-10 transition md:block hidden"
         >
-          <div className="w-3 h-[40ch] rounded-bl-xl rounded-tl-xl dark:bg-zinc-500 bg-gray-400 hover:animate-pulse" />
+          <div className="w-3 h-[40vh] rounded-bl-xl rounded-tl-xl dark:bg-zinc-500 bg-gray-300 hover:animate-pulse">
+            <div className="w-1 h-[10vh] bg-gray-700 absolute right-1 top-1/2 -translate-y-1/2 dark:bg-white" />
+          </div>
         </button>
       )}
 
