@@ -133,7 +133,7 @@ const UploadTag = ({
             onChange={(e) => setTag(e.target.value)}
             ref={tagRef}
             className={twMerge(
-              "w-full upPostInput rounded-r-none border-r-0 shadow-sm darkTextInput "
+              "w-full upPostInput rounded-r-none border-r-0 shadow-sm darkTextInput [@media(max-width:375px)]:placeholder:text-[0.75rem]"
             )}
             placeholder="입력후 추가버튼 또는 스페이스를 눌러주세요."
             onKeyUp={(e) => {

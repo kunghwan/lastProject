@@ -157,7 +157,7 @@ const JusoComponents = ({
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               className={twMerge(
-                "w-full upPostInput shadow-sm border-r-0 dark:text-white rounded-r-none darkTextInput"
+                "w-full upPostInput shadow-sm border-r-0 dark:text-white rounded-r-none darkTextInput [@media(max-width:375px)]:placeholder:text-[0.75rem]"
               )}
               ref={jusoRef}
               placeholder="장소를 입력후 엔터를 눌러주세요."
