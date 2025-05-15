@@ -19,7 +19,7 @@ const SearchForm = ({
   return (
     <>
       <form
-        className="flex dark:text-white dark:bg-[#4B4B4B] bg-white rounded-full shadow-md p-2 outline-none border border-gray-300 focus-within:border-green-500"
+        className="group flex dark:text-white dark:bg-[#4B4B4B] bg-white rounded-full shadow-md p-2 outline-none border border-gray-300 focus-within:bg-primary "
         onSubmit={(e) => {
           e.preventDefault();
           handleSearch();
@@ -29,10 +29,10 @@ const SearchForm = ({
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder={placeholder}
-          className="p-1 text-sm focus:outline-none dark:placeholder:text-gray-200 placeholder:text-gray-500 w-55"
+          className="p-1 text-sm focus:outline-none dark:placeholder:text-gray-200 placeholder:text-gray-500 w-55 focus:text-white focus:placeholder:text-white"
         />
         <button type="submit" className="text-xl px-2 hover:text-green-500">
-          <IoSearch />
+          <IoSearch className="group-focus-within:text-white " />
         </button>
       </form>
     </>

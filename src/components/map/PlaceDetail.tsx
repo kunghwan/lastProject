@@ -51,7 +51,7 @@ const PlaceDetail = ({ detailRef, onClose, place }: Props) => {
   return (
     <div
       ref={detailRef}
-      className="absolute z-10 shadow-md sm:block sm:top-[21%] sm:left-[27%] left-[20%] top-[32%] -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 w-60 max-w-xs bg-white border border-gray-300 rounded-xl sm:rounded-2xl p-3 h-fit dark:bg-[#6B6B6B] dark:text-white "
+      className="absolute z-10 shadow-md sm:block sm:top-[21%] sm:left-[27%] left-[20%] top-[32%] -translate-y-1/2 sm:translate-x-0 sm:translate-y-0 w-60 max-w-xs bg-white border border-gray-300 dark:border-gray-500 rounded-xl sm:rounded-2xl p-3 h-fit dark:bg-[#6B6B6B] dark:text-white "
     >
       <button
         onClick={onClose}
@@ -61,7 +61,7 @@ const PlaceDetail = ({ detailRef, onClose, place }: Props) => {
       </button>
 
       <h2 className="text-sm sm:text-md mb-2 font-semibold">상세 정보</h2>
-      <p className="font-bold sm:font-extrabold text-base sm:text-lg text-green-400 truncate">
+      <p className="font-bold sm:font-extrabold text-base sm:text-lg text-primary truncate">
         {place.place_name}
       </p>
       <p className="text-sm truncate">

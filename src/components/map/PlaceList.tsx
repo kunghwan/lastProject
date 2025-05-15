@@ -10,7 +10,7 @@ interface PlaceListProps {
 }
 
 const listBtn =
-  "flex flex-col items-center w-full p-3 gap-y-1 outline-none border rounded-lg border-gray-200 dark:border dark:border-gray-400 focus:border focus:rounded-lg hover:border hover:rounded-lg hover:border-green-400 focus:border-green-400";
+  "flex flex-col items-center w-full p-3 gap-y-1 outline-none border rounded-lg border-gray-200 dark:border dark:border-gray-400 focus:border focus:rounded-lg hover:border hover:rounded-lg hover:border-primary focus:border-primary";
 
 const PlaceList = ({
   places,
