@@ -281,7 +281,7 @@ const PostComponent = () => {
               <HiOutlineX />
             </button>
 
-            <div className="relative md:w-full w-auto h-1/2 md:h-2/3 mt-10 flex items-center justify-center">
+            <div className="relative overflow-hidden h-2/3 mt-7 md:mt-10 flex items-center justify-center">
               <img
                 src={
                   modalImages.length > 0
@@ -320,7 +320,7 @@ const PostComponent = () => {
               <h2 className="text-lg font-bold mb-2 dark:text-gray-600 truncate">
                 {selectedPost.title}
               </h2>
-              <p className="text-sm text-gray-700 break-words max-h-24 overflow-y-auto pr-1 scrollbar">
+              <p className="text-sm text-gray-700 break-words overflow-y-auto max-h-14 md:max-h-24 pr-1">
                 {selectedPost.content}
               </p>
             </div>
