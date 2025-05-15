@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Link from "next/link";
+import Loading from "@/components/Loading";
 
 const fetchPlaceDetail = async (contentid: string) => {
   const res = await axios.get(`/api/upplace/${contentid}`);
@@ -26,7 +27,9 @@ const PlaceDetailPage = () => {
   });
 
   if (!contentid) return <div>잘못된 접근입니다.</div>;
-  if (isLoading) return <div>로딩중...</div>;
+  if (isLoading)
+    return <Loading message="상세 정보를 불러오는 중입니다" isLoading={true} />;
+
   if (isError) return <div>❌ 상세 정보 로딩 실패</div>;
 
   const isLongText = place.overview.length > 500;
