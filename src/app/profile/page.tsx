@@ -7,6 +7,7 @@ import { useUserByUid } from "@/hooks/useUser";
 // import ProfileLayout from "@/components/profileUI/ProfileLayout";
 import { usePostsByUid } from "@/hooks/useAuth";
 import ProfileLayout from "@/components/profile/ProfileLayout";
+import TopButton from "@/components/upplace/TopButton";
 
 const MePage = () => {
   const [uid, setUid] = useState<string | null>(null);
@@ -26,7 +27,10 @@ const MePage = () => {
   if (userLoading || postLoading || !userData) return <h1>로딩 중...</h1>;
 
   return (
-    <ProfileLayout posts={posts || []} userData={userData} isMyPage={true} />
+    <>
+      <ProfileLayout posts={posts || []} userData={userData} isMyPage={true} />
+      <TopButton />
+    </>
   );
 };
 
