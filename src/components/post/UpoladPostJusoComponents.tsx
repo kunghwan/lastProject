@@ -78,7 +78,7 @@ const JusoComponents = ({
         {juso.address.length > 0 && (
           <label className="mt-8 bg-white  dark:bg-[#9d9d9d] flex w-full border-2 gap-x-2  border-emerald-800 dark:border-emerald-700 p-2.5 rounded items-center  dark:text-white">
             <span>
-              <IoLocationSharp className="text-2xl dark:text-white hover:text-emerald-600 dark:hover:text-emerald-700  " />
+              <IoLocationSharp className="text-2xl dark:text-white hover:text-primary dark:hover:text-emerald-700  " />
             </span>
             {juso.address}
           </label>
@@ -133,7 +133,7 @@ const JusoComponents = ({
                 // }
               }}
               className={twMerge(
-                " p-2.5 min-h-12 flex justify-center items-center rounded-xl min-w-14 bg-[#a4d9cb] dark:bg-[#6d9288]  hover:shadow-md dark:text-white w-auto  cursor-pointer whitespace-nowrap",
+                " p-2.5 min-h-12 flex justify-center items-center rounded-xl min-w-14 bg-primary dark:bg-[#6d9288]  hover:shadow-md dark:text-white w-auto  cursor-pointer whitespace-nowrap",
                 juso.address.length > 0 && "mt-8"
               )}
             >
@@ -157,7 +157,7 @@ const JusoComponents = ({
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               className={twMerge(
-                "w-full upPostInput shadow-sm border-r-0 dark:text-white rounded-r-none darkTextInput"
+                "w-full upPostInput shadow-sm border-r-0 dark:text-white rounded-r-none darkTextInput [@media(max-width:375px)]:placeholder:text-[0.75rem]"
               )}
               ref={jusoRef}
               placeholder="장소를 입력후 엔터를 눌러주세요."
@@ -224,7 +224,7 @@ const JusoComponents = ({
                 setIsJusoUlShowing(true);
                 return setIsJusoShowing(true);
               }}
-              className="hover:bg-[rgba(116,212,186,0.7)] border border-gray-400  hover:shadow-md flex justify-center items-center flex-1 rounded-l-none rounded-r-md bg-[rgba(116,212,186)] min-w-20 dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
+              className="hover:bg-[rgba(116,212,186,0.7)] border border-gray-400  hover:shadow-md flex justify-center items-center flex-1 rounded-l-none rounded-r-md bg-primary min-w-20 dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
             >
               <IoIosSearch className="text-3xl font-bold" />
             </button>

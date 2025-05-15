@@ -31,10 +31,12 @@
   .green-scrollbar::-webkit-scrollbar {
     /* 전체 스크롤바 영역 (트랙 + 손잡이 포함) */
     width: 8px;
+    border-radius: 9999px;
   }
   .green-scrollbar::-webkit-scrollbar-track {
     /* 스크롤바의 "트랙" — 손잡이가 움직이는 배경 영역 */
-    background: #ffffff; /* 밝은 배경 */
+    background: transparent; /*  트랙 배경을 완전히 투명하게 */
+    border-radius: 9999px;
   }
   .green-scrollbar::-webkit-scrollbar-thumb {
     /* 	실제로 사용자가 드래그하는 "스크롤 손잡이" */
@@ -43,7 +45,7 @@
   }
   .green-scrollbar {
     /* 브라우저들이 이 커스텀 스크롤바 스타일을 인식하도록 강제하는 핵심 요소 */
-    scrollbar-color: #10b981 #ffffff;
+    scrollbar-color: #10b981 transparent;
     scrollbar-width: thin;
   }
 }

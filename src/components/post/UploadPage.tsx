@@ -360,7 +360,9 @@ const UploadPostPage = () => {
                   title: e.target.value,
                 }))
               }
-              className={twMerge("upPostInput shadow-sm darkTextInput")}
+              className={twMerge(
+                "upPostInput shadow-sm darkTextInput [@media(max-width:375px)]:placeholder:text-[0.75rem]"
+              )}
               ref={titleRef}
               placeholder="제목을 입력하세요."
             />
@@ -378,7 +380,7 @@ const UploadPostPage = () => {
               id="content"
               placeholder="관광지의 소개글이나 리뷰를 작성해주세요."
               className={twMerge(
-                "h-50 shadow-sm resize-none upPostInput darkTextInput"
+                "h-50 shadow-sm resize-none upPostInput darkTextInput [@media(max-width:375px)]:placeholder:text-[0.75rem]"
               )}
               value={content}
               ref={descRef}
@@ -491,7 +493,7 @@ const UploadPostPage = () => {
           type="submit"
           ref={submitButtonRef}
           className={twMerge(
-            " outline-lime-100 hover:bg-[rgba(116,212,186,0.7)]  bg-[rgba(62,188,154)] transition duration-300 upPostButton dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
+            " outline-lime-100 hover:bg-[rgba(116,212,186,0.7)]  bg-primary transition duration-300 upPostButton dark:bg-[rgba(116,212,186,0.5)] dark:text-white"
           )}
         >
           게시

@@ -19,7 +19,8 @@ import LikeButton from "@/components/post/LikeButton";
 import { FcLike } from "react-icons/fc";
 import { HiOutlineX } from "react-icons/hi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { getTimeAgo } from "@/lib/post";
+import { useQueryClient } from "@tanstack/react-query";
+import TopButton from "@/components/upplace/TopButton";
 
 type SortOption = "recent" | "oldest" | "likes";
 
@@ -34,33 +35,6 @@ const BookmarkPage = () => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [modalImages, setModalImages] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  function getTimeAgo(time: string | Timestamp | FieldValue): string {
-    let createdTime: Date;
-
-    if (typeof time === "string") {
-      createdTime = new Date(time);
-    } else if (time instanceof Timestamp) {
-      createdTime = time.toDate();
-    } else {
-      // FieldValue인 경우는 렌더링 시점에는 있을 수 없음
-      return "시간 정보 없음";
-    }
-
-    const now = new Date();
-    const diff = now.getTime() - createdTime.getTime();
-
-    const minute = 60 * 1000;
-    const hour = 60 * minute;
-    const day = 24 * hour;
-    const week = 7 * day;
-
-    if (diff < minute) return "방금 전";
-    if (diff < hour) return `${Math.floor(diff / minute)}분 전`;
-    if (diff < day) return `${Math.floor(diff / hour)}시간 전`;
-    if (diff < week) return `${Math.floor(diff / day)}일 전`;
-    return `${Math.floor(diff / week)}주 전`;
-  }
 
   const getFormattedDate = (createdAt: Post["createdAt"]) => {
     //! 지금 들어온 createdAt 값이 Firebase의 Timestamp 객체인가를 검사(instanceof)
@@ -83,20 +57,16 @@ const BookmarkPage = () => {
       return 0; // FieldValue 등 아직 날짜로 변환 불가한 경우
     }
   };
-  //사람이 읽기 좋은 날짜 문자열로 바꾸는 함수
-  const formatCreatedAt = (
-    createdAt: string | Timestamp | FieldValue
-  ): string => {
-    if (createdAt instanceof Timestamp) {
-      return createdAt.toDate().toLocaleString();
-    } else if (typeof createdAt === "string") {
-      return new Date(createdAt).toLocaleString();
-    } else {
-      return "날짜 정보 없음";
-    }
-  };
 
+  const queryClient = useQueryClient();
   useEffect(() => {
+    const cached = queryClient.getQueryData<Post[]>(["likedPosts"]);
+    if (cached) {
+      setPosts(cached);
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(authService, async (user) => {
       if (!user) {
         setPosts([]);
@@ -120,6 +90,9 @@ const BookmarkPage = () => {
         });
 
         setPosts(likedPosts);
+
+        // ✅ 캐시에 저장
+        queryClient.setQueryData(["likedPosts"], likedPosts);
       } catch (error) {
         console.error("Error fetching liked posts:", error);
       } finally {
@@ -357,6 +330,7 @@ const BookmarkPage = () => {
           </div>
         </div>
       )}
+      <TopButton />
     </div>
   );
 };
