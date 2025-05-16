@@ -75,7 +75,7 @@ const UpPlaceBookMark = () => {
             {places.map((place) => (
               <div
                 key={place.contentId}
-                className="relative hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1.5 transition-all duration-200"
+                className="relative hover:bg-gray-100 border border-gray-200 dark:border-gray-600 dark:hover:bg-zinc-700 rounded-2xl p-1.5 transition-all duration-200"
               >
                 <PlaceCard
                   place={place}
