@@ -493,7 +493,7 @@ const IdFind = () => {
               }}
               type={idf.type || "text"}
               placeholder={idf.label}
-              className="bg-lime-200 p-5 placeholder:text-black outline-none lg:w-100 w-70 dark:caret-red-500 rounded dark:text-black dark:bg-lime-400"
+              className=" p-5 placeholder:text-black outline-none lg:w-100 w-70 dark:caret-red-500 rounded  border-primary border dark:border-emerald-500 dark:placeholder:text-white dark:text-white"
               value={idf.value}
               onChange={idf.onChange}
               onKeyDown={(e) => handleKeyDown(e, index)}

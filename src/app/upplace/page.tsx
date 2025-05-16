@@ -153,9 +153,24 @@ const UpPlace = () => {
   }, [inView, hasNextPage, fetchNextPage]);
 
   const handleLikedChange = (id: string, liked: boolean) => {
+    const contentId = id.replace("places_", "");
+
     setLikedIds((prev) => {
-      if (liked) return [...prev, id];
-      return prev.filter((item) => item !== id);
+      return liked ? [...prev, id] : prev.filter((item) => item !== id);
+    });
+
+    setLikeCounts((prev) => {
+      const current =
+        prev[contentId] ??
+        data?.pages
+          .flatMap((page) => page.places)
+          .find((p) => p.contentId === contentId)?.likeCount ??
+        0;
+
+      return {
+        ...prev,
+        [contentId]: liked ? current + 1 : Math.max(current - 1, 0),
+      };
     });
   };
 

@@ -72,7 +72,7 @@ const FileItem = ({ file, onChangeFiles, onDeleteFiles }: FileItemProps) => {
               <Image
                 src={URL.createObjectURL(file)}
                 alt={file.name}
-                className="w-24 h-24 object-cover"
+                className=" object-cover"
                 width={96}
                 height={96}
               />

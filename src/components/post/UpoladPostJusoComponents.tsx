@@ -30,7 +30,6 @@ export const searchAddress = async (query: string) => {
       }
     );
     const data = await res.json();
-    console.log(data, 79);
 
     return data.documents;
   } catch (error: any) {
@@ -65,8 +64,6 @@ const JusoComponents = ({
     //! 자동으로 가져오면 address(사용자가 주소를 한글자씩입력시) 값이 바뀔 때마다 자동 재실행(queryFn실행)=>비효율
     staleTime: 1000 * 60 * 5, //데이터를 신선하다고 판단할 시간 (캐시 유지 시간,같은 주소로 다시 검색하면 5분 동안은 캐시된 데이터 사용)
   });
-
-  console.log(searchResults, "data 확인");
 
   if (error || !searchResults) {
     return <h1>Error: {error?.message}</h1>;
