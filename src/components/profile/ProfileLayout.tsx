@@ -172,19 +172,19 @@ const ProfileLayout = ({
   const { openAlert } = useAlertModal();
 
   return (
-    <div className="flex flex-col w-full min-h-screen">
+    <div className="flex flex-col w-full ">
       {!isSmallScreen ? (
         <div className="flex flex-col mx-auto ">
-          <div className="flex m-5 mb-0 pr-20 pl-20 gap-2.5 justify-center ">
-            <div className="relative w-40 h-40">
+          <div className="flex m-5 mb-0 pr-20 pb-5 pl-20 gap-2.5 justify-center ">
+            <div className="relative w-40 h-40 ">
               <img
-                src={previewImage || defaultImgUrl} // ✅ 수정
+                src={previewImage || defaultImgUrl}
                 alt={`${userData.nickname}'s profile`}
-                className="w-full h-full rounded-full  sm:x-auto  transition-all duration-500 ease-in-out transform hover:scale-[1.02] cursor-pointer"
+                className="w-full h-full rounded-full  sm:x-auto  transition-all duration-500 border border-gray-200 ease-in-out transform hover:scale-[1.02] cursor-pointer"
               />
               {isMyPage ? (
                 <button
-                  onClick={() => setEditOpen(true)} // ✅ 추가됨
+                  onClick={() => setEditOpen(true)}
                   className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-sm font-medium rounded-full opacity-0 hover:opacity-70 transition-opacity"
                 >
                   수정하기
@@ -275,9 +275,9 @@ const ProfileLayout = ({
           <div className="flex justify-center mt-5">
             <div className="relative w-32 h-32 ">
               <img
-                src={firstPost?.userProfileImage || defaultImgUrl}
-                alt={`${userData.nickname || "유저"}'s profile`}
-                className=" transition-all duration-500 ease-in-out transform hover:scale-[1.02] w-full h-full rounded-full sm:x-auto cursor-pointer "
+                src={previewImage || defaultImgUrl}
+                alt={`${userData.nickname}'s profile`}
+                className=" transition-all duration-500 ease-in-out transform hover:scale-[1.02] w-full h-full rounded-full border border-gray-200 sm:x-auto cursor-pointer "
               />
               {isMyPage && (
                 <button
@@ -296,7 +296,7 @@ const ProfileLayout = ({
                 <IoSettingsOutline />
               </button>
             ) : (
-              <div className="absolute right-10  sm:right-40 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
+              <div className="absolute right-10 sm:right-30 hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400">
                 <FollowButton
                   followNickName={userData.nickname ?? "unknown"}
                   followingId={userData.uid}
@@ -343,8 +343,8 @@ const ProfileLayout = ({
             uid={userData.uid}
           />
         ) : (
-          <div className="flex pt-10 w-full justify-center">
-            <div className="text-gray-800 text-xl mt-30 animate-bounce dark:text-gray-200">
+          <div className="flex flex-col border-t-2 border-emerald-200 w-full mx-auto items-center">
+            <div className="pt-20 text-gray-800 text-xl animate-bounce dark:text-gray-200">
               게시물이 없습니다
             </div>
           </div>

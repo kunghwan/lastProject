@@ -181,7 +181,7 @@ const ProfileFeedComponent = ({
                 {post.imageUrl ? (
                   <div
                     onClick={() => handleOpenPost(post)}
-                    className="relative"
+                    className="relative overflow-hidden"
                   >
                     <img
                       src={post.imgs?.[0] || defaultImgUrl}
@@ -245,21 +245,23 @@ const ProfileFeedComponent = ({
 
       {selectedPost && (
         <div
-          className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex justify-center items-center "
+          className="fixed inset-0 z-[999] bg-black/30 backdrop-blur-sm flex justify-center items-center"
           onClick={() => setSelectedPost(null)}
         >
           <div
-            className="bg-white rounded-lg w-11/12 md:w-3/5 lg:w-1/2 max-h-[60vh] md:max-h-[80vh] h-screen relative"
+            className="bg-white dark:bg-gray-700 rounded-lg w-5/6 md:w-4/5 md:h-4/5 lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* 닫기 버튼 */}
             <button
               onClick={() => setSelectedPost(null)}
-              className="absolute z-40 top-0.5 right-1 md:text-3xl transition-all text-2xl font-bold text-gray-700 p-5 hover:text-gray-400"
+              className="absolute z-40 top-2 right-2 p-1 md:text-2xl md:top-3 md:right-3 text-xl font-bold text-gray-700 dark:text-white hover:text-gray-400 transition-all"
             >
               <HiOutlineX />
             </button>
 
-            <div className="relative overflow-hidden h-2/3 mt-7 md:mt-10 flex items-center justify-center">
+            {/* 이미지 슬라이드 영역 */}
+            <div className="relative w-full pt-8 md:pt-10 flex items-center justify-center">
               <img
                 src={
                   modalImages.length > 0
@@ -267,20 +269,21 @@ const ProfileFeedComponent = ({
                     : selectedPost.imageUrl?.[0] || defaultImgUrl
                 }
                 alt={`image-${currentIndex}`}
-                className=" object-contain h-80 rounded md:h-110 md:w-110"
+                className="object-contain md:w-140 h-80 md:h-120 rounded"
                 loading="lazy"
               />
+
               {modalImages.length > 1 && (
                 <>
                   <button
                     onClick={handlePrev}
-                    className="absolute left-3 text-2xl text-gray-700 invert hover:text-gray-600 rounded-full p-1.5 hover:bg-black/80 hover:scale-110 hover:opacity-85 transition-all duration-200"
+                    className="absolute left-3 text-2xl text-gray-700 dark:text-white hover:text-gray-400 rounded-full p-1.5 hover:bg-black/80 hover:scale-110 transition-all bg-white/40"
                   >
                     <FaChevronLeft />
                   </button>
                   <button
                     onClick={handleNext}
-                    className="absolute right-3 text-2xl text-gray-700 invert hover:text-gray-600 rounded-full p-1.5 hover:bg-black/80 hover:scale-110 hover:opacity-85 transition-all duration-200"
+                    className="absolute right-3 text-2xl bg-white/40 text-gray-700 dark:text-white hover:text-gray-400 rounded-full p-1.5 hover:bg-black/80 hover:scale-110 transition-all"
                   >
                     <FaChevronRight />
                   </button>
@@ -288,15 +291,16 @@ const ProfileFeedComponent = ({
               )}
             </div>
 
-            <div className="p-4 justify-end flex flex-col">
-              <div className="text-xs text-gray-500 mt-2 flex justify-between mb-5">
+            {/* 게시물 정보 */}
+            <div className="p-1 justify-end flex flex-col pr-2 pl-2 md:pr-10 md:pl-10 h-full">
+              <div className="text-xs text-gray-500 dark:text-gray-300 mt-2 flex justify-between mb-5">
                 <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
                 <div>{getFormattedDate(selectedPost.createdAt)}</div>
               </div>
-              <h2 className="text-lg font-bold mb-2 dark:text-gray-600 truncate">
+              <h2 className="text-lg font-bold mb-2 dark:text-white truncate">
                 {selectedPost.title}
               </h2>
-              <p className="text-xs text-gray-700 break-words overflow-y-auto max-h-12 md:max-h-24 pr-1">
+              <p className="text-sm text-gray-700 dark:text-gray-200 break-words overflow-y-auto max-h-16 md:max-h-24 pr-1">
                 {selectedPost.content}
               </p>
             </div>
