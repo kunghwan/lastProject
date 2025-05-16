@@ -282,7 +282,7 @@ const BookmarkPage = () => {
           onClick={() => setSelectedPost(null)}
         >
           <div
-            className="bg-white pb-2.5 dark:bg-gray-700 rounded-lg w-5/6 md:w-4/5  lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform "
+            className="bg-white pb-5 dark:bg-gray-700  rounded-lg w-5/6 md:w-4/5  lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform "
             onClick={(e) => e.stopPropagation()}
           >
             <button
