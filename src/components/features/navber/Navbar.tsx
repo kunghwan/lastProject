@@ -106,7 +106,7 @@ const Navbar = () => {
                 <ul className="flex flex-col justify-between items-center w-full h-full transition-opacity duration-300">
                   <li className="flex justify-center text-4xl dark:text-white">
                     <button onClick={closeNavMenu}>
-                      <FaCaretUp className="hover:animate-pulse text-3xl hover:text-primary" />
+                      <FaCaretUp className="hover:animate-pulse text-3xl hover:text-primary " />
                     </button>
                   </li>
                   {NavBtns.map((btn, index) => (
