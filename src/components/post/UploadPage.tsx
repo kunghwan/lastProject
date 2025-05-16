@@ -497,7 +497,7 @@ const UploadPostPage = () => {
             return;
           }}
           className={twMerge(
-            " bg-gray-300 hover:bg-gray-200 transition duration-300  upPostButton"
+            " bg-gray-200 dark:bg-zinc-500 dark:text-gray-300 hover:bg-gray-200 transition duration-300  upPostButton"
           )}
         >
           취소
