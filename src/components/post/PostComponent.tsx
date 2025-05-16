@@ -12,6 +12,7 @@ import { FieldValue, Timestamp } from "firebase/firestore";
 import { HiOutlineX } from "react-icons/hi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useQueryClient } from "@tanstack/react-query";
+import Loaiding from "../Loading";
 
 const PostComponent = () => {
   const router = useRouter();
@@ -265,7 +266,11 @@ const PostComponent = () => {
         })}
 
       <div ref={observerRef} className="col-span-full h-10" />
-      {loading && <div className="text-center col-span-full">로딩 중...</div>}
+      {loading && (
+        <div>
+          <Loaiding />
+        </div>
+      )}
 
       {selectedPost && (
         <div
