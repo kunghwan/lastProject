@@ -11,7 +11,7 @@ import {
   IoPersonAdd,
 } from "react-icons/io5";
 import { FaCircleQuestion, FaMessage, FaPencil, FaBell } from "react-icons/fa6";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { AUTH } from "@/contextapi/context";
 import { twMerge } from "tailwind-merge";
 import { useAlertModal } from "@/components/AlertStore";
@@ -19,8 +19,8 @@ import { useAlertModal } from "@/components/AlertStore";
 // 버튼 스타일 클래스 정의
 const btnClass = twMerge(
   "flex flex-col items-center justify-center gap-1 px-1 py-4 rounded-lg font-semibold text-md",
-  "bg-gray-200 dark:bg-[#373737] text-black dark:text-[#F1F5F9]",
-  "hover:bg-gray-300 dark:hover:bg-[#444444] w-20 h-20",
+  "bg-gray-100 dark:bg-[#555555] text-black dark:text-[#F1F5F9]",
+  "hover:text-emerald-300 dark:hover:bg-[#555555]  w-20 h-20",
   "transition-colors duration-200"
 );
 
@@ -46,6 +46,7 @@ const MobileHeader = ({
   const router = useRouter();
   const { user, signout } = AUTH.use(); // 사용자 정보 및 로그아웃 함수
   const { openAlert } = useAlertModal(); // 알림 모달 함수
+  const pathname = usePathname();
 
   // 메뉴 닫기
   const closeMenu = () => setIsMenuOpen(false);
@@ -154,7 +155,10 @@ const MobileHeader = ({
         <button
           key={idx}
           onClick={() => handleButtonClick(btn)}
-          className={btnClass}
+          className={twMerge(
+            btnClass,
+            btn.path === pathname ? "text-primary dark:text-primary" : "" // 강조 스타일 추가
+          )}
         >
           {btn.icon && <span className="text-2xl">{btn.icon}</span>}
           <span>{btn.label}</span>
@@ -172,13 +176,16 @@ const MobileHeader = ({
           onClick={closeMenu} // 배경 클릭 시 메뉴 닫기
         >
           <div
-            className="bg-white dark:bg-zinc-500 p-6 rounded-xl shadow-lg w-[60vw] mx-auto text-center flex flex-col"
+            className="bg-gray-50 dark:bg-[#444444] p-6 rounded-xl shadow-lg w-[60vw] mx-auto text-center flex flex-col"
             onClick={(e) => e.stopPropagation()} // 내부 클릭 시 닫힘 방지
           >
             {/* 닫기 버튼 */}
             <div className="flex justify-end mb-2">
-              <button onClick={closeMenu} className="text-2xl">
-                <IoCloseSharp className="dark:text-white m-1" />
+              <button
+                onClick={closeMenu}
+                className="text-2xl hover:text-black "
+              >
+                <IoCloseSharp className="dark:text-white m-1 dark:hover:text-gray-300" />
               </button>
             </div>
 
