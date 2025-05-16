@@ -22,7 +22,6 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useQueryClient } from "@tanstack/react-query";
 import TopButton from "@/components/upplace/TopButton";
 import Loaiding from "@/components/Loading";
-import { getTimeAgo } from "@/lib/post";
 
 type SortOption = "recent" | "oldest" | "likes";
 
@@ -236,8 +235,8 @@ const BookmarkPage = () => {
               onClick={() => setSort(value as SortOption)}
               className={`px-4 py-1.5 rounded-full border text-sm font-medium shadow transition-all duration-200 hover:scale-105 ${
                 sort === value
-                  ? "bg-emerald-500 text-white border-emerald-200 dark:text-gray-200 dark:bg-emerald-600 dark:border-emerald-500"
-                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-300"
+                  ? "bg-emerald-500 text-white border-emerald-200 dark:text-gray-200 dark:bg-emerald-500 dark:border-emerald-700"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-600 dark:border-gray-800 dark:text-gray-300 scale-90"
               }`}
             >
               {label}

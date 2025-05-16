@@ -10,8 +10,15 @@
   --color-primary: var(--color-emerald-400); /* Tailwind emerald-300 */
 }
 
-html {
+html,
+body {
+  height: 100%;
+  margin: 0;
   scrollbar-gutter: stable;
+}
+
+body::-webkit-scrollbar {
+  display: none;
 }
 
 @layer base {
@@ -41,6 +48,7 @@ html {
     @apply p-3 rounded-full  hover:opacity-80 justify-center flex items-center  text-3xl bg-gray-50 dark:bg-[#444444] dark:text-[#F1F5F9];
   }
   .ykhInputButton {
+
     @apply rounded-lg min-h-14 px-2 py-2 bg-gray-50 w-90 placeholder:text-gray-500 lg:w-120 dark:bg-[#666666]  focus:border-primary
     md:placeholder:text-sm  
     dark:placeholder:text-white shadow-sm dark:text-white border border-gray-400;
@@ -48,6 +56,7 @@ html {
   /* 하나추가함 */
   .CommonInput {
     @apply rounded-lg min-h-14 md:placeholder:text-sm placeholder:text-gray-500 focus:border-primary  px-2 py-2 dark:placeholder:text-white border-gray-500 border focus:outline-none;
+
   }
   /* global.css 또는 globals.css */
 }
