@@ -330,7 +330,7 @@ const SettingProfile = () => {
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder="자기소개를 작성해주세요"
-            className="border rounded-lg outline-none w-full h-20 p-3 resize-none mt-5 placeholder:text-black dark:placeholder:text-white CommonInput"
+            className="border rounded-lg outline-none w-full h-20 p-3 resize-none mt-5 placeholder:text-black dark:border-gray-400  dark:placeholder:text-white CommonInput dark:bg-[#666666]"
           />
           {bioError && (
             <div className="absolute text-red-500 text-xs mt-1">{bioError}</div>
@@ -354,4 +354,4 @@ export default SettingProfile;
 
 // 닉네임 입력창 클래스
 const settingProfile =
-  " p-3  w-80 sm:w-122 mt-5  placeholder:text-black dark:placeholder:text-white outline-none CommonInput";
+  " p-3  w-80 sm:w-122 mt-5  placeholder:text-black dark:placeholder:text-white outline-none CommonInput dark:bg-[#666666] dark:border-gray-400 ";
