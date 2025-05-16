@@ -261,7 +261,7 @@ const MapPage = () => {
   }, [map]);
 
   return (
-    <div className="relative flex h-[75vh] px-4 mt-[2vh]">
+    <div className="relative flex h-[75vh] px-4">
       {/* 지도 렌더링 영역 */}
       <div
         className="flex-1 bg-gray-200 relative rounded-2xl sm:rounded-3xl border border-gray-100 dark:border-[#444444] overflow-hidden min-h-100"

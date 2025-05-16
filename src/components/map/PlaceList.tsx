@@ -28,14 +28,14 @@ const PlaceList = ({
   return (
     <div
       className={twMerge(
-        "hidden md:flex absolute top-0 right-4 w-80 max-h-[76vh] h-full p-4 bg-gray-50 border border-gray-200 flex-col rounded-3xl z-10 dark:bg-[#444444] dark:border-[#444444] dark:text-[#E5E7EB] transition-transform duration-300 ease-in-out",
-        isOpen ? "translate-x-0" : "translate-x-full"
+        "hidden md:flex absolute top-0 right-0 w-80 p-4 h-full bg-gray-50 border border-gray-200 flex-col rounded-3xl z-10 dark:bg-[#444444] dark:border-[#444444] dark:text-[#E5E7EB] transition-transform duration-300 ease-in-out",
+        isOpen && "translate-x-[-16px]"
       )}
     >
       <button
         onClick={() => {
           setIsOpen(false);
-          setTimeout(onClose, 300);
+          onClose();
         }}
         className="text-gray-500 hover:text-gray-300 text-2xl absolute top-3 right-5 dark:text-white"
       >
