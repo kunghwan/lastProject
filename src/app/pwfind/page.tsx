@@ -344,7 +344,7 @@ const PwFindResult = () => {
             <div>
               <p className="text-xl text-black dark:text-white">
                 이메일:{" "}
-                <span className="font-bold text-blue-600 dark:text-blue-800">
+                <span className="font-bold text-primary dark:text-emerald-500">
                   {user ? user.email : email}
                 </span>
               </p>
@@ -359,7 +359,7 @@ const PwFindResult = () => {
                   onChange={handleChange}
                   onKeyDown={handleKeyDown}
                   placeholder="새비밀번호"
-                  className="border p-2 border-emerald-300 placeholder:text-emerald-300 dark:border-emerald-500 dark:placeholder:text-emerald-500"
+                  className="border p-2 border-emerald-300 placeholder:text-emerald-300 dark:border-emerald-500 dark:placeholder:text-emerald-500 outline-none"
                 />
                 {validation.newPassword?.message && (
                   <p className="text-sm text-red-500 ml-1">
@@ -376,7 +376,7 @@ const PwFindResult = () => {
                   onChange={handleChange}
                   onKeyDown={handleKeyDown}
                   placeholder="새 비밀번호 확인"
-                  className="border p-2 border-emerald-300 mt-2 placeholder:text-emerald-300 dark:border-emerald-500 dark:placeholder:text-emerald-500"
+                  className="border p-2 border-emerald-300 mt-2 placeholder:text-emerald-300 dark:border-emerald-500 dark:placeholder:text-emerald-500 outline-none"
                 />
                 {validation.confirmPassword?.message && (
                   <p className="text-sm text-red-500 ml-1">

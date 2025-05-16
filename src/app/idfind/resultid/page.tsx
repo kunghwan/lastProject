@@ -72,7 +72,7 @@ const IdFindResult = () => {
           <input
             type="checkbox"
             checked={isChecked}
-            className="w-5 h-5 appearance-none border border-cyan-300 rounded-sm checked:bg-cyan-200 checked:border-cyan-400"
+            className="w-5 h-5 appearance-none border border-primary rounded-sm checked:bg-primary "
             onChange={(e) => setIsChecked(e.target.checked)}
           />
           {/* ✅ 로딩 중일 때 */}
@@ -111,7 +111,7 @@ const IdFindResult = () => {
 export default IdFindResult;
 
 const pwButton =
-  "bg-gray-300 text-black font-bold px-6 py-3 rounded-2xl hover:bg-blue-600 w-40 lg:h-20 lg:flex lg:items-center lg:justify-center dark:bg-gray-500 dark:text-white";
+  "bg-gray-300 text-black font-bold px-6 py-3 rounded-2xl hover:bg-gray-500 w-40 lg:h-20 lg:flex lg:items-center lg:justify-center dark:bg-gray-500 dark:text-white";
 
 const loginButton =
   "bg-emerald-300 px-6 py-3 rounded-2xl hover:bg-emerald-600 w-40 text-black font-bold flex justify-center lg:h-20 lg:flex lg:items-center lg:justify-center dark:bg-emerald-800 dark:text-white";
