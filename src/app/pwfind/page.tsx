@@ -22,6 +22,7 @@ import { FaIdCard } from "react-icons/fa6";
 import { TbPassword } from "react-icons/tb";
 import Link from "next/link";
 import { useAlertModal } from "@/components/AlertStore"; // ✅ zustand 기반 모달 상태
+import { twMerge } from "tailwind-merge";
 
 // 세션 스토리지 키 상수
 const STORAGE_KEYS = {
@@ -257,7 +258,7 @@ const PwFindResult = () => {
   return (
     <div className="p-2 overflow-auto min-h-screen sm:overflow-visible lg:overflow-visible md:overflow-visible  ">
       {/* 상단 아이디/비밀번호 찾기 헤더 */}
-      <div className="w-full bg-primary p-4 whitespace-nowrap dark:bg-emerald-500  ">
+      <div className="w-full bg-primary p-4 whitespace-nowrap dark:bg-[rgba(116,212,186,0.5)]  ">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
             <FaIdCard className="text-amber-500 text-4xl dark:text-amber-700" />
@@ -289,7 +290,7 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="이름 입력"
-            className="border p-2 border-primary placeholder:text-emerald-300 lg:w-150 dark:border-emerald-500 dark:placeholder:text-emerald-500"
+            className="CommonInput"
           />
           {inputErrors.name && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.name}</p>
@@ -304,7 +305,7 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="전화번호 입력"
-            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150 dark:border-emerald-500 dark:placeholder:text-emerald-500"
+            className="CommonInput"
           />
           {inputErrors.phone && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.phone}</p>
@@ -319,7 +320,7 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="이메일 입력"
-            className="border p-2 border-emerald-300 placeholder:text-emerald-300 lg:w-150 dark:border-emerald-500 dark:placeholder:text-emerald-500"
+            className="CommonInput"
           />
           {inputErrors.email && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.email}</p>
@@ -329,7 +330,7 @@ const PwFindResult = () => {
           <button
             ref={findPasswordButtonRef}
             type="button"
-            className="bg-gray-300 rounded-2xl p-3 mt-2 flex justify-center w-50 items-center lg:w-80 dark:text-white dark:bg-gray-500"
+            className="bg-gray-300 rounded p-3 mt-2 flex justify-center w-50 items-center lg:w-80 dark:text-white dark:bg-gray-500"
             onClick={handleFindPassword}
           >
             비밀번호 찾기
@@ -340,7 +341,7 @@ const PwFindResult = () => {
       {/* 인증 후 비밀번호 재설정 화면 */}
       {(user || email) && (
         <>
-          <div className="border h-80 justify-center flex items-center border-emerald-100 dark:border-emerald-300">
+          <div className="border h-80 justify-center flex items-center border-gray-400 dark:border-gray-500 rounded-lg ">
             <div>
               <p className="text-xl text-black dark:text-white">
                 이메일:{" "}
@@ -359,7 +360,7 @@ const PwFindResult = () => {
                   onChange={handleChange}
                   onKeyDown={handleKeyDown}
                   placeholder="새비밀번호"
-                  className="border p-2  dark:border-emerald-500 dark:placeholder:text-emerald-500 outline-none md:placeholder:text-sm rounded-lg border-gray-400 placeholder:text-gray-500 "
+                  className={twMerge(" CommonInput ")}
                 />
                 {validation.newPassword?.message && (
                   <p className="text-sm text-red-500 ml-1">
@@ -376,7 +377,7 @@ const PwFindResult = () => {
                   onChange={handleChange}
                   onKeyDown={handleKeyDown}
                   placeholder="새 비밀번호 확인"
-                  className="border p-2 border-gray-400 rounded-lg mt-2 placeholder:text-gray-500 dark:border-emerald-500 dark:placeholder:text-emerald-500 outline-none md:placeholder:text-sm"
+                  className={twMerge("CommonInput ")}
                 />
                 {validation.confirmPassword?.message && (
                   <p className="text-sm text-red-500 ml-1">
@@ -391,7 +392,7 @@ const PwFindResult = () => {
           <div className="flex justify-center">
             <button
               ref={submitButtonRef}
-              className="bg-gray-300 rounded-2xl p-5 mt-3 flex justify-center w-50 items-center lg:w-80 dark:bg-gray-500"
+              className="bg-gray-300 rounded p-5 mt-3 flex justify-center w-50 items-center lg:w-80 dark:bg-gray-500 dark:text-black"
               onClick={handleSubmit}
             >
               확인

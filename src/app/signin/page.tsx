@@ -253,7 +253,10 @@ const LoginForm = () => {
           </div>
 
           <button
-            className={twMerge(LoginButton, " bg-primary")}
+            className={twMerge(
+              LoginButton,
+              " bg-primary dark:bg-[rgba(116,212,186,0.5)]"
+            )}
             onClick={handleLogin}
             disabled={isPending}
           >

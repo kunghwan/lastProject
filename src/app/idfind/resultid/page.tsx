@@ -72,7 +72,7 @@ const IdFindResult = () => {
           <input
             type="checkbox"
             checked={isChecked}
-            className="w-5 h-5 appearance-none border border-primary rounded-sm checked:bg-primary "
+            className="w-5 h-5 appearance-none border border-[rgba(116,212,186,0.5)] rounded-sm checked:dark:bg-[rgba(116,212,186,0.5)] "
             onChange={(e) => setIsChecked(e.target.checked)}
           />
           {/* ✅ 로딩 중일 때 */}
