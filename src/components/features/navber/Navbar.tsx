@@ -141,7 +141,7 @@ const Navbar = () => {
                 <li key={index}>
                   <button
                     className={twMerge(
-                      " justify-center text-3xl p-2.5 h-19 flex flex-col gap-y-1.5 items-center bg-gray-50 dark:bg-[#444444] dark:text-[#E5E7EB] hover:text-primary hover:opacity-80",
+                      " justify-center text-3xl flex flex-col gap-y-1.5 items-center bg-gray-50 dark:bg-[#444444] dark:text-[#E5E7EB] hover:text-primary hover:opacity-80",
                       pathname === btn.path && "text-primary dark:text-primary"
                     )}
                     onClick={() => navBtnClick(btn, index)}
