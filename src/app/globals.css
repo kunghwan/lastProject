@@ -41,7 +41,7 @@ html {
     @apply p-3 rounded-full  hover:opacity-80 justify-center flex items-center  text-3xl bg-gray-50 dark:bg-[#444444] dark:text-[#F1F5F9];
   }
   .ykhInputButton {
-    @apply rounded-lg min-h-14 px-2 py-2 bg-gray-50 w-90 placeholder:text-gray-500 lg:w-120 dark:bg-gray-800  focus:border-primary
+    @apply rounded-lg min-h-14 px-2 py-2 bg-gray-50 w-90 placeholder:text-gray-500 lg:w-120 dark:bg-[#666666]  focus:border-primary
     md:placeholder:text-sm  
     dark:placeholder:text-white shadow-sm dark:text-white border border-gray-400;
   }

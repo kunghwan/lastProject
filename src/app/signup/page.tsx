@@ -470,11 +470,9 @@ const SignupForm = () => {
                       onChange={handleChange}
                       onKeyDown={handleKeyDown(index)}
                       placeholder={info.label}
-                      className={` peer w-full border rounded-md  h-12 px-2 pt-[10px] pb-[10px] text-base outline-none placeholder-transparent ${
-                        errors[key]
-                          ? "border-gray-400 dark:border-gray-500"
-                          : "border-emerald-500"
-                      } focus:border-primary transition-all h-16 dark:text-white dark:bg-gray-800`}
+                      className={` peer w-full border rounded-md  dark:bg-[#666666]  h-12 px-2 pt-[10px] pb-[10px] text-base outline-none placeholder-transparent ${
+                        errors[key] ? "border-gray-400 " : "border-emerald-500"
+                      } focus:border-primary transition-all h-16 dark:text-white `}
                     />
                     <label
                       htmlFor={inputId}

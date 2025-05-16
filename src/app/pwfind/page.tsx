@@ -330,7 +330,7 @@ const PwFindResult = () => {
           <button
             ref={findPasswordButtonRef}
             type="button"
-            className="bg-gray-300 rounded p-3 mt-2 flex justify-center w-50 items-center lg:w-80 dark:text-white dark:bg-gray-500"
+            className="bg-gray-300 rounded p-3 mt-2 flex justify-center w-50 items-center lg:w-80 dark:text-white dark:bg-gray-800"
             onClick={handleFindPassword}
           >
             비밀번호 찾기
@@ -392,7 +392,7 @@ const PwFindResult = () => {
           <div className="flex justify-center">
             <button
               ref={submitButtonRef}
-              className="bg-gray-300 rounded p-5 mt-3 flex justify-center w-50 items-center lg:w-80 dark:bg-gray-500 dark:text-black"
+              className="bg-gray-100 rounded p-5 mt-3 flex justify-center w-50 items-center lg:w-80 dark:bg-gray-800 dark:text-black"
               onClick={handleSubmit}
             >
               확인
