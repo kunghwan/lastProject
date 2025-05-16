@@ -261,11 +261,11 @@ const MapPage = () => {
   }, [map]);
 
   return (
-    <div className="relative flex h-[76vh] px-4">
+    <div className="relative flex h-[75vh] px-4 mt-[2vh]">
       {/* 지도 렌더링 영역 */}
       <div
-        ref={mapRef}
         className="flex-1 bg-gray-200 relative rounded-2xl sm:rounded-3xl border border-gray-100 dark:border-[#444444] overflow-hidden min-h-100"
+        ref={mapRef}
       />
 
       {/* 검색창 + 키워드 버튼 */}
