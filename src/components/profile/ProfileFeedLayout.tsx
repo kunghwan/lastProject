@@ -181,7 +181,7 @@ const ProfileFeedComponent = ({
                 {post.imageUrl ? (
                   <div
                     onClick={() => handleOpenPost(post)}
-                    className="relative overflow-hidden"
+                    className="relative overflow-hidden rounded-lg"
                   >
                     <img
                       src={post.imgs?.[0] || defaultImgUrl}
@@ -249,7 +249,7 @@ const ProfileFeedComponent = ({
           onClick={() => setSelectedPost(null)}
         >
           <div
-            className="bg-white dark:bg-gray-700 rounded-lg w-5/6 md:w-4/5 md:h-4/5 lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform"
+            className="bg-white dark:bg-gray-700  pb-2.5 rounded-lg w-5/6 md:w-4/5 md:h-4/5 lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform"
             onClick={(e) => e.stopPropagation()}
           >
             {/* 닫기 버튼 */}
@@ -292,15 +292,15 @@ const ProfileFeedComponent = ({
             </div>
 
             {/* 게시물 정보 */}
-            <div className="p-1 justify-end flex flex-col pr-2 pl-2 md:pr-10 md:pl-10 h-full">
-              <div className="text-xs text-gray-500 dark:text-gray-300 mt-2 flex justify-between mb-5">
+            <div className="p-3 justify-end flex flex-col pr-2 pl-2 md:h-40 sm:pr-10 sm:pl-10">
+              <div className="text-[11px] text-gray-500 dark:text-gray-300 mt-2 flex justify-between mb-5">
                 <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
                 <div>{getFormattedDate(selectedPost.createdAt)}</div>
               </div>
               <h2 className="text-lg font-bold mb-2 dark:text-white truncate">
                 {selectedPost.title}
               </h2>
-              <p className="text-sm text-gray-700 dark:text-gray-200 break-words overflow-y-auto max-h-16 md:max-h-24 pr-1">
+              <p className="text-sm text-gray-700 dark:text-gray-200 p-2.5 break-words overflow-y-auto max-h-18 md:max-h-24 pr-1">
                 {selectedPost.content}
               </p>
             </div>
