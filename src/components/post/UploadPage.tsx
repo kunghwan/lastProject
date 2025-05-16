@@ -242,7 +242,20 @@ const UploadPostPage = () => {
             userProfileImage: user.profileImageUrl,
           } as UploadPostProps);
 
-          alert("게시물이 성공적으로 등록되었습니다!");
+          openAlert(
+            "게시물이 성공적으로 등록되었습니다!",
+            [
+              {
+                text: "확인",
+                isGreen: true,
+                autoFocus: true,
+              },
+            ],
+
+            "알림"
+          );
+
+          // alert("게시물이 성공적으로 등록되었습니다!");
           //게시된후 초기화
           setTag("");
           setPost(initialState);
