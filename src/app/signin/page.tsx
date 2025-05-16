@@ -213,7 +213,7 @@ const LoginForm = () => {
             <input
               type="text"
               ref={emailRef}
-              className="ykhInputButton dark:text-gray-500 "
+              className="ykhInputButton  "
               placeholder="이메일"
               value={email}
               onChange={handleEmailChange}
@@ -222,7 +222,7 @@ const LoginForm = () => {
             <input
               type="password"
               ref={passwordRef}
-              className="ykhInputButton dark:text-gray-500"
+              className="ykhInputButton "
               placeholder="비밀번호"
               value={password}
               onChange={handlePasswordChange}
@@ -276,6 +276,6 @@ const Find = "cursor-pointer dark:text-[#C5E3DB]";
 const LoginButton =
   "p-3 rounded w-90 cursor-pointer  lg:w-120   dark:text-black";
 const SignUserButton =
-  "p-3 rounded w-90 cursor-pointer bg-gray-200 text-center lg:w-120 dark:text-gray-700 dark:bg-gray-300 ";
+  "p-3 rounded w-90 cursor-pointer bg-gray-100 text-center lg:w-120 dark:text-white dark:bg-gray-800 ";
 
 //! sdfsdf
