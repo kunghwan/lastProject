@@ -169,7 +169,7 @@ const MapPage = () => {
               // 라벨 오버레이 생성
               const label = document.createElement("div");
               label.className =
-                "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-22 text-center cursor-pointer dark:bg-[#6B6B6B] dark:text-white";
+                "bg-white border border-gray-300 px-2 p-0.5 text-sm rounded shadow font-normal text-gray-800 truncate w-22 text-center cursor-pointer dark:bg-[#555555] dark:text-white";
               label.innerText = place.place_name;
               label.onclick = () => {
                 handlePlaceClick(place, true);
@@ -265,7 +265,7 @@ const MapPage = () => {
       {/* 지도 렌더링 영역 */}
       <div
         ref={mapRef}
-        className="flex-1 bg-gray-200 relative rounded-2xl sm:rounded-3xl border border-gray-300 overflow-hidden min-h-100"
+        className="flex-1 bg-gray-200 relative rounded-2xl sm:rounded-3xl border border-gray-100 dark:border-[#444444] overflow-hidden min-h-100"
       />
 
       {/* 검색창 + 키워드 버튼 */}

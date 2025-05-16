@@ -69,7 +69,7 @@ const Navbar = () => {
   }, []);
 
   const baseNavStyle =
-    "[@media(min-width:1425px)]:flex absolute w-17 top-45 -left-[125%] bg-gray-100 z-30 rounded-full duration-400 ease-in-out transform dark:bg-[#6B6B6B] dark:text-white";
+    "[@media(min-width:1425px)]:flex absolute w-17 top-45 -left-[125%] bg-gray-50 z-30 rounded-full duration-400 ease-in-out transform dark:bg-[#444444] dark:text-white";
 
   return (
     <>
@@ -112,7 +112,7 @@ const Navbar = () => {
                   {NavBtns.map((btn, index) => (
                     <li
                       key={index}
-                      className="dark:bg-[#6B6B6B] dark:text-[#E5E7EB]"
+                      className="dark:bg-[#444444] dark:text-[#E5E7EB]"
                     >
                       <button
                         className={twMerge(
@@ -135,13 +135,13 @@ const Navbar = () => {
 
         {/* 모바일 하단 네비게이션 */}
         {pathname !== "/signin" && pathname !== "/signup" && (
-          <nav className="dark:bg-[#6B6B6B] dark:text-white fixed bottom-0 left-0 right-0 bg-gray-100 z-20 flex justify-around items-center [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto ">
+          <nav className="dark:bg-[#444444] dark:text-[#F1F5F9] fixed bottom-0 left-0 right-0 bg-gray-50 z-20 flex justify-around items-center [@media(min-width:1425px)]:hidden rounded-t-2xl max-w-300 mx-auto ">
             <ul className="flex justify-around w-full">
               {NavBtns.map((btn, index) => (
                 <li key={index}>
                   <button
                     className={twMerge(
-                      "justify-center text-3xl p-2.5 flex flex-col gap-y-1.5 items-center bg-gray-100 dark:bg-[#6B6B6B] dark:text-[#E5E7EB] hover:text-primary hover:opacity-80",
+                      "justify-center text-3xl p-2.5 flex flex-col gap-y-1.5 items-center bg-gray-50 dark:bg-[#444444] dark:text-[#E5E7EB] hover:text-primary hover:opacity-80",
                       pathname === btn.path && "text-primary dark:text-primary"
                     )}
                     onClick={() => navBtnClick(btn, index)}

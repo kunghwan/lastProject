@@ -26,13 +26,13 @@ if (storedDarkMode === "true") {
 }
 
 //! 공통 스타일 상수 정의
-const headBtn = "grayButton text-xl sm:text-2xl";
+const headBtn = "grayButton dark: text-xl sm:text-2xl";
 const boldBtn = "text-2xl font-bold h-14 hover:opacity-80";
 const mobileAuthBtn = "text-xl font-bold hover:opacity-80";
 const darkModeBtn = (isDarkMode: boolean) =>
   twMerge(
-    "grayButton text-xl",
-    isDarkMode ? "text-gray-800" : "text-white bg-black"
+    "grayButton text-xl dark:text-[#F1F5F9]",
+    isDarkMode ? "text-gray-800" : "text-white bg-zinc-700"
   );
 
 const Header = () => {
