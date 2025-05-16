@@ -190,7 +190,7 @@ const PostComponent = () => {
           return (
             <div
               key={post.id}
-              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl"
+              className="p-1.5 pb-2.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl"
             >
               <button
                 className="flex gap-1.5 items-center text-center m-1.5"
@@ -208,7 +208,7 @@ const PostComponent = () => {
                 className="relative cursor-pointer"
                 onClick={() => handleOpenPost(post)}
               >
-                <div className="overflow-hidden ">
+                <div className="overflow-hidden rounded-lg">
                   <img
                     src={images[0] || defaultImgUrl}
                     alt="Post image"
@@ -273,7 +273,7 @@ const PostComponent = () => {
           onClick={() => setSelectedPost(null)}
         >
           <div
-            className="bg-white dark:bg-gray-700 rounded-lg w-5/6 md:w-4/5 md:h-4/5 lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform"
+            className="bg-white dark:bg-gray-700  pb-2.5 rounded-lg w-5/6 md:w-4/5  lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform"
             onClick={(e) => e.stopPropagation()}
           >
             {/* 닫기 버튼 */}
@@ -316,8 +316,8 @@ const PostComponent = () => {
             </div>
 
             {/* 게시물 정보 */}
-            <div className="p-3 justify-end flex flex-col pr-10 pl-10">
-              <div className="text-xs text-gray-500 dark:text-gray-300 mt-2 flex justify-between mb-5">
+            <div className="p-3 justify-end flex flex-col sm:pr-10 sm:pl-10">
+              <div className="text-[11px] md:text-xs text-gray-500 dark:text-gray-300 mt-2 flex justify-between mb-5">
                 <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
                 <div>
                   업로드 시간 : {getFormattedDate(selectedPost.createdAt)}
