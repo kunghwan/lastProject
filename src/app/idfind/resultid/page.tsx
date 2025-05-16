@@ -48,7 +48,7 @@ const IdFindResult = () => {
   return (
     <>
       {/* 상단 헤더 - 아이디/비밀번호 찾기 */}
-      <div className="w-full bg-primary p-4 whitespace-nowrap dark:bg-emerald-500">
+      <div className="w-full bg-primary p-4 whitespace-nowrap dark:bg-[rgba(116,212,186,0.5)]">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
           <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
             <FaIdCard className="text-amber-500 text-4xl dark:text-amber-700" />
@@ -67,7 +67,7 @@ const IdFindResult = () => {
 
       {/* 본문: 이메일 결과 표시 영역 */}
       <div className="w-full flex justify-center flex-col ml-5">
-        <div className="h-50 items-center justify-center flex border border-emerald-300 rounded mt-5 w-80 gap-3 p-4 lg:h-100 lg:w-280 md:w-200">
+        <div className="h-50 items-center justify-center flex border border-gray-400 rounded mt-5 w-80 gap-3 p-4 lg:h-100 lg:w-280 md:w-200">
           {/* ✅ 체크박스 */}
           <input
             type="checkbox"
@@ -83,7 +83,7 @@ const IdFindResult = () => {
           ) : email ? (
             // ✅ 이메일이 있을 때
             <p className="text-xl text-black">
-              <span className="font-bold dark:text-emerald-300">{email}</span>
+              <span className="font-bold dark:text-white">{email}</span>
             </p>
           ) : (
             // ✅ 이메일이 없을 때
@@ -111,7 +111,7 @@ const IdFindResult = () => {
 export default IdFindResult;
 
 const pwButton =
-  "bg-gray-300 text-black font-bold px-6 py-3 rounded-2xl hover:bg-gray-500 w-40 lg:h-20 lg:flex lg:items-center lg:justify-center dark:bg-gray-500 dark:text-white";
+  "bg-gray-100 text-black font-bold px-6 py-3 rounded-2xl hover:bg-gray-700 w-40 lg:h-20 lg:flex lg:items-center lg:justify-center dark:bg-gray-800 dark:text-white ";
 
 const loginButton =
-  "bg-emerald-300 px-6 py-3 rounded-2xl hover:bg-emerald-600 w-40 text-black font-bold flex justify-center lg:h-20 lg:flex lg:items-center lg:justify-center dark:bg-emerald-800 dark:text-white";
+  "bg-emerald-300 px-6 py-3 rounded-2xl hover:bg-emerald-600 w-40 text-black font-bold flex justify-center lg:h-20 lg:flex lg:items-center lg:justify-center  dark:text-white dark:bg-[rgba(116,212,186,0.5)]";

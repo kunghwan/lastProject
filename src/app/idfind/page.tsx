@@ -493,7 +493,8 @@ const IdFind = () => {
               }}
               type={idf.type || "text"}
               placeholder={idf.label}
-              className=" p-5 placeholder:text-black outline-none lg:w-100 w-70 dark:caret-red-500 rounded  border-primary border dark:border-emerald-500 dark:placeholder:text-white dark:text-white"
+              className=" p-5  focus:border-primary bg-white  md:placeholder:text-sm  outline-none lg:w-100 w-70    border-gray-400 
+              placeholder:text-gray-500 border dark:border-gray-500  rounded-lg dark:placeholder:text-white  dark:text-white dark:bg-[#484848]"
               value={idf.value}
               onChange={idf.onChange}
               onKeyDown={(e) => handleKeyDown(e, index)}
@@ -559,7 +560,7 @@ const IdFind = () => {
       {/* 마스킹된 이메일 결과 표시 및 선택 */}
       {foundEmail.trim() !== "" && (
         <>
-          <p className="text-center text-amber-600 font-bold mt-1 text-sm lg:justify-start lg:flex lg:p-2 dark:text-amber-700">
+          <p className="text-center text-primary font-bold mt-1 text-sm lg:justify-start lg:flex lg:p-2 dark:text-primary">
             내 아이디는 <span className="underline">{foundEmail}</span> 입니다.
           </p>
           <div className="grid grid-cols-2 gap-x-8">
