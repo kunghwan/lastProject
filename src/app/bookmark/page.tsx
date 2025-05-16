@@ -21,6 +21,7 @@ import { HiOutlineX } from "react-icons/hi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useQueryClient } from "@tanstack/react-query";
 import TopButton from "@/components/upplace/TopButton";
+import Loaiding from "@/components/Loading";
 
 type SortOption = "recent" | "oldest" | "likes";
 
@@ -172,7 +173,12 @@ const BookmarkPage = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  if (loading) return <div>로딩 중...</div>;
+  if (loading)
+    return (
+      <div>
+        <Loaiding message="북마크페이지로 이동중입니다..." />
+      </div>
+    );
 
   return (
     <div className="flex flex-col mx-auto p-2 lg:w-3/4 w-full ">
