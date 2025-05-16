@@ -282,7 +282,7 @@ const BookmarkPage = () => {
           onClick={() => setSelectedPost(null)}
         >
           <div
-            className="bg-white pb-2.5 dark:bg-gray-700 rounded-lg w-5/6 md:w-4/5 md:h-4/5 lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform "
+            className="bg-white pb-2.5 dark:bg-gray-700 rounded-lg w-5/6 md:w-4/5  lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform "
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -324,16 +324,16 @@ const BookmarkPage = () => {
 
             {/* 게시물 정보 */}
             <div className="p-3 justify-end flex flex-col pr-2 pl-2 md:h-40 sm:pr-10 sm:pl-10">
-              <div className="text-[10px] text-gray-500 dark:text-gray-300 mt-2 flex justify-between mb-5">
+              <div className="text-[10px] text-gray-500 dark:text-gray-300 mt-2 flex justify-between pb-2">
                 <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
                 <div>{getFormattedDate(selectedPost.createdAt)}</div>
               </div>
-              <h2 className="text-lg font-bold mb-2 dark:text-white truncate">
+              <div className="text-lg font-bold pb-4 dark:text-white truncate">
                 {selectedPost.title}
-              </h2>
-              <p className="text-sm text-gray-700 dark:text-gray-200 break-words overflow-y-auto max-h-18 md:max-h-24 pr-1">
+              </div>
+              <div className="text-sm text-gray-700 dark:text-gray-200 break-words overflow-y-auto h-30 pr-2">
                 {selectedPost.content}
-              </p>
+              </div>
             </div>
           </div>
         </div>

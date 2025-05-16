@@ -273,7 +273,7 @@ const PostComponent = () => {
           onClick={() => setSelectedPost(null)}
         >
           <div
-            className="bg-white dark:bg-gray-700  pb-2.5 rounded-lg w-5/6 md:w-4/5 md:h-4/5 lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform"
+            className="bg-white dark:bg-gray-700  pb-2.5 rounded-lg w-5/6 md:w-4/5  lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform"
             onClick={(e) => e.stopPropagation()}
           >
             {/* 닫기 버튼 */}
