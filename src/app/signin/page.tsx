@@ -213,7 +213,7 @@ const LoginForm = () => {
             <input
               type="text"
               ref={emailRef}
-              className="ykhInputButton  "
+              className="ykhInputButton focus:border-blue-500 "
               placeholder="이메일"
               value={email}
               onChange={handleEmailChange}
