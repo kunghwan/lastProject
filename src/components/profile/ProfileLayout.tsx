@@ -351,8 +351,8 @@ const ProfileLayout = ({
         )}
       </div>
       {editOpen && (
-        <div className="fixed inset-0  bg-opacity-50 z-60 flex justify-center items-center ">
-          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-xl w-full max-w-md">
+        <div className="fixed inset-0  bg-opacity-50 z-60 flex justify-center items-center bg-gray-700/85 dark:bg-gray-800/85 ">
+          <div className="bg-white dark:bg-[#3c3c3c] p-6 rounded-xl shadow-xl w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">프로필 수정</h2>
 
             <label className="block mb-2">닉네임</label>
@@ -375,7 +375,7 @@ const ProfileLayout = ({
                 setEditBio(e.target.value);
                 setBioError("");
               }}
-              className="w-full p-2 border rounded mb-1"
+              className="w-full p-2 border rounded mb-1 resize-none h-30 "
             />
             {bioError && (
               <p className="text-red-500 text-sm mb-2">{bioError}</p>
