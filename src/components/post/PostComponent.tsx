@@ -205,14 +205,14 @@ const PostComponent = () => {
               </button>
 
               <div
-                className="relative cursor-pointer"
+                className="relative cursor-pointer overflow-hidden"
                 onClick={() => handleOpenPost(post)}
               >
                 <div className="overflow-hidden rounded-lg">
                   <img
                     src={images[0] || defaultImgUrl}
                     alt="Post image"
-                    className="w-full opacity-70 border-gray-300 h-128 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01] border "
+                    className="w-full opacity-70 border-gray-300 h-128 object-cover transition-all duration-500 ease-in-out transform hover:scale-[1.01] border "
                   />
                 </div>
 
@@ -223,7 +223,7 @@ const PostComponent = () => {
                 )}
               </div>
 
-              <div className="flex gap-20 justify-between items-center text-s text-gray-500 mt-1 dark:text-gray-300">
+              <div className="flex gap-20 justify-between pt-1 items-center text-s text-gray-500 mt-1 dark:text-gray-300">
                 <div className="flex gap-5">
                   <div className="flex-1/4 text-m text-gray-500 dark:text-gray-300">
                     <LikeButton
@@ -273,7 +273,7 @@ const PostComponent = () => {
           onClick={() => setSelectedPost(null)}
         >
           <div
-            className="bg-white pb-5 dark:bg-gray-700  rounded-lg w-5/6 md:w-4/5  lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform "
+            className="bg-white pb-5 dark:bg-gray-700 rounded-lg w-5/6 md:w-4/5  lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform "
             onClick={(e) => e.stopPropagation()}
           >
             <button

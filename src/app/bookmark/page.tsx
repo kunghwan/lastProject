@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import { Timestamp, FieldValue } from "firebase/firestore";
 import { authService, dbService } from "@/lib/firebase";
-import { Post } from "@/types/post";
+import { Post, Tag } from "@/types/post";
 import { useRouter } from "next/navigation";
 import UpPlaceBookMark from "@/components/upplace/UpPlaceBookMark";
 import LikeButton from "@/components/post/LikeButton";
@@ -22,6 +22,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useQueryClient } from "@tanstack/react-query";
 import TopButton from "@/components/upplace/TopButton";
 import Loaiding from "@/components/Loading";
+import { getTimeAgo } from "@/lib/post";
 
 type SortOption = "recent" | "oldest" | "likes";
 
@@ -180,6 +181,33 @@ const BookmarkPage = () => {
       </div>
     );
 
+  function getTimeAgo(time: string | Timestamp | FieldValue): string {
+    let createdTime: Date;
+
+    if (typeof time === "string") {
+      createdTime = new Date(time);
+    } else if (time instanceof Timestamp) {
+      createdTime = time.toDate();
+    } else {
+      // FieldValue인 경우는 렌더링 시점에는 있을 수 없음
+      return "시간 정보 없음";
+    }
+
+    const now = new Date();
+    const diff = now.getTime() - createdTime.getTime();
+
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+    const week = 7 * day;
+
+    if (diff < minute) return "방금 전";
+    if (diff < hour) return `${Math.floor(diff / minute)}분 전`;
+    if (diff < day) return `${Math.floor(diff / hour)}시간 전`;
+    if (diff < week) return `${Math.floor(diff / day)}일 전`;
+    return `${Math.floor(diff / week)}주 전`;
+  }
+
   return (
     <div className="flex flex-col mx-auto p-2 lg:w-3/4 w-full ">
       <div className="flex items-center justify-between mb-4 gap-2.5">
@@ -189,7 +217,7 @@ const BookmarkPage = () => {
         </p>
         <button
           onClick={handleBack}
-          className="text-sm text-emerald-600 font-bold dark:text-emerald-200 hover:underline hover:scale-105 transition-transform duration-200"
+          className="text-sm font-medium text-emerald-600 dark:text-emerald-200 hover:scale-105  hover:text-emerald-700 dark:hover:text-emerald-100 transition-all duration-200"
         >
           ← 이전 페이지
         </button>
@@ -208,7 +236,7 @@ const BookmarkPage = () => {
               onClick={() => setSort(value as SortOption)}
               className={`px-4 py-1.5 rounded-full border text-sm font-medium shadow transition-all duration-200 hover:scale-105 ${
                 sort === value
-                  ? "bg-blue-500 text-white border-blue-500 dark:text-gray-200"
+                  ? "bg-emerald-500 text-white border-emerald-200 dark:text-gray-200 dark:bg-emerald-600 dark:border-emerald-500"
                   : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-300"
               }`}
             >
@@ -241,11 +269,11 @@ const BookmarkPage = () => {
                 <div className="font-bold">{post.userNickname}</div>
               </div>
 
-              <div className="mt-2 relative overflow-hidden">
+              <div className="mt-2 relative rounded-xl overflow-hidden">
                 <img
                   src={image}
                   alt="Post image"
-                  className="w-full h-80 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01] rounded-xl"
+                  className="w-full h-80 object-cover transition-all duration-500 ease-in-out transform hover:scale-[1.01] rounded-xl"
                 />
                 {Array.isArray(post.imgs) && post.imgs.length > 1 && (
                   <div className="absolute top-2 right-2 bg-gray-800 opacity-80 text-white text-xs p-1.5 rounded-xl">
@@ -253,20 +281,34 @@ const BookmarkPage = () => {
                   </div>
                 )}
               </div>
-
-              <p className="truncate">{post.content}</p>
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleLike(post.id!);
-                }}
-                className="flex items-center mb-2.5"
-              >
-                <LikeButton
-                  postId={post.uid}
-                  likedBy={post.likes}
-                  postOwnerId={post.uid}
-                />
+              <div className="pt-2 pb-1 flex justify-between items-center">
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleLike(post.id!);
+                  }}
+                  className="flex items-center"
+                >
+                  <LikeButton
+                    postId={post.uid}
+                    likedBy={post.likes}
+                    postOwnerId={post.uid}
+                  />
+                </div>
+                <div className="items-baseline text-end text-gray500 text-sm">
+                  {getTimeAgo(post.createdAt)}
+                </div>
+              </div>
+              <p className="truncate font-bold">{post.title}</p>
+              <div className="flex flex-wrap">
+                {post.tags.map((tag: Tag) => (
+                  <div
+                    key={tag.id}
+                    className="px-2 py-1 text-xs text-gray-600 dark:text-gray-300"
+                  >
+                    <p>{tag.name}</p>
+                  </div>
+                ))}
               </div>
             </div>
           );
