@@ -179,7 +179,7 @@ const Header = () => {
 
   return (
     <>
-      <div className="fixed top-0 left-1/2 translate-x-[-50%] h-[13vh] w-full z-50 flex justify-center shadow-sm dark:border-b-2 dark:border-emerald-100">
+      <div className="fixed top-0 left-1/2 translate-x-[-50%] w-full z-50 flex justify-center shadow-sm dark:border-b-2 dark:border-emerald-100">
         <header className="bg-white dark:bg-[#333333] w-full flex items-center justify-between px-4 py-4 lg:max-w-300 mx-auto">
           {/* 로고 영역 */}
           <Link href="/" className="hover:opacity-80 flex items-center gap-x-2">

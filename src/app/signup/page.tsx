@@ -349,8 +349,9 @@ const SignupForm = () => {
   if (!isLoaded) return null; // 로딩 안 됐으면 렌더 안 함
 
   return (
-    <div className="flex flex-col justify-start items-center min-h-screen px-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-400 rounded-lg p-6 dark:border-gray-500">
+    <div className="flex flex-col items-center justify-start mt-1  ">
+      <div className="w-full max-w-md bg-white dark:bg-[#484848] border border-gray-400 rounded-lg p-6 dark:border-gray-500 ">
+        {/* form 내용 */}
         <form className="space-y-8">
           {InfoAccount.map((info, index) => {
             const key = info.name as keyof typeof user;
@@ -491,7 +492,7 @@ const SignupForm = () => {
                 ) : (
                   // 체크박스 렌더링
                   <>
-                    <div className="flex items-center mt-2">
+                    <div className="flex items-center ">
                       <input
                         id={inputId}
                         ref={locationAgreeRef}
@@ -534,13 +535,12 @@ const SignupForm = () => {
           id="signup-next-button"
           type="button"
           onClick={handleSubmit}
-          className="mt-8 w-full bg-primary text-black font-bold py-4 rounded-lg hover:bg-emerald-500 transition dark:text-white dark:bg-emerald-500"
+          className="mt-2 w-full bg-primary text-black font-bold py-4 rounded-lg hover:bg-emerald-500 transition dark:text-white dark:bg-emerald-500"
         >
           다음
         </button>
       </div>
-      {/* 알림 모달
-      <AlertModal /> */}
+
       {isSubmitting && (
         <Loaiding isLoading={true} message="가입 처리 중입니다..." />
       )}

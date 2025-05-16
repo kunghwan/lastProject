@@ -10,6 +10,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { validateNickname, validateBio } from "@/lib/validations";
 import ProfileFeedComponent from "./ProfileFeedLayout";
 import { useAlertModal } from "../AlertStore";
+import Router from "next/router";
+import { useRouter } from "next/navigation";
 
 const ProfileLayout = ({
   isMyPage,
@@ -151,8 +153,6 @@ const ProfileLayout = ({
     }, {} as Record<string, string>);
   }, [tags]);
 
-  const firstPost = useMemo(() => posts[0] ?? null, [posts]);
-
   useEffect(() => {
     if (!userData?.uid) return;
     const followersRef = collection(
@@ -170,6 +170,8 @@ const ProfileLayout = ({
     return () => unsubscribe();
   }, [userData?.uid]);
   const { openAlert } = useAlertModal();
+
+  const router = useRouter();
 
   return (
     <div className="flex flex-col w-full ">
@@ -246,7 +248,10 @@ const ProfileLayout = ({
                 <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
                   게시물 <span>{actualPostCount}</span>
                 </div>
-                <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
+                <div
+                  className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800"
+                  onClick={() => router.push("/subscribers")}
+                >
                   구독수 <span>{followerCount}</span>
                 </div>
               </div>
@@ -313,7 +318,10 @@ const ProfileLayout = ({
                 <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
                   게시물 <span>{actualPostCount}</span>
                 </div>
-                <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
+                <div
+                  className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800"
+                  onClick={() => router.push("/subscribers")}
+                >
                   구독수 <span>{followerCount}</span>
                 </div>
               </div>
