@@ -349,7 +349,7 @@ const SignupForm = () => {
   if (!isLoaded) return null; // 로딩 안 됐으면 렌더 안 함
 
   return (
-    <div className="flex flex-col justify-start items-center min-h-screen px-4">
+    <div className="flex flex-col justify-start items-center min-h-screen px-4  mt-5 max-h-screen">
       <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-400 rounded-lg p-6 dark:border-gray-500">
         <form className="space-y-8">
           {InfoAccount.map((info, index) => {
