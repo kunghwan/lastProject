@@ -135,13 +135,13 @@ const Navbar = () => {
 
         {/* 모바일 하단 네비게이션 */}
         {pathname !== "/signin" && pathname !== "/signup" && (
-          <nav className="dark:bg-[#444444] h-[9vh] dark:text-[#F1F5F9] fixed bottom-0 left-0 right-0 bg-gray-50 z-20 flex justify-around items-center [@media(min-width:1402px)]:hidden rounded-t-2xl  mx-auto ">
+          <nav className="dark:bg-[#444444] h-20 dark:text-[#F1F5F9] fixed bottom-0 left-0 right-0 bg-gray-50 z-20 flex justify-around items-center [@media(min-width:1402px)]:hidden rounded-t-2xl  mx-auto ">
             <ul className="flex justify-around w-full">
               {NavBtns.map((btn, index) => (
                 <li key={index}>
                   <button
                     className={twMerge(
-                      " justify-center text-3xl p-2.5 h-[8vh] flex flex-col gap-y-1.5 items-center bg-gray-50 dark:bg-[#444444] dark:text-[#E5E7EB] hover:text-primary hover:opacity-80",
+                      " justify-center text-3xl p-2.5 h-19 flex flex-col gap-y-1.5 items-center bg-gray-50 dark:bg-[#444444] dark:text-[#E5E7EB] hover:text-primary hover:opacity-80",
                       pathname === btn.path && "text-primary dark:text-primary"
                     )}
                     onClick={() => navBtnClick(btn, index)}
