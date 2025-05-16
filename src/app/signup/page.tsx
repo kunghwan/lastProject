@@ -349,7 +349,7 @@ const SignupForm = () => {
   if (!isLoaded) return null; // 로딩 안 됐으면 렌더 안 함
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen md:h-screen overflow-y-auto md:overflow-hidden  px-4 mt-1">
+    <div className="flex flex-col items-center justify-start min-h-screen md:h-screen overflow-y-auto lg:overflow-hidden  px-4 mt-1">
       <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-400 rounded-lg p-6 dark:border-gray-500 ">
         {/* form 내용 */}
         <form className="space-y-8">
