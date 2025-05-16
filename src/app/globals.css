@@ -21,7 +21,7 @@
   }
   *::-webkit-scrollbar-track {
     /* 스크롤바의 "트랙" — 손잡이가 움직이는 배경 영역 */
-    @apply bg-transparent rounded-full cursor-pointer;
+    @apply dark:bg-gray-500 rounded-full cursor-pointer px-2.5 bg-clip-padding border-4 border-transparent;
   }
   *::-webkit-scrollbar-thumb {
     /* 	실제로 사용자가 드래그하는 "스크롤 손잡이" */

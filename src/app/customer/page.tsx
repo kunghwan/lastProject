@@ -56,7 +56,7 @@ const QnaPage = () => {
           ref={qnaRef}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className=" outline-none min-w-80   sm:min-w-96  p-2.5 sm:w-4/5  rounded-full border bg-white dark:bg-gray-400 dark:placeholder:text-gray-100 border-gray-500 dark:border-white dark:text-black placeholder-gray-400"
+          className=" outline-none min-w-80 focus:border-primary   sm:min-w-96  p-2.5 sm:w-4/5  rounded-full border bg-white dark:bg-gray-400 dark:placeholder:text-gray-100 border-gray-500 dark:border-white dark:text-black placeholder-gray-400"
         />
         <IoSearchOutline className=" absolute hover:text-[rgba(151,218,200)] dark:hover:text-[rgba(151,218,200,0.5)] right-5  top-1/2 -translate-y-1/2 text-green-950 text-3xl" />
       </div>
@@ -76,7 +76,7 @@ const QnaPage = () => {
               <button
                 onClick={() => toggleQuestion(item.question)}
                 className={twMerge(
-                  "hover:underline text-xs sm:text-sm text-left font-bold text-zinc-100 flex justify-between items-center p-2.5 rounded  bg-primary dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer",
+                  "hover:underline text-xs sm:text-sm text-left font-bold text-gray-200 flex justify-between items-center p-2.5 rounded  bg-primary dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer dark:text-gray-300",
                   isanswerShowing === item.question && "rounded-b-none"
                 )}
               >
@@ -95,7 +95,7 @@ const QnaPage = () => {
               {isanswerShowing === item.question && (
                 <div
                   className={twMerge(
-                    "hsecol border-t-2 border-gray-100 gap-y-1.5 text-xs  text-gray-700 rounded rounded-t-none p-2.5 bg-emerald-100 dark:bg-[rgba(240,255,251,0.5)] md:text-[16px] dark:text-white"
+                    "hsecol border-t-2 border-gray-100 gap-y-1.5 text-xs  dark:text-gray-200 text-gray-700 rounded rounded-t-none p-2.5 bg-emerald-100 dark:bg-[rgba(240,255,251,0.5)] md:text-[16px] "
                   )}
                 >
                   {item.answer.map((text, index) => (
