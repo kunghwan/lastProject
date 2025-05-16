@@ -17,7 +17,7 @@ const ShareButton = ({ userNickname }: ShareButtonProps) => {
       userNickname
     )}`;
 
-    openAlert("해당 유저의 프로필 링크를 복사할까요?", [
+    openAlert("해당 유저의 프로필 링크를 \n복사할까요?", [
       {
         text: "확인",
         isGreen: true,

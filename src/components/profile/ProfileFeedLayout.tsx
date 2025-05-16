@@ -159,7 +159,7 @@ const ProfileFeedComponent = ({
   }, []);
 
   return (
-    <div className="flex flex-col p-5 border-t-2 border-emerald-200 w-full lg:w-[1024px] mx-auto">
+    <div className="flex flex-col p-3 border-t-2 border-emerald-200 w-full lg:w-[1024px] mx-auto">
       <ul className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {[...postList]
           .sort((a, b) => {
@@ -177,16 +177,16 @@ const ProfileFeedComponent = ({
           })
           .map((post) => (
             <li key={post.id} className="p-1">
-              <div className="flex flex-col gap-1relative hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-2.5 transition-all duration-200 cursor-pointer dark:border dark:border-gray-400">
+              <div className="flex flex-col gap-1 relative hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1 transition-all duration-200 cursor-pointer dark:border dark:border-gray-400">
                 {post.imageUrl ? (
                   <div
                     onClick={() => handleOpenPost(post)}
-                    className="relative overflow-hidden"
+                    className="relative overflow-hidden rounded-lg"
                   >
                     <img
                       src={post.imgs?.[0] || defaultImgUrl}
                       alt="post"
-                      className="w-full h-64 transition-all duration-500 ease-in-out transform hover:scale-[1.02] object-cover rounded"
+                      className="w-full h-96 transition-all duration-500 ease-in-out transform hover:scale-[1.02] object-cover rounded"
                     />
                     {Array.isArray(post.imgs) && post.imgs.length > 1 && (
                       <div className="absolute top-2 right-2 bg-gray-800 opacity-80 text-white text-xs p-1.5 rounded-full">
@@ -195,7 +195,7 @@ const ProfileFeedComponent = ({
                     )}
                   </div>
                 ) : (
-                  <div className="w-full h-64 bg-gray-300 items-center justify-center flex">
+                  <div className="w-full h-96 bg-gray-300 items-center justify-center flex">
                     <img
                       src={defaultImgUrl}
                       alt="기본 이미지"
@@ -249,17 +249,15 @@ const ProfileFeedComponent = ({
           onClick={() => setSelectedPost(null)}
         >
           <div
-            className="bg-white dark:bg-gray-700 rounded-lg w-5/6 md:w-4/5 md:h-4/5 lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform"
+            className="bg-white pb-5 dark:bg-gray-700  rounded-lg w-5/6 md:w-4/5  lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform "
             onClick={(e) => e.stopPropagation()}
           >
-            {/* 닫기 버튼 */}
             <button
               onClick={() => setSelectedPost(null)}
               className="absolute z-40 top-2 right-2 p-1 md:text-2xl md:top-3 md:right-3 text-xl font-bold text-gray-700 dark:text-white hover:text-gray-400 transition-all"
             >
               <HiOutlineX />
             </button>
-
             {/* 이미지 슬라이드 영역 */}
             <div className="relative w-full pt-8 md:pt-10 flex items-center justify-center">
               <img
@@ -292,17 +290,17 @@ const ProfileFeedComponent = ({
             </div>
 
             {/* 게시물 정보 */}
-            <div className="p-1 justify-end flex flex-col pr-2 pl-2 md:pr-10 md:pl-10 h-full">
-              <div className="text-xs text-gray-500 dark:text-gray-300 mt-2 flex justify-between mb-5">
+            <div className="p-3 justify-end flex flex-col pr-2 pl-2 md:h-40 sm:pr-10 sm:pl-10">
+              <div className="text-[10px] text-gray-500 dark:text-gray-300 mt-2 flex justify-between pb-2">
                 <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
                 <div>{getFormattedDate(selectedPost.createdAt)}</div>
               </div>
-              <h2 className="text-lg font-bold mb-2 dark:text-white truncate">
+              <div className="text-lg font-bold pb-4 dark:text-white truncate">
                 {selectedPost.title}
-              </h2>
-              <p className="text-sm text-gray-700 dark:text-gray-200 break-words overflow-y-auto max-h-16 md:max-h-24 pr-1">
+              </div>
+              <div className="text-sm text-gray-700 dark:text-gray-200 break-words overflow-y-auto h-30 pr-2">
                 {selectedPost.content}
-              </p>
+              </div>
             </div>
           </div>
         </div>

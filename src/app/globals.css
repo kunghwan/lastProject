@@ -10,6 +10,10 @@
   --color-primary: var(--color-emerald-400); /* Tailwind emerald-300 */
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 @layer base {
   button,
   a {
@@ -28,18 +32,18 @@
   }
   *::-webkit-scrollbar-thumb {
     /* 	실제로 사용자가 드래그하는 "스크롤 손잡이" */
-    @apply bg-primary rounded-full cursor-pointer hover:bg-primary/60;
+    @apply bg-primary rounded-full cursor-pointer hover:bg-primary/60 bg-clip-padding border-transparent;
   }
 }
 
 @layer components {
   .grayButton {
-    @apply p-3 rounded-full  hover:opacity-80 justify-center flex items-center dark:text-gray-800 text-3xl bg-gray-200;
+    @apply p-3 rounded-full  hover:opacity-80 justify-center flex items-center  text-3xl bg-gray-50 dark:bg-[#444444] dark:text-[#F1F5F9];
   }
   .ykhInputButton {
-    @apply rounded p-4 bg-white w-90 placeholder:text-black outline-none lg:w-120  
+    @apply rounded p-4 bg-gray-50 w-90 placeholder:text-black  lg:w-120 dark:bg-gray-950 
     
-    dark:placeholder:text-gray-900 dark:text-lime-300 border border-primary dark:border-emerald-100;
+    dark:placeholder:text-white dark:text-white border border-primary;
   }
   /* global.css 또는 globals.css */
 }
