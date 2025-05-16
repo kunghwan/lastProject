@@ -381,7 +381,7 @@ const UploadPostPage = () => {
             />
           </div>
 
-          <div className="hsecol gap-y-1">
+          <div className="hsecol gap-y-1  overflow-hidden ">
             <label
               htmlFor="content"
               className=" inline-block w-fit font-bold text-md text-gray-500 dark:text-white"
@@ -393,7 +393,7 @@ const UploadPostPage = () => {
               id="content"
               placeholder="관광지의 소개글이나 리뷰를 작성해주세요."
               className={twMerge(
-                "h-50 shadow-sm resize-none upPostInput darkTextInput [@media(max-width:375px)]:placeholder:text-[0.75rem]"
+                "box-border rounded-sm  h-50 shadow-sm resize-none upPostInput darkTextInput [@media(max-width:375px)]:placeholder:text-[0.75rem]"
               )}
               value={content}
               ref={descRef}
@@ -497,7 +497,7 @@ const UploadPostPage = () => {
             return;
           }}
           className={twMerge(
-            " bg-gray-300 hover:bg-gray-200 transition duration-300  upPostButton"
+            " bg-gray-200 dark:bg-zinc-500 dark:text-gray-300 hover:bg-gray-200 transition duration-300  upPostButton"
           )}
         >
           취소

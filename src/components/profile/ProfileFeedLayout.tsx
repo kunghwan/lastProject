@@ -159,7 +159,7 @@ const ProfileFeedComponent = ({
   }, []);
 
   return (
-    <div className="flex flex-col p-5 border-t-2 border-emerald-200 w-full lg:w-[1024px] mx-auto">
+    <div className="flex flex-col p-3 border-t-2 border-emerald-200 w-full lg:w-[1024px] mx-auto">
       <ul className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {[...postList]
           .sort((a, b) => {
@@ -177,7 +177,7 @@ const ProfileFeedComponent = ({
           })
           .map((post) => (
             <li key={post.id} className="p-1">
-              <div className="flex flex-col gap-1relative hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-2.5 transition-all duration-200 cursor-pointer dark:border dark:border-gray-400">
+              <div className="flex flex-col gap-1 relative hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl p-1 transition-all duration-200 cursor-pointer dark:border dark:border-gray-400">
                 {post.imageUrl ? (
                   <div
                     onClick={() => handleOpenPost(post)}
@@ -186,7 +186,7 @@ const ProfileFeedComponent = ({
                     <img
                       src={post.imgs?.[0] || defaultImgUrl}
                       alt="post"
-                      className="w-full h-64 transition-all duration-500 ease-in-out transform hover:scale-[1.02] object-cover rounded"
+                      className="w-full h-96 transition-all duration-500 ease-in-out transform hover:scale-[1.02] object-cover rounded"
                     />
                     {Array.isArray(post.imgs) && post.imgs.length > 1 && (
                       <div className="absolute top-2 right-2 bg-gray-800 opacity-80 text-white text-xs p-1.5 rounded-full">
@@ -195,7 +195,7 @@ const ProfileFeedComponent = ({
                     )}
                   </div>
                 ) : (
-                  <div className="w-full h-64 bg-gray-300 items-center justify-center flex">
+                  <div className="w-full h-96 bg-gray-300 items-center justify-center flex">
                     <img
                       src={defaultImgUrl}
                       alt="기본 이미지"

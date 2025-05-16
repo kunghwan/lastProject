@@ -95,3 +95,13 @@ const followUser = async (followerUid: string, targetUid: string) => {
     console.error("❌ 구독 실패:", error);
   }
 };
+
+export const getFollowers = async (uid: string): Promise<User[]> => {
+  const snap = await getDocs(collection(dbService, "users", uid, "followers"));
+  return snap.docs.map((doc) => doc.data() as User);
+};
+
+export const getFollowing = async (uid: string): Promise<User[]> => {
+  const snap = await getDocs(collection(dbService, "users", uid, "following"));
+  return snap.docs.map((doc) => doc.data() as User);
+};

@@ -10,6 +10,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { validateNickname, validateBio } from "@/lib/validations";
 import ProfileFeedComponent from "./ProfileFeedLayout";
 import { useAlertModal } from "../AlertStore";
+import Router from "next/router";
+import { useRouter } from "next/navigation";
 
 const ProfileLayout = ({
   isMyPage,
@@ -151,8 +153,6 @@ const ProfileLayout = ({
     }, {} as Record<string, string>);
   }, [tags]);
 
-  const firstPost = useMemo(() => posts[0] ?? null, [posts]);
-
   useEffect(() => {
     if (!userData?.uid) return;
     const followersRef = collection(
@@ -170,6 +170,8 @@ const ProfileLayout = ({
     return () => unsubscribe();
   }, [userData?.uid]);
   const { openAlert } = useAlertModal();
+
+  const router = useRouter();
 
   return (
     <div className="flex flex-col w-full ">
@@ -246,7 +248,10 @@ const ProfileLayout = ({
                 <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
                   게시물 <span>{actualPostCount}</span>
                 </div>
-                <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
+                <div
+                  className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800"
+                  onClick={() => router.push("/subscribers")}
+                >
                   구독수 <span>{followerCount}</span>
                 </div>
               </div>
@@ -313,7 +318,10 @@ const ProfileLayout = ({
                 <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
                   게시물 <span>{actualPostCount}</span>
                 </div>
-                <div className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800 ">
+                <div
+                  className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800"
+                  onClick={() => router.push("/subscribers")}
+                >
                   구독수 <span>{followerCount}</span>
                 </div>
               </div>
@@ -351,8 +359,8 @@ const ProfileLayout = ({
         )}
       </div>
       {editOpen && (
-        <div className="fixed inset-0  bg-opacity-50 z-60 flex justify-center items-center ">
-          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-xl w-full max-w-md">
+        <div className="fixed inset-0  bg-opacity-50 z-60 flex justify-center items-center bg-gray-700/85 dark:bg-gray-800/85 ">
+          <div className="bg-white dark:bg-[#3c3c3c] p-6 rounded-xl shadow-xl w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">프로필 수정</h2>
 
             <label className="block mb-2">닉네임</label>
@@ -375,7 +383,7 @@ const ProfileLayout = ({
                 setEditBio(e.target.value);
                 setBioError("");
               }}
-              className="w-full p-2 border rounded mb-1"
+              className="w-full p-2 border rounded mb-1 resize-none h-30 "
             />
             {bioError && (
               <p className="text-red-500 text-sm mb-2">{bioError}</p>

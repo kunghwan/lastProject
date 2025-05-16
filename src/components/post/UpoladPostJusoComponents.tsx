@@ -229,7 +229,7 @@ const JusoComponents = ({
         </div>
       )}
       {isJusoUlShowing && (
-        <ul className="mt-2 hsecol gap-y-2 bg-gray-200 dark:bg-green-50/80 border border-gray-400  rounded p-2.5 max-h-40 overflow-y-auto  ">
+        <ul className="mt-2 hsecol gap-y-2 bg-gray-200 dark:bg-[#666666] border border-gray-400  rounded p-2.5 max-h-40 overflow-y-auto  ">
           {searchResults.length === 0 ? (
             <li>
               <p className="font-bold flex justify-center">
