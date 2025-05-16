@@ -40,7 +40,7 @@ html {
   .ykhInputButton {
     @apply rounded p-4 bg-gray-50 w-90 placeholder:text-black  lg:w-120 dark:bg-gray-950 
     
-    dark:placeholder:text-white dark:text-white border border-primary dark:border-none focus:border-primary;
+    dark:placeholder:text-white dark:text-white border border-primary;
   }
   /* global.css 또는 globals.css */
 }
