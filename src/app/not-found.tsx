@@ -14,7 +14,7 @@ const NotFound = () => {
       </p>
       <button
         onClick={() => navi.push("/")}
-        className="hover:scale-105 hover:animate-pulse flex gap-x-2.5 items-center font-bold p-2.5 rounded w-40 bg-primary dark:bg-[rgba(116,212,186,0.5)] text-white hover:shadow-md whitespace-nowrap"
+        className="hover:scale-105  hover:animate-pulse transition-transform duration-500 ease-in-out flex gap-x-2.5 items-center font-bold p-2.5 rounded w-40 bg-primary dark:bg-[rgba(116,212,186,0.5)] text-white hover:shadow-md whitespace-nowrap"
       >
         <span>
           <FaArrowLeft className="" />
