@@ -100,7 +100,7 @@ export default function SubscribersPage() {
   if (loading)
     return (
       <div className="p-4">
-        <Loaiding />
+        <Loaiding message="구독자를 찾고 있습니다..." />
       </div>
     );
 
