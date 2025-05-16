@@ -393,7 +393,7 @@ const UploadPostPage = () => {
               id="content"
               placeholder="관광지의 소개글이나 리뷰를 작성해주세요."
               className={twMerge(
-                "box-border rounded-sm h-50 shadow-sm resize-none upPostInput darkTextInput [@media(max-width:375px)]:placeholder:text-[0.75rem]"
+                "box-border rounded-sm  h-50 shadow-sm resize-none upPostInput darkTextInput [@media(max-width:375px)]:placeholder:text-[0.75rem]"
               )}
               value={content}
               ref={descRef}
