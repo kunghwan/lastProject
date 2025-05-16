@@ -19,7 +19,7 @@ const SearchForm = ({
   return (
     <>
       <form
-        className="group flex dark:text-white dark:bg-[#4B4B4B] bg-white rounded-full shadow-md p-2 outline-none border border-gray-300 focus-within:bg-primary "
+        className="group flex dark:text-white dark:bg-[#4B4B4B] bg-gray-50 rounded-full shadow-md p-2 outline-none border border-gray-100 dark:border-[#3B3B3B] focus-within:bg-primary focus-within:border-emerald-300"
         onSubmit={(e) => {
           e.preventDefault();
           handleSearch();
