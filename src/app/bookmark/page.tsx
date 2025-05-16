@@ -230,7 +230,7 @@ const BookmarkPage = () => {
             <div
               key={post.id}
               onClick={() => handleOpenPost(post)}
-              className="hover:bg-gray-100 border overflow-hidden border-gray-200 dark:hover:bg-gray-600 rounded-2xl p-1.5 cursor-pointer relative"
+              className="hover:bg-gray-100 border overflow-hidden border-gray-200  dark:border-gray-600 dark:hover:bg-zinc-700 rounded-2xl p-1.5 cursor-pointer relative"
             >
               <div className="flex items-center gap-1.5 ">
                 <img
@@ -245,7 +245,7 @@ const BookmarkPage = () => {
                 <img
                   src={image}
                   alt="Post image"
-                  className="w-full h-64 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01] rounded-xl"
+                  className="w-full h-80 object-cover mb-2 transition-all duration-500 ease-in-out transform hover:scale-[1.01] rounded-xl"
                 />
                 {Array.isArray(post.imgs) && post.imgs.length > 1 && (
                   <div className="absolute top-2 right-2 bg-gray-800 opacity-80 text-white text-xs p-1.5 rounded-xl">
