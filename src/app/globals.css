@@ -28,7 +28,7 @@ html {
     @apply bg-gray-100 rounded-full cursor-pointer;
   }
   .dark *::-webkit-scrollbar-track {
-    background-color: #484848;
+    background-color: #4c4c4c;
   }
   *::-webkit-scrollbar-thumb {
     /* 	실제로 사용자가 드래그하는 "스크롤 손잡이" */
