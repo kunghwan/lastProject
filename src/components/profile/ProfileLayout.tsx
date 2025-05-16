@@ -93,8 +93,8 @@ const ProfileLayout = ({
       await uploadBytes(storageRef, imageFile);
       const newUrl = await getDownloadURL(storageRef);
       imageUrl = newUrl;
-      setPreviewImage(newUrl); // ✅ 수정 완료 후에만 바깥에 반영
-      setEditPreviewImage(newUrl); // ✅ 모달 미리보기도 동기화
+      setPreviewImage(newUrl);
+      setEditPreviewImage(newUrl);
     }
 
     try {
@@ -103,14 +103,39 @@ const ProfileLayout = ({
         bio: editBio,
         profileImageUrl: imageUrl,
       });
-      alert("프로필이 수정되었습니다.");
-      setEditOpen(false);
-      location.reload();
+
+      openAlert(
+        "프로필이 수정되었습니다.",
+        [
+          {
+            text: "확인",
+            isGreen: true,
+            onClick: () => {
+              setEditOpen(false);
+              location.reload();
+            },
+          },
+        ],
+        "완료"
+      );
     } catch (err) {
-      alert("수정에 실패했습니다.");
+      openAlert(
+        "수정에 실패했습니다.\n다시 시도해주세요.",
+        [{ text: "닫기" }],
+        "오류"
+      );
       console.error(err);
     }
-  }, [editNickname, editBio, imageFile, previewImage, userData.uid]);
+  }, [
+    editNickname,
+    editBio,
+    imageFile,
+    previewImage,
+    userData.uid,
+    setEditOpen,
+    setPreviewImage,
+    setEditPreviewImage,
+  ]);
 
   const actualPostCount = useMemo(
     () => posts.filter((post) => post.id !== "default").length,
