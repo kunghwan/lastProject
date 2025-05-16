@@ -350,7 +350,7 @@ const SignupForm = () => {
 
   return (
     <div className="flex flex-col items-center justify-start mt-1  ">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-400 rounded-lg p-6 dark:border-gray-500 ">
+      <div className="w-full max-w-md bg-white dark:bg-[#484848] border border-gray-400 rounded-lg p-6 dark:border-gray-500 ">
         {/* form 내용 */}
         <form className="space-y-8">
           {InfoAccount.map((info, index) => {
