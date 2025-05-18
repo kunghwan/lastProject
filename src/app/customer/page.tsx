@@ -120,7 +120,7 @@ const QnaPage = () => {
               <button
                 onClick={() => toggleQuestion(item.question)}
                 className={twMerge(
-                  "hover:underline text-xs sm:text-sm text-left font-bold text-white flex justify-between items-center p-2.5 rounded bg-emerald-200 focus:bg-primary dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer dark:text-gray-300",
+                  "hover:underline text-xs sm:text-sm text-left font-bold text-white flex justify-between items-center p-2.5 rounded bg-green-300 focus:bg-primary dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer dark:text-gray-300",
                   isanswerShowing === item.question && "rounded-b-none"
                 )}
               >
