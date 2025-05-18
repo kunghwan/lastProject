@@ -78,7 +78,7 @@ const MapPage = () => {
 
       const largeMarkerImage = new maps.MarkerImage(
         "/image/pointMarker.png", // 강조용 이미지(커스텀 가능)
-        new maps.Size(45, 60),
+        new maps.Size(50, 60),
         { offset: new maps.Point(20, 55) }
       );
 

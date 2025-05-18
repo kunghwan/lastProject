@@ -28,8 +28,9 @@ const PlaceList = ({
   return (
     <div
       className={twMerge(
-        "hidden md:flex absolute top-0 right-0 w-80 p-4 h-full bg-gray-50 border border-gray-200 flex-col rounded-3xl z-10 dark:bg-[#444444] dark:border-[#444444] dark:text-[#E5E7EB] transition-transform duration-300 ease-in-out",
-        isOpen && "translate-x-[-16px]"
+        "hidden md:flex absolute top-0 right-4 w-80 p-4 h-full bg-gray-50 border border-gray-200 flex-col rounded-3xl z-10 dark:bg-[#444444] dark:border-[#444444] dark:text-[#E5E7EB]",
+        "transform transition-transform duration-300 ease-in-out", // 애니메이션 부드럽게
+        isOpen ? "translate-x-0" : "translate-x-[80px]" //
       )}
     >
       <button
