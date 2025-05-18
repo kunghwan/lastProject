@@ -452,10 +452,7 @@ const IdFind = () => {
   );
 
   return (
-    <form
-      onSubmit={(e: FormEvent) => e.preventDefault()}
-      className="overflow-y-auto overflow-visible min-h-screen hide-scrollbar "
-    >
+    <form onSubmit={(e: FormEvent) => e.preventDefault()}>
       {/* 알림창 */}
       {alertMessage && <AlertModal />}
 
@@ -494,7 +491,7 @@ const IdFind = () => {
               type={idf.type || "text"}
               placeholder={idf.label}
               className="   focus:border-primary bg-white  md:placeholder:text-sm  outline-none lg:w-100 w-70    border-gray-400 
-              placeholder:text-gray-500 border dark:border-gray-500  rounded-lg dark:placeholder:text-white  dark:text-white dark:bg-[#484848] CommonInput"
+              placeholder:text-gray-500 border dark:border-gray-500  rounded-lg dark:placeholder:text-white  dark:text-white dark:bg-zinc-700 CommonInput"
               value={idf.value}
               onChange={idf.onChange}
               onKeyDown={(e) => handleKeyDown(e, index)}
