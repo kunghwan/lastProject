@@ -24,6 +24,9 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  .qnamodalp {
+    @apply text-sm md:text-lg text-gray-700 dark:text-zinc-400 [@media(max-width:375px)]:text-[11px];
+  }
   .green-scrollbar::-webkit-scrollbar-button {
     display: none;
     height: 0;

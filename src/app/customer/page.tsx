@@ -6,6 +6,7 @@ import { IoClose } from "react-icons/io5";
 import { LuMailPlus } from "react-icons/lu";
 import { IoSearchOutline } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
+import { AiOutlineQuestionCircle } from "react-icons/ai";
 
 interface QnA {
   question: string;
@@ -14,6 +15,7 @@ interface QnA {
 const QnaPage = () => {
   //useState로 상태 관리(openQuestion 상태를 추가하여 현재 열려 있는 질문을 관리,null이면 아무 질문도 열려 있지 않은 상태)
   const [isanswerShowing, setIsanswerShowing] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const qnaRef = useRef<HTMLInputElement>(null);
   //클릭한 질문이 이미 열려 있으면 닫고, 그렇지 않으면 해당 질문을 엽니다.
@@ -38,6 +40,7 @@ const QnaPage = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setIsanswerShowing(null);
+        return setIsModalOpen(false);
       }
     };
 
@@ -48,21 +51,62 @@ const QnaPage = () => {
   }, []);
 
   return (
-    <div className="mt-5 relative min-h-screen  hsecol gap-y-2.5 px-5  ">
-      <div className="relative z-[2]   max-w-96 mx-auto max-[700px]:px-2.5">
-        <input
-          type="text"
-          placeholder="어떤 질문을 찾고 계신가요?"
-          ref={qnaRef}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className=" outline-none min-w-80 focus:border-primary   sm:min-w-96  p-2.5 sm:w-4/5  rounded-full border bg-white dark:bg-zinc-700 dark:placeholder:text-gray-100 border-gray-500 dark:border-white dark:text-white placeholder-gray-400"
-        />
-        <IoSearchOutline className=" absolute hover:text-[rgba(151,218,200)] dark:hover:text-[rgba(151,218,200,0.5)] right-5  top-1/2 -translate-y-1/2 text-green-950 dark:text-white text-3xl" />
+    <div className="mt-5  relative min-h-full  hsecol gap-y-2.5 px-5  ">
+      <div className=" flex gap-x-1 ">
+        <div className="relative z-[2]   max-w-full   mx-auto [@media(max-width:375px)]:mx-0">
+          <input
+            type="text"
+            placeholder="어떤 질문을 찾고 계신가요?"
+            ref={qnaRef}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className=" outline-none min-w-80 [@media(max-width:360px)]:min-w-70 focus:border-primary max-w-96 p-2.5  sm:w-4/5  rounded-full border bg-white dark:bg-zinc-700 dark:placeholder:text-gray-100 border-gray-500 dark:border-white dark:text-white [@media(max-width:344px)]:p-2 placeholder-gray-400"
+          />
+          <IoSearchOutline className=" absolute hover:text-[rgba(151,218,200)] dark:hover:text-[rgba(151,218,200,0.5)] right-5 [@media(max-width:375px)]:right-0 [@media(max-width:375px)]:left-70 [@media(max-width:344px)]:text-md [@media(max-width:360px)]:hidden top-1/2 -translate-y-1/2 text-green-950 dark:text-white text-3xl" />
+        </div>
+        <div
+          onClick={() => setIsModalOpen(true)}
+          className={twMerge(
+            "relative z-[2] group flex items-center justify-center w-12 h-12  hover:bg-gray-50 dark:hover:bg-zinc-700 hover:text-primary  rounded-xl cursor-pointer"
+          )}
+        >
+          <AiOutlineQuestionCircle className="text-2xl [@media(max-width:375px)]:text-xl text-gray-300 dark:text-gray-400 group-hover:text-primary " />
+          <div className="absolute top-full mt-1 z-30 left-1/2 -translate-x-1/2  border border-gray-100  dark:border-gray-800 hidden group-hover:block bg-emerald-50 dark:bg-[#35423a] text-xs text-zinc-600 dark:text-gray-300 px-2 py-1  rounded whitespace-nowrap">
+            방방콕콕이란?
+          </div>
+        </div>
       </div>
-
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 z-40 flex items-center justify-center bg-white/60 dark:bg-zinc-900/60 "
+          onClick={() => setIsModalOpen(false)}
+        >
+          {/* w-11/12 전체 가로폭(width)의 약 91.6%  */}
+          <div
+            onClick={(e) => e.stopPropagation()} // 이벤트 전파 방지
+            className="hsecol z-50 justify-center items-center bg-white border border-gray-200 dark:border-zinc-700 dark:bg-zinc-800 p-6 rounded shadow-lg w-11/12 max-w-sm md:max-w-xl relative [@media(max-width:375px)]:max-w-xs"
+          >
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-2 right-2 text-xl "
+            >
+              <IoClose />
+            </button>
+            <h2 className="text-lg md:text-xl font-bold mb-2">방방콕콕이란?</h2>
+            <p className="qnamodalp">
+              방방콕콕은 대전의 여행장소를 올리는 sns입니다!
+            </p>
+            <p className="qnamodalp">
+              대전의 추천장소와 정보를 확인할 수 있습니다.
+            </p>
+            <p className="qnamodalp">
+              다녀온 장소에 대한 글을 올려 다른 유저에게 추천해 보세요!
+            </p>
+          </div>
+        </div>
+      )}
       <hr className="mb-2 text-gray-300" />
-      <div className="z-[4]">
+      <div className="z-[4] mt-1">
         <ul className="">
           {filteredQna.length === 0 && (
             <li className="text-gray-800 dark:text-white">
@@ -76,7 +120,7 @@ const QnaPage = () => {
               <button
                 onClick={() => toggleQuestion(item.question)}
                 className={twMerge(
-                  "hover:underline text-xs sm:text-sm text-left font-bold text-white flex justify-between items-center p-2.5 rounded  bg-primary dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer dark:text-gray-300",
+                  "hover:underline text-xs sm:text-sm text-left font-bold text-white flex justify-between items-center p-2.5 rounded bg-green-300 focus:bg-primary dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer dark:text-gray-300",
                   isanswerShowing === item.question && "rounded-b-none"
                 )}
               >
@@ -108,11 +152,11 @@ const QnaPage = () => {
         </ul>
       </div>
 
-      <div className="mt-5 font-bold hsecol items-center pb-10     w-full xl:mb-16">
+      <div className="mt-5 font-bold hsecol items-center     w-full xl:mb-16">
         <p className="text-gray-500 dark:text-white text-[13px] md:text-xl">
           추가로 질문사항이 있으시면
         </p>
-        <div className="z-[4] flex  text-[13px] text-gray-500 dark:text-white  md:text-xl">
+        <div className="z-[4] flex  text-[13px] text-gray-500 dark:text-white  md:text-xl [@media(max-width:360px)]:text-[12px]">
           <a
             href="https://mail.naver.com/write?to=test@test.com"
             target="_blank"
