@@ -256,7 +256,7 @@ const PwFindResult = () => {
   }, [inputName, inputPhone, inputEmail, inputErrors]);
 
   return (
-    <div className="p-2 overflow-auto min-h-screen sm:overflow-visible lg:overflow-visible md:overflow-visible  ">
+    <div className="p-2   ">
       {/* 상단 아이디/비밀번호 찾기 헤더 */}
       <div className="w-full bg-primary p-4 whitespace-nowrap dark:bg-[rgba(116,212,186,0.5)]  ">
         <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
@@ -290,7 +290,7 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="이름 입력"
-            className="CommonInput dark:bg-[#666666]  "
+            className="CommonInput dark:bg-zinc-700   "
           />
           {inputErrors.name && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.name}</p>
@@ -305,7 +305,7 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="전화번호 입력"
-            className="CommonInput dark:bg-[#666666] "
+            className="CommonInput dark:bg-zinc-700  "
           />
           {inputErrors.phone && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.phone}</p>
@@ -320,7 +320,7 @@ const PwFindResult = () => {
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             placeholder="이메일 입력"
-            className="CommonInput dark:bg-[#666666] "
+            className="CommonInput dark:bg-zinc-700  "
           />
           {inputErrors.email && (
             <p className="text-sm text-red-500 ml-1">{inputErrors.email}</p>
@@ -360,7 +360,7 @@ const PwFindResult = () => {
                   onChange={handleChange}
                   onKeyDown={handleKeyDown}
                   placeholder="새비밀번호"
-                  className={twMerge(" CommonInput dark:bg-[#666666]  ")}
+                  className={twMerge(" CommonInput dark:bg-zinc-700  ")}
                 />
                 {validation.newPassword?.message && (
                   <p className="text-sm text-red-500 ml-1">
@@ -377,7 +377,7 @@ const PwFindResult = () => {
                   onChange={handleChange}
                   onKeyDown={handleKeyDown}
                   placeholder="새 비밀번호 확인"
-                  className={twMerge("CommonInput dark:bg-[#666666]  ")}
+                  className={twMerge("CommonInput dark:bg-zinc-700  ")}
                 />
                 {validation.confirmPassword?.message && (
                   <p className="text-sm text-red-500 ml-1">

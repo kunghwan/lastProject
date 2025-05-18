@@ -493,36 +493,36 @@ const SignupForm = () => {
                   // 체크박스 렌더링
                   <>
                     <div className="flex items-center ">
-                      <input
-                        id={inputId}
-                        ref={locationAgreeRef}
-                        name={info.name}
-                        type="checkbox"
-                        checked={value as boolean}
-                        onChange={handleChange}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            const button =
-                              document.getElementById("signup-next-button");
-                            button?.click();
-                          }
-                        }}
-                        className="w-4 h-4 mr-2"
-                      />
-                      <label
-                        htmlFor={inputId}
-                        className="text-sm text-gray-700 dark:text-gray-300"
-                      >
-                        {info.label}
+                      <label className="flex items-start cursor-pointer">
+                        <input
+                          id={inputId}
+                          ref={locationAgreeRef}
+                          name={info.name}
+                          type="checkbox"
+                          checked={value as boolean}
+                          onChange={handleChange}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              const button =
+                                document.getElementById("signup-next-button");
+                              button?.click();
+                            }
+                          }}
+                          className="w-4 h-4 mt-1 mr-2"
+                        />
+                        <div className="flex flex-col">
+                          <span className="text-sm text-gray-700 dark:text-gray-300">
+                            {info.label}
+                          </span>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            위치정보는 주변 추천 장소 검색, 맞춤 콘텐츠 제공
+                            등을 위해 사용됩니다.
+                          </p>
+                        </div>
                       </label>
                     </div>
                     {/* ✅ 위치정보 설명문구 조건부로 추가 (Fragment 내부에 있어야 함) */}
-
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6">
-                      위치정보는 주변 추천 장소 검색, 맞춤 콘텐츠 제공 등을 위해
-                      사용됩니다.
-                    </p>
                   </>
                 )}
               </div>
