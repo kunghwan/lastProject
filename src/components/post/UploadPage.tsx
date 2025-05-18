@@ -305,6 +305,22 @@ const UploadPostPage = () => {
     titleRef.current?.focus();
   }, []);
 
+  useEffect(() => {
+    if (!user) {
+      return openAlert(
+        "로그인 후 사용해주세요.",
+        [
+          {
+            text: "확인",
+            isGreen: true,
+            autoFocus: true,
+          },
+        ],
+        "알림"
+      );
+    }
+  }, [user, openAlert]);
+
   //! 마우스 휠 가로로 변경
   useEffect(() => {
     const el = scrollRef.current; //ref로 지정한 DOM 요소(예: <div ref={scrollRef}>)를 가져옴
