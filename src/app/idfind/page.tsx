@@ -19,6 +19,7 @@ import { dbService, FBCollection } from "@/lib/firebase";
 import AlertModal from "@/components/AlertModal";
 import Link from "next/link";
 import { useAlertModal } from "@/components/AlertStore";
+import FindHeader from "@/components/ui/FindHeader";
 
 // 세션 저장 키 정의
 const STORAGE_KEY = "idFindForm";
@@ -457,25 +458,7 @@ const IdFind = () => {
       {alertMessage && <AlertModal />}
 
       {/* 상단 아이디/비밀번호 찾기 헤더 */}
-      <div className="w-full bg-primary p-4 whitespace-nowrap dark:bg-[rgba(116,212,186,0.5)]  ">
-        <div className="flex md:flex-row items-center gap-4 md:gap-20 p-4 lg:justify-between">
-          <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
-            <FaIdCard className="text-amber-500 text-4xl dark:text-amber-700" />
-            <p className="font-bold text-amber-500 dark:text-amber-700">
-              아이디 찾기
-            </p>
-          </div>
-          <div className="flex items-center w-full md:w-80 gap-2 p-2 rounded">
-            <TbPassword className="text-blue-500 text-4xl dark:text-blue-700" />
-            <Link
-              href="/pwfind"
-              className="font-bold text-black-500  whitespace-nowrap dark:text-white"
-            >
-              비밀번호 찾기
-            </Link>
-          </div>
-        </div>
-      </div>
+      <FindHeader />
 
       {/* 입력폼 렌더링 */}
       {IdFinds.map((idf, index) => (
