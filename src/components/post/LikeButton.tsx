@@ -2,7 +2,13 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { GoHeart, GoHeartFill } from "react-icons/go";
-import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  getDoc,
+} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { dbService, FBCollection } from "@/lib/firebase";
 import { AUTH } from "@/contextapi/context";
@@ -31,6 +37,12 @@ const LikeButton = ({ postId, likedBy = [], postOwnerId }: LikeButtonProps) => {
     }
 
     const postRef = doc(dbService, FBCollection.POSTS, postId);
+    const postSnap = await getDoc(postRef);
+
+    if (!postSnap.exists()) {
+      console.warn("❌ 게시물이 존재하지 않습니다:", postId);
+      return;
+    }
 
     if (isLiked) {
       setLikes((prev) => prev.filter((uid) => uid !== user.uid));

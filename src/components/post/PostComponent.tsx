@@ -219,7 +219,7 @@ const PostComponent = () => {
 
                 {Array.isArray(post.imgs) && post.imgs.length > 1 && (
                   <div className="absolute top-3 right-3 bg-gray-800 opacity-70 text-white text-xs p-2 rounded-full">
-                    +{post.imgs.length}
+                    +{post.imgs.length - 1}
                   </div>
                 )}
               </div>
