@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { twMerge } from "tailwind-merge";
 import { AUTH } from "@/contextapi/context";
 import { IoPersonSharp, IoStar, IoMenu } from "react-icons/io5";
@@ -59,13 +59,26 @@ const Navbar = () => {
   );
 
   const handleToggleNavMenu = useCallback(() => {
-    setIsNavMenuOpen((prev) => !prev);
+    setIsNavMenuOpen((prev) => {
+      localStorage.setItem("isNavMenuOpen", String(!prev));
+      return !prev;
+    });
     setIsGridMenuVisible((prev) => !prev);
   }, []);
 
   const closeNavMenu = useCallback(() => {
     setIsNavMenuOpen(false);
+    localStorage.setItem("isNavMenuOpen", "false");
     setTimeout(() => setIsGridMenuVisible(true), 100);
+  }, []);
+
+  //! pc nav 새로고침해도 상태유지
+  useEffect(() => {
+    const saved = localStorage.getItem("isNavMenuOpen");
+    if (saved !== null) {
+      setIsNavMenuOpen(saved === "true");
+      setIsGridMenuVisible(!(saved === "true"));
+    }
   }, []);
 
   const baseNavStyle =
