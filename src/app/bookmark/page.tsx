@@ -317,68 +317,86 @@ const BookmarkPage = () => {
       <div className="col-span-2 lg:col-span-3 pb-20 ">
         <UpPlaceBookMark />
       </div>
-      {selectedPost && (
-        <div
-          className="fixed inset-0 z-[999] bg-black/30 backdrop-blur-sm flex justify-center items-center"
-          onClick={() => setSelectedPost(null)}
-        >
-          <div
-            className="bg-white pb-5 dark:bg-gray-700  rounded-lg w-5/6 md:w-4/5  lg:w-1/2 relative overflow-y-auto transition-all duration-300 transform "
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setSelectedPost(null)}
-              className="absolute z-40 top-2 right-2 p-1 md:text-2xl md:top-3 md:right-3 text-xl font-bold text-gray-700 dark:text-white hover:text-gray-400 transition-all"
-            >
-              <HiOutlineX />
-            </button>
-            {/* 이미지 슬라이드 영역 */}
-            <div className="relative w-full pt-8 md:pt-10 flex items-center justify-center">
-              <img
-                src={
-                  modalImages.length > 0
-                    ? modalImages[currentIndex]
-                    : selectedPost.imageUrl?.[0] || defaultImgUrl
-                }
-                alt={`image-${currentIndex}`}
-                className="object-contain md:w-140 h-80 md:h-120 rounded"
-                loading="lazy"
-              />
+      {sortedPosts.map((post) => {
+        const image =
+          typeof post.imageUrl === "string"
+            ? post.imageUrl
+            : Array.isArray(post.imageUrl)
+            ? post.imageUrl[0]
+            : null;
 
-              {modalImages.length > 1 && (
-                <>
-                  <button
-                    onClick={handlePrev}
-                    className="absolute left-3 text-2xl text-gray-700 dark:text-white hover:text-gray-400 rounded-full p-1.5 hover:bg-black/80 hover:scale-110 transition-all bg-white/40"
-                  >
-                    <FaChevronLeft />
-                  </button>
-                  <button
-                    onClick={handleNext}
-                    className="absolute right-3 text-2xl bg-white/40 text-gray-700 dark:text-white hover:text-gray-400 rounded-full p-1.5 hover:bg-black/80 hover:scale-110 transition-all"
-                  >
-                    <FaChevronRight />
-                  </button>
-                </>
+        const safePostImage =
+          image && image.trim() !== "" && image !== "undefined"
+            ? image
+            : "/image/logo1.png";
+
+        const safeProfileImage =
+          post.userProfileImage &&
+          post.userProfileImage.trim() !== "" &&
+          post.userProfileImage !== "undefined"
+            ? post.userProfileImage
+            : "/image/logo1.png";
+
+        return (
+          <div
+            key={post.id}
+            onClick={() => handleOpenPost(post)}
+            className="hover:bg-gray-100 border overflow-hidden border-gray-200  dark:border-gray-600 dark:hover:bg-zinc-700 rounded-2xl p-1.5 cursor-pointer relative"
+          >
+            <div className="flex items-center gap-1.5 ">
+              <img
+                src={safeProfileImage}
+                alt="userProfileImage"
+                className="w-8 h-8 rounded-2xl"
+              />
+              <div className="font-bold">{post.userNickname}</div>
+            </div>
+
+            <div className="mt-2 relative rounded-xl overflow-hidden">
+              <img
+                src={safePostImage}
+                alt="Post image"
+                className="w-full h-80 object-cover transition-all duration-500 ease-in-out transform hover:scale-[1.01] rounded-xl"
+              />
+              {Array.isArray(post.imgs) && post.imgs.length > 1 && (
+                <div className="absolute top-2 right-2 bg-gray-800 opacity-80 text-white text-xs p-1.5 rounded-xl">
+                  +{post.imgs.length}
+                </div>
               )}
             </div>
 
-            {/* 게시물 정보 */}
-            <div className="p-3 justify-end flex flex-col pr-2 pl-2 md:h-40 sm:pr-10 sm:pl-10">
-              <div className="text-[10px] text-gray-500 dark:text-gray-300 mt-2 flex justify-between pb-2">
-                <div>장소 : {selectedPost.lo?.address || "주소 없음"}</div>
-                <div>{getFormattedDate(selectedPost.createdAt)}</div>
+            <div className="pt-2 pb-1 flex justify-between items-center">
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleLike(post.id!);
+                }}
+                className="flex items-center"
+              >
+                <LikeButton
+                  postId={post.uid}
+                  likedBy={post.likes}
+                  postOwnerId={post.uid}
+                />
               </div>
-              <div className="text-lg font-bold pb-4 dark:text-white truncate">
-                {selectedPost.title}
-              </div>
-              <div className="text-sm text-gray-700 dark:text-gray-200 break-words overflow-y-auto h-30 pr-2">
-                {selectedPost.content}
+              <div className="items-baseline text-end text-gray500 text-sm">
+                {getTimeAgo(post.createdAt)}
               </div>
             </div>
+            <p className="truncate font-bold">{post.title}</p>
+            <div className="flex flex-wrap">
+              {post.tags.map((tag: Tag) => (
+                <div
+                  key={tag.id}
+                  className="px-2 py-1 text-xs text-gray-600 dark:text-gray-300"
+                >
+                  <p>{tag.name}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })}
 
       <TopButton />
     </div>

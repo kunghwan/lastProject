@@ -22,9 +22,9 @@ const ClientPage = ({ username }: { username: string }) => {
     return (
       <Link
         href={"/"}
-        className="flex item-center justify-center hover:scale-105 cursor-pointer p-10"
+        className="flex item-center justify-center font-bold hover:scale-105 hover:text-gray-700 cursor-pointer p-10"
       >
-        없는 유저입니다. 홈으로 가시겠습니까?
+        없는 유저입니다.😢 홈으로 가시겠습니까?
       </Link>
     );
 

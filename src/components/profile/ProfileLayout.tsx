@@ -250,7 +250,11 @@ const ProfileLayout = ({
                 </div>
                 <div
                   className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800"
-                  onClick={() => router.push("/subscribers")}
+                  onClick={() => {
+                    if (isMyPage) {
+                      router.push("/subscribers");
+                    }
+                  }}
                 >
                   구독수 <span>{followerCount}</span>
                 </div>
@@ -320,7 +324,11 @@ const ProfileLayout = ({
                 </div>
                 <div
                   className="flex gap-2.5 p-2.5 hover:scale-103 hover:animate-pulse transition-all cursor-pointer active:text-gray-800"
-                  onClick={() => router.push("/subscribers")}
+                  onClick={() => {
+                    if (isMyPage) {
+                      router.push("/subscribers");
+                    }
+                  }}
                 >
                   구독수 <span>{followerCount}</span>
                 </div>

@@ -106,12 +106,10 @@ export default function SubscribersPage() {
 
   return (
     <div className="p-6 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">👥 구독 정보</h1>
-
       <section className="mb-10">
-        <h2 className="text-xl font-semibold mb-2">
+        <h1 className="text-2xl font-semibold mb-6">
           📥 나를 구독한 유저 ({followers.length})
-        </h2>
+        </h1>
         {followers.length === 0 ? (
           <p className="text-gray-500">아직 나를 팔로우한 유저가 없습니다.</p>
         ) : (
@@ -139,7 +137,7 @@ export default function SubscribersPage() {
         )}
       </section>
 
-      <section>
+      {/* <section>
         <h2 className="text-xl font-semibold mb-2">
           📤 내가 구독한 유저 ({following.length})
         </h2>
@@ -168,7 +166,7 @@ export default function SubscribersPage() {
             ))}
           </ul>
         )}
-      </section>
+      </section> */}
     </div>
   );
 }
