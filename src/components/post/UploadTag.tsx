@@ -125,15 +125,16 @@ const UploadTag = ({
         >
           태그
         </label>
-        <div className="flex ">
+        <div className="flex  border-0 ">
           <input
             id="tags"
             type="text"
             value={tag}
             onChange={(e) => setTag(e.target.value)}
             ref={tagRef}
+            //Todo: peer는 Tailwind CSS에서 형제 요소 간의 상호작용 스타일링
             className={twMerge(
-              "w-full upPostInput rounded-r-none border-r-0 shadow-sm darkTextInput [@media(max-width:375px)]:placeholder:text-[0.75rem]"
+              "peer w-full upPostInput rounded-r-none border-r-0 shadow-sm darkTextInput [@media(max-width:375px)]:placeholder:text-[0.75rem]"
             )}
             placeholder="입력후 추가버튼 또는 스페이스를 눌러주세요."
             onKeyUp={(e) => {
@@ -167,7 +168,7 @@ const UploadTag = ({
             type="button"
             onClick={onClickTag}
             className={twMerge(
-              "bg-white border border-l-0 py-2 px-2  flex justify-center items-center rounded-r-md rounded-l-none  border-gray-400 dark:bg-[#666666]"
+              "bg-white border border-l-0 py-2 px-2  flex justify-center items-center rounded-r-md rounded-l-none  border-gray-400 dark:bg-[#666666]  peer-focus:border-primary "
             )}
           >
             <IoIosAddCircleOutline className="text-2xl text-gray-500  hover:text-[rgba(116,212,186)] dark:text-white" />

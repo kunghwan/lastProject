@@ -206,20 +206,20 @@ const PostComponent = () => {
               </button>
 
               <div
-                className="relative cursor-pointer overflow-hidden"
+                className="relative cursor-pointer "
                 onClick={() => handleOpenPost(post)}
               >
-                <div className="overflow-hidden rounded-lg">
+                <div className="overflow-hidden rounded-lg  border-gray-300 border">
                   <img
                     src={images[0] || defaultImgUrl}
                     alt="Post image"
-                    className="w-full opacity-70 border-gray-300 h-128 object-cover transition-all duration-500 ease-in-out transform hover:scale-[1.01] border "
+                    className="w-full opacity-70 rounded-lg h-128 object-cover transition-all duration-500 ease-in-out transform hover:scale-[1.01]  "
                   />
                 </div>
 
                 {Array.isArray(post.imgs) && post.imgs.length > 1 && (
                   <div className="absolute top-3 right-3 bg-gray-800 opacity-70 text-white text-xs p-2 rounded-full">
-                    +{post.imgs.length}
+                    +{post.imgs.length - 1}
                   </div>
                 )}
               </div>

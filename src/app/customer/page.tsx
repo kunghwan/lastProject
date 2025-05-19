@@ -78,7 +78,7 @@ const QnaPage = () => {
       </div>
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-40 flex items-center justify-center bg-white/60 dark:bg-zinc-900/60 "
+          className="fixed inset-0 z-40 flex items-center justify-center bg-white/60 dark:bg-[#333333]/60  "
           onClick={() => setIsModalOpen(false)}
         >
           {/* w-11/12 전체 가로폭(width)의 약 91.6%  */}
@@ -120,7 +120,7 @@ const QnaPage = () => {
               <button
                 onClick={() => toggleQuestion(item.question)}
                 className={twMerge(
-                  "hover:underline text-xs sm:text-sm text-left font-bold text-white flex justify-between items-center p-2.5 rounded bg-green-300 focus:bg-primary dark:bg-[rgba(151,218,200,0.5)] md:text-xl cursor-pointer dark:text-gray-300",
+                  "hover:underline text-xs sm:text-sm text-left font-bold text-white flex justify-between items-center p-2.5 rounded bg-green-300 focus:bg-primary dark:bg-[#8fa89f] dark:focus:bg-[rgba(151,218,200,0.5)]  md:text-xl cursor-pointer dark:text-gray-300",
                   isanswerShowing === item.question && "rounded-b-none"
                 )}
               >
@@ -139,7 +139,7 @@ const QnaPage = () => {
               {isanswerShowing === item.question && (
                 <div
                   className={twMerge(
-                    "hsecol border-t-2 border-gray-100 gap-y-1.5 text-xs  dark:text-white text-gray-700 rounded rounded-t-none p-2.5 bg-emerald-100 dark:bg-[rgba(240,255,251,0.5)] md:text-[16px] "
+                    "hsecol border-t-2 border-gray-100 gap-y-1.5 text-xs  dark:text-white text-gray-700 rounded rounded-t-none p-2.5 bg-emerald-100 dark:bg-[rgba(240,255,251,0.5)]  md:text-[16px] "
                   )}
                 >
                   {item.answer.map((text, index) => (
