@@ -50,17 +50,6 @@ const UpPlaceBookMark = () => {
     fetchLikedPlaces();
   }, [fetchLikedPlaces]);
 
-  // // 특정 장소 북마크 삭제
-  // const handleDelete = async (contentid: string) => {
-  //   if (!user) return;
-  //   try {
-  //     await deleteDoc(doc(dbService, `users/${user.uid}/likes`, contentid));
-  //     setPlaces((prev) => prev.filter((p) => p.contentid !== contentid));
-  //   } catch (err) {
-  //     console.error("❌ 북마크 삭제 실패", err);
-  //   }
-  // };
-
   return (
     <>
       <h1 className="text-xl font-bold mb-4 flex gap-2.5 px-1">
