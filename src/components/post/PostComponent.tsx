@@ -213,7 +213,7 @@ const PostComponent = () => {
                   <img
                     src={images[0] || defaultImgUrl}
                     alt="Post image"
-                    className="w-full opacity-70 rounded-lg h-128 object-cover transition-all duration-500 ease-in-out transform hover:scale-[1.01]  "
+                    className="w-full opacity-70 rounded-lg h-80 sm:h-128 object-cover transition-all duration-500 ease-in-out transform hover:scale-[1.01]  "
                   />
                 </div>
 
