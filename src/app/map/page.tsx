@@ -165,7 +165,7 @@ const MapPage = () => {
             setIsPlaceListOpen(true);
 
             // 기존 마커 및 오버레이 제거 (markerObjectsRef 활용)
-            markerObjectsRef.current.forEach((marker) => marker.setMap(null));
+            markersRef.current.forEach((item) => item.setMap(null));
             markersRef.current = [];
             markerObjectsRef.current.clear();
             selectedMarkerRef.current = null;
