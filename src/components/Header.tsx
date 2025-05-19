@@ -3,6 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { AUTH } from "@/contextapi/context";
+import { twMerge } from "tailwind-merge";
+import { dbService } from "@/lib";
+import { useAlertModal } from "@/components/AlertStore";
 import {
   IoMoon,
   IoSunny,
@@ -10,13 +15,8 @@ import {
   IoMenu,
   IoNotificationsOutline,
 } from "react-icons/io5";
-import { usePathname, useRouter } from "next/navigation";
-import { AUTH } from "@/contextapi/context";
-import { twMerge } from "tailwind-merge";
-import Navbar from "./features/navber/Navbar";
-import { dbService } from "@/lib";
 import MobileHeader from "./MobileHeader";
-import { useAlertModal } from "@/components/AlertStore";
+import Navbar from "./features/navber/Navbar";
 
 //! 초기 로딩 시 다크 모드 설정
 const storedDarkMode =
