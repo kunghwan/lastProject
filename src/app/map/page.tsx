@@ -12,14 +12,20 @@ const MapPage = () => {
   const [map, setMap] = useState<any>(null); // 카카오 지도 객체 상태
   const [places, setPlaces] = useState<PlaceProps[]>([]); // 검색된 장소 목록 상태
   const [selectedPlace, setSelectedPlace] = useState<PlaceProps | null>(null); // 선택된 장소 상태
-  const [keyword, setKeyword] = useState(""); // 검색 키워드 상태
-  const [inputValue, setInputValue] = useState(""); // 입력창의 현재 값 상태
+  const [keyword, setKeyword] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("selectedKeyword") || "맛집";
+    }
+    return "맛집";
+  }); // 검색 키워드 상태
+  const [inputValue, setInputValue] = useState(keyword); // 입력창의 현재 값 상태
+
   const [isPlaceListOpen, setIsPlaceListOpen] = useState(true); // 검색 리스트 열고 닫기 상태
-  const [isMobileListOpen, setIsMobileListOpen] = useState(false); // 모바일 리스트 열림 상태
+  const [isMobileListOpen, setIsMobileListOpen] = useState(true); // 모바일 리스트 열림 상태
 
   const mapRef = useRef<HTMLDivElement>(null); // 지도 렌더링 DOM 참조
   const detailRef = useRef<HTMLDivElement>(null); // 상세 정보창 DOM 참조
-  const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map()); // 키워드 버튼 참조 (Map)
+  const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map()); // 키워드 버튼 참조
 
   //! TypeScript가 kakao 마커 객체가 어떤 구조인지 몰라서, 원래는 정확한 타입을 지정하는게 좋으나 복잡하기 때문에 임시로 any타입을 씀
   const markersRef = useRef<any[]>([]); // 현재 지도에 그려진 마커 및 오버레이 배열
@@ -62,6 +68,13 @@ const MapPage = () => {
       }
     }
   }, []);
+
+  //! 키워드가 변경될 때마다 localStorage에 저장 (키워드 상태 유지)
+  useEffect(() => {
+    if (keyword) {
+      localStorage.setItem("selectedKeyword", keyword);
+    }
+  }, [keyword]);
 
   //! 마커 클릭 시 상세보기 열기 및 지도 이동
   const handlePlaceClick = useCallback(
@@ -276,7 +289,10 @@ const MapPage = () => {
           handleSearch={handleSearch}
         />
         <div className="flex flex-wrap justify-center md:justify-start">
-          <KeywordButtons onKeywordClick={handleKeywordClick} />
+          <KeywordButtons
+            onKeywordClick={handleKeywordClick}
+            selectedKeyword={keyword} // 선택된 키워드 상태 전달
+          />
         </div>
       </div>
 
@@ -294,31 +310,28 @@ const MapPage = () => {
       {!isPlaceListOpen && places.length > 0 && (
         <button
           onClick={() => setIsPlaceListOpen(true)}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 py-1 rounded z-10 transition md:block hidden"
-          aria-label="검색 결과 리스트 열기"
+          className="absolute bottom-0 right-0 m-2 bg-gray-100 dark:bg-[#555] px-2 py-1 rounded shadow text-sm text-gray-600 dark:text-white"
+          aria-label="검색 결과 리스트 다시 열기"
         >
-          <div className="w-3 h-[40vh] rounded-bl-xl rounded-tl-xl dark:bg-zinc-500 bg-gray-300 hover:animate-pulse">
-            <div className="w-1 h-[10vh] bg-gray-700 absolute right-1 top-1/2 -translate-y-1/2 dark:bg-white" />
-          </div>
+          검색 결과 보기
         </button>
       )}
+      {/* 모바일 리스트 (슬라이드 형) */}
+      {places.length > 0 && (
+        <MobilePlaceList
+          places={places}
+          isOpen={isMobileListOpen}
+          setIsOpen={setIsMobileListOpen}
+          handlePlaceClick={handlePlaceClick}
+        />
+      )}
 
-      {/* 상세 정보창 */}
+      {/* 상세정보창 */}
       {selectedPlace && (
         <PlaceDetail
           place={selectedPlace}
           onClose={handleCloseDetail}
           detailRef={detailRef}
-        />
-      )}
-
-      {/* 모바일 장소 리스트 */}
-      {keyword.length > 0 && places.length > 0 && (
-        <MobilePlaceList
-          isOpen={isMobileListOpen}
-          setIsOpen={setIsMobileListOpen}
-          places={places}
-          handlePlaceClick={handlePlaceClick}
         />
       )}
     </div>
