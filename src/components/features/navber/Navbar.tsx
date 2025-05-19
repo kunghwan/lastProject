@@ -72,11 +72,12 @@ const Navbar = () => {
     setTimeout(() => setIsGridMenuVisible(true), 100);
   }, []);
 
+  //! pc nav 새로고침해도 상태유지
   useEffect(() => {
     const saved = localStorage.getItem("isNavMenuOpen");
     if (saved !== null) {
       setIsNavMenuOpen(saved === "true");
-      setIsGridMenuVisible(!(saved === "true")); // 열려 있으면 Grid 숨김
+      setIsGridMenuVisible(!(saved === "true"));
     }
   }, []);
 
