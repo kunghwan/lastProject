@@ -9,6 +9,7 @@ import Loading from "@/components/Loading";
 import { useAlertModal } from "@/components/AlertStore";
 import AlertModal from "@/components/AlertModal";
 import { twMerge } from "tailwind-merge";
+import LoginInput from "@/components/ui/LoginInput";
 
 const LoginForm = () => {
   const { openAlert } = useAlertModal();
@@ -210,20 +211,19 @@ const LoginForm = () => {
       <form onSubmit={(e) => e.preventDefault()}>
         <div className="flex flex-col gap-y-2.5 items-center justify-center h-120">
           <div className="flex flex-col gap-y-2.5">
-            <input
+            <LoginInput
               type="text"
               ref={emailRef}
-              className="ykhInputButton focus:border-primary focus:outline-none dark:bg-zinc-700
- "
+              className={InputStyle}
               placeholder="이메일"
               value={email}
               onChange={handleEmailChange}
               onKeyDown={handleEmailKeyDown}
             />
-            <input
+            <LoginInput
               type="password"
               ref={passwordRef}
-              className="ykhInputButton focus:border-primary focus:outline-none dark:bg-zinc-700 "
+              className={InputStyle}
               placeholder="비밀번호"
               value={password}
               onChange={handlePasswordChange}
@@ -232,22 +232,10 @@ const LoginForm = () => {
           </div>
           {/* flex gap-x-20 justify-start w-100 lg:w-120 px-5 */}
           <div className="  w-90 flex justify-between lg:w-120">
-            <Link
-              href="/idfind"
-              className={twMerge(
-                Find,
-                "w-45 text-center hover:text-primary lg:w-60 dark:hover:text-emerald-400 dark:opacity-80   "
-              )}
-            >
+            <Link href="/idfind" className={Find}>
               아이디찾기
             </Link>
-            <Link
-              href="/pwfind"
-              className={twMerge(
-                Find,
-                "w-45 text-center hover:text-primary lg:w-60 dark:hover:text-emerald-400 dark:opacity-80  "
-              )}
-            >
+            <Link href="/pwfind" className={Find}>
               비밀번호찾기
             </Link>
           </div>
@@ -276,10 +264,12 @@ const LoginForm = () => {
 
 export default LoginForm;
 
-const Find = "cursor-pointer dark:text-[#C5E3DB]";
+const Find =
+  "cursor-pointer dark:text-[#C5E3DB] w-45 text-center hover:text-primary lg:w-60 dark:hover:text-emerald-400 dark:opacity-80";
 const LoginButton =
   "p-3 rounded w-90 cursor-pointer  lg:w-120   dark:text-black";
 const SignUserButton =
   "p-3 rounded w-90 cursor-pointer bg-gray-100 text-center lg:w-120 dark:text-white dark:bg-gray-800 ";
 
-//! sdfsdf
+const InputStyle =
+  "focus:border-primary focus:outline-none dark:bg-zinc-700 rounded-lg min-h-14 px-2 py-2 bg-gray-50 w-90 placeholder:text-gray-500 lg:w-120 dark:bg-[#666666] focus:border-primary md:placeholder:text-sm  dark:placeholder:text-white shadow-sm dark:text-white border border-gray-400   ";
