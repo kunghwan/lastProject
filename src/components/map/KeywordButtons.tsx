@@ -18,10 +18,9 @@ interface KeywordButtonsProps {
 }
 
 const baseStyle =
-  "group bg-gray-50 border dark:border-gray-500 border-gray-100 p-2.5 rounded-full shadow-sm gap-x-1 flex items-center justify-center font-semibold dark:bg-[#555555] dark:text-[#E5E7EB] sm:text-sm text-xs";
-const hoverFocusStyle =
-  "hover:border-primary focus:bg-primary focus:border-none";
-const selectedStyle = "bg-primary text-white border-none dark:text-zinc-900";
+  "group bg-gray-50 border dark:border-gray-500 border-gray-100 p-2.5 rounded-full shadow-sm gap-x-1 flex items-center justify-center font-semibold dark:bg-[#555555] dark:text-[#E5E7EB] sm:text-sm text-xs hover:border-primary focus:bg-primary focus:border-none";
+const selectedStyle =
+  "bg-primary text-white border-none dark:text-zinc-900 dark:bg-primary";
 
 const KeywordButton = ({
   name,
@@ -29,15 +28,11 @@ const KeywordButton = ({
   onClick,
   selected,
 }: KeywordButtonProps) => {
-  const buttonClass = twMerge(
-    baseStyle,
-    hoverFocusStyle,
-    selected ? selectedStyle : ""
-  );
+  const buttonClass = twMerge(baseStyle, selected ? selectedStyle : "");
 
   const iconClass = twMerge(
     "text-primary sm:text-lg text-base",
-    selected && "text-white dark:text-zinc-900"
+    selected && "text-white dark:text-zinc-900 dark:bg-primary"
   );
 
   const textClass = twMerge(selected ? "text-white dark:text-zinc-900" : "");
