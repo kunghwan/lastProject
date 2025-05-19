@@ -78,7 +78,7 @@ const QnaPage = () => {
       </div>
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-40 flex items-center justify-center bg-white/60 dark:bg-zinc-900/60 "
+          className="fixed inset-0 z-40 flex items-center justify-center bg-white/60 dark:bg-[#333333]/60  "
           onClick={() => setIsModalOpen(false)}
         >
           {/* w-11/12 전체 가로폭(width)의 약 91.6%  */}
