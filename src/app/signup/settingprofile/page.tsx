@@ -266,7 +266,7 @@ const SettingProfile = () => {
   return (
     <>
       {loading && <LoadingPage />} {/* 로딩 화면 */}
-      <div className="flex flex-col gap-y-2 p-4 lg:mx-auto lg:w-130 md:w-130 sm:w-130 overflow-auto min-h-screen">
+      <div className="flex flex-col gap-y-2 p-4 lg:mx-auto lg:w-130 md:w-130 sm:w-130 overflow-auto">
         {/* 닉네임 입력 */}
         <div className="relative">
           <input
