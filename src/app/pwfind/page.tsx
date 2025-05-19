@@ -268,7 +268,7 @@ const PwFindResult = () => {
             <TbPassword className="text-blue-500 text-4xl dark:text-blue-700" />
             <Link
               href="/pwfind"
-              className="font-bold text-black-500  whitespace-nowrap text-amber-500 dark:text-amber-700"
+              className="font-bold text-black-500  whitespace-nowrap text-amber-500 dark:text-amber-700 "
             >
               비밀번호 찾기
             </Link>
@@ -330,7 +330,7 @@ const PwFindResult = () => {
           <button
             ref={findPasswordButtonRef}
             type="button"
-            className="bg-gray-300 rounded p-3 mt-2 flex justify-center w-50 items-center lg:w-80 dark:text-white dark:bg-gray-800 "
+            className="bg-gray-100 rounded p-3 mt-2 flex justify-center w-50 items-center lg:w-80 dark:text-white dark:bg-gray-800 "
             onClick={handleFindPassword}
           >
             비밀번호 찾기

@@ -54,7 +54,7 @@ body::-webkit-scrollbar {
   }
   /* 하나추가함 */
   .CommonInput {
-    @apply rounded-lg min-h-14 md:placeholder:text-sm placeholder:text-gray-500 focus:border-primary  px-2 py-2 dark:placeholder:text-white border-gray-500 border focus:outline-none;
+    @apply rounded-lg min-h-14 md:placeholder:text-sm placeholder:text-gray-500 focus:border-primary  px-2 py-2 dark:placeholder:text-white border-gray-500 border focus:outline-none w-80 lg:w-150;
   }
   /* global.css 또는 globals.css */
 }
