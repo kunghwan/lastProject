@@ -8,12 +8,24 @@
 // import KeywordButtons from "@/components/map/KeywordButtons";
 // import { useAlertModal } from "@/components/AlertStore";
 
+// const LAST_SEARCH_KEY = "lastSearchKeyword";
+
 // const MapPage = () => {
 //   const [map, setMap] = useState<any>(null); // 카카오 지도 객체 상태
 //   const [places, setPlaces] = useState<PlaceProps[]>([]); // 검색된 장소 목록 상태
 //   const [selectedPlace, setSelectedPlace] = useState<PlaceProps | null>(null); // 선택된 장소 상태
-//   const [keyword, setKeyword] = useState("맛집"); // 검색 키워드 상태
-//   const [inputValue, setInputValue] = useState("맛집"); // 입력창의 현재 값 상태
+//   const [keyword, setKeyword] = useState(() => {
+//     if (typeof window !== "undefined") {
+//       return localStorage.getItem(LAST_SEARCH_KEY) || "맛집";
+//     }
+//     return "맛집";
+//   }); // 검색 키워드 상태 (localStorage에서 초기값 로드)
+//   const [inputValue, setInputValue] = useState(() => {
+//     if (typeof window !== "undefined") {
+//       return localStorage.getItem(LAST_SEARCH_KEY) || "맛집";
+//     }
+//     return "맛집";
+//   }); // 입력창의 현재 값 상태 (localStorage에서 초기값 로드)
 //   const [isPlaceListOpen, setIsPlaceListOpen] = useState(true); // 검색 리스트 열고 닫기 상태
 //   const [isMobileListOpen, setIsMobileListOpen] = useState(true); // 모바일 리스트 열림 상태
 
@@ -217,6 +229,9 @@
 //   useEffect(() => {
 //     if (keyword && map) {
 //       searchPlaces(keyword);
+//       if (typeof window !== "undefined") {
+//         localStorage.setItem(LAST_SEARCH_KEY, keyword); // 마지막 검색어 저장
+//       }
 //     }
 //   }, [map, keyword, searchPlaces]);
 
@@ -233,6 +248,9 @@
 //     setKeyword(trimmed);
 //     setIsPlaceListOpen(true);
 //     setIsMobileListOpen(true);
+//     if (typeof window !== "undefined") {
+//       localStorage.setItem(LAST_SEARCH_KEY, trimmed); // 검색 시 검색어 저장
+//     }
 //   }, [inputValue, openAlert]);
 
 //   //! 상세 정보 닫기
@@ -259,6 +277,14 @@
 
 //     setSelectedPlace(null);
 //   }, [map]);
+
+//   //! 선택된 장소에 해당하는 버튼에 focus 적용
+//   useEffect(() => {
+//     if (selectedPlace && buttonRefs.current?.has(selectedPlace.id)) {
+//       const targetButton = buttonRefs.current.get(selectedPlace.id);
+//       targetButton?.focus();
+//     }
+//   }, [selectedPlace]);
 
 //   return (
 //     <div className="relative flex h-[75vh] px-4">
