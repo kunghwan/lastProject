@@ -349,8 +349,9 @@ const SignupForm = () => {
   if (!isLoaded) return null; // 로딩 안 됐으면 렌더 안 함
 
   return (
-    <div className="flex flex-col justify-start items-center min-h-screen px-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-400 rounded-lg p-6 dark:border-gray-500">
+    <div className="flex flex-col items-center justify-start mt-1  ">
+      <div className="w-full max-w-md bg-white dark:bg-[#484848] border border-gray-400 rounded-lg p-6 dark:border-gray-500 ">
+        {/* form 내용 */}
         <form className="space-y-8">
           {InfoAccount.map((info, index) => {
             const key = info.name as keyof typeof user;
@@ -491,37 +492,37 @@ const SignupForm = () => {
                 ) : (
                   // 체크박스 렌더링
                   <>
-                    <div className="flex items-center mt-2">
-                      <input
-                        id={inputId}
-                        ref={locationAgreeRef}
-                        name={info.name}
-                        type="checkbox"
-                        checked={value as boolean}
-                        onChange={handleChange}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            const button =
-                              document.getElementById("signup-next-button");
-                            button?.click();
-                          }
-                        }}
-                        className="w-4 h-4 mr-2"
-                      />
-                      <label
-                        htmlFor={inputId}
-                        className="text-sm text-gray-700 dark:text-gray-300"
-                      >
-                        {info.label}
+                    <div className="flex items-center ">
+                      <label className="flex items-start cursor-pointer">
+                        <input
+                          id={inputId}
+                          ref={locationAgreeRef}
+                          name={info.name}
+                          type="checkbox"
+                          checked={value as boolean}
+                          onChange={handleChange}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              const button =
+                                document.getElementById("signup-next-button");
+                              button?.click();
+                            }
+                          }}
+                          className="w-4 h-4 mt-1 mr-2"
+                        />
+                        <div className="flex flex-col">
+                          <span className="text-sm text-gray-700 dark:text-gray-300">
+                            {info.label}
+                          </span>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            위치정보는 주변 추천 장소 검색, 맞춤 콘텐츠 제공
+                            등을 위해 사용됩니다.
+                          </p>
+                        </div>
                       </label>
                     </div>
                     {/* ✅ 위치정보 설명문구 조건부로 추가 (Fragment 내부에 있어야 함) */}
-
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6">
-                      위치정보는 주변 추천 장소 검색, 맞춤 콘텐츠 제공 등을 위해
-                      사용됩니다.
-                    </p>
                   </>
                 )}
               </div>
@@ -534,13 +535,12 @@ const SignupForm = () => {
           id="signup-next-button"
           type="button"
           onClick={handleSubmit}
-          className="mt-8 w-full bg-primary text-black font-bold py-4 rounded-lg hover:bg-emerald-500 transition dark:text-white dark:bg-emerald-500"
+          className="mt-2 w-full bg-primary text-black font-bold py-4 rounded-lg hover:bg-emerald-500 transition dark:text-white dark:bg-emerald-500"
         >
           다음
         </button>
       </div>
-      {/* 알림 모달
-      <AlertModal /> */}
+
       {isSubmitting && (
         <Loaiding isLoading={true} message="가입 처리 중입니다..." />
       )}
