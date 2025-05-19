@@ -9,37 +9,56 @@ import KeywordButtons from "@/components/map/KeywordButtons";
 import { useAlertModal } from "@/components/AlertStore";
 
 const MapPage = () => {
-  const [map, setMap] = useState<any>(null); // 카카오 지도 객체 상태
-  const [places, setPlaces] = useState<PlaceProps[]>([]); // 검색된 장소 목록 상태
-  const [selectedPlace, setSelectedPlace] = useState<PlaceProps | null>(null); // 선택된 장소 상태
+  // 카카오 지도 객체 상태
+  const [map, setMap] = useState<any>(null);
+  // 검색된 장소 목록 상태
+  const [places, setPlaces] = useState<PlaceProps[]>([]);
+  // 선택된 장소 상태
+  const [selectedPlace, setSelectedPlace] = useState<PlaceProps | null>(null);
+
+  // 검색 키워드 상태 (초기값은 로컬스토리지에서 불러오거나 기본값 "맛집")
   const [keyword, setKeyword] = useState(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("selectedKeyword") || "맛집";
+      return localStorage.getItem("mapKeyword") || "맛집";
     }
     return "맛집";
-  }); // 검색 키워드 상태
-  const [inputValue, setInputValue] = useState(keyword); // 입력창의 현재 값 상태
+  });
 
-  const [isPlaceListOpen, setIsPlaceListOpen] = useState(true); // 검색 리스트 열고 닫기 상태
-  const [isMobileListOpen, setIsMobileListOpen] = useState(true); // 모바일 리스트 열림 상태
+  // 입력창의 현재 값 상태 (초기값은 keyword와 동일)
+  const [inputValue, setInputValue] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("mapKeyword") || "맛집";
+    }
+    return "맛집";
+  });
 
-  const mapRef = useRef<HTMLDivElement>(null); // 지도 렌더링 DOM 참조
-  const detailRef = useRef<HTMLDivElement>(null); // 상세 정보창 DOM 참조
-  const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map()); // 키워드 버튼 참조
+  // 검색 리스트 열고 닫기 상태
+  const [isPlaceListOpen, setIsPlaceListOpen] = useState(true);
+  // 모바일 리스트 열림 상태
+  const [isMobileListOpen, setIsMobileListOpen] = useState(true);
 
-  //! TypeScript가 kakao 마커 객체가 어떤 구조인지 몰라서, 원래는 정확한 타입을 지정하는게 좋으나 복잡하기 때문에 임시로 any타입을 씀
-  const markersRef = useRef<any[]>([]); // 현재 지도에 그려진 마커 및 오버레이 배열
-  const markerObjectsRef = useRef<Map<string, any>>(new Map()); // 마커 객체 관리용 Map (place.id를 key로 하는 마커만 저장)
-  const selectedMarkerRef = useRef<any>(null); // 현재 선택된 마커 (크기 커진 마커)
+  // 지도 렌더링 DOM 참조
+  const mapRef = useRef<HTMLDivElement>(null);
+  // 상세 정보창 DOM 참조
+  const detailRef = useRef<HTMLDivElement>(null);
+  // 키워드 버튼 참조 (Map)
+  const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
-  const { openAlert } = useAlertModal(); // 알림 모달 훅
+  // kakao 마커 객체 및 오버레이 배열 상태
+  const markersRef = useRef<any[]>([]);
+  // 마커 객체 관리용 Map (place.id를 key로 하는 마커 저장)
+  const markerObjectsRef = useRef<Map<string, any>>(new Map());
+  // 현재 선택된 마커 (크기 커진 마커)
+  const selectedMarkerRef = useRef<any>(null);
+
+  const { openAlert } = useAlertModal();
 
   //! 지도 초기화 및 kakao map API 로드
   useEffect(() => {
     const initMap = () => {
       if (!mapRef.current) return;
 
-      //! 지도 초기 중심 좌표 설정 (대전)
+      // 지도 초기 중심 좌표 설정 (대전)
       const center = new window.kakao.maps.LatLng(36.3286, 127.4229);
       const mapInstance = new window.kakao.maps.Map(mapRef.current, {
         center,
@@ -49,7 +68,7 @@ const MapPage = () => {
       setMap(mapInstance); // 지도 객체 저장
     };
 
-    //! 카카오 맵 스크립트 불러오기
+    // 카카오 맵 스크립트 불러오기
     const loadKakaoMapScript = () => {
       const script = document.createElement("script");
       script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_API_KEY}&autoload=false&libraries=services`;
@@ -69,10 +88,10 @@ const MapPage = () => {
     }
   }, []);
 
-  //! 키워드가 변경될 때마다 localStorage에 저장 (키워드 상태 유지)
+  //! 키워드가 변경될 때마다 localStorage에 저장
   useEffect(() => {
-    if (keyword) {
-      localStorage.setItem("selectedKeyword", keyword);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("mapKeyword", keyword);
     }
   }, [keyword]);
 
@@ -84,7 +103,7 @@ const MapPage = () => {
 
       // 기본 및 선택된 마커 이미지
       const defaultMarkerImage = new maps.MarkerImage(
-        "https://t1.daumcdn.net/localimg/localimages/07/2018/pc/img/marker_spot.png", //이미지는 바꿀수 있음
+        "https://t1.daumcdn.net/localimg/localimages/07/2018/pc/img/marker_spot.png",
         new maps.Size(25, 35),
         { offset: new maps.Point(12, 35) }
       );
@@ -291,7 +310,7 @@ const MapPage = () => {
         <div className="flex flex-wrap justify-center md:justify-start">
           <KeywordButtons
             onKeywordClick={handleKeywordClick}
-            selectedKeyword={keyword} // 선택된 키워드 상태 전달
+            selectedKeyword={keyword}
           />
         </div>
       </div>
@@ -310,28 +329,31 @@ const MapPage = () => {
       {!isPlaceListOpen && places.length > 0 && (
         <button
           onClick={() => setIsPlaceListOpen(true)}
-          className="absolute bottom-0 right-0 m-2 bg-gray-100 dark:bg-[#555] px-2 py-1 rounded shadow text-sm text-gray-600 dark:text-white"
-          aria-label="검색 결과 리스트 다시 열기"
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 py-1 rounded z-10 transition md:block hidden"
+          aria-label="검색 결과 리스트 열기"
         >
-          검색 결과 보기
+          <div className="w-3 h-[40vh] rounded-bl-xl rounded-tl-xl dark:bg-zinc-500 bg-gray-300 hover:animate-pulse">
+            <div className="w-1 h-[10vh] bg-gray-700 absolute right-1 top-1/2 -translate-y-1/2 dark:bg-white" />
+          </div>
         </button>
       )}
-      {/* 모바일 리스트 (슬라이드 형) */}
-      {places.length > 0 && (
-        <MobilePlaceList
-          places={places}
-          isOpen={isMobileListOpen}
-          setIsOpen={setIsMobileListOpen}
-          handlePlaceClick={handlePlaceClick}
-        />
-      )}
 
-      {/* 상세정보창 */}
+      {/* 상세 정보창 */}
       {selectedPlace && (
         <PlaceDetail
           place={selectedPlace}
           onClose={handleCloseDetail}
           detailRef={detailRef}
+        />
+      )}
+
+      {/* 모바일 장소 리스트 */}
+      {keyword.length > 0 && places.length > 0 && (
+        <MobilePlaceList
+          isOpen={isMobileListOpen}
+          setIsOpen={setIsMobileListOpen}
+          places={places}
+          handlePlaceClick={handlePlaceClick}
         />
       )}
     </div>
