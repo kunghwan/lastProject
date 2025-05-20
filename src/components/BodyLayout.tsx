@@ -1,6 +1,5 @@
 "use client";
 
-import Navbar from "./features/navber/Navbar";
 import Header from "./Header";
 import { PropsWithChildren } from "react";
 
@@ -23,8 +22,6 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
       >
         <div className="max-w-300 mx-auto">{children}</div>
       </main>
-
-      <Navbar />
     </div>
   );
 };
