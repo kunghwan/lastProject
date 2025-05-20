@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import { useAlertModal } from "@/components/AlertStore";
 import SearchForm from "@/components/map/SearchForm";
 import MobilePlaceList from "@/components/map/MobilePlaceList";
 import PlaceDetail from "@/components/map/PlaceDetail";
 import PlaceList from "@/components/map/PlaceList";
 import KeywordButtons from "@/components/map/KeywordButtons";
-import { useAlertModal } from "@/components/AlertStore";
 
 const lastsavedKwd = "lastSearchKeyword"; // localStorage에 저장할 마지막 검색어 키
 const firstKwd = "맛집"; // 처음 열었을때 검색어
@@ -326,7 +326,6 @@ const MapPage = () => {
         <button
           onClick={() => setIsPlaceListOpen(true)}
           className="absolute right-4 top-1/2 transform -translate-y-1/2 py-1 rounded z-10 transition md:block hidden"
-          aria-label="검색 결과 리스트 열기"
         >
           <div className="w-3 h-[40vh] rounded-bl-xl rounded-tl-xl dark:bg-zinc-500 bg-gray-300 hover:animate-pulse">
             <div className="w-1 h-[10vh] bg-gray-700 absolute right-1 top-1/2 -translate-y-1/2 dark:bg-white" />
