@@ -7,6 +7,7 @@ import { storageService, dbService, FBCollection } from "@/lib/firebase";
 import { AUTH } from "@/contextapi/context";
 import LoadingPage from "@/components/Loading";
 import { useAlertModal } from "@/components/AlertStore";
+import Image from "next/image"; // 상단 import 추가
 import AlertModal from "@/components/AlertModal";
 
 const SettingProfile = () => {
@@ -313,7 +314,9 @@ const SettingProfile = () => {
             className="hidden"
           />
           {profile.profileImageUrl && (
-            <img
+            <Image
+              width={128}
+              height={128}
               src={profile.profileImageUrl}
               alt="preview"
               className="mt-2 w-32 h-32 object-cover border rounded"
