@@ -34,7 +34,7 @@ const MobilePlaceList = ({
       {/* 슬라이드 패널 */}
       <div
         className={twMerge(
-          "fixed inset-x-0 bottom-0 bg-gray-50 max-h-[80vh] rounded-t-2xl z-[21] transform transition-transform duration-300 ease-in-out md:hidden dark:bg-[#444444]",
+          "fixed inset-x-0 bottom-0 bg-gray-50 min-h-[70vh] rounded-t-2xl z-[21] transform transition-transform duration-300 ease-in-out md:hidden dark:bg-[#444444]",
           isOpen ? "translate-y-0" : "translate-y-full"
         )}
       >
