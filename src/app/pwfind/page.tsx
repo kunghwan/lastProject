@@ -360,7 +360,9 @@ const PwFindResult = () => {
                   onChange={handleChange}
                   onKeyDown={handleKeyDown}
                   placeholder="새비밀번호"
-                  className={twMerge(" CommonInput dark:bg-zinc-700  ")}
+                  className={twMerge(
+                    " CommonInput dark:bg-zinc-700 lg:w-80   "
+                  )}
                 />
                 {validation.newPassword?.message && (
                   <p className="text-sm text-red-500 ml-1">
@@ -377,7 +379,7 @@ const PwFindResult = () => {
                   onChange={handleChange}
                   onKeyDown={handleKeyDown}
                   placeholder="새 비밀번호 확인"
-                  className={twMerge("CommonInput dark:bg-zinc-700  ")}
+                  className={twMerge("CommonInput dark:bg-zinc-700 lg:w-80  ")}
                 />
                 {validation.confirmPassword?.message && (
                   <p className="text-sm text-red-500 ml-1">
@@ -392,7 +394,7 @@ const PwFindResult = () => {
           <div className="flex justify-center">
             <button
               ref={submitButtonRef}
-              className="bg-gray-100 rounded p-5 mt-3 flex justify-center w-50 items-center lg:w-80 dark:bg-gray-800 dark:text-black"
+              className="bg-gray-100 rounded-lg p-5 mt-3 flex justify-center w-50 items-center lg:w-80 dark:bg-gray-800 dark:text-black"
               onClick={handleSubmit}
             >
               확인
