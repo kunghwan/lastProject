@@ -77,7 +77,11 @@ const PlaceDetail = ({ detailRef, onClose, place }: Props) => {
 
       <ul className="mt-2 flex gap-x-2 text-lg sm:text-xl">
         {jusoClip(place).map(({ icon, text, msg }, i) => (
-          <button key={i} onClick={() => handleCopy(text, msg)}>
+          <button
+            key={i}
+            onClick={() => handleCopy(text, msg)}
+            className="hover:text-primary"
+          >
             {icon}
           </button>
         ))}
