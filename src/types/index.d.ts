@@ -156,12 +156,6 @@ interface UpPlaceLikeButtonProps {
 
 //-----------------------------------------------
 
-interface HomeMenu {
-  name: string;
-  href: string; // 경로
-  Icon: IconType;
-}
-
 // 카카오 지도 api 관련
 interface PlaceProps {
   address_name: string; // 지번 주소
