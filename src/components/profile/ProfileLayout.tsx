@@ -300,7 +300,7 @@ const ProfileLayout = ({
             {isMyPage ? (
               <button
                 onClick={() => setEditOpen(true)}
-                className="text-2xl absolute right-20 sm:right-50 hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400  dark:active:text-gray-100"
+                className="text-2xl flex items-start hover:animate-spin hover:scale-105 cursor-pointer p-2.5 active:text-gray-800 hover:text-gray-400  dark:active:text-gray-100"
               >
                 <IoSettingsOutline />
               </button>
@@ -367,7 +367,7 @@ const ProfileLayout = ({
         )}
       </div>
       {editOpen && (
-        <div className="fixed inset-0  bg-opacity-50 z-60 flex justify-center items-center bg-gray-700/85 dark:bg-gray-800/85 ">
+        <div className="fixed inset-0  bg-opacity-50 z-22222222 flex justify-center items-center bg-gray-700/85 dark:bg-gray-800/85 ">
           <div className="bg-white dark:bg-[#3c3c3c] p-6 rounded-xl shadow-xl w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">프로필 수정</h2>
 
