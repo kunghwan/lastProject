@@ -194,11 +194,11 @@ const PostComponent = () => {
               className="p-1.5 pb-2.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl"
             >
               <button
-                className="flex gap-1.5 items-center text-center m-1.5"
+                className="flex gap-1.5 items-center mb-2.5  text-center m-1.5"
                 onClick={() => handleClick(post.uid, post.userNickname)}
               >
                 <img
-                  className="w-8 h-8 border rounded-2xl pb-2.5 border-gray-200"
+                  className="w-8 h-8 border rounded-2xl border-gray-200"
                   src={post.userProfileImage || defaultImgUrl}
                   alt="user profile image"
                 />
