@@ -29,7 +29,7 @@ const AlertModal = () => {
 
   return ReactDOM.createPortal(
     <div
-      className="fixed inset-0 z-9999 bg-black/40 flex items-center justify-center "
+      className="fixed inset-0 z-99999 bg-black/40 flex items-center justify-center "
       onClick={closeAlert}
     >
       <div

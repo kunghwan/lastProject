@@ -2,6 +2,7 @@
 
 import Header from "./Header";
 import { PropsWithChildren } from "react";
+import TopButton from "./upplace/TopButton";
 
 const BodyLayout = ({ children }: PropsWithChildren) => {
   return (
@@ -20,7 +21,10 @@ const BodyLayout = ({ children }: PropsWithChildren) => {
                      {/* 최대 화면 너비 1401px 이하일 때, 하단 패딩을 주어 스크롤바가 콘텐츠를 가리지 않도록 함 */}
                      max-[1401px]:pb-4"
       >
-        <div className="max-w-300 mx-auto">{children}</div>
+        <div className="max-w-300 mx-auto">
+          {children}
+          <TopButton />
+        </div>
       </main>
     </div>
   );

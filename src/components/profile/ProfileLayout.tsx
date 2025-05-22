@@ -367,7 +367,7 @@ const ProfileLayout = ({
         )}
       </div>
       {editOpen && (
-        <div className="fixed inset-0  bg-opacity-50 z-22222222 flex justify-center items-center bg-gray-700/85 dark:bg-gray-800/85 ">
+        <div className="fixed inset-0  bg-opacity-50 z-30000 flex justify-center items-center bg-gray-700/85 dark:bg-gray-800/85 ">
           <div className="bg-white dark:bg-[#3c3c3c] p-6 rounded-xl shadow-xl w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">프로필 수정</h2>
 
