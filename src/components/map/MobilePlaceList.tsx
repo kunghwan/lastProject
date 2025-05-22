@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { IoMenu } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
 
@@ -16,12 +17,51 @@ const MobilePlaceList = ({
   places,
   handlePlaceClick,
 }: Props) => {
+  const panelRef = useRef<HTMLDivElement>(null);
+  const touchStartY = useRef<number | null>(null);
+  const touchEndY = useRef<number | null>(null);
+
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      touchEndY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = () => {
+      if (
+        touchStartY.current !== null &&
+        touchEndY.current !== null &&
+        touchEndY.current - touchStartY.current > 100 // 100px 이상 아래로 스와이프 시
+      ) {
+        setIsOpen(false);
+      }
+      touchStartY.current = null;
+      touchEndY.current = null;
+    };
+
+    panel.addEventListener("touchstart", handleTouchStart);
+    panel.addEventListener("touchmove", handleTouchMove);
+    panel.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      panel.removeEventListener("touchstart", handleTouchStart);
+      panel.removeEventListener("touchmove", handleTouchMove);
+      panel.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [setIsOpen]);
+
   return (
     <>
       {/* 수동으로 열기 버튼 */}
       {!isOpen && places.length > 0 && (
         <button
-          className="md:hidden fixed bottom-[11vh] my-2 left-[50%] translate-x-[-50%] z-10 bg-gray-50 text-gray-500 py-2 rounded-full shadow px-7 hover:opacity-80  dark:bg-[#6B6B6B] dark:text-gray-50"
+          className="md:hidden fixed bottom-[11vh] my-2 left-[50%] translate-x-[-50%] z-10 bg-gray-50 text-gray-500 py-2 rounded-full shadow px-7 hover:opacity-80 dark:bg-[#6B6B6B] dark:text-gray-50"
           onClick={() => setIsOpen(true)}
         >
           <div className="flex items-center gap-x-2">
@@ -39,23 +79,23 @@ const MobilePlaceList = ({
         )}
       >
         {/* 위쪽 바 (닫기용) */}
-        <div className="mt-5" onClick={() => setIsOpen(false)}>
+        <div className="mt-5" onClick={() => setIsOpen(false)} ref={panelRef}>
           <button className="flex items-center justify-center p-2 rounded-2xl mx-auto w-[40vw] bg-gray-200 hover:bg-gray-300 dark:bg-zinc-400 dark:hover:opacity-80" />
         </div>
 
         {/* 장소 목록 */}
         <div className="p-4 overflow-y-auto h-full">
-          <ul className="space-y-4 max-h-[60vh] overflow-y-auto mt-4 px-2 ">
+          <ul className="space-y-4 max-h-[60vh] overflow-y-auto mt-4 px-2">
             {places.map((place) => (
               <li
                 key={place.id}
-                className="bg-gray-100 rounded-lg border border-gray-300  opacity-80 hover:border hover:border-primary dark:bg-[#555555] dark:text-white"
+                className="bg-gray-100 rounded-lg border border-gray-300 opacity-80 hover:border hover:border-primary dark:bg-[#555555] dark:text-white"
               >
                 <button
                   className="flex flex-col items-start w-full p-3 gap-y-1"
                   onClick={() => {
-                    handlePlaceClick(place, true); // showDetail: true 넘기기
-                    setIsOpen(false); // 클릭 시 자동 닫힘
+                    handlePlaceClick(place, true);
+                    setIsOpen(false);
                   }}
                 >
                   <p className="font-bold">{place.place_name}</p>
