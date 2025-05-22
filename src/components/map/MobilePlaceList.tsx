@@ -73,14 +73,13 @@ const MobilePlaceList = ({
 
       {/* 슬라이드 패널 */}
       <div
-        ref={panelRef}
         className={twMerge(
           "fixed inset-x-0 bottom-0 bg-gray-50 min-h-[70vh] rounded-t-2xl z-[21] transform transition-transform duration-300 ease-in-out md:hidden dark:bg-[#444444]",
           isOpen ? "translate-y-0" : "translate-y-full"
         )}
       >
         {/* 위쪽 바 (닫기용) */}
-        <div className="mt-5" onClick={() => setIsOpen(false)}>
+        <div className="mt-5" onClick={() => setIsOpen(false)} ref={panelRef}>
           <button className="flex items-center justify-center p-2 rounded-2xl mx-auto w-[40vw] bg-gray-200 hover:bg-gray-300 dark:bg-zinc-400 dark:hover:opacity-80" />
         </div>
 
