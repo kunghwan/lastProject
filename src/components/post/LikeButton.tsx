@@ -88,7 +88,7 @@ const LikeButton = ({ postId, likedBy = [], postOwnerId }: LikeButtonProps) => {
       <button
         type="button"
         onClick={handleLikeToggle}
-        className={`hover:scale-105 cursor-pointer p-0.5 ${
+        className={`hover:scale-105 cursor-pointer z-50 p-0.5 ${
           isLiked ? "text-red-500" : "text-gray-500"
         }`}
       >

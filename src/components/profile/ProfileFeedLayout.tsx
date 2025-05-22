@@ -159,7 +159,7 @@ const ProfileFeedComponent = ({
   }, []);
 
   return (
-    <div className="flex flex-col p-3 border-t-2 border-emerald-200 w-full lg:w-[1024px] mx-auto">
+    <div className="flex flex-col p-3 border-t-2 border-emerald-200 w-full lg:w-[1024px] mx-auto z-29999">
       <ul className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {[...postList]
           .sort((a, b) => {
